@@ -1,0 +1,78 @@
+#include "pch.h"
+#include "LevelMgr.h"
+
+#include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
+#include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
+#include "GameEngine/07.EditorUI/11.CollisionMatrixUI/CollisionMatrixUI.h"
+#include "Header/components.h"
+
+LevelMgr::LevelMgr()
+    : m_LevelState(LEVEL_STATE::STOP)
+{
+}
+
+LevelMgr::~LevelMgr()
+{
+}
+
+void LevelMgr::Init()
+{
+
+}
+
+void LevelMgr::Progress()
+{
+    // 실행할 레벨이 지정된게 없으면 return
+    if (!m_CurLevel) return;
+    
+    // 이전에 등록된 모든 오브젝트들 제거
+    m_CurLevel->Deregister();
+
+    // 레벨의 상태가 Play 일 때만 Level의 Tick을 수행
+    if (m_LevelState == LEVEL_STATE::PLAY)
+        m_CurLevel->Tick(); // 레벨안에 있는 오브젝트들이 이번 DT 동안 할 일 수행
+    
+    m_CurLevel->FinalTick();
+
+    // 충돌 검사 진행 -> TODO : Level이 각자의 CollisionMgr을 들고 있는 형태로 가져가면 어떨까
+    if (m_LevelState == LEVEL_STATE::PLAY)
+        CollisionMgr::GetInst()->Progress(m_CurLevel);
+}
+
+void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
+{
+    if (m_LevelState == _NextState) return;
+
+    // Stop -> Play
+    if (m_LevelState == LEVEL_STATE::STOP && _NextState == LEVEL_STATE::PLAY)
+    {
+        // 원본 Asset 레벨의 복제본 레벨을 만들어서 현재 레벨로 가리킨다.
+        m_CurLevel = m_SharedLevel->Clone();
+        m_CurLevel->SetChanged();
+        m_CurLevel->Begin();
+    }
+
+    // Play, Pause -> Stop
+    else if (   (m_LevelState == LEVEL_STATE::PLAY || m_LevelState == LEVEL_STATE::PAUSE) && _NextState == LEVEL_STATE::STOP   )
+    {
+        // 원본 Asset 
+        m_CurLevel = m_SharedLevel;
+        m_CurLevel->SetChanged();
+    }
+
+    
+        
+    m_LevelState = _NextState;
+}
+
+void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel)
+{
+    m_CurLevel = m_SharedLevel = _NextLevel; 
+    m_LevelState = LEVEL_STATE::STOP; // TODO : Release용 or 플레이 도중 Level 전환 시, 이전 LevelState로 continue
+    
+    EditorUI* pUI = EditorMgr::GetInst()->GetEditorUI("CollisionMatrixUI").Get();
+    if (CollisionMatrixUI* MatUI = dynamic_cast<CollisionMatrixUI*>(pUI))
+        MatUI->RefreshFromLevel();
+    
+    _NextLevel->SetChanged();
+}

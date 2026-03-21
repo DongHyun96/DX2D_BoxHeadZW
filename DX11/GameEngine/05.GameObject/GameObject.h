@@ -1,0 +1,167 @@
+﻿#pragma once
+
+#include "GameEngine/04.Asset/Entity.h"
+#include "GameEngine/06.Component/Script/CScript.h"
+#include "Header/components.h"
+#include "Module/Ptr.h"
+
+#define GET_COMPONENT(COM_NAME, COM_TYPE) Ptr<C##COM_NAME> COM_NAME() const {return dynamic_cast<C##COM_NAME*>(m_Components[static_cast<UINT>(COMPONENT_TYPE::COM_TYPE)].Get()); }
+
+class CMeshRender;
+
+class GameObject : public Entity
+{
+	
+	friend class TaskMgr;
+	friend class Layer;
+	friend class Menu;
+	
+private:
+	
+	bool m_IsActive = true;
+	
+private:
+
+	Ptr<Component>			m_Components[static_cast<UINT>(COMPONENT_TYPE::END)]{};
+	vector<Ptr<CScript>>	m_vecScripts{};
+
+	Ptr<CCollider2D>		m_Collider2D{};
+	Ptr<CRenderComponent>	m_RenderCom{};
+
+	// 종속 관계에서 Parent가 Child를 스마트포인터로 소유 / Child는 일반 포인터로 부모를 가리킴으로 순환 참조 방지
+	// 자식이 사라져도 부모 객체는 살아있음
+	GameObject*				m_Parent{};
+	vector<Ptr<GameObject>> m_vecChild{};
+
+	// GameObject 본인이 속한 Layer Index
+	// -1인 경우, 어떤 레이어에도 속하지 않는다 == 레벨안에 있지 않은 오브젝트
+	// 실질적으로 Level 구조에서 사용하는 LayerIdx 변수
+	int						m_LayerIdx = -1;
+	bool					m_bInLayer{}; // 레이어에 현재 속해 있는지 체크
+	
+	bool					m_Dead{}; // 곧 사라질 GameObject
+	
+public:
+
+	GameObject();
+	GameObject(const GameObject& _Origin);
+	
+	virtual ~GameObject() override;
+
+public:
+	
+	CLONE(GameObject)
+	
+public:
+	
+	void Begin();
+	void Tick();
+
+	/// <summary> 매 프레임마다 Tick 이후에 뒷 수습작업 수행 </summary>
+	void FinalTick();
+	
+	/// <summary> Editor 전용 GameObject FinalTick </summary>
+	void FinalTick_Editor();
+	
+	void Render();
+	
+public:
+	
+	/// <summary>
+	/// Type에 대응되는 Component 제거 
+	/// </summary>
+	/// <returns> : 제거할 대상 Component가 없거나, TYPE END일 경우 return false </returns>
+	bool RemoveComponent(COMPONENT_TYPE _Type);
+
+	
+	bool AddComponent(const Ptr<Component>& _Com);
+	Ptr<Component> GetComponent(COMPONENT_TYPE _Type) { return m_Components[static_cast<UINT>(_Type)]; }
+
+public:
+	
+	/// <summary>
+	/// TargetScript에 대응되는 Script 제거 
+	/// </summary>
+	/// <returns> : 제거할 대상이 없을 경우 return false </returns>
+	bool RemoveScript(const Ptr<CScript>& _TargetScript);
+
+	template<typename T>
+	Ptr<T> GetScriptComponent() const;
+	vector<Ptr<CScript>> GetScripts() const { return m_vecScripts; }
+
+public:
+	
+	void AddChild(const Ptr<GameObject>& _Child);
+	void DisconnectWithParent();
+	void DeregisterAsParent();
+	void RegisterAsParent();
+
+public:
+	
+	Ptr<GameObject> GetParent() const { return m_Parent; }
+	
+	Ptr<GameObject> GetChild(UINT _Idx) const { return m_vecChild[_Idx]; }
+	const vector<Ptr<GameObject>>& GetChildren() const { return m_vecChild; }
+
+public:
+	
+	bool IsDead() const { return m_Dead; }
+	GET_SET(bool, IsActive)
+	
+public:
+	
+	int GetLayerIdx() const { return m_LayerIdx; }
+	bool SetLayerIdx(int _LayerIdx);
+	
+public:
+
+	// 특정 컴포넌트를 다운캐스팅해서 바로 리턴
+	GET_COMPONENT(Transform,		TRANSFORM)
+	GET_COMPONENT(MeshRender,		MESH_RENDER)
+	GET_COMPONENT(BillboardRender,	BILLBOARD_RENDER);
+	GET_COMPONENT(Camera,			CAMERA);
+	
+	GET_COMPONENT(ColliderRect,		COLLIDER2D_RECT);
+	GET_COMPONENT(ColliderCircle,	COLLIDER2D_CIRCLE);
+	GET_COMPONENT(ColliderPoint,	COLLIDER2D_POINT);
+	
+	GET_COMPONENT(SpriteRender,		SPRITE_RENDER)
+	GET_COMPONENT(FlipbookRender,	FLIPBOOK_RENDER)
+	GET_COMPONENT(TileRender,		TILE_RENDER)
+	GET_COMPONENT(Light2D,			LIGHT2D)
+
+public:
+	
+	Ptr<CCollider2D> GetCollider2D() const { return m_Collider2D; }
+	Ptr<CRenderComponent> GetRenderCom() const { return m_RenderCom; }
+	
+	/*Ptr<CTransform>  Transform()  {return dynamic_cast<CTransform*>(m_Components[static_cast<UINT>(COMPONENT_TYPE::TRANSFORM)].Get()); }
+	Ptr<CMeshRender> MeshRender() {return dynamic_cast<CMeshRender*>(m_Components[static_cast<UINT>(COMPONENT_TYPE::MESHRENDER)].Get()); }
+	Ptr<CCamera> Camera() {return dynamic_cast<CCamera*>(m_Components[static_cast<UINT>(COMPONENT_TYPE::CAMERA)].Get()); }*/
+
+	/// <summary>
+	/// Level Asset 저장 시, GameObject 저장 기능 
+	/// </summary>
+	void SaveToLevelFile(FILE* _File);
+
+	void LoadFromLevelFile(FILE* _File);
+	
+public:
+	
+	void RegisterLayer();
+	
+	void Destroy();
+	
+};
+
+template <typename T>
+Ptr<T> GameObject::GetScriptComponent() const
+{
+	for (const Ptr<CScript>& script : m_vecScripts)
+		if (Ptr<T> casted = dynamic_cast<T*>(script.Get())) 
+			return casted;
+	
+	return nullptr;
+}
+
+bool IsValid(Ptr<GameObject>& _Object);

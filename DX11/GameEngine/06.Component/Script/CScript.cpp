@@ -1,0 +1,46 @@
+﻿#include "pch.h"
+#include "CScript.h"
+
+#include "GameEngine/04.Asset/09.Prefab/APrefab.h"
+#include "GameEngine/03.Manager/07.TaskMgr/TaskMgr.h"
+#include "GameEngine/05.GameObject/GameObject.h"
+
+CScript::CScript(int _ScriptType)
+    : Component(COMPONENT_TYPE::SCRIPT)
+    , m_ScriptType(_ScriptType)
+{
+}
+
+CScript::CScript(const CScript& _Origin)
+    : Component(_Origin)
+    , m_ScriptType(_Origin.m_ScriptType)
+{
+}
+
+CScript::~CScript()
+{
+}
+
+GameObject* CScript::Instantiate(APrefab* _Prefab, int _LayerIdx, Vec3 _WorldPos)
+{
+    if (!_Prefab) return nullptr;
+
+    GameObject* pObject = _Prefab->Instantiate();
+
+    if (pObject->Transform()) pObject->Transform()->SetRelativePos(_WorldPos);
+
+    CreateObject(pObject, _LayerIdx);
+    
+    return pObject;
+}
+
+void CScript::Destroy()
+{
+    if (!GetOwner() || GetOwner()->IsDead()) return; // 이미 삭제 요청이 들어갔었던 Object
+    
+    TaskInfo info = {};
+    
+    info.Type       = TASK_TYPE::DESTROY_OBJECT;
+    info.Param_0    = reinterpret_cast<DWORD_PTR>(m_Owner);
+    TaskMgr::GetInst()->AddTask(info);
+}

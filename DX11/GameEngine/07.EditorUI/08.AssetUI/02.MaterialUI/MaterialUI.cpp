@@ -1,0 +1,199 @@
+﻿#include "pch.h"
+#include "MaterialUI.h"
+
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
+#include "GameEngine/07.EditorUI/05.ListUI/ListUI.h"
+#include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
+
+MaterialUI::MaterialUI()
+    : AssetUI(ASSET_TYPE::MATERIAL)
+{
+}
+
+MaterialUI::~MaterialUI()
+{
+}
+
+void MaterialUI::Tick_UI()
+{
+    AssetUI::Tick_UI();
+
+    Ptr<AMaterial> pMtrl = static_cast<AMaterial*>(GetTargetAsset().Get());
+
+    // ======
+    // Shader
+    // ======
+    ImGui::Text("Shader");
+    ImGui::SameLine(100);
+
+    Ptr<AGraphicShader> pShader = pMtrl->GetShader();
+
+    wstring ShaderKey = pShader ? pShader->GetKey() : L"None";
+	
+    ImGui::InputText("##ShaderName", string(ShaderKey.begin(), ShaderKey.end()).data(), ShaderKey.length() + 1, ImGuiInputTextFlags_ReadOnly);
+
+    // 특정 위젯에서 드래그가 발생했고, 해당 위젯 위에 마우스가 호버링 중인지
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* PayLoad = ImGui::AcceptDragDropPayload("Content"))
+        {
+            if (!TreeUI::IsPayloadMultiData(PayLoad))
+            {
+                DWORD_PTR data = *static_cast<DWORD_PTR*>(PayLoad->Data);
+                Ptr<Asset> pAsset = reinterpret_cast<Asset*>(data);
+
+                if (ASSET_TYPE::GRAPHICS_SHADER == pAsset->GetType())
+                    pMtrl->SetShader(static_cast<AGraphicShader*>(pAsset.Get()));
+            }
+        }
+
+        ImGui::EndDragDropTarget();
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("##ShaderBtn", Vec2(20.f, 20.f)))
+    {
+        // 버튼이 눌리면, 리스트UI 를 찾아서 활성화 시키고, 출력시키고 싶은 문자열을 ListUI 에 등록시킨다.
+        Ptr<ListUI> pUI = dynamic_cast<ListUI*>(EditorMgr::GetInst()->FindUI("ListUI").Get());
+        assert(pUI.Get());
+
+        pUI->SetUIName("Shader List");
+
+        vector<wstring> vecShaderNames;
+        AssetMgr::GetInst()->GetAssetKeys(ASSET_TYPE::GRAPHICS_SHADER, vecShaderNames);
+        pUI->AddString(vecShaderNames);
+        pUI->AddDelegate(this, static_cast<DELEGATE_1>(&MaterialUI::OnSelectShader));
+        pUI->SetActive(true);
+    }
+
+
+    // TODO : Render Domain 
+    
+
+    ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+    ImGui::Text("Shader Parameter");
+    ImGui::Separator();
+    
+    // Shader Param
+    ShaderParameterTick();
+
+    ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
+    
+    // Save Button
+    SaveButton();
+    /*if (ImGui::Button("Save##MtrlSaveBtn"))
+    {
+        wstring FilePath = CONTENT_PATH + pMtrl->GetKey();
+        pMtrl->Save(FilePath);
+    }*/
+}
+
+void MaterialUI::ShaderParameterTick()
+{
+    Ptr<AMaterial> pMtrl = static_cast<AMaterial*>(GetTargetAsset().Get());
+    
+    if (!pMtrl->GetShader()) return;
+    
+    const vector<ShaderParam>& vecParam = pMtrl->GetShader()->GetShaderParams();
+
+    
+    
+    for (const ShaderParam& shaderParam : vecParam)
+    {
+        string Desc = string(shaderParam.Desc.begin(), shaderParam.Desc.end());
+        if (Desc.empty()) Desc = "Description None";
+        ImGui::Text(Desc.c_str());
+        
+        switch (shaderParam.Type)
+        {
+        case SHADER_PARAM::INT:
+        {
+            ImGui::SameLine();
+            
+            SCALAR_PARAM Param = static_cast<SCALAR_PARAM>(static_cast<UINT>(SCALAR_PARAM::INT_0) + shaderParam.Index); 
+            int& Data = pMtrl->GetScalar<int>(Param);
+            ImGui::DragInt("##DragInt", &Data);
+        }
+            break;
+        case SHADER_PARAM::FLOAT:
+        {
+            ImGui::SameLine();
+            
+            SCALAR_PARAM Param = static_cast<SCALAR_PARAM>(static_cast<float>(SCALAR_PARAM::FLOAT_0) + shaderParam.Index); 
+            float& Data = pMtrl->GetScalar<float>(Param);
+            ImGui::DragFloat("##DragInt", &Data);
+        }
+            break;
+        case SHADER_PARAM::VEC2:
+        {
+            ImGui::SameLine();
+            
+            SCALAR_PARAM Param = static_cast<SCALAR_PARAM>(static_cast<float>(SCALAR_PARAM::VEC2_0) + shaderParam.Index); 
+            Vec2& Data = pMtrl->GetScalar<Vec2>(Param);
+            ImGui::DragFloat2("##DragFloat2", Data);
+        }
+            break;
+        case SHADER_PARAM::VEC4:
+        {
+            ImGui::SameLine();
+            
+            SCALAR_PARAM Param = static_cast<SCALAR_PARAM>(static_cast<UINT>(SCALAR_PARAM::VEC4_0) + shaderParam.Index); 
+            Vec4& Data = pMtrl->GetScalar<Vec4>(Param);
+            ImGui::DragFloat4("##DragFloat4", Data);
+        }
+            break;
+        case SHADER_PARAM::MAT:
+        {
+            
+        }
+            break;
+        case SHADER_PARAM::TEX:
+        {
+            Ptr<ATexture> pTexture = pMtrl->GetTexture(TEX_0);
+            ImTextureRef SRV = pTexture ? pTexture->GetSRV().Get() : nullptr;
+            
+            // 이미지 샘플
+            ImGui::ImageWithBg
+            (
+                SRV,
+                ImVec2(100, 100),
+                Vec2(0.f, 0.f), Vec2(1.f, 1.f),
+                ImVec4(0.0f, 0.0f, 0.0f, 1.0f)
+            );
+            
+            /*****************/
+            /* 드래그 처리 */
+            /*****************/
+            
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload("Content"))
+                {
+                    if (!TreeUI::IsPayloadMultiData(Payload))
+                    {
+                        DWORD_PTR data = *static_cast<DWORD_PTR*>(Payload->Data);
+                        Ptr<Asset> pAsset = reinterpret_cast<Asset*>(data);
+
+                        if (ASSET_TYPE::TEXTURE == pAsset->GetType())
+                            pMtrl->SetTexture(TEX_0, static_cast<ATexture*>(pAsset.Get()));
+                    }
+                }
+        
+                ImGui::EndDragDropTarget();
+            }
+        }
+            break;
+        }
+    }
+}
+
+void MaterialUI::OnSelectShader(DWORD_PTR _ListUI)
+{
+    const Ptr<ListUI>           pListUI     = reinterpret_cast<ListUI*>(_ListUI);
+    const wstring               key         = wstring(pListUI->GetSelectedString().begin(), pListUI->GetSelectedString().end());
+    const Ptr<AGraphicShader>   pShader     = FIND_ASSET(AGraphicShader, key);
+    const Ptr<AMaterial>        pMaterial   = static_cast<AMaterial*>(GetTargetAsset().Get());
+    
+    pMaterial->SetShader(pShader.Get());
+}

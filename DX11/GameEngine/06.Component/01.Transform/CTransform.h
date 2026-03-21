@@ -1,0 +1,100 @@
+﻿#pragma once
+#include <GameEngine/06.Component/Component.h>
+#include "Header/enum.h"
+
+class CTransform : public Component
+{
+private:
+
+    Vec3        m_RelativePos{};
+    Vec3        m_RelativeScale = Vec3::One;
+    Vec3        m_RelativeRot{};
+                
+    Vec3        m_Pivot{};
+    
+    CTransform* m_Parent{};
+    
+    bool        m_IndependentScale{}; // 부모 오브젝트의 크기는 무시, 주의 : 상위 부모의 Scale z값 0이 되지 않도록 주의할 것
+    
+private:
+    
+    Matrix  m_MatWorld{};
+
+private:
+
+    // 방향 벡터
+    Vec3    m_Dir[static_cast<UINT>(DIR::END)]{};
+    
+public:
+
+    CTransform();
+    virtual ~CTransform() override;
+    
+    // 저장 불러오기
+    virtual void SaveToLevelFile(FILE* _File) override;
+    virtual void LoadFromLevelFile(FILE* _File) override;
+
+    CLONE(CTransform)
+    
+public:
+
+    Vec3 GetRelativePos()       const { return m_RelativePos; }
+    Vec3 GetRelativeScale()     const { return m_RelativeScale; }
+    Vec3 GetRelativeRot()       const { return m_RelativeRot; }
+    
+    void SetRelativePos(const Vec3& pos) { m_RelativePos = pos; }
+    void SetRelativeScale(const Vec3& scale) { m_RelativeScale = scale; }
+    void SetRelativeRot(const Vec3& rotation) { m_RelativeRot = rotation; }
+
+    float GetRelativePosX() const { return m_RelativePos.x; }
+    float GetRelativePosY() const { return m_RelativePos.y; }
+    float GetRelativePosZ() const { return m_RelativePos.z; }
+    
+    void SetRelativePosX(float x) { m_RelativePos.x = x; }
+    void SetRelativePosY(float y) { m_RelativePos.y = y; }
+    void SetRelativePosZ(float z) { m_RelativePos.z = z; }
+
+    Vec3 GetWorldPos() const { return m_MatWorld.Translation(); }
+    Vec3 GetWorldScale() const;
+    
+    void SetPivot(const Vec3& pivot) { this->m_Pivot = pivot; }
+
+    const Matrix& GetWorldMatrix() const { return m_MatWorld; }
+    void SetWorldMatrix(const Matrix& _matWorld) { m_MatWorld = _matWorld; }
+    
+    GET_SET(bool, IndependentScale)
+    
+public:
+    
+    /// <summary>
+    /// Right, Up, Front 방향벡터 구하기 
+    /// </summary>
+    Vec3 GetDir(DIR _Type) const { return m_Dir[static_cast<UINT>(_Type)]; }
+
+public:
+    
+    static CTransform Lerp(const CTransform& a, const CTransform& b, float alpha);
+    static CTransform Lerp(CTransform* a, CTransform* b, float alpha) { return Lerp(*a, *b, alpha); }
+    static CTransform Lerp(const Ptr<CTransform>& a, const Ptr<CTransform>& b, float alpha) { return Lerp(*(a.Get()), *(b.Get()), alpha); }
+
+public:
+    
+    CTransform& operator=(const CTransform& _Other)
+    {
+        m_RelativePos       = _Other.m_RelativePos;
+        m_RelativeScale     = _Other.m_RelativeScale;
+        m_RelativeRot       = _Other.m_RelativeRot;
+        return *this;
+    }
+    
+public:
+
+    /// <summary> 세팅된 위치, 크기, 회전 정보를 하나의 World행렬로 묶어준다 </summary>
+    virtual void FinalTick() override;
+
+    /// <summary>
+    /// 데이터를 GPU 메모리로 전송
+    /// </summary>
+    void Binding();
+    
+};

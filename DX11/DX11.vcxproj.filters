@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Default">
+      <UniqueIdentifier>{2253061c-3937-4f5b-8cb3-433ed406bc85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{a86c4507-1279-4038-9eb6-6b39a3b22374}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{55554376-3ee5-44ee-86db-7abda99c211b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Device">
+      <UniqueIdentifier>{475360c7-3f65-4fbc-ba70-211b156edeaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL">
+      <UniqueIdentifier>{bdcd3b56-46ed-4656-883e-e82c466da30a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\1.Header">
+      <UniqueIdentifier>{e838ddc7-3120-43c1-9f22-cbdf891a1647}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\2.Render">
+      <UniqueIdentifier>{230c0d37-1452-4701-bff2-597459251309}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\2.Render\2.2D">
+      <UniqueIdentifier>{79ef1013-5c3c-4514-9fa0-26e5a644e74b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Default\GameClient.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Default\framework.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Default\Resource.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Default\targetver.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\define.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\struct.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\func.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\enum.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\global.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Default\pch.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Single.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\01.Engine\Engine.h" />
+    <ClInclude Include="GameEngine\02.Device\Device.h" />
+    <ClInclude Include="Module\SimpleMath.h" />
+    <ClInclude Include="GameEngine\03.Manager\01.PathMgr\PathMgr.h" />
+    <ClInclude Include="GameEngine\03.Manager\02.TimeMgr\TimeMgr.h" />
+    <ClInclude Include="GameEngine\04.Asset\01.Mesh\AMesh.h" />
+    <ClInclude Include="GameEngine\04.Asset\02.Texture\ATexture.h" />
+    <ClInclude Include="GameEngine\04.Asset\Entity.h" />
+    <ClInclude Include="GameEngine\04.Asset\Asset.h" />
+    <ClInclude Include="GameEngine\03.Manager\03.KeyMgr\KeyMgr.h" />
+    <ClInclude Include="GameEngine\04.Asset\03.GraphicShader\AGraphicShader.h" />
+    <ClInclude Include="Module\Ptr.h" />
+    <ClInclude Include="GameEngine\05.GameObject\GameObject.h" />
+    <ClInclude Include="GameEngine\06.Component\Component.h" />
+    <ClInclude Include="GameEngine\06.Component\01.Transform\CTransform.h" />
+    <ClInclude Include="GameEngine\02.Device\ConstBuffer\ConstBuffer.h" />
+    <ClInclude Include="GameEngine\03.Manager\04.AssetMgr\AssetMgr.h" />
+    <ClInclude Include="GameEngine\06.Component\Script\CScript.h" />
+    <ClInclude Include="GameEngine\03.Manager\05.LevelMgr\LevelMgr.h" />
+    <ClInclude Include="GameEngine\03.Manager\06.RenderMgr\RenderMgr.h" />
+    <ClInclude Include="GameEngine\04.Asset\04.Level\ALevel.h" />
+    <ClInclude Include="GameEngine\04.Asset\04.Level\Layer\Layer.h" />
+    <ClInclude Include="GameEngine\04.Asset\05.Material\AMaterial.h" />
+    <ClInclude Include="GameEngine\SpriteFrame.h" />
+    <ClInclude Include="Header\assets.h" />
+    <ClInclude Include="Header\components.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\01.MeshRender\CMeshRender.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\CBillboardRender.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\CRenderComponent.h" />
+    <ClInclude Include="GameEngine\06.Component\02.Camera\CCamera.h" />
+    <ClInclude Include="GameEngine\03.Manager\07.TaskMgr\TaskMgr.h" />
+    <ClInclude Include="GameEngine\03.Manager\08.CollisionMgr\CollisionMgr.h" />
+    <ClInclude Include="GameEngine\04.Asset\06.Sprite\ASprite.h" />
+    <ClInclude Include="GameEngine\06.Component\03.Collider2D\CCollider2D.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\CSpriteRender.h" />
+    <ClInclude Include="GameEngine\02.Device\StructuredBuffer\StructuredBuffer.h" />
+    <ClInclude Include="GameEngine\04.Asset\07.Flipbook\AFlipbook.h" />
+    <ClInclude Include="GameEngine\04.Asset\08.TileMap\ATileMap.h" />
+    <ClInclude Include="GameEngine\06.Component\04.Light2D\CLight2D.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.h" />
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\imstb_textedit.h" />
+    <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="GameEngine\03.Manager\09.EditorMgr\EditorMgr.h" />
+    <ClInclude Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.h" />
+    <ClInclude Include="GameEngine\06.Component\03.Collider2D\CColliderPoint.h" />
+    <ClInclude Include="GameEngine\06.Component\03.Collider2D\CColliderRect.h" />
+    <ClInclude Include="GameEngine\06.Component\Script\CEditorCamMoveScript.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\01.Inspector\Inspector.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\01.Inspector\ObjectInspectorViewer.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\02.Outliner\Outliner.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\03.Menu\Menu.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\01.TransformUI\TransformUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\Collider2DUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\03.CameraUI\CameraUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\04.LightUI\Light2DUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\01.MeshRenderUI\MeshRenderUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\02.BillboardRenderUI\BillboardRenderUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\03.SpriteRenderUI\SpriteRenderUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\04.FlipbookRenderUI\FlipbookRenderUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\05.TileRenderUI\TileRenderUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\RenderUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\ComponentUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\05.ListUI\ListUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\06.ContentUI\ContentUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\07.TreeUI\TreeUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\01.MeshUI\MeshUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\02.MaterialUI\MaterialUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\03.TextureUI\TextureUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\04.SpriteUI\SpriteUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\05.FlipbookUI\FlipbookUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\06.TileMapUI\TileMapUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\07.GraphicShaderUI\GraphicShaderUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\09.LevelUI\LevelUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\10.SoundUI\SoundUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\11.PrefabUI\PrefabUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\AssetUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\08.ComputeShaderUI\ComputeShaderUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\EditorUI.h" />
+    <ClInclude Include="Header\extern.h" />
+    <ClInclude Include="Source\Scripts\CCamMoveScript.h" />
+    <ClInclude Include="Source\Scripts\CMonsterScript.h" />
+    <ClInclude Include="Source\Scripts\CPlayerScript.h" />
+    <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBackgroundScript.h" />
+    <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.h" />
+    <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletScript.h" />
+    <ClInclude Include="Source\ScriptMgr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Default\DX11.ico">
+      <Filter>Default</Filter>
+    </Image>
+    <Image Include="Default\small.ico">
+      <Filter>Default</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="GameEngine\01.Engine\Engine.cpp" />
+    <ClCompile Include="GameEngine\01.Engine\Engine_Init.cpp" />
+    <ClCompile Include="GameEngine\02.Device\Device.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\01.PathMgr\PathMgr.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\02.TimeMgr\TimeMgr.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\01.Mesh\AMesh.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\02.Texture\ATexture.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\Entity.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\Asset.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\03.KeyMgr\KeyMgr.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\03.GraphicShader\AGraphicShader.cpp" />
+    <ClCompile Include="GameEngine\05.GameObject\GameObject.cpp" />
+    <ClCompile Include="GameEngine\06.Component\Component.cpp" />
+    <ClCompile Include="GameEngine\06.Component\01.Transform\CTransform.cpp" />
+    <ClCompile Include="GameEngine\02.Device\ConstBuffer\ConstBuffer.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\04.AssetMgr\AssetMgr.cpp" />
+    <ClCompile Include="GameEngine\06.Component\Script\CScript.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\04.AssetMgr\AssetMgr_Init.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\05.LevelMgr\LevelMgr.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\06.RenderMgr\RenderMgr.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\04.Level\ALevel.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\04.Level\Layer\Layer.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\05.Material\AMaterial.cpp" />
+    <ClCompile Include="GameEngine\SpriteFrame.cpp" />
+    <ClCompile Include="Header\extern.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\01.MeshRender\CMeshRender.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\CBillboardRender.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\CRenderComponent.cpp" />
+    <ClCompile Include="GameEngine\06.Component\02.Camera\CCamera.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\07.TaskMgr\TaskMgr.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\08.CollisionMgr\CollisionMgr.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\06.Sprite\ASprite.cpp" />
+    <ClCompile Include="GameEngine\06.Component\03.Collider2D\CCollider2D.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\CSpriteRender.cpp" />
+    <ClCompile Include="Header\func.cpp" />
+    <ClCompile Include="GameEngine\02.Device\StructuredBuffer\StructuredBuffer.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\07.Flipbook\AFlipbook.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\08.TileMap\ATileMap.cpp" />
+    <ClCompile Include="GameEngine\06.Component\04.Light2D\CLight2D.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.cpp" />
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\imgui_tables.cpp" />
+    <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\09.EditorMgr\EditorMgr.cpp" />
+    <ClCompile Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.cpp" />
+    <ClCompile Include="GameEngine\06.Component\03.Collider2D\CColliderPoint.cpp" />
+    <ClCompile Include="GameEngine\06.Component\03.Collider2D\CColliderRect.cpp" />
+    <ClCompile Include="GameEngine\06.Component\Script\CEditorCamMoveScript.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\01.Inspector\Inspector.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\01.Inspector\Inspector_Init.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\01.Inspector\ObjectInspectorViewer.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\02.Outliner\Outliner.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\03.Menu\Menu.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\01.TransformUI\TransformUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\Collider2DUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\03.CameraUI\CameraUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\04.LightUI\Light2DUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\01.MeshRenderUI\MeshRenderUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\02.BillboardRenderUI\BillboardRenderUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\03.SpriteRenderUI\SpriteRenderUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\04.FlipbookRenderUI\FlipbookRenderUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\05.TileRenderUI\TileRenderUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\RenderUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\ComponentUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\05.ListUI\ListUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\06.ContentUI\ContentUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\07.TreeUI\TreeUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\01.MeshUI\MeshUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\02.MaterialUI\MaterialUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\03.TextureUI\TextureUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\04.SpriteUI\SpriteUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\05.FlipbookUI\FlipbookUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\06.TileMapUI\TileMapUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\07.GraphicShaderUI\GraphicShaderUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\09.LevelUI\LevelUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\10.SoundUI\SoundUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\11.PrefabUI\PrefabUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\AssetUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\08.ComputeShaderUI\ComputeShaderUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\EditorUI.cpp" />
+    <ClCompile Include="Module\SimpleMath.cpp" />
+    <ClCompile Include="Source\Scripts\CCamMoveScript.cpp" />
+    <ClCompile Include="Source\Scripts\CMonsterScript.cpp" />
+    <ClCompile Include="Source\Scripts\CPlayerScript.cpp" />
+    <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBackgroundScript.cpp" />
+    <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.cpp" />
+    <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBulletScript.cpp" />
+    <ClCompile Include="Source\ScriptMgr.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Default\DX11.rc">
+      <Filter>Default</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Module\SimpleMath.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="HLSL\value.fx">
+      <Filter>HLSL\1.Header</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\std2d.fx">
+      <Filter>HLSL\2.Render\2.2D</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\billboard.fx">
+      <Filter>HLSL\2.Render\2.2D</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\dbg.fx">
+      <Filter>HLSL\2.Render</Filter>
+    </FxCompile>
+    <FxCompile Include="HLSL\sprite.fx" />
+    <FxCompile Include="HLSL\flipbook.fx" />
+    <FxCompile Include="HLSL\func.fx" />
+    <FxCompile Include="HLSL\struct.fx" />
+    <FxCompile Include="HLSL\tile.fx" />
+  </ItemGroup>
+</Project>
