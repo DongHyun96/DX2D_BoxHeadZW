@@ -46,12 +46,15 @@ void CFlipbookRender::CreateMaterial()
 
 void CFlipbookRender::FinalTick()
 {
-   if (CheckFinish()) return;
+    // 아무 Flipbook도 갖지 못한 CFlipbookRender이거나, 현재 선택된 Flipbook 이 없을 때
+    if (m_CurSelectedFlipbookIdx < 0 || m_vecFlipbook.empty()) return; 
     
+    if (CheckFinish()) return;
+
     const float fLimit = 1.f / m_FPS;
-    
+
     m_AccTime += DT;
-    
+
     if (m_AccTime > fLimit)
     {
         m_AccTime -= fLimit;

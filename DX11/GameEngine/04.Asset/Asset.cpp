@@ -15,8 +15,9 @@ Asset::Asset(const Asset& _Origin)
     , m_Key(_Origin.m_Key)
     , m_Type(_Origin.m_Type)
     , m_IsProvidedByEngine(_Origin.m_IsProvidedByEngine)
-    , m_Guid(_Origin.m_Guid)
+    //, m_Guid(_Origin.m_Guid)
 {
+    GetGuid(); // 새 Guid로 Guid 초기화
 }
 
 Asset::~Asset()
