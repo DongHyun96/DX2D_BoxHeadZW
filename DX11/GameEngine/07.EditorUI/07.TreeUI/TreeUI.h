@@ -19,6 +19,10 @@ public:
     class TreeUI*           m_Owner{};              // 노드를 소유하고 있는 TreeUI
     
 private:
+
+    bool OpenRequested{}; // 다음 프레임에 한 번 강제 오픈 (ReNew 이 후, 이전에 골랐던 TreeNode를 다시 열기 위함)
+    
+private:
     
     string Key{}; // 보여주려는 이름 뒤에 붙을 고유 문자열 키값
 
@@ -27,6 +31,11 @@ public:
     TreeNode();
     
 public:
+    void Tick();
+    
+public:
+
+    void RequestOpen() { OpenRequested = true; }
     
     void AddChildNode(const Ptr<TreeNode>& _Node)
     {
@@ -37,8 +46,6 @@ public:
     void SetFramed(bool _Frame) { Framed = _Frame; }
     void SetIsFolderStyleNode(bool _IsFolderStyle) { IsFolderNode = _IsFolderStyle; }
     
-public:
-    void Tick();
     
 private:
     
@@ -101,6 +108,14 @@ public:
 
 private:
     void Tick_UI() override;
+
+public:
+
+    GET_SET(string, DropKey)
+    
+    Ptr<TreeNode> GetSelected() const { return m_Selected; }
+    const vector<Ptr<TreeNode>>& GetSelectedNodes() const { return m_SelectedNodes; }
+    Ptr<TreeNode> FindNodeByData(DWORD_PTR _Data) const;
     
 public:
     /// <summary>
@@ -149,11 +164,6 @@ public:
     /// <summary> Drop당한 TreeNode 등록 </summary>
     void RegisterDropped(const Ptr<TreeNode>& _Node) { m_DropNode = _Node; }
 
-    GET(Ptr<TreeNode>, Selected);
-    const vector<Ptr<TreeNode>>& GetSelectedNodes() const { return m_SelectedNodes; }
-
-    GET_SET(string, DropKey)
-
     void BuildDragPayload();
     void SetDropPayload(const ImGuiPayload* _Payload);
     
@@ -169,11 +179,13 @@ public:
     /// <returns> : Multi data이면 return true </returns>
     static bool IsPayloadMultiData(const ImGuiPayload* _Payload);
 
+    void ExpandToNode(const Ptr<TreeNode>& _Node);
+    
 private:
     
     void BuildOrderedNodes();
     void CollectOrdered(const Ptr<TreeNode>& _Node);
-
+    Ptr<TreeNode> FindNodeByDataRecursive(const Ptr<TreeNode>& _Node, DWORD_PTR _Data) const;
     int GetOrderedIndex(const TreeNode* _Node) const;
     
 public:

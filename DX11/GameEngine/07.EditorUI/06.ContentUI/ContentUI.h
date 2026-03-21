@@ -40,6 +40,8 @@ private:
     
     /// <summary> RenameModeEnd 처리 반복 코드 </summary> 
     void RenameModeEndBoilerPlate();
+    
+    void DuplicateAssetTick();
 
 public:
     

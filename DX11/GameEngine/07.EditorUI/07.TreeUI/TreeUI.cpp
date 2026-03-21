@@ -38,6 +38,13 @@ void TreeNode::Tick()
     if (FolderVisual)
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.95f, 0.78f, 0.22f, 1.f));
 
+    // Renew 이 후, 이전에 골랐었던 TreeNode에 대해 강제 오픈 처리를 위한 단계
+    if (OpenRequested)
+    {
+        ImGui::SetNextItemOpen(true, ImGuiCond_Always);
+        OpenRequested = false;
+    }
+    
     const bool Opened = ImGui::TreeNodeEx(NodeName.c_str(), Flags);
 
     if (FolderVisual)
@@ -197,6 +204,19 @@ void TreeUI::Tick_UI()
     }
 }
 
+Ptr<TreeNode> TreeUI::FindNodeByData(DWORD_PTR _Data) const
+{
+    if (_Data == 0) return nullptr;
+
+    for (const Ptr<TreeNode>& node : m_vecNode)
+    {
+        Ptr<TreeNode> found = FindNodeByDataRecursive(node, _Data);
+        if (found) return found;
+    }
+
+    return nullptr;
+}
+
 Ptr<TreeNode> TreeUI::AddItem(const Ptr<TreeNode>& _ParentNode, const string& _String, DWORD_PTR _Data)
 {
     Ptr<TreeNode> pNewNode  = new TreeNode;
@@ -320,6 +340,18 @@ bool TreeUI::IsPayloadMultiData(const ImGuiPayload* _Payload)
     return count > 1;
 }
 
+void TreeUI::ExpandToNode(const Ptr<TreeNode>& _Node)
+{
+    if (!_Node) return;
+
+    TreeNode* cur = _Node.Get();
+    while (cur)
+    {
+        cur->RequestOpen();
+        cur = cur->Parent;
+    }
+}
+
 void TreeUI::BuildOrderedNodes()
 {
     m_OrderedNodes.clear();
@@ -333,6 +365,22 @@ void TreeUI::CollectOrdered(const Ptr<TreeNode>& _Node)
     m_OrderedNodes.push_back(_Node);
     for (const Ptr<TreeNode>& c : _Node->vecChildNode)
         CollectOrdered(c);
+}
+
+Ptr<TreeNode> TreeUI::FindNodeByDataRecursive(const Ptr<TreeNode>& _Node, DWORD_PTR _Data) const
+{
+    if (!_Node) return nullptr;
+
+    if (_Node->Data == _Data)
+        return _Node;
+
+    for (const Ptr<TreeNode>& child : _Node->vecChildNode)
+    {
+        Ptr<TreeNode> found = FindNodeByDataRecursive(child, _Data);
+        if (found) return found;
+    }
+
+    return nullptr;
 }
 
 int TreeUI::GetOrderedIndex(const TreeNode* _Node) const

@@ -28,6 +28,7 @@ void ContentUI::Tick_UI()
     if (AssetMgr::GetInst()->IsChanged()) ReNew();
     // DeleteAssetTick();
     ChangeAssetNameTick();
+    DuplicateAssetTick();
 }
 
 void ContentUI::ChangeAssetNameTick()
@@ -130,26 +131,81 @@ void ContentUI::RenameModeEndBoilerPlate()
     ReNew();
 }
 
+void ContentUI::DuplicateAssetTick()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.WantTextInput) return;
+    
+    const ImGuiInputFlags flags = ImGuiInputFlags_RouteFocused;
+
+    // Ctrl + D키 조합
+    if (!ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_D, flags)) return;
+    
+    vector<Ptr<Asset>> vecToDuplicate{};
+
+    const auto& selectedNodes = m_Tree->GetSelectedNodes();
+    if (!selectedNodes.empty())
+    {
+        for (const Ptr<TreeNode>& node : selectedNodes)
+        {
+            if (node && node->Data != 0)
+                vecToDuplicate.push_back(reinterpret_cast<Asset*>(node->Data));
+        }
+    }
+    else
+    {
+        Ptr<TreeNode> single = m_Tree->GetSelected();
+        if (single && single->Data != 0)
+            vecToDuplicate.push_back(reinterpret_cast<Asset*>(single->Data));
+    }
+
+    bool bCopySucceeded{};
+    for (const Ptr<Asset>& asset : vecToDuplicate)
+    {
+        Ptr<Asset> NewAsset = asset->CreateNewAsset();
+        
+        // 제대로 복사되었다면(해당 Ctrl+D를 사용하기 위한 CreateNewAsset을 override 한 Asset이라면), AssetMgr에 등록 처리
+        if (NewAsset)
+        {
+            AssetMgr::GetInst()->AddAsset(NewAsset->GetKey(), NewAsset);
+            bCopySucceeded = true;
+        }
+    }
+
+    if (bCopySucceeded) ReNew();
+}
+
 void ContentUI::ReNew()
 {
-    // 트리 비우기
+    // 이전 선택 Asset Key로 백업
+    vector<wstring> prevSelectedKeys{};
+    for (const Ptr<TreeNode>& node : m_Tree->GetSelectedNodes())
+    {
+        if (!node || node->Data == 0) continue;
+        if (Ptr<Asset> asset = reinterpret_cast<Asset*>(node->Data)) 
+            prevSelectedKeys.push_back(asset->GetKey());
+    }
+
+    unordered_set<wstring> selectedKeySet(prevSelectedKeys.begin(), prevSelectedKeys.end());
+    vector<Ptr<TreeNode>> nodesToRestore{};
+    
+    // 트리 재구성
     m_Tree->Clear();
 
-    // 에셋 종류별 Tree에 추가하기
     vector<wstring> vecAssetNames{};
     for (UINT i = 0; i < static_cast<UINT>(ASSET_TYPE::END); ++i)
     {
         const ASSET_TYPE Type = static_cast<ASSET_TYPE>(i);
-        
+
         Ptr<TreeNode> Node = m_Tree->AddItem(nullptr, ToString(Type));
         Node->SetFramed(true);
-        
+
         vecAssetNames.clear();
         AssetMgr::GetInst()->GetAssetKeys(Type, vecAssetNames);
 
         unordered_map<wstring, Ptr<TreeNode>> folderNodes{};
         folderNodes.reserve(vecAssetNames.size());
-        
+
         for (const wstring& AssetName : vecAssetNames)
         {
             Ptr<Asset> pAsset = AssetMgr::GetInst()->Find(Type, AssetName);
@@ -158,7 +214,7 @@ void ContentUI::ReNew()
             wstring DisplayPath = AssetName;
             if (!pAsset->GetRelativePath().empty())
                 DisplayPath = pAsset->GetRelativePath();
-            
+
             vector<wstring> Parts{};
             wstring Cur{};
             for (wchar_t ch : DisplayPath)
@@ -171,21 +227,19 @@ void ContentUI::ReNew()
                         Cur.clear();
                     }
                 }
-                else
-                {
-                    Cur.push_back(ch);
-                }
+                else Cur.push_back(ch);
             }
             if (!Cur.empty()) Parts.push_back(Cur);
 
-            // AssetType 폴더명과 동일한 선두 폴더가 있다면 제거
             if (Parts.size() > 1)
             {
                 string TypeStr = ToString(Type);
                 wstring TypeW(TypeStr.begin(), TypeStr.end());
                 for (wchar_t& c : TypeW) c = static_cast<wchar_t>(towlower(c));
+
                 wstring Head = Parts.front();
                 for (wchar_t& c : Head) c = static_cast<wchar_t>(towlower(c));
+
                 if (Head == TypeW) Parts.erase(Parts.begin());
             }
 
@@ -198,20 +252,38 @@ void ContentUI::ReNew()
                 if (!PathKey.empty()) PathKey += L"/";
                 PathKey += Parts[p];
 
-                auto Iter = folderNodes.find(PathKey);
-                if (Iter == folderNodes.end())
+                auto it = folderNodes.find(PathKey);
+                if (it == folderNodes.end())
                 {
-                    Ptr<TreeNode> FolderNode = m_Tree->AddItem(Parent, string(Parts[p].begin(), Parts[p].end()));
-                    FolderNode->SetIsFolderStyleNode(true);
-                    folderNodes.insert(make_pair(PathKey, FolderNode));
-                    Parent = FolderNode;
+                    Ptr<TreeNode> folder = m_Tree->AddItem(Parent, string(Parts[p].begin(), Parts[p].end()));
+                    folder->SetIsFolderStyleNode(true);
+                    folderNodes.insert(make_pair(PathKey, folder));
+                    Parent = folder;
                 }
-                else Parent = Iter->second;
+                else Parent = it->second;
             }
-            
+
             const wstring& Leaf = Parts.back();
-            m_Tree->AddItem(Parent, string(Leaf.begin(), Leaf.end()), reinterpret_cast<DWORD_PTR>(pAsset.Get()));
+            Ptr<TreeNode> leafNode = m_Tree->AddItem(
+                Parent,
+                string(Leaf.begin(), Leaf.end()),
+                reinterpret_cast<DWORD_PTR>(pAsset.Get())
+            );
+
+            // key 매칭으로 복원 대상 수집
+            if (selectedKeySet.find(pAsset->GetKey()) != selectedKeySet.end())
+                nodesToRestore.push_back(leafNode);
         }
+    }
+    
+    // ReNew 이후 선택 복원 (없어진 Asset은 자동 스킵)
+    bool hasRestored = false;
+    for (const Ptr<TreeNode>& node : nodesToRestore)
+    {
+        if (!node) continue;
+        m_Tree->ExpandToNode(node);                           // 부모 체인 열기
+        m_Tree->RegisterSelectedEx(node, hasRestored, false); // 다중선택 복원
+        hasRestored = true;
     }
 }
 

@@ -168,6 +168,7 @@ bool AssetMgr::RemoveAsset(ASSET_TYPE _Type, const wstring& _TargetKey)
     if (!m_mapAsset[static_cast<UINT>(_Type)].contains(_TargetKey)) return false; 
 
     // 제거할 Asset이 존재하는 상황
+    m_Changed = true;
     Ptr<Asset> TargetAsset = m_mapAsset[static_cast<UINT>(_Type)].at(_TargetKey);
 
     // 해당 Asset map에서 삭제

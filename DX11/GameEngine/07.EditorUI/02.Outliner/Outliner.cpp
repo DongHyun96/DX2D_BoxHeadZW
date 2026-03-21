@@ -113,8 +113,8 @@ void Outliner::DuplicateObjectTick()
     {
         Ptr<GameObject> ClonedObject = gameObject->Clone();
         LevelMgr::GetInst()->GetCurLevel()->AddObject(ClonedObject->GetLayerIdx(), ClonedObject);
-        ReNew();
     }
+    ReNew();
 }
 
 void Outliner::ChangeObjectNameTick()

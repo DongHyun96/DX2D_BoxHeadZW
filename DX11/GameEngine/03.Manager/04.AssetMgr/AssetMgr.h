@@ -178,7 +178,7 @@ public:
     /// </summary>
     /// <param name="_OriginAsset"> : 복제하려는 기반 Asset 객체 </param>
     /// <returns> : 제대로 복제 처리가 되지 않았다면 return nullptr </returns>
-    Ptr<Asset> CreateNewAsset(const Ptr<Asset>& _OriginAsset) { return _OriginAsset->CreateNewAsset(); }
+    // Ptr<Asset> CreateNewAsset(const Ptr<Asset>& _OriginAsset) { return _OriginAsset->CreateNewAsset(); }
 
     /// <summary>
     /// T type과 AssetName에 따른 Asset Key 자동 생성 -> Suffix에  XY indexing을 붙여 NameCommon에 넘버링으로 여러 Asset 생성
