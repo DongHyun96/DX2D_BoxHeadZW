@@ -12,6 +12,16 @@ AFlipbook::~AFlipbook()
 {
 }
 
+Ptr<Asset> AFlipbook::CreateNewAsset()
+{
+    const wstring FileNameWithoutExtension = GetFileNameWithoutExtension(GetKey());
+    Ptr<AFlipbook> NewAsset = AssetMgr::GetInst()->CreateNewAsset<AFlipbook>(FileNameWithoutExtension);
+
+    /* 나머지 멤버변수 복사 처리 */
+    NewAsset->m_vecSprite = this->m_vecSprite;
+    return NewAsset.Get();
+}
+
 void AFlipbook::InsertSprite(int _Idx, const Ptr<ASprite>& _Sprite)
 {
     if (_Idx < 0) _Idx = 0;

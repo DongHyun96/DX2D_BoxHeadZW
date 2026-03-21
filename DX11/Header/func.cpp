@@ -230,6 +230,17 @@ wstring GetFileName(const wstring& _Path)
     return _Path.substr(pos + 1);
 }
 
+wstring GetFileNameWithoutExtension(const wstring& _Path)
+{
+    const wstring fileName = GetFileName(_Path);
+    
+    size_t pos = fileName.find_last_of(L".");
+    
+    if (pos == wstring::npos) return fileName;
+    
+    return fileName.substr(0, pos);
+}
+
 uint64_t CalculateFileHash64(const std::wstring& _FullPath)
 {
     FILE* pFile = nullptr;

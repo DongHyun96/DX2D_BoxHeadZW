@@ -338,10 +338,12 @@ void ObjectInspectorViewer::TickCreateThisObjectAsPrefabUI()
     ImGui::BeginDisabled(bIsChildObject || bIsPrefabProtoObject); // 최상위 부모 오브젝트로만 Prefab을 만들 수 있도록 설정 & Prefab Prototype 오브젝트로 프리팹 생성 x
     if (ImGui::Button("Create this object as prefab"))
     {
-        Ptr<APrefab> Prefab{};
-        const wstring AssetName = m_TargetObject->GetName() + L"Prefab";  
-        AssetMgr::GetInst()->CreateNewAsset<APrefab>(AssetName, Prefab);
+        
+        const wstring AssetName = m_TargetObject->GetName() + L"Prefab";
+        
+        Ptr<APrefab> Prefab = AssetMgr::GetInst()->CreateNewAsset<APrefab>(AssetName);
         Prefab->SetProtoObj(m_TargetObject);
+        AssetMgr::GetInst()->AddAsset(Prefab->GetKey(), Prefab.Get());
     }
     
     ImGui::EndDisabled();

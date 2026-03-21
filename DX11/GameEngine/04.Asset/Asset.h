@@ -32,6 +32,15 @@ public:
 	
 	virtual ~Asset() override;
 	
+private:
+	
+	/// <summary>
+	/// 단순 복사생성자로 처리하는 Clone과 다르게, AssetMgr에 직접 집어넣는 처리를 위한 이 Asset 기반 새로운 Asset 만들기
+	/// Ctrl + D 단축키로 Editor에서 복사처리하기 위함 (해당 기능을 지원하지 않는 Asset에 대해서는 override 하지 말 것)
+	/// </summary>
+	/// <returns> : 제대로 만들어지지 않았다면, return nullptr </returns>
+	virtual Ptr<Asset> CreateNewAsset() { return nullptr; }
+	
 public:
 
 	ASSET_TYPE GetType() const { return m_Type; }

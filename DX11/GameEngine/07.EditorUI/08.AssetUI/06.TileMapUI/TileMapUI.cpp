@@ -697,15 +697,15 @@ bool TileMapUI::BuildSharedAtlasIfNeeded
 
         if (!sp)
         {
-            Ptr<ASprite> newSp{};
             wstring spName = baseName + L"_" + to_wstring(y) + L"_" + to_wstring(x);
-            AssetMgr::GetInst()->CreateNewAsset<ASprite>(spName, newSp);
+            Ptr<ASprite> newSp = AssetMgr::GetInst()->CreateNewAsset<ASprite>(spName);
+            AssetMgr::GetInst()->AddAsset(newSp->GetKey(), newSp.Get());
             sp = newSp;
         }
 
         sp->SetAtlas(outAtlas);
-        sp->SetLeftTopUV(Vec2((float)dstX / atlasW, (float)dstY / atlasH));
-        sp->SetSliceUV(Vec2((float)src[i].w / atlasW, (float)src[i].h / atlasH));
+        sp->SetLeftTopUV(Vec2(static_cast<float>(dstX) / atlasW, static_cast<float>(dstY) / atlasH));
+        sp->SetSliceUV(Vec2(static_cast<float>(src[i].w) / atlasW, static_cast<float>(src[i].h) / atlasH));
         sp->SetBackgroundUV(sp->GetSliceUV());
         sp->SetOffsetUV(Vec2(0, 0));
         sp->SaveBySelfRelativePath();

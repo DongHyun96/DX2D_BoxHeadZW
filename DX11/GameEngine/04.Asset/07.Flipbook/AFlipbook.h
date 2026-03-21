@@ -12,6 +12,10 @@ public:
     
     AFlipbook();
     virtual ~AFlipbook() override;
+
+private:
+    
+    virtual Ptr<Asset> CreateNewAsset() override;
     
 public:
     

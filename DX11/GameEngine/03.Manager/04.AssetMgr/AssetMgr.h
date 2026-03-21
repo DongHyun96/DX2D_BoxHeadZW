@@ -167,24 +167,27 @@ public:
     /// <summary>
     /// T type과 AssetName에 따른 Asset Key 자동 생성
     /// 겹치는 키가 있다면, name 끝 suffix에 indexing으로 해당 문제를 피함
-    /// AssetMgr::AddAsset까지 일괄 적용
     /// </summary>
-    /// <param name="_AssetName"></param>
-    /// <param name="_OutNewAsset"> : 새롭게 생성된 Asset </param>
-    /// <returns> : AssetMgr에 겹치는 키가 존재한다면 return false </returns>
+    /// <param name="_AssetName"> : Asset Key에 들어갈 Asset명 (확장자명은 제거해서 보내주어야 함)</param>
     template<typename T>
-    void CreateNewAsset(const wstring& _AssetName, Ptr<T>& _OutNewAsset);
+    Ptr<T> CreateNewAsset(const wstring& _AssetName);
+
+    /// <summary>
+    /// Editor 내에서 Asset 복제를 통한 Asset 생성 및 AddAsset 처리
+    /// 받은 _OriginAsset의 Key에 Suffix indexing을 붙여서 생성 처리한다
+    /// </summary>
+    /// <param name="_OriginAsset"> : 복제하려는 기반 Asset 객체 </param>
+    /// <returns> : 제대로 복제 처리가 되지 않았다면 return nullptr </returns>
+    Ptr<Asset> CreateNewAsset(const Ptr<Asset>& _OriginAsset) { return _OriginAsset->CreateNewAsset(); }
 
     /// <summary>
     /// T type과 AssetName에 따른 Asset Key 자동 생성 -> Suffix에  XY indexing을 붙여 NameCommon에 넘버링으로 여러 Asset 생성
-    /// AssetMgr::AddAsset까지 일괄 적용
     /// </summary>
     /// <param name="_AssetNameCommon"></param>
     /// <param name="_OutAssets"></param>
     /// <returns> : 만일 겹치는 키값이 있다면 생성 x return false </returns>
     template<typename T>
     bool CreateNewAssetsBySuffixXYCount(const wstring& _AssetNameCommon, vector<Ptr<T>>& _OutAssets, const Vec2& _SuffixXYCount);
-
     
 };
 
@@ -291,20 +294,20 @@ Ptr<T> AssetMgr::Load(const wstring& _Key, const wstring& _RelativePath)
 }
 
 template <typename T>
-void AssetMgr::CreateNewAsset(const wstring& _AssetName, Ptr<T>& _OutNewAsset)
+Ptr<T> AssetMgr::CreateNewAsset(const wstring& _AssetName)
 {
-    _OutNewAsset = nullptr;
     const ASSET_TYPE Type = GetAssetType<T>();
-    const wstring Key = GenerateNewAssetKeyBasedOnAssetName(GetAssetType<T>(), _AssetName);
+    const wstring Key = GenerateNewAssetKeyBasedOnAssetName(Type, _AssetName);
     
-    _OutNewAsset = new T;
+    Ptr<T> NewAsset = new T;
 
-    _OutNewAsset->SetName(_AssetName);
-    _OutNewAsset->GetGuid();              // GUID 새로 생성
-    _OutNewAsset->SetKey(Key);            // Key 부여
-    _OutNewAsset->SetRelativePath(Key);   // RelativePath 값
+    NewAsset->SetName(_AssetName);
+    NewAsset->GetGuid();              // GUID 새로 생성
+    NewAsset->SetKey(Key);            // Key 부여
+    NewAsset->SetRelativePath(Key);   // RelativePath 값
     
-    AddAsset(Key, _OutNewAsset.Get());
+    return NewAsset;
+    // AddAsset(Key, _OutNewAsset.Get());
 }
 
 template <typename T>
@@ -353,9 +356,6 @@ bool AssetMgr::CreateNewAssetsBySuffixXYCount(const wstring& _AssetNameCommon, v
         }
     }
 
-    for (const Ptr<T>& pAsset : _OutAssets)
-        AddAsset(pAsset->m_Key, pAsset.Get());
-    
     return true;
 }
 

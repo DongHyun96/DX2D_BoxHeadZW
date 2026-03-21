@@ -74,6 +74,12 @@ void TextureSpriteCreatorUI::Tick_UI()
         
         bool CreateSucceeded = AssetMgr::GetInst()->CreateNewAssetsBySuffixXYCount<ASprite>(wstring(m_InputSpriteName.begin(), m_InputSpriteName.end()), vecSprites, m_TotalFrameXYCount);
         if (!CreateSucceeded) return;
+        else
+        {
+            // 새로이 생성된 Asset들 AssetMgr에 등록
+            for (const Ptr<ASprite>& sprite : vecSprites)
+                AssetMgr::GetInst()->AddAsset(sprite->GetKey(), sprite.Get());
+        }
 
         // 제대로 생성되었다면 새롭게 생성된 Sprite들의 Atlas와 FrameCoord에 따른 UV 좌표 잡기
         for (UINT y = 0; y < m_TotalFrameXYCount.y; ++y)

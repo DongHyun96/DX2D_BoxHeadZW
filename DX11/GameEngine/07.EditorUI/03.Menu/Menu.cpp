@@ -159,35 +159,24 @@ void Menu::AssetTick()
     {
         if (ImGui::BeginMenu("Create Asset"))
         {
+            Ptr<Asset> NewAsset{};
             if (ImGui::MenuItem("Create Material"))
-            {
-                Ptr<AMaterial> NewAsset{};
-                AssetMgr::GetInst()->CreateNewAsset<AMaterial>(L"Default Material", NewAsset);
-            }
+                NewAsset = AssetMgr::GetInst()->CreateNewAsset<AMaterial>(L"Default Material").Get();
 
             if (ImGui::MenuItem("Create Sprite"))
-            {
-                Ptr<ASprite> NewAsset{};
-                AssetMgr::GetInst()->CreateNewAsset<ASprite>(L"Default Sprite", NewAsset);
-            }
+                NewAsset = AssetMgr::GetInst()->CreateNewAsset<ASprite>(L"Default Sprite").Get();
 
             if (ImGui::MenuItem("Create Flipbook"))
-            {
-                Ptr<AFlipbook> NewAsset{};
-                AssetMgr::GetInst()->CreateNewAsset<AFlipbook>(L"Default Flipbook", NewAsset);
-            }
+                NewAsset = AssetMgr::GetInst()->CreateNewAsset<AFlipbook>(L"Default Flipbook").Get();
 
             if (ImGui::MenuItem("Create TileMap"))
-            {
-                Ptr<ATileMap> NewAsset{};
-                AssetMgr::GetInst()->CreateNewAsset<ATileMap>(L"Default TileMap", NewAsset);
-            }
+                NewAsset = AssetMgr::GetInst()->CreateNewAsset<ATileMap>(L"Default TileMap").Get();
             
             if (ImGui::MenuItem("Create Level"))
-            {
-                Ptr<ALevel> NewAsset{};
-                AssetMgr::GetInst()->CreateNewAsset<ALevel>(L"Default Level", NewAsset);
-            }
+                NewAsset = AssetMgr::GetInst()->CreateNewAsset<ALevel>(L"Default Level").Get();
+
+            // 새로운 Asset 생성 성공, AssetMgr에 새로이 생성된 Asset 등록 처리
+            if (NewAsset) AssetMgr::GetInst()->AddAsset(NewAsset->GetKey(), NewAsset);
             
             ImGui::EndMenu();
         }	

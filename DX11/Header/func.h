@@ -69,6 +69,11 @@ void ChangeLevelState(LEVEL_STATE _NextState);
 wstring GetFileName(const wstring& _Path);
 
 /// <summary>
+/// Path 포멧의 wstring에서 extension이 제거된 파일명 wstring 추출 반환
+/// </summary>
+wstring GetFileNameWithoutExtension(const wstring& _Path);
+
+/// <summary>
 /// Asset_Type에 해당하는 폴더 wstring 반환 (ex. Material Type -> L"Material\\"
 /// </summary>
 wstring GetAssetTypeFolderWString(ASSET_TYPE _Type);
