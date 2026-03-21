@@ -312,25 +312,42 @@ bool AssetMgr::CreateNewAssetsBySuffixXYCount(const wstring& _AssetNameCommon, v
 {
     _OutAssets.clear();
     ASSET_TYPE Type = GetAssetType<T>();
+
+    const UINT yCount = _SuffixXYCount.y;
+    const UINT xCount = _SuffixXYCount.x;
     
-    for (UINT y = 0; y < _SuffixXYCount.y; ++y)
+    const UINT yWidth = to_wstring((yCount == 0) ? 0 : yCount).size();
+    const UINT xWidth = to_wstring((xCount == 0) ? 0 : xCount).size();
+
+    auto MakePaddedSuffix = [](UINT value, UINT width) -> wstring
     {
-        for (UINT x = 0; x < _SuffixXYCount.x; ++x)
+        wstring s = to_wstring(value);
+        if (s.size() < width)
+            s.insert(0, width - s.size(), L'0');
+        return s;
+    };
+    
+    for (UINT y = 0; y < yCount; ++y)
+    {
+        for (UINT x = 0; x < xCount; ++x)
         {
-            const wstring AssetName = _AssetNameCommon + to_wstring(y) + L"_" + to_wstring(x);
+            const wstring ySuffix = MakePaddedSuffix(y, yWidth);
+            const wstring xSuffix = MakePaddedSuffix(x, xWidth);
+
+            const wstring AssetName = _AssetNameCommon + ySuffix + L"_" + xSuffix;
             wstring Key{};
             bool bGenerated = GenerateNewAssetKeyBasedOnAssetName(GetAssetType<T>(), AssetName, Key);
-            
+
             if (!bGenerated)
             {
                 _OutAssets.clear();
                 return false;
             }
-            
+
             Ptr<T> pAsset = new T;
-    
+
             pAsset->GetGuid();              // GUID 새로 생성
-            pAsset->SetKey(Key);            // Key 부여
+            pAsset->SetKey(Key);            // Key 부여   
             pAsset->SetRelativePath(Key);   // RelativePath 값
             _OutAssets.push_back(pAsset);
         }

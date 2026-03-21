@@ -20,11 +20,14 @@ void FlipbookRenderUI::Tick_UI()
     ComponentUI::Tick_UI();
 
     Ptr<CFlipbookRender> flipbookRender = GetTargetObject()->FlipbookRender();
-    if (!flipbookRender)
-        return;
 
     ImGui::Separator();
     ImGui::Text("Flipbook List");
+
+    // 오브젝트 CFlipbookRender에 실질적으로 Setting된 FlipbookIdx
+    ImGui::BeginDisabled(flipbookRender->GetFlipbookCount() <= 0);
+    ImGui::SliderInt("Selected Flipbook Idx", &flipbookRender->m_CurSelectedFlipbookIdx, -1, flipbookRender->GetFlipbookCount() - 1);
+    ImGui::EndDisabled();
 
     ImGui::Button("Drop Flipbook To Append", ImVec2(240.f, 36.f));
     if (ImGui::BeginDragDropTarget())

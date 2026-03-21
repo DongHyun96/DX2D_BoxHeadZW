@@ -14,7 +14,7 @@ TextureSpriteCreatorUI::~TextureSpriteCreatorUI()
 
 void TextureSpriteCreatorUI::Tick_UI()
 {
-    TitleButton("Current Selected Atlas");
+    ColoredButtonTitle("Current Selected Atlas");
 
     if (!m_TargetTexture) return;
 
@@ -88,17 +88,6 @@ void TextureSpriteCreatorUI::Tick_UI()
         
         SetActive(false);
     }
-}
-
-void TextureSpriteCreatorUI::TitleButton(const string& _Title)
-{
-    ImGui::PushID(0);
-    ImGui::PushStyleColor(ImGuiCol_Button,          (ImVec4)ImColor::HSV(0.f, 0.6f, 0.6f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,   (ImVec4)ImColor::HSV(0.f, 0.6f, 0.6f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,    (ImVec4)ImColor::HSV(0.f, 0.6f, 0.6f));
-    ImGui::Button(_Title.c_str());
-    ImGui::PopStyleColor(3);
-    ImGui::PopID();
 }
 
 void TextureSpriteCreatorUI::Activate()

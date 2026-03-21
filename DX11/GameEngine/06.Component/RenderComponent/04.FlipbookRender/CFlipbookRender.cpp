@@ -55,12 +55,12 @@ void CFlipbookRender::FinalTick()
     if (m_AccTime > fLimit)
     {
         m_AccTime -= fLimit;
-        ++m_CurSprite;
+        ++m_CurAnimatingSpriteIdx;
 
-        if (m_CurSprite >= m_vecFlipbook[m_CurFlipbook]->GetSpriteCount())
+        if (m_CurAnimatingSpriteIdx >= m_vecFlipbook[m_CurSelectedFlipbookIdx]->GetSpriteCount())
         {
             m_Finish = true;
-            --m_CurSprite;
+            --m_CurAnimatingSpriteIdx;
         }
     }    
 }
@@ -69,13 +69,13 @@ void CFlipbookRender::Render()
 {
     if (!GetMaterial() || !GetMesh()) return;
     if (m_vecFlipbook.empty()) return;
-    if (m_CurFlipbook < 0 || m_CurFlipbook >= m_vecFlipbook.size()) return;
+    if (m_CurSelectedFlipbookIdx < 0 || m_CurSelectedFlipbookIdx >= m_vecFlipbook.size()) return;
     
     
-    Ptr<AFlipbook> CurSelectedFlipbook = m_vecFlipbook[m_CurFlipbook];
+    Ptr<AFlipbook> CurSelectedFlipbook = m_vecFlipbook[m_CurSelectedFlipbookIdx];
     if (!CurSelectedFlipbook) return;
     
-    Ptr<ASprite> pCurSprite = CurSelectedFlipbook->GetSprite(m_CurSprite);
+    Ptr<ASprite> pCurSprite = CurSelectedFlipbook->GetSprite(m_CurAnimatingSpriteIdx);
     if (!pCurSprite) return;
     
     
@@ -102,7 +102,7 @@ bool CFlipbookRender::CheckFinish()
     
     if (m_RepeatCount > 0)
     {
-        m_CurSprite = 0;
+        m_CurAnimatingSpriteIdx = 0;
         m_Finish = false;
         --m_RepeatCount;
         return false;
@@ -110,7 +110,7 @@ bool CFlipbookRender::CheckFinish()
     
     if (m_RepeatCount == -1)
     {
-        m_CurSprite = 0;
+        m_CurAnimatingSpriteIdx = 0;
         m_Finish = false;
         return false;
     }
@@ -125,8 +125,8 @@ void CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount)
     if (_FlipbookIdx < 0 || _FlipbookIdx >= static_cast<int>(m_vecFlipbook.size()))
         return;
         
-    m_CurFlipbook   = _FlipbookIdx;
-    m_CurSprite     = 0;
+    m_CurSelectedFlipbookIdx   = _FlipbookIdx;
+    m_CurAnimatingSpriteIdx     = 0;
     m_RepeatCount   = _RepeatCount;
     m_FPS           = _FPS;
     m_AccTime       = 0.f;
@@ -152,20 +152,20 @@ bool CFlipbookRender::RemoveFlipbook(int _Idx)
 
     if (m_vecFlipbook.empty())
     {
-        m_CurFlipbook = 0;
-        m_CurSprite = 0;
+        m_CurSelectedFlipbookIdx = 0;
+        m_CurAnimatingSpriteIdx = 0;
         m_Finish = false;
         return true;
     }
 
-    if (m_CurFlipbook == _Idx)
+    if (m_CurSelectedFlipbookIdx == _Idx)
     {
-        m_CurFlipbook = min(_Idx, static_cast<int>(m_vecFlipbook.size()) - 1);
-        m_CurSprite = 0;
+        m_CurSelectedFlipbookIdx = min(_Idx, static_cast<int>(m_vecFlipbook.size()) - 1);
+        m_CurAnimatingSpriteIdx = 0;
         m_Finish = false;
     }
-    else if (m_CurFlipbook > _Idx)
-        --m_CurFlipbook;
+    else if (m_CurSelectedFlipbookIdx > _Idx)
+        --m_CurSelectedFlipbookIdx;
 
     return true;
 }
@@ -187,8 +187,8 @@ bool CFlipbookRender::SwapFlipbook(int _A, int _B)
 
     swap(m_vecFlipbook[_A], m_vecFlipbook[_B]);
 
-    if (m_CurFlipbook == _A)      m_CurFlipbook = _B;
-    else if (m_CurFlipbook == _B) m_CurFlipbook = _A;
+    if (m_CurSelectedFlipbookIdx == _A)      m_CurSelectedFlipbookIdx = _B;
+    else if (m_CurSelectedFlipbookIdx == _B) m_CurSelectedFlipbookIdx = _A;
 
     return true;
 }
@@ -203,8 +203,8 @@ void CFlipbookRender::SaveToLevelFile(FILE* _File)
     for (const Ptr<AFlipbook>& Flipbook : m_vecFlipbook)
         SaveAssetRef(_File, Flipbook.Get());
 
-    fwrite(&m_CurFlipbook, sizeof(int), 1, _File);
-    fwrite(&m_CurSprite, sizeof(int), 1, _File);
+    fwrite(&m_CurSelectedFlipbookIdx, sizeof(int), 1, _File);
+    fwrite(&m_CurAnimatingSpriteIdx, sizeof(int), 1, _File);
     fwrite(&m_FPS, sizeof(int), 1, _File);
     
 }
@@ -220,8 +220,8 @@ void CFlipbookRender::LoadFromLevelFile(FILE* _File)
         m_vecFlipbook.push_back(LoadAssetRef<AFlipbook>(_File));
     
 
-    fread(&m_CurFlipbook, sizeof(int), 1, _File);
-    fread(&m_CurSprite, sizeof(int), 1, _File);
+    fread(&m_CurSelectedFlipbookIdx, sizeof(int), 1, _File);
+    fread(&m_CurAnimatingSpriteIdx, sizeof(int), 1, _File);
     fread(&m_FPS, sizeof(int), 1, _File);
     
 }

@@ -5,13 +5,16 @@
 
 class CFlipbookRender : public CRenderComponent
 {
+    
+    friend class FlipbookRenderUI;
+    
 private:
 
     vector<Ptr<AFlipbook>> m_vecFlipbook{};
     // Ptr<AFlipbook>  m_Flipbook{};
 
-    int             m_CurFlipbook{}; // TODO : Idx로 명시적으로 이름 짓기 
-    int             m_CurSprite{}; // 현재 재생중인 Flipbook 내에서 재생중인 프레임 Sprite index // TODO : idx로 명시적으로 이름 짓기
+    int             m_CurSelectedFlipbookIdx{};  
+    int             m_CurAnimatingSpriteIdx{}; // 현재 재생중인 Flipbook 내에서 재생중인 프레임 Sprite index
 
     int             m_RepeatCount{}; // -1 : 반복재생, 0 이상이면 재생 횟수
     bool            m_Repeat{};

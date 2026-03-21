@@ -19,17 +19,20 @@ void TextureUI::Tick_UI()
     
     Ptr<ATexture> pTexture = static_cast<ATexture*>(GetTargetAsset().Get());
 
+    int Width = pTexture->GetWidth(); 
+    int Height = pTexture->GetHeight();
+    const int PreviewWidth = min(Width, 1000);
+    const int PreviewHeight = min(Height, 1000);
+    
     // 이미지 샘플
     ImGui::ImageWithBg
     (
         pTexture->GetSRV().Get(),
-        ImVec2(200, 200),
+        ImVec2(PreviewWidth, PreviewHeight),
         Vec2(0.f, 0.f), Vec2(1.f, 1.f),
         ImVec4(0.0f, 0.0f, 0.0f, 1.0f)
     );
     
-    int Width = pTexture->GetWidth(); 
-    int Height = pTexture->GetHeight(); 
 
     ImGui::Text("Resolution");
     ImGui::SameLine(150);

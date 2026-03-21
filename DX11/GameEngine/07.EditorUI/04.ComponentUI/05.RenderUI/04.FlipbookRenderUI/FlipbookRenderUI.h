@@ -6,12 +6,12 @@ class FlipbookRenderUI : public RenderUI
 private:
     int         m_SelectedFlipbookIdx = -1;
 
-    bool        m_PreviewPlaying = true;
-    bool        m_PreviewLoop = true;
-    float       m_PreviewFPS = 10.f;
-    float       m_PreviewAccTime = 0.f;
-    int         m_PreviewCurFrame = 0;
-    AFlipbook*  m_PreviewTarget = nullptr;
+    bool        m_PreviewPlaying    = true;
+    bool        m_PreviewLoop       = true;
+    float       m_PreviewFPS        = 10.f;
+    float       m_PreviewAccTime    = 0.f;
+    int         m_PreviewCurFrame   = 0;
+    AFlipbook*  m_PreviewTarget     = nullptr;
 
 public:
     FlipbookRenderUI();

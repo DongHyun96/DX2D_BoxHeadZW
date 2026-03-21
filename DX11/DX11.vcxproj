@@ -274,6 +274,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\03.Manager\01.PathMgr\PathMgr.h" />
     <ClInclude Include="GameEngine\03.Manager\02.TimeMgr\TimeMgr.h" />
     <ClInclude Include="Module\Util.h" />
+    <ClInclude Include="Source\enum\enum.h" />
     <ClInclude Include="Source\ScriptMgr.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBackgroundScript.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.h" />

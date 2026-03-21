@@ -25,8 +25,6 @@ public:
     
 private:
     
-    void TitleButton(const string& _Title);
-    
     virtual void Activate() override;
     
 };
