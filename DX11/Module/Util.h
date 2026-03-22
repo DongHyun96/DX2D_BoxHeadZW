@@ -88,3 +88,17 @@ T GetRandom(const T& _Start, const T& _End)
         return T{};
     }
 }
+
+/// <summary>
+/// Z값을 제외한 X, Y값으로 Vec3에서 Vec2값 반환
+/// </summary>
+static Vec2 ToVec2(const Vec3& _V) { return {_V.x, _V.y}; }
+
+enum class EDIRECTION;
+
+/// <summary>
+/// 해당 Vector 방향에 대응되는 EDIRECTION 구하기 
+/// 만약 Zero vector를 받았다면 END를 return
+/// </summary>
+EDIRECTION GetDirection(const Vec3& _Vector);
+EDIRECTION GetDirection(const Vec2& _Vector);

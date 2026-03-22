@@ -61,8 +61,8 @@ float4 PS_Flipbook(VS_OUT _input) : SV_Target
         }
         else
         {
-            vColor = float4(1.f, 1.f, 0.f, 1.f);
-            //discard;
+            // vColor = float4(1.f, 1.f, 0.f, 1.f);
+            discard;
         }
             
         if (vColor.a == 0.f) discard;

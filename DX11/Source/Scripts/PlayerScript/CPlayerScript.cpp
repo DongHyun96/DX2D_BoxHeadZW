@@ -34,32 +34,41 @@ void CPlayerScript::Init()
 void CPlayerScript::Begin()
 {
     if (GetOwner()->FlipbookRender())
-        GetOwner()->FlipbookRender()->Play(L"UnArmed", 0, 10.f, 2, true);
+        GetOwner()->FlipbookRender()->Stop(L"UnArmed", 6, 0);
 }
 
 void CPlayerScript::Tick()
 {
     Move();
-    
+    UpdateAnimDirection();
+    HandleRayCast();    
     // MeshRender()->GetMaterial()->SetScalar(INT_0, KEY_PRESSED(KEY::X) ? 1 : 0);
 }
 
 void CPlayerScript::Move()
 {
+    // Velocity 초기화
+    m_Velocity = Vec3();
+    
     Vec3 Direction{};
     
-    if (KEY_PRESSED(KEY::D)) Direction.x += 1.f;
-    if (KEY_PRESSED(KEY::W)) Direction.y += 1.f;
-    if (KEY_PRESSED(KEY::A)) Direction.x -= 1.f;
-    if (KEY_PRESSED(KEY::S)) Direction.y -= 1.f;
+    if (KEY_PRESSED(KEY::A)) Direction.x -= 1.f; // Left
+    if (KEY_PRESSED(KEY::D)) Direction.x += 1.f; // Right
+    if (KEY_PRESSED(KEY::W)) Direction.y += 1.f; // Up
+    if (KEY_PRESSED(KEY::S)) Direction.y -= 1.f; // Down
 
     if (Direction.LengthSquared() == 0.f) return;
     Direction.Normalize();
     
-    m_Direction = Direction; // 마지막 Direction 방향 기록
+    m_Velocity = Direction * m_MoveSpeedBase * m_SpeedFactor;
     
-    Vec3 Pos = Transform()->GetRelativePos() + m_Direction * m_MoveSpeedBase * DT;
+    Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
     Transform()->SetRelativePos(Pos);
+}
+
+void CPlayerScript::UpdateAnimDirection()
+{
+    
 }
 
 void CPlayerScript::HandleRayCast()

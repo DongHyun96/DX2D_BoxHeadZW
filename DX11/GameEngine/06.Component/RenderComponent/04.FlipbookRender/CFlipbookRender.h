@@ -25,11 +25,11 @@ private: // 현재 선택된 AFlipbook 내에서의 Anim Data
     int             m_RepeatCount{};    // -1 : 반복재생, 0 이상이면 재생 횟수
     bool            m_bCurCycleFinished{};   // 현재 Animation 재생 바퀴 완료 (끝 Sprite까지 도달 완료)
     
-    float           m_FPS{};            // 1초당 보여줄 프레임수
-    float           m_FrameTimer{};     // 1프레임 보여준 누적시간    
+    float           m_FPS = 10.f;               // 1초당 보여줄 프레임수
+    float           m_FrameTimer{};             // 1프레임 보여준 누적시간    
     
-    bool            m_bPlayReverse{};   // 반대로 재생시킬건지
-    bool            m_bStopped{};       // Animation이 멈춘 상태인지 (멈춘상태에서 Sprite 한 장을 보여주는 식으로 처리를 할 수도 있다)
+    bool            m_bPlayReverse{};           // 반대로 재생시킬건지
+    bool            m_bStopped{};               // Animation이 멈춘 상태인지 (멈춘상태에서 Sprite 한 장을 보여주는 식으로 처리를 할 수도 있다)
     
 public:
     
@@ -60,8 +60,6 @@ public:
 
 public: // 재생 관련
 
-    // TODO : 반대로 재생시키는 Reverse 기능도 있어야 함
-    
     /// <summary>
     /// 현재 지정된 카테고리에서의 재생 처리
     /// </summary>
@@ -88,6 +86,34 @@ public: // 재생 관련
     /// </summary>
     /// <returns> : 멈출 수 없는 상태라면 return false </returns>
     bool Stop();
+
+
+    /// <summary>
+    /// 현재 재생중인 FlipbookRenderer 멈추고, 보여줄 Category, FlipbookIdx, SpriteIdx에서 멈춘 상태 유지하기
+    /// 애니메이션을 재생하지 않고 특정 이미지로 보여줄 때에 쓰일 수 있다.
+    /// </summary>
+    /// <param name="_Category"> : 멈췄을 때 보여줄 카테고리 종류 </param>
+    /// <param name="_FlipbookIdx"> : 멈췄을 때 보여줄 FlipbookIdx </param>
+    /// <param name="_SpriteIdx"> : 멈췄을 때 보여줄 SpriteIdx (default 0)</param>
+    /// <returns> : Invalid Paremeter -> return false </returns>
+    bool Stop(const wstring& _Category, int _FlipbookIdx, int _SpriteIdx = 0);
+
+    /// <summary>
+    /// 현재 재생중인 FlipbookRenderer 멈추고, 보여줄 FlipbookIdx, SpriteIdx에서 멈춘 상태 유지하기
+    /// 선택된 Category는 유지한 상태
+    /// </summary>
+    /// <param name="_FlipbookIdx"></param>
+    /// <param name="_SpriteIdx"></param>
+    /// <returns></returns>
+    bool Stop(int _FlipbookIdx, int _SpriteIdx);
+
+    /// <summary>
+    /// 현재 재생중인 FlipbookRenderer 멈추고, SpriteIdx에서 멈춘 상태 유지하기
+    /// 카테고리, 선택된 Flipbook은 유지한 상태
+    /// </summary>
+    /// <param name="_SpriteIdx"></param>
+    /// <returns></returns>
+    bool Stop(int _SpriteIdx);
     
 public:
 

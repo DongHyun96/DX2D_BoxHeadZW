@@ -4,7 +4,7 @@
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "Source/Scripts/CCamMoveScript.h"
 #include "Source/Scripts/CMonsterScript.h"
-#include "Source/Scripts/CPlayerScript.h"
+#include "Source/Scripts/PlayerScript/CPlayerScript.h"
 
 void LevelMgr::CreateTestLevel()
 {

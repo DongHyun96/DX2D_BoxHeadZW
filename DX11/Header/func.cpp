@@ -12,7 +12,7 @@
 
 #include "Source/Scripts/CCamMoveScript.h"
 #include "Source/Scripts/CMonsterScript.h"
-#include "Source/Scripts/CPlayerScript.h"
+#include "Source/Scripts/PlayerScript/CPlayerScript.h"
 
 namespace
 {

@@ -82,5 +82,5 @@ using namespace std;
 
 
 ///////////////////////////////////////////////////User include///////////////////////////////////////////////////
-#include "Source/UserHeader/define.h"
-#include "Source/UserHeader/enum.h"
+#include "Source/UserHeader/userDefine.h"
+#include "Source/UserHeader/userEnum.h"

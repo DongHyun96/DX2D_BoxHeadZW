@@ -281,9 +281,10 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletScript.h" />
     <ClInclude Include="Source\Scripts\CCamMoveScript.h" />
     <ClInclude Include="Source\Scripts\CMonsterScript.h" />
-    <ClInclude Include="Source\Scripts\CPlayerScript.h" />
-    <ClInclude Include="Source\UserHeader\define.h" />
-    <ClInclude Include="Source\UserHeader\enum.h" />
+    <ClInclude Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.h" />
+    <ClInclude Include="Source\Scripts\PlayerScript\CPlayerScript.h" />
+    <ClInclude Include="Source\UserHeader\userDefine.h" />
+    <ClInclude Include="Source\UserHeader\userEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine\02.Device\ConstBuffer\ConstBuffer.cpp" />
@@ -1007,7 +1008,8 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="Source\Scripts\CPlayerScript.cpp">
+    <ClCompile Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.cpp" />
+    <ClCompile Include="Source\Scripts\PlayerScript\CPlayerScript.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>

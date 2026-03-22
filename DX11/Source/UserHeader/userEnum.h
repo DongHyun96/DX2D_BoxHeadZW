@@ -2,7 +2,7 @@
 /// <summary>
 /// Eight Directions
 /// </summary>
-enum class EDirection
+enum class EDIRECTION
 {
     RIGHT,      // 1
     RIGHT_UP,   // 2

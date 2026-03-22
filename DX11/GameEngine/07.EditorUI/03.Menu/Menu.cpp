@@ -72,6 +72,14 @@ void Menu::LevelTick()
             LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
             ChangeLevelState(LEVEL_STATE::PLAY);
     }
+    
+    // Level Stop 단축키 처리 (esc)
+    if (!io.WantTextInput && ImGui::Shortcut(ImGuiKey_Escape, flags))
+    {
+        if (LevelMgr::GetInst()->GetCurLevel() &&
+            LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP)
+            ChangeLevelState(LEVEL_STATE::STOP);
+    }
 
     
     if (ImGui::BeginMenu("Level"))

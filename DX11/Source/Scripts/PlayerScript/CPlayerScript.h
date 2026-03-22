@@ -1,16 +1,15 @@
 ﻿#pragma once
 
 #include "GameEngine/06.Component/Script/CScript.h"
-#include "AirplaneShootingScript/CBulletMgrScript.h"
-#include "GameEngine/04.Asset/09.Prefab/APrefab.h"
 
 class CPlayerScript : public CScript
 {
 private:
     
-    float m_MoveSpeedBase = 500.f;
+    const float m_MoveSpeedBase     = 500.f;
+    float       m_SpeedFactor       = 1.f;
     
-    Vec3 m_Direction = Vec3(0.f, -1.f, 0.f); // 첫 Direction은 앞을 바라보는 것으로(Down 방향)
+    Vec3 m_Velocity{};
     
 public:
     
@@ -27,11 +26,18 @@ public:
 private:
     
     void Move();
+    void UpdateAnimDirection();
+    
+private:
     
     /// <summary>
     /// For Testing
     /// </summary>
     void HandleRayCast();
+    
+public:
+    
+    const Vec3& GetVelocity() const { return m_Velocity; }
     
 public:
     

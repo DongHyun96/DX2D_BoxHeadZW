@@ -168,16 +168,14 @@ bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool 
     assert(_FPS > 0.f);
 
     if (!m_vecCurSelectedCategoryFlipbooks) return false; // 현재 골라놓은 카테고리가 없음
-    const vector<Ptr<AFlipbook>>& vecCurSelectedCategoryFlipbooks = *m_vecCurSelectedCategoryFlipbooks;
     
-    if (_FlipbookIdx < 0 || _FlipbookIdx >= vecCurSelectedCategoryFlipbooks.size())
+    if (_FlipbookIdx < 0 || _FlipbookIdx >= m_vecCurSelectedCategoryFlipbooks->size())
         return false;
     
     m_bPlayReverse = _bPlayReverse;
-    
     m_CurSelectedFlipbookIdx = _FlipbookIdx;
     
-    Ptr<AFlipbook> TargetFlipbook = vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx];
+    Ptr<AFlipbook> TargetFlipbook = m_vecCurSelectedCategoryFlipbooks->at(m_CurSelectedFlipbookIdx);
     
     m_CurAnimatingSpriteIdx  = !_bPlayReverse ? 0 : TargetFlipbook->GetSpriteCount() - 1;
     m_RepeatCount            = _RepeatCount;
@@ -217,6 +215,67 @@ bool CFlipbookRender::Stop()
     m_bCurCycleFinished = false;
     m_FrameTimer        = 0.f;
     m_bStopped          = true;
+    
+    return true;
+}
+
+bool CFlipbookRender::Stop(const wstring& _Category, int _FlipbookIdx, int _SpriteIdx)
+{
+    if (!m_mapCategoryFlipbooks.contains(_Category))                                     return false;
+    if (_FlipbookIdx >= m_mapCategoryFlipbooks[_Category].size())                        return false;
+    if (_SpriteIdx >= m_mapCategoryFlipbooks[_Category][_FlipbookIdx]->GetSpriteCount()) return false;
+
+    // 현재 카테고리 지정
+    SetCurrentCategory(_Category);
+
+    m_CurSelectedFlipbookIdx    = _FlipbookIdx;
+    m_CurAnimatingSpriteIdx     = _SpriteIdx;
+    
+    m_RepeatCount       = 0;
+    m_bCurCycleFinished = false;
+    m_FrameTimer        = 0.f;
+    m_bStopped          = true;
+    
+    return true;
+}
+
+bool CFlipbookRender::Stop(int _FlipbookIdx, int _SpriteIdx)
+{
+    if (!m_vecCurSelectedCategoryFlipbooks)                                                  return false;
+    if (_FlipbookIdx >= m_vecCurSelectedCategoryFlipbooks->size())                           return false;
+    if (_SpriteIdx >= m_vecCurSelectedCategoryFlipbooks->at(_FlipbookIdx)->GetSpriteCount()) return false;
+
+    m_CurSelectedFlipbookIdx    = _FlipbookIdx;
+    m_CurAnimatingSpriteIdx     = _SpriteIdx;
+    
+    m_RepeatCount       = 0;
+    m_bCurCycleFinished = false;
+    m_FrameTimer        = 0.f;
+    m_bStopped          = true;
+    
+    return true;
+}
+
+/*bool CFlipbookRender::Stop(int _FlipbookIdx, int _SpriteIdx)
+{
+    
+}*/
+
+bool CFlipbookRender::Stop(int _SpriteIdx)
+{
+    if (!m_vecCurSelectedCategoryFlipbooks) return false;
+    if (_SpriteIdx >= (*m_vecCurSelectedCategoryFlipbooks)[m_CurSelectedFlipbookIdx]->GetSpriteCount()) return false;    
+    
+    // 나머지 데이터 초기화
+    m_CurAnimatingSpriteIdx = _SpriteIdx;
+    
+    m_RepeatCount       = 0;
+    m_bCurCycleFinished = false;
+    m_FrameTimer        = 0.f;
+    m_bStopped          = true;
+    
+    return true;
+    
 }
 
 bool CFlipbookRender::SetFlipbook(const wstring& _Category, int _Idx, const Ptr<AFlipbook>& _Flipbook)
@@ -324,7 +383,7 @@ void CFlipbookRender::SaveToLevelFile(FILE* _File)
 
     // 현재 선택된 카테고리 저장 
     SaveWString(_File, m_CurSelectedCategory);
-    
+
     // 카테고리 갯수 저장
     const size_t CategoryCount = m_mapCategoryFlipbooks.size();
     fwrite(&CategoryCount, sizeof(size_t), 1, _File);
@@ -342,7 +401,7 @@ void CFlipbookRender::SaveToLevelFile(FILE* _File)
             SaveAssetRef(_File, Flipbook.Get());    
     }
 
-    fwrite(&m_CurSelectedFlipbookIdx, sizeof(int), 1, _File);
+    fwrite(&m_CurSelectedFlipbookIdx, sizeof(int), 1, _File); // 카테고리 내에서 지정된 Flipbook Idx 저장
     fwrite(&m_CurAnimatingSpriteIdx, sizeof(int), 1, _File);
     fwrite(&m_FPS, sizeof(int), 1, _File);
 }
@@ -372,6 +431,8 @@ void CFlipbookRender::LoadFromLevelFile(FILE* _File)
         for (size_t j = 0; j < FlipbookCount; ++j)
             m_mapCategoryFlipbooks[CategoryName].push_back(LoadAssetRef<AFlipbook>(_File));
     }
+    
+    SetCurrentCategory(m_CurSelectedCategory); // 카테고리 지정
 
     fread(&m_CurSelectedFlipbookIdx, sizeof(int), 1, _File);
     fread(&m_CurAnimatingSpriteIdx, sizeof(int), 1, _File);

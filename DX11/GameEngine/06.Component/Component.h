@@ -40,15 +40,19 @@ public:
 	GameObject* GetOwner() const { return m_Owner; }
 	
 	
-    GET_OTHER_COMPONENT(BillboardRender);
+    GET_OTHER_COMPONENT(Transform);
     GET_OTHER_COMPONENT(Camera);
     GET_OTHER_COMPONENT(ColliderRect);
     GET_OTHER_COMPONENT(ColliderCircle);
     GET_OTHER_COMPONENT(ColliderPoint);
+    GET_OTHER_COMPONENT(Light2D);
+	
     GET_OTHER_COMPONENT(MeshRender);
+    GET_OTHER_COMPONENT(BillboardRender);
     GET_OTHER_COMPONENT(SpriteRender);
-    GET_OTHER_COMPONENT(Transform);
+    GET_OTHER_COMPONENT(FlipbookRender);
 	GET_OTHER_COMPONENT(TileRender);
+	
 	
 	class CCollider2D* GetCollider2D() const;
 
@@ -61,6 +65,4 @@ public:
 	
 	virtual void Begin() {}
 	virtual void FinalTick() = 0;
-
-
 };
