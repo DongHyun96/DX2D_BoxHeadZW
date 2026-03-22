@@ -55,6 +55,12 @@ bool AFlipbook::RemoveSprite(const Ptr<ASprite>& _Sprite)
     return false;
 }
 
+bool AFlipbook::ClearSprites()
+{
+    m_vecSprite.clear();
+    return true;
+}
+
 HRESULT AFlipbook::Save(const wstring& _FilePath)
 {
     if (FAILED(Asset::Save(_FilePath))) return E_FAIL;

@@ -5,8 +5,8 @@ class FlipbookUI : public AssetUI
 {
 private:
     int         m_SelectedSpriteIdx = -1;
-    bool        m_PreviewPlaying = true;
-    bool        m_PreviewLoop = true;
+    bool        m_PreviewPlaying    = true;
+    bool        m_PreviewLoop       = true;
     float       m_PreviewFPS{10.f};
     float       m_PreviewAccTime{};
     int         m_PreviewCurFrame{};
@@ -48,5 +48,9 @@ private:
     );
     void DrawUVEditor(const Ptr<AFlipbook>& _Flipbook);
     void DrawAppendSection(const Ptr<AFlipbook>& _Flipbook);
+    
+private:
+    
+    void OnConfirmClearSprites(bool _Yes);
 
 };

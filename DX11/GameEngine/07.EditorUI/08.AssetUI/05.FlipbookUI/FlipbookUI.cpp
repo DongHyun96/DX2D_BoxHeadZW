@@ -4,7 +4,9 @@
 #include <algorithm>
 
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
+#include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
+#include "GameEngine/07.EditorUI/10.ConfirmUI/ConfirmUI.h"
 
 FlipbookUI::FlipbookUI()
     : AssetUI(ASSET_TYPE::FLIPBOOK)
@@ -205,6 +207,16 @@ void FlipbookUI::DrawSpriteTable
     vector<Ptr<ASprite>>&   _InsertSprites
 )
 {
+    if (ImGui::Button("ClearSprites"))
+    {
+        Ptr<ConfirmUI> pUI = dynamic_cast<ConfirmUI*>(EditorMgr::GetInst()->FindUI("ConfirmUI").Get());
+        assert(pUI.Get());
+
+        pUI->SetWarningText("Are you sure you want to clear all sprites from this Flipbook?");
+        pUI->AddDelegate(this, static_cast<DELEGATE_BOOL>(&FlipbookUI::OnConfirmClearSprites));
+        pUI->SetActive(true);
+    }
+    
     if (ImGui::BeginTable("##FlipbookSpriteTable", 4,
         ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable))
     {
@@ -463,5 +475,14 @@ void FlipbookUI::DrawAppendSection(const Ptr<AFlipbook>& _Flipbook)
             }
         }
         ImGui::EndDragDropTarget();
+    }
+}
+
+void FlipbookUI::OnConfirmClearSprites(bool _Yes)
+{
+    if (_Yes)
+    {
+        Ptr<AFlipbook> pFlipbook = static_cast<AFlipbook*>(GetTargetAsset().Get());
+        pFlipbook->ClearSprites();
     }
 }

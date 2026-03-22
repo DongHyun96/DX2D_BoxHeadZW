@@ -25,6 +25,7 @@ public:
     
     bool RemoveSprite(int _Idx);
     bool RemoveSprite(const Ptr<ASprite>& _Sprite);
+    bool ClearSprites();
     
 public:
     
