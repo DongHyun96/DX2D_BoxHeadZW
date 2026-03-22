@@ -79,3 +79,8 @@ using namespace std;
 #include "resource.h"
 #include "Header/global.h"
 #include "Module/Ptr.h"
+
+
+///////////////////////////////////////////////////User include///////////////////////////////////////////////////
+#include "Source/UserHeader/define.h"
+#include "Source/UserHeader/enum.h"
