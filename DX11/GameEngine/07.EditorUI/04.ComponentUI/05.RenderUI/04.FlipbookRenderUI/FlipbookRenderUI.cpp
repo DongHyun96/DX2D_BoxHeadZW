@@ -23,8 +23,11 @@ void FlipbookRenderUI::Tick_UI()
 
     Ptr<CFlipbookRender> flipbookRender = GetTargetObject()->FlipbookRender();
 
+    TickSelectingLevelBeginningInfo(flipbookRender);
 
-    TickSelectCategory(flipbookRender);
+    ImGui::Separator(); ImGui::Separator(); ImGui::Separator();
+    
+    TickSelectPreviewCategory(flipbookRender);
     TickAddNewCategory(flipbookRender);
     TickRemoveCategory(flipbookRender);
 
@@ -60,10 +63,50 @@ void FlipbookRenderUI::Tick_UI()
     DrawPreviewSection(flipbookRender);
 }
 
-void FlipbookRenderUI::TickSelectCategory(const Ptr<CFlipbookRender>& _FlipbookRender)
+void FlipbookRenderUI::TickSelectingLevelBeginningInfo(const Ptr<CFlipbookRender>& _FlipbookRender)
 {
     ImGui::SetNextItemOpen(false, ImGuiCond_FirstUseEver);
-    if (ImGui::CollapsingHeader("Current Category", ImGuiTreeNodeFlags_None))
+    if (ImGui::CollapsingHeader("ComponentSelectedCategory", ImGuiTreeNodeFlags_None))
+    {
+        string CategoryTitleName    = "<REAL_SELECTED_CATEGORY>";
+        float windowWidth           = ImGui::GetWindowSize().x;
+        float textWidth             = ImGui::CalcTextSize(CategoryTitleName.c_str()).x;
+        
+        ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+        ImGui::Text(CategoryTitleName.c_str());
+
+        //Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
+        //const int curLayer = m_TargetObject->GetLayerIdx();
+        
+
+        if (ImGui::BeginTable("##Category", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
+        {
+            for (auto it = _FlipbookRender->m_mapCategoryFlipbooks.begin(); it != _FlipbookRender->m_mapCategoryFlipbooks.end(); ++it)
+            {
+                wstring Name = it->first;
+                string strCategoryName = string(Name.begin(), Name.end());
+
+                ImGui::TableNextColumn();
+
+                const string CurSelectedStr = string(_FlipbookRender->m_CurSelectedCategory.begin(), _FlipbookRender->m_CurSelectedCategory.end()); 
+                
+                const bool selected = CurSelectedStr == strCategoryName;
+                
+                if (ImGui::Selectable(strCategoryName.c_str(), selected))
+                    _FlipbookRender->SetCurrentCategory(wstring(strCategoryName.begin(), strCategoryName.end()));
+            }
+
+            ImGui::EndTable();
+        }
+    }
+    
+    ImGui::SeparatorText("");
+}
+
+void FlipbookRenderUI::TickSelectPreviewCategory(const Ptr<CFlipbookRender>& _FlipbookRender)
+{
+    ImGui::SetNextItemOpen(false, ImGuiCond_FirstUseEver);
+    if (ImGui::CollapsingHeader("Previewing Category", ImGuiTreeNodeFlags_None))
     {
         string CategoryTitleName    = "<CATEGORY>";
         float windowWidth           = ImGui::GetWindowSize().x;
@@ -76,7 +119,7 @@ void FlipbookRenderUI::TickSelectCategory(const Ptr<CFlipbookRender>& _FlipbookR
         //const int curLayer = m_TargetObject->GetLayerIdx();
         
 
-        if (ImGui::BeginTable("##Category", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
+        if (ImGui::BeginTable("##Category2", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
         {
             for (auto it = _FlipbookRender->m_mapCategoryFlipbooks.begin(); it != _FlipbookRender->m_mapCategoryFlipbooks.end(); ++it)
             {

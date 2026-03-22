@@ -56,19 +56,25 @@ void CFlipbookRender::FinalTick()
     
     if (CheckFinish()) return;
 
-    const float fLimit = 1.f / m_FPS;
+    const float frameTimeLimit = 1.f / m_FPS;
 
-    m_AccTime += DT;
+    m_FrameTimer += DT;
 
-    if (m_AccTime > fLimit)
+    if (m_FrameTimer > frameTimeLimit) // 한 프레임 보여주기 시간 끝
     {
-        m_AccTime -= fLimit;
-        ++m_CurAnimatingSpriteIdx;
+        m_FrameTimer -= frameTimeLimit;
+        
+        if (!m_bPlayReverse) ++m_CurAnimatingSpriteIdx;
+        else                 --m_CurAnimatingSpriteIdx;
 
-        if (m_CurAnimatingSpriteIdx >= vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx]->GetSpriteCount())
+        if (m_CurAnimatingSpriteIdx < 0 ||
+            m_CurAnimatingSpriteIdx >= vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx]->GetSpriteCount()) // 애니메이션 한 바퀴 순회 끝
         {
-            m_Finish = true;
-            --m_CurAnimatingSpriteIdx;
+            m_bCurCycleFinished = true;
+
+            // 나간 Idx에 대해 다시 Boundary로 들어오게끔 처리
+            if (!m_bPlayReverse) --m_CurAnimatingSpriteIdx;
+            else                 ++m_CurAnimatingSpriteIdx;
         }
     }    
 }
@@ -113,27 +119,77 @@ void CFlipbookRender::Render()
 
 bool CFlipbookRender::CheckFinish()
 {
-    if (!m_Finish) return false;
-    
-    if (m_RepeatCount > 0)
+    if (m_bStopped)              return true;   // Stopped된 상황
+    if (!m_bCurCycleFinished)    return false;  // 아직 현재 사이클이 진행중
+    if (m_RepeatCount == 0)
     {
-        m_CurAnimatingSpriteIdx = 0;
-        m_Finish = false;
+        // 반복재생(-1)이 아닌 때에 현재 사이클이 종료되었고, RepeatCount 마저도 모두 소진한 상태 (이제 막 Animation이 모두 재생되어 Stopped 처리된 상황)
+        m_bStopped = true;
+        return true;   
+    }
+    
+    // 현재 사이클이 종료됨
+    // 반복재생(-1) 처리가 걸렸거나, 아직 RepeatCount가 남아있는 경우
+
+    if (m_RepeatCount != -1)
+    {
+        // 무한루프 재생이 아닌 상황 (RepeatCount를 하나 감소시킨다)
         --m_RepeatCount;
-        return false;
     }
+
+    Ptr<AFlipbook> TargetFlipbook = (*m_vecCurSelectedCategoryFlipbooks)[m_CurSelectedFlipbookIdx];
     
-    if (m_RepeatCount == -1)
-    {
-        m_CurAnimatingSpriteIdx = 0;
-        m_Finish = false;
-        return false;
-    }
-    return true;
+    m_CurAnimatingSpriteIdx = !m_bPlayReverse ? 0 : TargetFlipbook->GetSpriteCount() - 1;
+    m_bCurCycleFinished     = false;
     
+    return false;
 }
 
-bool CFlipbookRender::Play(const wstring& _Category, int _FlipbookIdx, float _FPS, int _RepeatCount)
+bool CFlipbookRender::SetCurrentCategory(const wstring& _CategoryKey)
+{
+    if (!m_mapCategoryFlipbooks.contains(_CategoryKey)) return false;
+    
+    m_CurSelectedCategory = _CategoryKey;
+    m_vecCurSelectedCategoryFlipbooks = &m_mapCategoryFlipbooks[_CategoryKey];
+    m_CurSelectedFlipbookIdx = 0;
+    
+    m_CurAnimatingSpriteIdx = 0;
+    m_RepeatCount           = 0;    
+    m_bCurCycleFinished     = false;   
+    
+    m_FPS                   = 0.f;            
+    m_FrameTimer            = 0.f;         
+    m_bPlayReverse          = false;   
+    m_bStopped              = true;       
+}
+
+bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool _bPlayReverse)
+{
+    assert(_FPS > 0.f);
+
+    if (!m_vecCurSelectedCategoryFlipbooks) return false; // 현재 골라놓은 카테고리가 없음
+    const vector<Ptr<AFlipbook>>& vecCurSelectedCategoryFlipbooks = *m_vecCurSelectedCategoryFlipbooks;
+    
+    if (_FlipbookIdx < 0 || _FlipbookIdx >= vecCurSelectedCategoryFlipbooks.size())
+        return false;
+    
+    m_bPlayReverse = _bPlayReverse;
+    
+    m_CurSelectedFlipbookIdx = _FlipbookIdx;
+    
+    Ptr<AFlipbook> TargetFlipbook = vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx];
+    
+    m_CurAnimatingSpriteIdx  = !_bPlayReverse ? 0 : TargetFlipbook->GetSpriteCount() - 1;
+    m_RepeatCount            = _RepeatCount;
+    m_FPS                    = _FPS;
+    m_FrameTimer             = 0.f;
+    m_bCurCycleFinished      = false;
+    m_bStopped               = false;
+    
+    return true;
+}
+
+bool CFlipbookRender::Play(const wstring& _Category, int _FlipbookIdx, float _FPS, int _RepeatCount, bool _bPlayReverse)
 {
     assert(_FPS > 0.f);
 
@@ -143,19 +199,24 @@ bool CFlipbookRender::Play(const wstring& _Category, int _FlipbookIdx, float _FP
     m_CurSelectedCategory = _Category;
     m_vecCurSelectedCategoryFlipbooks = &m_mapCategoryFlipbooks[_Category];
     
-    const vector<Ptr<AFlipbook>>& vecCurSelectedCategoryFlipbooks = *m_vecCurSelectedCategoryFlipbooks;
+    return Play(_FlipbookIdx, _FPS, _RepeatCount, _bPlayReverse);
+}
+
+bool CFlipbookRender::Stop()
+{
+    // 현재 카테고리가 지정되어 있지 않은 상황
+    if (!m_vecCurSelectedCategoryFlipbooks) return false;
+    if (m_CurSelectedFlipbookIdx >= m_vecCurSelectedCategoryFlipbooks->size()) return false;
     
-    if (_FlipbookIdx < 0 || _FlipbookIdx >= vecCurSelectedCategoryFlipbooks.size())
-        return false;
-        
-    m_CurSelectedFlipbookIdx    = _FlipbookIdx;
-    m_CurAnimatingSpriteIdx     = 0;
-    m_RepeatCount               = _RepeatCount;
-    m_FPS                       = _FPS;
-    m_AccTime                   = 0.f;
-    m_Finish                    = false;
+    Ptr<AFlipbook> TargetFlipbook = m_vecCurSelectedCategoryFlipbooks->at(m_CurSelectedFlipbookIdx);
+
+    // 나머지 데이터 초기화
+    m_CurAnimatingSpriteIdx = m_bPlayReverse ? 0 : TargetFlipbook->GetSpriteCount() - 1; // 처음 지점으로 돌리기
     
-    return true;
+    m_RepeatCount       = 0;
+    m_bCurCycleFinished = false;
+    m_FrameTimer        = 0.f;
+    m_bStopped          = true;
 }
 
 bool CFlipbookRender::SetFlipbook(const wstring& _Category, int _Idx, const Ptr<AFlipbook>& _Flipbook)
@@ -213,7 +274,7 @@ bool CFlipbookRender::RemoveFlipbook(const wstring& _Category, int _Idx)
     {
         m_CurSelectedFlipbookIdx = 0;
         m_CurAnimatingSpriteIdx = 0;
-        m_Finish = false;
+        m_bCurCycleFinished = false;
         return true;
     }
 
@@ -221,7 +282,7 @@ bool CFlipbookRender::RemoveFlipbook(const wstring& _Category, int _Idx)
     {
         m_CurSelectedFlipbookIdx = min(_Idx, vecFlipbooks.size() - 1);
         m_CurAnimatingSpriteIdx = 0;
-        m_Finish = false;
+        m_bCurCycleFinished = false;
     }
     else if (m_CurSelectedFlipbookIdx > _Idx)
         --m_CurSelectedFlipbookIdx;
