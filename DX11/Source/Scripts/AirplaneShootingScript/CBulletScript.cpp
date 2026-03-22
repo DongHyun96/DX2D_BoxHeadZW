@@ -29,7 +29,7 @@ void CBulletScript::Begin()
 
 void CBulletScript::Tick()
 {
-    if (!m_Owner->GetIsActive()) return;
+    if (!GetOwner()->GetIsActive()) return;
 
     m_TimeAfterSpawned += DT;
     
@@ -56,7 +56,7 @@ void CBulletScript::Tick()
     if (m_TimeAfterSpawned > 10.f)
     {
         m_TimeAfterSpawned = 0.f;
-        m_Owner->SetIsActive(false);
+        GetOwner()->SetIsActive(false);
     }
     
     // Border check
@@ -92,9 +92,9 @@ void CBulletScript::LoadFromLevelFile(FILE* _File)
 
 bool CBulletScript::Fire(const Vec3& _StartPosition, const Vec3& _FireDirection, float _Speed)
 {
-    if (m_Owner->GetIsActive()) return false;
+    if (GetOwner()->GetIsActive()) return false;
 
-    m_Owner->SetIsActive(true);
+    GetOwner()->SetIsActive(true);
     Transform()->SetRelativePos(_StartPosition);
 
     float zRot = atan2f(_FireDirection.y, _FireDirection.x);

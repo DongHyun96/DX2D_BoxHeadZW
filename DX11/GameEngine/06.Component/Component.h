@@ -12,7 +12,7 @@ class Component : public Entity
 
 	friend class GameObject;
 
-protected:
+private:
 
 	const COMPONENT_TYPE m_Type; // 컴포넌트 타입
 

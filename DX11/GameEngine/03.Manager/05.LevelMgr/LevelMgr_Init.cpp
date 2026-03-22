@@ -218,7 +218,6 @@ void LevelMgr::CreateTestLevel()
     //pChild->AddChild(pChild2);
     
     PlayerObject->AddChild(SpotLight);
-    PlayerObject->GetScriptComponent<CPlayerScript>()->SetSpotLight(SpotLight->Light2D().Get());
 
     // pLevel->AddObject(0, pChild);
     

@@ -41,6 +41,6 @@ void CScript::Destroy()
     TaskInfo info = {};
     
     info.Type       = TASK_TYPE::DESTROY_OBJECT;
-    info.Param_0    = reinterpret_cast<DWORD_PTR>(m_Owner);
+    info.Param_0    = reinterpret_cast<DWORD_PTR>(GetOwner());
     TaskMgr::GetInst()->AddTask(info);
 }

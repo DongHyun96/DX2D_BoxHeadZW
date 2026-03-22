@@ -274,7 +274,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\03.Manager\01.PathMgr\PathMgr.h" />
     <ClInclude Include="GameEngine\03.Manager\02.TimeMgr\TimeMgr.h" />
     <ClInclude Include="Module\Util.h" />
-    <ClInclude Include="Source\enum\enum.h" />
+    <ClInclude Include="Source\Manager\GameManager.h" />
     <ClInclude Include="Source\ScriptMgr.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBackgroundScript.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.h" />
@@ -282,6 +282,8 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\CCamMoveScript.h" />
     <ClInclude Include="Source\Scripts\CMonsterScript.h" />
     <ClInclude Include="Source\Scripts\CPlayerScript.h" />
+    <ClInclude Include="Source\UserHeader\define.h" />
+    <ClInclude Include="Source\UserHeader\enum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine\02.Device\ConstBuffer\ConstBuffer.cpp" />
@@ -846,6 +848,7 @@ CodeGen.exe</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="GameEngine\03.Manager\02.TimeMgr\TimeMgr.cpp" />
+    <ClCompile Include="Source\Manager\GameManager.cpp" />
     <ClCompile Include="Source\ScriptMgr.cpp" />
     <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBackgroundScript.cpp" />
     <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.cpp" />
