@@ -4,13 +4,13 @@
 /// </summary>
 enum class EDirection
 {
-    RIGHT,
-    RIGHT_UP,
-    UP,
-    UP_LEFT,
-    LEFT,
-    LEFT_DOWN,
-    DOWN,
-    DOWN_RIGHT,
-    END
+    RIGHT,      // 1
+    RIGHT_UP,   // 2
+    UP,         // 3
+    UP_LEFT,    // 4
+    LEFT,       // 5
+    LEFT_DOWN,  // 6
+    DOWN,       // 7
+    DOWN_RIGHT, // 8
+    END     
 };

@@ -55,7 +55,7 @@ void ContentUI::ChangeAssetNameTick()
                 return;
             }
 
-            const wstring FileName = asset->GetKey().empty() ? L"UnNamed" : GetFileName(asset->GetKey()); 
+            const wstring FileName = asset->GetKey().empty() ? L"UnNamed" : GetFileNameWithoutExtension(asset->GetKey()); 
             const string FileNameStr = string(FileName.begin(), FileName.end());
 
             memset(m_RenameBuf, 0, sizeof(m_RenameBuf));
