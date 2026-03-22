@@ -36,7 +36,7 @@ private:
 private:
     
     void ChangeAssetNameTick();
-    void DeleteAssetTick();
+    // void DeleteAssetTick();
     
     /// <summary> RenameModeEnd 처리 반복 코드 </summary> 
     void RenameModeEndBoilerPlate();
@@ -60,8 +60,10 @@ private:
     
     
 
-private:
+    /* Delete 처리 관련 (Not in used) */
     
+private:
+    /*
     void OnDeleteKeyPressed(const vector<Ptr<Asset>>& _Assets);
     
     void OnDeleteSelectionConfirm(bool _Yes);
@@ -87,5 +89,6 @@ private:
 
     string BuildDeleteConfirmText() const;
     string BuildReferencerConfirmText(const Ptr<Asset>& _Target, const vector<wstring>& _Refs) const;
+    */
     
 };

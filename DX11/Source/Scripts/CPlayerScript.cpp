@@ -31,7 +31,7 @@ void CPlayerScript::Init()
 void CPlayerScript::Begin()
 {
     if (GetOwner()->FlipbookRender())
-        GetOwner()->FlipbookRender()->Play(0, 10.f, 5);
+        GetOwner()->FlipbookRender()->Play(L"UnArmed", 0, 10.f, -1);
 }
 
 void CPlayerScript::Tick()

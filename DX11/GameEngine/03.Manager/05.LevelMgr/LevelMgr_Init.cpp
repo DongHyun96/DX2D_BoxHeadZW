@@ -170,12 +170,12 @@ void LevelMgr::CreateTestLevel()
 
     // PlayerObject->SpriteRender()->SetSprite(FIND_ASSET(ASprite, L"LinkSprite"));
     
-    PlayerObject->FlipbookRender()->AddFlipbook(LOAD_ASSET(AFlipbook, L"Flipbook\\Link_MoveDown.flip"));
-    PlayerObject->FlipbookRender()->AddFlipbook(LOAD_ASSET(AFlipbook, L"Flipbook\\Link_MoveUp.flip"));
-    PlayerObject->FlipbookRender()->AddFlipbook(LOAD_ASSET(AFlipbook, L"Flipbook\\Link_MoveLeft.flip"));
-    PlayerObject->FlipbookRender()->AddFlipbook(LOAD_ASSET(AFlipbook, L"Flipbook\\Link_MoveRight.flip"));
+    PlayerObject->FlipbookRender()->AddFlipbook(L"Default", LOAD_ASSET(AFlipbook, L"Flipbook\\Link_MoveDown.flip"));
+    PlayerObject->FlipbookRender()->AddFlipbook(L"Default", LOAD_ASSET(AFlipbook, L"Flipbook\\Link_MoveUp.flip"));
+    PlayerObject->FlipbookRender()->AddFlipbook(L"Default", LOAD_ASSET(AFlipbook, L"Flipbook\\Link_MoveLeft.flip"));
+    PlayerObject->FlipbookRender()->AddFlipbook(L"Default", LOAD_ASSET(AFlipbook, L"Flipbook\\Link_MoveRight.flip"));
     
-    PlayerObject->FlipbookRender()->Play(0, 10.f, 5);
+    PlayerObject->FlipbookRender()->Play(L"Default",0, 10.f, 5);
     //PlayerObject->MeshRender()->SetMesh(AssetMgr::GetInst()->Find<AMesh>(L"RectMesh"));
     //PlayerObject->MeshRender()->SetMaterial(AssetMgr::GetInst()->Find<AMaterial>(L"Std2DMtrl"));
     

@@ -4,6 +4,19 @@
 class FlipbookRenderUI : public RenderUI
 {
 private:
+    
+    wstring m_CurSelectedCategory{}; // FlipbookRenderUI 내에서 사용할 SelectedCategory 정보
+    
+private:
+    
+    char m_NewCategoryNameBuf[128]{};
+    
+private:
+    
+    
+    
+private: // 현재 선택된 Category 내에서의 Flipbook vector 관련 데이터
+    
     int         m_SelectedFlipbookIdx = -1;
 
     bool        m_PreviewPlaying    = true;
@@ -19,11 +32,25 @@ public:
 
 public:
     virtual void Tick_UI() override;
+    
+private:
+    
 
 private:
+    
+    void TickSelectCategory(const Ptr<CFlipbookRender>& _FlipbookRender);
+    
+    void TickAddNewCategory(const Ptr<CFlipbookRender>& _FlipbookRender);
+    void TickRemoveCategory(const Ptr<CFlipbookRender>& _FlipbookRender);
+    
+    
     void TryAppendFromPayload(const ImGuiPayload* _Payload, const Ptr<CFlipbookRender>& _FlipbookRender);
     void DrawFlipbookList(const Ptr<CFlipbookRender>& _FlipbookRender);
     void DrawPreviewSection(const Ptr<CFlipbookRender>& _FlipbookRender);
     void DrawSpritePreview(const Ptr<ASprite>& _Sprite, float _MaxPreviewSize);
+    
+private:
+    
+    void OnRemoveCategoryConfirmed(bool _Yes);
     
 };

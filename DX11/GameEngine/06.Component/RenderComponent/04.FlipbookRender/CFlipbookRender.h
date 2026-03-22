@@ -10,9 +10,16 @@ class CFlipbookRender : public CRenderComponent
     
 private:
 
-    vector<Ptr<AFlipbook>> m_vecFlipbook{};
-    // Ptr<AFlipbook>  m_Flipbook{};
+    // 카테고리 이름, Flipbook 벡터 형식의 자료구조로 Flipbook 저장
+    map<wstring, vector<Ptr<AFlipbook>>> m_mapCategoryFlipbooks{};
 
+private:
+    
+    wstring                 m_CurSelectedCategory{};             // null 문자열일 경우, 선택된 카테고리가 존재하지 않음
+    vector<Ptr<AFlipbook>>* m_vecCurSelectedCategoryFlipbooks{}; // 현재 선택된 카테고리의 Flipbook 집합 
+    
+private: // 현재 선택된 플립북 내에서의 Anim Data
+    
     int             m_CurSelectedFlipbookIdx{};  
     int             m_CurAnimatingSpriteIdx{}; // 현재 재생중인 Flipbook 내에서 재생중인 프레임 Sprite index
 
@@ -20,8 +27,8 @@ private:
     bool            m_Repeat{};
     bool            m_Finish{};
     
-    float           m_FPS{}; // 1초당 보여줄 프레임수
-    float           m_AccTime{}; // 1프레임 보여준 누적시간    
+    float           m_FPS{};        // 1초당 보여줄 프레임수
+    float           m_AccTime{};    // 1프레임 보여준 누적시간    
     
 public:
     
@@ -45,43 +52,53 @@ private:
 public:
 
     // SET(Ptr<AFlipbook>, Flipbook)
-    
-    void Play(int _FlipbookIdx, float _FPS, int _RepeatCount);
+
+    /// <summary>
+    /// 카테고리 지정 처리 하면서 특정 Flipbook Animation Play 시작
+    /// </summary>
+    /// <param name="_Category"> : Flipbook 카테고리 </param>
+    /// <param name="_FlipbookIdx"> : 카테고리 내에서의 Flipbook Idx 고르기</param>
+    /// <param name="_FPS"></param>
+    /// <param name="_RepeatCount"></param>
+    /// <returns> : 제대로 Play 되지 않았다면 return false </returns>
+    bool Play(const wstring& _Category, int _FlipbookIdx, float _FPS, int _RepeatCount);
     
     // TODO : 추후, Sprite 한 장면만 보여주기식 함수도 추가하면 편할듯?
 
-    void SetFlipbook(int _Idx, const Ptr<AFlipbook>& _Flipbook);
+    bool SetFlipbook(const wstring& _Category, int _Idx, const Ptr<AFlipbook>& _Flipbook);
     
-    void AddFlipbook(const Ptr<AFlipbook>& _Flipbook)
-    {
-        if (_Flipbook) m_vecFlipbook.push_back(_Flipbook);
-    }
+    bool AddFlipbook(const wstring& _Category, const Ptr<AFlipbook>& _Flipbook);
 
 public:
     
-    UINT GetFlipbookCount() const { return m_vecFlipbook.size(); }
+    UINT GetCategoryFlipbookCount(const wstring& _Category);
     
-    Ptr<AFlipbook> GetFlipbook(int _Idx) const
-    {
-        return _Idx < 0 || _Idx >= m_vecFlipbook.size() ? nullptr : m_vecFlipbook[_Idx];
-    }
+    Ptr<AFlipbook> GetFlipbook(const wstring& _Category, int _Idx);
+    
+    wstring GetCurSelectedCategory() const { return m_CurSelectedCategory; }
 
 public:
     
     /// <summary>
-    /// 해당 Idx의 Flipbook 제거
+    /// 카테고리 내에서 해당 Idx의 Flipbook 제거
     /// </summary>
     /// <remarks> : 제대로 제거되었다면 return true </remarks>
-    bool RemoveFlipbook(int _Idx);
+    bool RemoveFlipbook(const wstring& _Category, int _Idx);
 
     /// <summary>
     /// 해당 Flipbook 객체를 들고 있다면 제거
     /// </summary>
-    /// <param name="_Flipbook"></param>
     /// <returns> : 제대로 제거되었다면 return true </returns>
-    bool RemoveFlipbook(const Ptr<AFlipbook>& _Flipbook);
-    
-    bool SwapFlipbook(int _A, int _B);
+    bool RemoveFlipbook(const wstring& _Category, const Ptr<AFlipbook>& _Flipbook);
+
+    /// <summary>
+    /// 카테고리 내에서의 Flipbook Swap 처리
+    /// </summary>
+    /// <param name="_Category"></param>
+    /// <param name="_A"></param>
+    /// <param name="_B"></param>
+    /// <returns></returns>
+    bool SwapFlipbook(const wstring& _Category, int _A, int _B);
     
 public:
     

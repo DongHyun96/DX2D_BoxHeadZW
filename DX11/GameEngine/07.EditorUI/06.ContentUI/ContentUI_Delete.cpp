@@ -10,6 +10,7 @@
 #include "GameEngine/07.EditorUI/10.ConfirmUI/ConfirmUI.h"
 #include "Source/ScriptMgr.h"
 
+/*
 namespace
 {
     string ToNarrow(const wstring& _W)
@@ -461,7 +462,7 @@ int ContentUI::ClearReferencesFromAsset(const Ptr<Asset>& _Owner, const Ptr<Asse
         {
             mtrl->SetShader(nullptr);
             ++cleared;
-        }*/
+        }#1#
 
         if (targetTex)
         {
@@ -694,4 +695,5 @@ string ContentUI::BuildReferencerConfirmText(const Ptr<Asset>& _Target, const ve
 
     return msg;
 }
+*/
 

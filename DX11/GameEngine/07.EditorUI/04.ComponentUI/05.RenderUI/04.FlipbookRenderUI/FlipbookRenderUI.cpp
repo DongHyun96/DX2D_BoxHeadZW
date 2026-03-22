@@ -2,8 +2,10 @@
 #include "FlipbookRenderUI.h"
 
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
+#include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
 #include "GameEngine/06.Component/RenderComponent/04.FlipbookRender/CFlipbookRender.h"
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
+#include "GameEngine/07.EditorUI/10.ConfirmUI/ConfirmUI.h"
 
 FlipbookRenderUI::FlipbookRenderUI()
     : RenderUI(COMPONENT_TYPE::FLIPBOOK_RENDER, "FlipbookRenderUI")
@@ -21,12 +23,26 @@ void FlipbookRenderUI::Tick_UI()
 
     Ptr<CFlipbookRender> flipbookRender = GetTargetObject()->FlipbookRender();
 
+
+    TickSelectCategory(flipbookRender);
+    TickAddNewCategory(flipbookRender);
+    TickRemoveCategory(flipbookRender);
+
+    ImGui::Separator(); ImGui::Separator(); ImGui::Separator();
+    
+    // 아무 카테고리도 없는 Flipbook Renderer
+    if (flipbookRender->m_mapCategoryFlipbooks.empty()) return;
+    
+    // 현재 선택된 카테고리가 없는 경우
+    if (m_CurSelectedCategory.empty()) return;
+    
     ImGui::Separator();
-    ImGui::Text("Flipbook List");
+    string Temp = string(m_CurSelectedCategory.begin(), m_CurSelectedCategory.end()) + " : Flipbook List ";
+    ImGui::Text(Temp.c_str());
 
     // 오브젝트 CFlipbookRender에 실질적으로 Setting된 FlipbookIdx
-    ImGui::BeginDisabled(flipbookRender->GetFlipbookCount() <= 0);
-    ImGui::SliderInt("Selected Flipbook Idx", &flipbookRender->m_CurSelectedFlipbookIdx, -1, flipbookRender->GetFlipbookCount() - 1);
+    ImGui::BeginDisabled(flipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory) <= 0);
+    ImGui::SliderInt("Selected Flipbook Idx", &flipbookRender->m_CurSelectedFlipbookIdx, -1, flipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory) - 1);
     ImGui::EndDisabled();
 
     ImGui::Button("Drop Flipbook To Append", ImVec2(240.f, 36.f));
@@ -44,11 +60,98 @@ void FlipbookRenderUI::Tick_UI()
     DrawPreviewSection(flipbookRender);
 }
 
+void FlipbookRenderUI::TickSelectCategory(const Ptr<CFlipbookRender>& _FlipbookRender)
+{
+    ImGui::SetNextItemOpen(false, ImGuiCond_FirstUseEver);
+    if (ImGui::CollapsingHeader("Current Category", ImGuiTreeNodeFlags_None))
+    {
+        string CategoryTitleName    = "<CATEGORY>";
+        float windowWidth           = ImGui::GetWindowSize().x;
+        float textWidth             = ImGui::CalcTextSize(CategoryTitleName.c_str()).x;
+        
+        ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+        ImGui::Text(CategoryTitleName.c_str());
+
+        //Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
+        //const int curLayer = m_TargetObject->GetLayerIdx();
+        
+
+        if (ImGui::BeginTable("##Category", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
+        {
+            for (auto it = _FlipbookRender->m_mapCategoryFlipbooks.begin(); it != _FlipbookRender->m_mapCategoryFlipbooks.end(); ++it)
+            {
+                wstring Name = it->first;
+                string strCategoryName = string(Name.begin(), Name.end());
+
+                ImGui::TableNextColumn();
+
+                const string CurSelectedStr = string(m_CurSelectedCategory.begin(), m_CurSelectedCategory.end()); 
+                
+                const bool selected = CurSelectedStr == strCategoryName;
+                
+                if (ImGui::Selectable(strCategoryName.c_str(), selected))
+                    m_CurSelectedCategory = wstring(strCategoryName.begin(), strCategoryName.end());
+            }
+
+            ImGui::EndTable();
+        }
+    }
+}
+
+void FlipbookRenderUI::TickAddNewCategory(const Ptr<CFlipbookRender>& _FlipbookRender)
+{
+    ImGui::SetNextItemWidth(400.0f);
+    ImGui::InputText("New Category", m_NewCategoryNameBuf, IM_ARRAYSIZE(m_NewCategoryNameBuf));
+    ImGui::SameLine();
+
+    if (!ImGui::Button("Add Category"))
+        return;
+
+    string newName = m_NewCategoryNameBuf;
+    if (newName.empty())
+        return;
+
+    wstring newWName(newName.begin(), newName.end());
+
+    // 이미 있는 이름이라면 처리 x
+    if (_FlipbookRender->m_mapCategoryFlipbooks.contains(newWName))
+    {
+        m_NewCategoryNameBuf[0] = '\0';
+        return;
+    }
+    
+    // 공백 문자열이라면 처리 x
+    if (m_NewCategoryNameBuf[0] == '\0') return;
+
+    // 신규 카테고리 생성
+    _FlipbookRender->m_mapCategoryFlipbooks.insert(make_pair(newWName, vector<Ptr<AFlipbook>>{}));
+    m_NewCategoryNameBuf[0] = '\0';
+}
+
+void FlipbookRenderUI::TickRemoveCategory(const Ptr<CFlipbookRender>& _FlipbookRender)
+{
+    const bool canRemove = !m_CurSelectedCategory.empty() && _FlipbookRender->m_mapCategoryFlipbooks.contains(m_CurSelectedCategory);
+
+    ImGui::BeginDisabled(!canRemove);
+
+    if (ImGui::Button("Remove Selected Category"))
+    {
+        Ptr<ConfirmUI> pUI = dynamic_cast<ConfirmUI*>(EditorMgr::GetInst()->FindUI("ConfirmUI").Get());
+        assert(pUI.Get());
+
+        pUI->SetWarningText("Are you sure you want to remove this selected Category?");
+        pUI->AddDelegate(this, static_cast<DELEGATE_BOOL>(&FlipbookRenderUI::OnRemoveCategoryConfirmed));
+        pUI->SetActive(true);
+    }
+
+    ImGui::EndDisabled();
+}
+
 void FlipbookRenderUI::TryAppendFromPayload(const ImGuiPayload* _Payload, const Ptr<CFlipbookRender>& _FlipbookRender)
 {
     if (!_Payload || !_FlipbookRender) return;
 
-    const int prevCount = static_cast<int>(_FlipbookRender->GetFlipbookCount());
+    const int prevCount = _FlipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory);
     int added = 0;
 
     auto TryAddOne = [&](DWORD_PTR _RawData)
@@ -56,7 +159,7 @@ void FlipbookRenderUI::TryAppendFromPayload(const ImGuiPayload* _Payload, const 
         Ptr<Asset> asset = reinterpret_cast<Asset*>(_RawData);
         if (asset && asset->GetType() == ASSET_TYPE::FLIPBOOK)
         {
-            _FlipbookRender->AddFlipbook(static_cast<AFlipbook*>(asset.Get()));
+            _FlipbookRender->AddFlipbook(m_CurSelectedCategory, static_cast<AFlipbook*>(asset.Get()));
             ++added;
         }
     };
@@ -81,7 +184,7 @@ void FlipbookRenderUI::TryAppendFromPayload(const ImGuiPayload* _Payload, const 
 
 void FlipbookRenderUI::DrawFlipbookList(const Ptr<CFlipbookRender>& _FlipbookRender)
 {
-    const int count = static_cast<int>(_FlipbookRender->GetFlipbookCount());
+    const int count = _FlipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory);
 
     if (count <= 0)
     {
@@ -109,7 +212,7 @@ void FlipbookRenderUI::DrawFlipbookList(const Ptr<CFlipbookRender>& _FlipbookRen
 
         for (int i = 0; i < count; ++i)
         {
-            Ptr<AFlipbook> flipbook = _FlipbookRender->GetFlipbook(i);
+            Ptr<AFlipbook> flipbook = _FlipbookRender->GetFlipbook(m_CurSelectedCategory, i);
             string key = flipbook ? string(flipbook->GetKey().begin(), flipbook->GetKey().end()) : "None";
 
             ImGui::PushID(i);
@@ -157,16 +260,16 @@ void FlipbookRenderUI::DrawFlipbookList(const Ptr<CFlipbookRender>& _FlipbookRen
 
     if (swapA != -1 && swapB != -1)
     {
-        if (_FlipbookRender->SwapFlipbook(swapA, swapB))
+        if (_FlipbookRender->SwapFlipbook(m_CurSelectedCategory, swapA, swapB))
         {
             if (m_SelectedFlipbookIdx == swapA) m_SelectedFlipbookIdx = swapB;
             else if (m_SelectedFlipbookIdx == swapB) m_SelectedFlipbookIdx = swapA;
         }
     }
 
-    if (removeIndex != -1 && _FlipbookRender->RemoveFlipbook(removeIndex))
+    if (removeIndex != -1 && _FlipbookRender->RemoveFlipbook(m_CurSelectedCategory, removeIndex))
     {
-        const int newCount = static_cast<int>(_FlipbookRender->GetFlipbookCount());
+        const int newCount = _FlipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory);
 
         if (newCount <= 0)
         {
@@ -186,7 +289,7 @@ void FlipbookRenderUI::DrawPreviewSection(const Ptr<CFlipbookRender>& _FlipbookR
 {
     ImGui::Text("Preview");
 
-    const int count = static_cast<int>(_FlipbookRender->GetFlipbookCount());
+    const int count = _FlipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory);
     if (count <= 0)
     {
         ImGui::Text("No Flipbook");
@@ -196,7 +299,7 @@ void FlipbookRenderUI::DrawPreviewSection(const Ptr<CFlipbookRender>& _FlipbookR
     if (m_SelectedFlipbookIdx < 0 || m_SelectedFlipbookIdx >= count)
         m_SelectedFlipbookIdx = 0;
 
-    Ptr<AFlipbook> flipbook = _FlipbookRender->GetFlipbook(m_SelectedFlipbookIdx);
+    Ptr<AFlipbook> flipbook = _FlipbookRender->GetFlipbook(m_CurSelectedCategory, m_SelectedFlipbookIdx);
     if (!flipbook)
     {
         ImGui::Text("Selected Flipbook is None");
@@ -325,4 +428,20 @@ void FlipbookRenderUI::DrawSpritePreview(const Ptr<ASprite>& _Sprite, float _Max
         Vec2(uv1.x, uv1.y),
         ImVec4(0.f, 0.f, 0.f, 1.f)
     );
+}
+
+void FlipbookRenderUI::OnRemoveCategoryConfirmed(bool _Yes)
+{
+    if (!_Yes) return;
+    
+    Ptr<CFlipbookRender> FlipbookRender = GetTargetObject()->FlipbookRender();
+    
+    FlipbookRender->m_mapCategoryFlipbooks.erase(m_CurSelectedCategory);
+
+    if (FlipbookRender->m_mapCategoryFlipbooks.empty()) m_CurSelectedCategory.clear();
+    else
+    {
+        auto it = FlipbookRender->m_mapCategoryFlipbooks.begin();
+        m_CurSelectedCategory = it->first;
+    }    
 }
