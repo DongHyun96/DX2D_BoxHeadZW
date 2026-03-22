@@ -20,7 +20,15 @@ public:
     void Tick_UI() override;
 
 private:
-    void DrawSpritePreview(const Ptr<ASprite>& _Sprite, float _MaxPreviewSize);
+    
+    /// <returns> : 수정된 Current Zoom Factor </returns>
+    float DrawSpritePreview
+    (
+        const Ptr<ASprite>& _Sprite,
+        float               _MaxPreviewSize,
+        bool                _EnableZoom = false,
+        float               _CurrentZoomFactor = 1.f
+    );
     
     void DrawPreviewSection(const Ptr<AFlipbook>& _Flipbook);
     

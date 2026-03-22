@@ -47,19 +47,25 @@ void FlipbookUI::Tick_UI()
     SaveButton();
 }
 
-void FlipbookUI::DrawSpritePreview(const Ptr<ASprite>& _Sprite, float _MaxPreviewSize)
+float FlipbookUI::DrawSpritePreview
+(
+    const Ptr<ASprite>& _Sprite,
+    float               _MaxPreviewSize,
+    bool                _EnableZoom,
+    float               _CurrentZoomFactor    
+)
 {
     if (!_Sprite)
     {
         ImGui::Text("Empty");
-        return;
+        return _CurrentZoomFactor;
     }
 
     Ptr<ATexture> pAtlas = _Sprite->GetAtlas();
     if (!pAtlas)
     {
         ImGui::Text("No Atlas");
-        return;
+        return _CurrentZoomFactor;
     }
 
     Vec2 LeftTopUV   = _Sprite->GetLeftTopUV();
@@ -80,20 +86,30 @@ void FlipbookUI::DrawSpritePreview(const Ptr<ASprite>& _Sprite, float _MaxPrevie
     if (PreviewW <= 0.f || PreviewH <= 0.f)
     {
         ImGui::Text("Invalid UV");
-        return;
+        return _CurrentZoomFactor;
     }
 
     const float MaxDim = max(PreviewW, PreviewH);
     const float Scale = (MaxDim > _MaxPreviewSize) ? (_MaxPreviewSize / MaxDim) : 1.f;
-
+    
+    ImVec2 ImageSize{};
+    if (_EnableZoom)
+    {
+        ImGui::SliderFloat("ZoomFactor##Slider", &_CurrentZoomFactor, 0.1f, 10.0f, "%.1f");
+        ImageSize = ImVec2(PreviewW * Scale * _CurrentZoomFactor, PreviewH * Scale * _CurrentZoomFactor);
+    }
+    else ImageSize = ImVec2(PreviewW * Scale, PreviewH * Scale);
+    
     ImGui::ImageWithBg
     (
         pAtlas->GetSRV().Get(),
-        ImVec2(PreviewW * Scale, PreviewH * Scale),
+        ImageSize,
         Vec2(UV0.x, UV0.y),
         Vec2(UV1.x, UV1.y),
         ImVec4(0.0f, 0.0f, 0.0f, 1.0f)
     );
+    
+    return _CurrentZoomFactor;
 }
 
 void FlipbookUI::DrawPreviewSection(const Ptr<AFlipbook>& _Flipbook)
@@ -173,7 +189,10 @@ void FlipbookUI::DrawPreviewSection(const Ptr<AFlipbook>& _Flipbook)
 
 
     ImGui::Text("Frame %d / %d", m_PreviewCurFrame, spriteCount - 1);
-    DrawSpritePreview(_Flipbook->GetSprite(m_PreviewCurFrame), 200.f);
+    static float ZoomFactor = 1.f;
+    ImGui::PushID("PreviewSection");
+    ZoomFactor = DrawSpritePreview(_Flipbook->GetSprite(m_PreviewCurFrame), 200.f, true, ZoomFactor);
+    ImGui::PopID();
 
     ImGui::Separator();
 }
@@ -345,7 +364,10 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
     ImGui::SameLine(120);
     ImGui::InputText("##EditSpriteKey", editKeyStr.data(), editKeyStr.length() + 1, ImGuiInputTextFlags_ReadOnly);
 
-    DrawSpritePreview(pEditSprite, 200.f);
+    static float ZoomFactor = 1.f;
+    ImGui::PushID("UVEditorSection");
+    ZoomFactor = DrawSpritePreview(pEditSprite, 200.f, true, ZoomFactor);
+    ImGui::PopID();
 
     ImGui::BeginDisabled(!isAtlas);
     {
@@ -402,6 +424,10 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
 
     if (ImGui::Button("Save Sprite"))
         pEditSprite->SaveBySelfRelativePath();
+    
+    ImGui::SameLine(200);
+    if (ImGui::Button("Close Edit UV"))
+        m_SelectedSpriteIdx = -1;
 }
 
 void FlipbookUI::DrawAppendSection(const Ptr<AFlipbook>& _Flipbook)

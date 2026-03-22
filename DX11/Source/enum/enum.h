@@ -1,4 +1,7 @@
 ﻿
+/// <summary>
+/// Eight Directions
+/// </summary>
 enum class EDirection
 {
     RIGHT,
