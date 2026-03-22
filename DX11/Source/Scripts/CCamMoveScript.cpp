@@ -7,6 +7,7 @@
 #include "GameEngine/05.GameObject/GameObject.h"
 #include "GameEngine/06.Component/01.Transform/CTransform.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
 
 CCamMoveScript::CCamMoveScript()
     : CScript(static_cast<int>(SCRIPT_TYPE::CAMMOVESCRIPT))
@@ -20,7 +21,13 @@ CCamMoveScript::~CCamMoveScript()
 void CCamMoveScript::Tick()
 {
     // CheckTogglingTargetMode();
-    Move();
+    // Move();
+    
+    // 일단은 Player를 무조건 따라가도록 처리
+    float z = Transform()->GetRelativePosZ();
+    const Vec3 PlayerPos = GM->GetPlayerObject()->Transform()->GetRelativePos();
+    const Vec3 CamPos = {PlayerPos.x, PlayerPos.y, z}; 
+    Transform()->SetRelativePos(CamPos);
 }
 
 void CCamMoveScript::MoveOrthographic()
