@@ -20,10 +20,22 @@ FlipbookRenderUI::~FlipbookRenderUI()
 void FlipbookRenderUI::Tick_UI()
 {
     RenderUI::Tick_UI();
+    
 
     Ptr<CFlipbookRender> flipbookRender = GetTargetObject()->FlipbookRender();
-
-    TickSelectingLevelBeginningInfo(flipbookRender);
+    
+    // Preview에서 고른 정보를 토대로 Level의 캐릭터 멈춘 상태로 보여주기
+    flipbookRender->Stop(m_CurSelectedCategory, m_SelectedFlipbookIdx);
+    
+    // TickSelectingLevelBeginningInfo(flipbookRender);
+    if (ImGui::Button("Save Current Transform to selected AFlipbook"))
+    {
+        if (Ptr<AFlipbook> TargetFlipbook = flipbookRender->GetFlipbook(m_CurSelectedCategory, m_SelectedFlipbookIdx))
+        {
+            TargetFlipbook->SetRenderOffset(flipbookRender->GetRenderOffset());
+            TargetFlipbook->SetRenderScale(flipbookRender->GetRenderScale());
+        }
+    }
 
     ImGui::Separator(); ImGui::Separator(); ImGui::Separator();
     
@@ -33,34 +45,7 @@ void FlipbookRenderUI::Tick_UI()
 
     ImGui::Separator(); ImGui::Separator(); ImGui::Separator();
     
-    // 아무 카테고리도 없는 Flipbook Renderer
-    if (flipbookRender->m_mapCategoryFlipbooks.empty()) return;
-    
-    // 현재 선택된 카테고리가 없는 경우
-    if (m_CurSelectedCategory.empty()) return;
-    
-    ImGui::Separator();
-    string Temp = string(m_CurSelectedCategory.begin(), m_CurSelectedCategory.end()) + " : Flipbook List ";
-    ImGui::Text(Temp.c_str());
-
-    // 오브젝트 CFlipbookRender에 실질적으로 Setting된 FlipbookIdx
-    ImGui::BeginDisabled(flipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory) <= 0);
-    ImGui::SliderInt("Selected Flipbook Idx", &flipbookRender->m_CurSelectedFlipbookIdx, -1, flipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory) - 1);
-    ImGui::EndDisabled();
-
-    ImGui::Button("Drop Flipbook To Append", ImVec2(240.f, 36.f));
-    if (ImGui::BeginDragDropTarget())
-    {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Content"))
-            TryAppendFromPayload(payload, flipbookRender);
-        ImGui::EndDragDropTarget();
-    }
-
-    DrawFlipbookList(flipbookRender);
-
-    ImGui::Spacing();
-    ImGui::Separator();
-    DrawPreviewSection(flipbookRender);
+    TickPreview(flipbookRender);
 }
 
 void FlipbookRenderUI::TickSelectingLevelBeginningInfo(const Ptr<CFlipbookRender>& _FlipbookRender)
@@ -100,10 +85,39 @@ void FlipbookRenderUI::TickSelectingLevelBeginningInfo(const Ptr<CFlipbookRender
         }
     }
     
-    // 고른 Flipbook의 RenderOffset과 RenderScale 조정
-    
-    
     ImGui::SeparatorText("");
+}
+
+void FlipbookRenderUI::TickPreview(const Ptr<CFlipbookRender>& _FlipbookRender)
+{
+    // 아무 카테고리도 없는 Flipbook Renderer
+    if (_FlipbookRender->m_mapCategoryFlipbooks.empty()) return;
+    
+    // 현재 선택된 카테고리가 없는 경우
+    if (m_CurSelectedCategory.empty()) return;
+    
+    ImGui::Separator();
+    string Temp = string(m_CurSelectedCategory.begin(), m_CurSelectedCategory.end()) + " : Flipbook List ";
+    ImGui::Text(Temp.c_str());
+
+    // 오브젝트 C_FlipbookRender에 실질적으로 Setting된 FlipbookIdx
+    ImGui::BeginDisabled(_FlipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory) <= 0);
+    ImGui::SliderInt("Selected Flipbook Idx", &_FlipbookRender->m_CurSelectedFlipbookIdx, -1, _FlipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory) - 1);
+    ImGui::EndDisabled();
+
+    ImGui::Button("Drop Flipbook To Append", ImVec2(240.f, 36.f));
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Content"))
+            TryAppendFromPayload(payload, _FlipbookRender);
+        ImGui::EndDragDropTarget();
+    }
+
+    DrawFlipbookList(_FlipbookRender);
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    DrawPreviewSection(_FlipbookRender);
 }
 
 void FlipbookRenderUI::TickSelectPreviewCategory(const Ptr<CFlipbookRender>& _FlipbookRender)

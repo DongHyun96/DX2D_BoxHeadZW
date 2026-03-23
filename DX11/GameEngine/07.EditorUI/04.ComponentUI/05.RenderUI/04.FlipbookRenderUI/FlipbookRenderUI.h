@@ -39,6 +39,8 @@ private:
     /// 실질적으로 CFlipbookRender에 미리 처음에 세팅될 데이터들 세팅 (Category, 카테고리 내에서의 어떤 플립북을 선택할지 등) 
     /// </summary>
     void TickSelectingLevelBeginningInfo(const Ptr<CFlipbookRender>& _FlipbookRender);
+    
+    void TickPreview(const Ptr<CFlipbookRender>& _FlipbookRender);
 
 private:
     
