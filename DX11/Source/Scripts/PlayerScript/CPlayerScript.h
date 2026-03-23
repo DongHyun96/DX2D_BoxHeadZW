@@ -2,8 +2,15 @@
 
 #include "GameEngine/06.Component/Script/CScript.h"
 
+/// <summary>
+/// Basic Movement 및 MainState Holder 담당
+/// </summary>
 class CPlayerScript : public CScript
 {
+private:
+    
+    PLAYER_HANDSTATE m_HandState{}; // 현재 손에 들고 있는 무기 종류 State
+    
 private:
     
     const float m_MoveSpeedBase     = 500.f;
@@ -26,7 +33,6 @@ public:
 private:
     
     void Move();
-    void UpdateAnimDirection();
     
 private:
     
@@ -38,6 +44,9 @@ private:
 public:
     
     const Vec3& GetVelocity() const { return m_Velocity; }
+    
+    void SetHandState(PLAYER_HANDSTATE _HandState) { m_HandState = _HandState; }
+    PLAYER_HANDSTATE GetHandState() const { return m_HandState; }
     
 public:
     

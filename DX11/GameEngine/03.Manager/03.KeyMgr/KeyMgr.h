@@ -22,6 +22,8 @@ enum class KEY
 	MRB, // 마우스 오른쪽 클릭
 	MMB,
 	
+	NUM_1, NUM_2, NUM_3, NUM_4, NUM_5, NUM_6,
+	
 	LEFT,
 	RIGHT,
 	UP,

@@ -55,24 +55,30 @@ void CPlayerAnimHandler::UpdateWalkingBackward(const Vec2& _PlayerToMousePos)
 
 void CPlayerAnimHandler::UpdateAnimTransition()
 {
+    PLAYER_HANDSTATE CurrentHandState = m_MainPlayerScript->GetHandState();
+    const wstring& AnimCategory = mapPlayerHandStateAnimCategory.at(CurrentHandState); 
+    
     Vec3 CurrentVelocity = m_MainPlayerScript->GetVelocity();
     const int FlipBookIndexByDirection = static_cast<int>(m_AnimDirection);
 
-    if (CurrentVelocity.LengthSquared() == 0.f) // 이동하고 있지 않은 상태ㄴ
+    if (CurrentVelocity.LengthSquared() == 0.f) // 이동하고 있지 않은 상태
     {
         // 해당 방향으로 자연스럽게 멈춤
         // 2번 index가 멈춘 상태의 Sprite 모양
-        FlipbookRender()->Stop(FlipBookIndexByDirection, 2);
+        FlipbookRender()->Stop(AnimCategory, FlipBookIndexByDirection, 2);
         m_PrevAnimDirection = EDIRECTION::END;
         return;
     }
 
     // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
-    if (m_AnimDirection == m_PrevAnimDirection && m_WalkingBackward == m_PrevWalkingBackward) return;
+    if (m_AnimDirection == m_PrevAnimDirection &&
+        m_WalkingBackward == m_PrevWalkingBackward &&
+        CurrentHandState == m_PrevHandState
+        ) return;
 
-    
-    FlipbookRender()->Play(FlipBookIndexByDirection, 12, -1, m_WalkingBackward);
+    FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 12, -1, m_WalkingBackward);
 
-    m_PrevAnimDirection = m_AnimDirection;
-    m_PrevWalkingBackward = m_WalkingBackward;
+    m_PrevAnimDirection     = m_AnimDirection;
+    m_PrevWalkingBackward   = m_WalkingBackward;
+    m_PrevHandState         = CurrentHandState;
 }

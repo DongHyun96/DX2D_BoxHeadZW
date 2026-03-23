@@ -8,6 +8,7 @@
 #include "Source/Scripts/CMonsterScript.h"
 #include "Source/Scripts/PlayerScript\CPlayerAnimHandler.h"
 #include "Source/Scripts/PlayerScript\CPlayerScript.h"
+#include "Source/Scripts/PlayerScript\CPlayerSwapWeapon.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
@@ -18,6 +19,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CMonsterScript");
 	_vec.push_back(L"CPlayerAnimHandler");
 	_vec.push_back(L"CPlayerScript");
+	_vec.push_back(L"CPlayerSwapWeapon");
 }
 
 CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
@@ -36,6 +38,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CPlayerAnimHandler;
 	if (L"CPlayerScript" == _strScriptName)
 		return new CPlayerScript;
+	if (L"CPlayerSwapWeapon" == _strScriptName)
+		return new CPlayerSwapWeapon;
 	return nullptr;
 }
 
@@ -57,6 +61,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CPlayerAnimHandler;
 	case (UINT)SCRIPT_TYPE::PLAYERSCRIPT:
 		return new CPlayerScript;
+	case (UINT)SCRIPT_TYPE::PLAYERSWAPWEAPON:
+		return new CPlayerSwapWeapon;
 	}
 	return nullptr;
 }
@@ -79,6 +85,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CPlayerAnimHandler";
 	case SCRIPT_TYPE::PLAYERSCRIPT:
 		return L"CPlayerScript";
+	case SCRIPT_TYPE::PLAYERSWAPWEAPON:
+		return L"CPlayerSwapWeapon";
 	}
 	return nullptr;
 }

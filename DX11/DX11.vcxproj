@@ -284,6 +284,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\CMonsterScript.h" />
     <ClInclude Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.h" />
     <ClInclude Include="Source\Scripts\PlayerScript\CPlayerScript.h" />
+    <ClInclude Include="Source\Scripts\PlayerScript\CPlayerSwapWeapon.h" />
     <ClInclude Include="Source\UserHeader\userDefine.h" />
     <ClInclude Include="Source\UserHeader\userEnum.h" />
   </ItemGroup>
@@ -1088,6 +1089,7 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Source\Scripts\PlayerScript\CPlayerSwapWeapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Default\DX11.rc" />

@@ -13,8 +13,9 @@ private:
 private: /* Animation FSM에서(UpdateAction) transition 조건에 필요한 변수들 */
 	
     // TODO : 이전 상태까지도 체크를 해서 만약 들어온 Velocity와 State 모두 이전 Tick과 같다면, Anim Play 처리를 한 번더 처리 하면 안됨
-    
-    EDIRECTION m_PrevAnimDirection = EDIRECTION::END;
+
+    PLAYER_HANDSTATE m_PrevHandState    = PLAYER_HANDSTATE::END;
+    EDIRECTION m_PrevAnimDirection      = EDIRECTION::END;
     bool m_PrevWalkingBackward{};
     
 public:

@@ -40,7 +40,6 @@ void CPlayerScript::Begin()
 void CPlayerScript::Tick()
 {
     Move();
-    UpdateAnimDirection();
     HandleRayCast();    
     // MeshRender()->GetMaterial()->SetScalar(INT_0, KEY_PRESSED(KEY::X) ? 1 : 0);
 }
@@ -64,11 +63,6 @@ void CPlayerScript::Move()
     
     Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
     Transform()->SetRelativePos(Pos);
-}
-
-void CPlayerScript::UpdateAnimDirection()
-{
-    
 }
 
 void CPlayerScript::HandleRayCast()
