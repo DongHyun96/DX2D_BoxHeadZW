@@ -71,6 +71,10 @@ HRESULT AFlipbook::Save(const wstring& _FilePath)
         DebugUtil::AddDebugLog(L"[AFlipbook::Save] : Open File failed!");
         return E_FAIL;
     }
+    
+    // 이 Flipbook 전용 RenderOffset 및 RenderScale값 저장
+    fwrite(&m_RenderOffset, sizeof(Vec2), 1, pFile);
+    fwrite(&m_RenderScale, sizeof(Vec2), 1, pFile);
 
     // 몇장의 스프라이트로 구성되었는지 저장
     UINT SpriteCount = m_vecSprite.size();
@@ -96,6 +100,10 @@ HRESULT AFlipbook::Load(const wstring& _FilePath)
         return E_FAIL;
     }
 
+    // 이 Flipbook 전용 RenderOffset 및 RenderScale값 불러오기 (TODO : 저장하고 이 주석 풀기)
+    /*fread(&m_RenderOffset, sizeof(Vec2), 1, pFile);
+    fread(&m_RenderScale, sizeof(Vec2), 1, pFile);*/
+    
     UINT SpriteCount{};
     fread(&SpriteCount, sizeof(UINT), 1, pFile);
 

@@ -26,12 +26,12 @@ void RenderUI::Tick_UI()
 
     ImGui::Text("RenderOffset");
     ImGui::SameLine(100);
-    if (ImGui::DragFloat2("##Render Offset", vRenderOffset))
+    if (ImGui::DragFloat2("##Render Offset", vRenderOffset, 0.1f))
         GetTargetObject()->GetRenderCom()->SetRenderOffset(vRenderOffset);
 
     ImGui::Text("RenderScale");
     ImGui::SameLine(100); // 100Pixel 뒤로 이어붙이기
-    if (ImGui::DragFloat2("##RENDERSCALE", vRenderScale))
+    if (ImGui::DragFloat2("##RENDERSCALE", vRenderScale, 0.1f, 0.1f))
         GetTargetObject()->GetRenderCom()->SetRenderScale(vRenderScale);
     
     ImGui::Spacing();

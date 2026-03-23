@@ -186,6 +186,10 @@ bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool 
     m_bCurCycleFinished      = false;
     m_bStopped               = false;
     
+    // Render Transform 관련값 맞추기
+    SetRenderOffset(TargetFlipbook->GetRenderOffset());
+    SetRenderScale(TargetFlipbook->GetRenderScale());
+    
     return true;
 }
 
@@ -237,6 +241,11 @@ bool CFlipbookRender::Stop(const wstring& _Category, int _FlipbookIdx, int _Spri
     m_bCurCycleFinished = false;
     m_FrameTimer        = 0.f;
     m_bStopped          = true;
+
+    // 고른 Target Flipbook의 Render Transform 관련값으로 맞추기
+    Ptr<AFlipbook> TargetFlipbook = m_mapCategoryFlipbooks[_Category][_FlipbookIdx];
+    SetRenderOffset(TargetFlipbook->GetRenderOffset());
+    SetRenderScale(TargetFlipbook->GetRenderScale());
     
     return true;
 }
@@ -254,6 +263,11 @@ bool CFlipbookRender::Stop(int _FlipbookIdx, int _SpriteIdx)
     m_bCurCycleFinished = false;
     m_FrameTimer        = 0.f;
     m_bStopped          = true;
+    
+    // 고른 Target Flipbook의 Render Transform 관련값으로 맞추기
+    Ptr<AFlipbook> TargetFlipbook = m_mapCategoryFlipbooks[m_CurSelectedCategory][_FlipbookIdx];
+    SetRenderOffset(TargetFlipbook->GetRenderOffset());
+    SetRenderScale(TargetFlipbook->GetRenderScale());
     
     return true;
 }

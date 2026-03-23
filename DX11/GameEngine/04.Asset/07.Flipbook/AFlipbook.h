@@ -8,6 +8,12 @@ private:
     
     vector<Ptr<ASprite>> m_vecSprite{};
     
+private:
+
+    // 이 Flipbook 전용 CFlipbookRender에서 설정될 RenderOffset과 RenderScale 값
+    Vec2 m_RenderOffset{};
+    Vec2 m_RenderScale = Vec2::One;
+    
 public:
     
     AFlipbook();
@@ -28,6 +34,10 @@ public:
     bool ClearSprites();
     
 public:
+
+    GET_SET(Vec2, RenderOffset)
+    GET_SET(Vec2, RenderScale)
+    
     
     void SetSprite(int _Idx, const Ptr<ASprite>& _Sprite)
     {

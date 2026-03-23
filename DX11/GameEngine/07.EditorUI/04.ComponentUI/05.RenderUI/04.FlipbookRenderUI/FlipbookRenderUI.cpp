@@ -100,6 +100,9 @@ void FlipbookRenderUI::TickSelectingLevelBeginningInfo(const Ptr<CFlipbookRender
         }
     }
     
+    // 고른 Flipbook의 RenderOffset과 RenderScale 조정
+    
+    
     ImGui::SeparatorText("");
 }
 
