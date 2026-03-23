@@ -29,7 +29,7 @@ void CEditorCamMoveScript::Tick()
     if (KEY_PRESSED(KEY::LSHIFT))
         Speed = 14000.f;
     
-    if (KEY_PRESSED(KEY::RMB))
+    if (KEY_PRESSED(KEY::MRB))
     {
         Vec2 vMouseDir = KeyMgr::GetInst()->GetMouseDir();
         Vec3 Direction = Vec3(-vMouseDir.x, vMouseDir.y, 0.f);
@@ -105,7 +105,7 @@ void CEditorCamMoveScript::MovePerspective()
     if (KEY_PRESSED(KEY::Q)) vPos += vUp * E_DT * Speed;
     if (KEY_PRESSED(KEY::E)) vPos -= vUp * E_DT * Speed;
     
-    if (KEY_PRESSED(KEY::RMB))
+    if (KEY_PRESSED(KEY::MRB))
     {
         Vec2 vMouseDir = KeyMgr::GetInst()->GetMouseDir();
         

@@ -244,6 +244,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\07.EditorUI\09.MainWindowDropDetectorUI\MainWindowDropDetectorUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\10.ConfirmUI\ConfirmUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\11.CollisionMatrixUI\CollisionMatrixUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\12.DebugLogUI\DebugLogUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\EditorUI.h" />
     <ClInclude Include="GameEngine\SpriteFrame.h" />
     <ClInclude Include="Header\assets.h" />
@@ -827,6 +828,7 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\07.EditorUI\09.MainWindowDropDetectorUI\MainWindowDropDetectorUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\10.ConfirmUI\ConfirmUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\11.CollisionMatrixUI\CollisionMatrixUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\12.DebugLogUI\DebugLogUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\EditorUI.cpp" />
     <ClCompile Include="GameEngine\SpriteFrame.cpp" />
     <ClCompile Include="Header\extern.cpp" />

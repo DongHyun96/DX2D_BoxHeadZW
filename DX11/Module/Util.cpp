@@ -1,6 +1,24 @@
 ﻿#include "pch.h"
 #include "Util.h"
 
+#include "GameEngine/07.EditorUI/12.DebugLogUI/DebugLogUI.h"
+
+#ifdef _DEBUG
+void DebugUtil::AddDebugLog(const wstring& _msg, const Vec4& _Color, float _TotalLifeTime)
+{
+    const wstring debugString = _msg + L"\n";
+    OutputDebugStringW(debugString.c_str());
+        
+    DebugLogUIData LogData{};
+    LogData.LogStr          = string(debugString.begin(), debugString.end());;
+    LogData.Color           = _Color;
+    LogData.TotalLifeTime   = _TotalLifeTime;
+        
+    DebugLogUI::AddDebugInfo(LogData);
+}
+#else
+#endif
+
 Vec4 GetRandomColor(bool _bUseRandomAlpha)
 {
     return Vec4
@@ -35,7 +53,7 @@ EDIRECTION GetDirection(const Vec2& _Vector)
     
     v.Normalize();
     
-    const float Angle = atan2(v.y, v.x);
+    const float Angle = atan2f(v.y, v.x);
     float Degree = XMConvertToDegrees(Angle);
     
     if (Degree < 0.f) Degree += 360.f; // 음수값 방지

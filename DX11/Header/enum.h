@@ -134,7 +134,7 @@ enum SCALAR_PARAM
     MAT_1,
 };
 
-enum class DBG_SHAPE
+enum class DEBUG_SHAPE
 {
     RECT,
     CIRCLE,

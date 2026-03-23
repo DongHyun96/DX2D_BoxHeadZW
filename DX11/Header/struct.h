@@ -3,7 +3,7 @@
 
 enum class LIGHT_TYPE;
 enum class TASK_TYPE;
-enum class DBG_SHAPE;
+enum class DEBUG_SHAPE;
 
 struct Vertex
 {
@@ -17,9 +17,9 @@ typedef Vertex Vtx;
 /// <summary>
 /// DebugInfo : 디버그 렌더링 요청사항 정보
 /// </summary>
-struct DbgInfo
+struct DebugInfo
 {
-    DBG_SHAPE   Shape{};
+    DEBUG_SHAPE   Shape{};
     
     Vec3        Pos{}; // 셋 다 world 기준
     Vec3        Scale{};
@@ -32,6 +32,23 @@ struct DbgInfo
     float       Life{}; // 총 최대수명 (초 단위)
     
     bool        EnableDepthTest{};
+};
+
+
+/// <summary>
+/// ImGui 용 Log Data
+/// </summary>
+struct DebugLogUIData
+{
+    
+    friend class DebugLogUI;
+    
+    string  LogStr{};
+    Vec4    Color{};
+    float   TotalLifeTime{};
+    
+private:
+    float   Age{};
 };
 
 /// <summary>

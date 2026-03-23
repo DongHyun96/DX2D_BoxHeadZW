@@ -84,7 +84,7 @@ void CCamMoveScript::MovePerspective()
     if (KEY_PRESSED(KEY::Q)) vPos += vUp * DT * 400.f;
     if (KEY_PRESSED(KEY::E)) vPos -= vUp * DT * 400.f;
     
-    if (KEY_PRESSED(KEY::RMB))
+    if (KEY_PRESSED(KEY::MRB))
     {
         Vec2 vMouseDir = KeyMgr::GetInst()->GetMouseDir();
         

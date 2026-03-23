@@ -166,6 +166,7 @@ namespace DirectX
             Vector2 Cross(const Vector2& V) const;
 
             void Normalize();
+            Vector2 Normalized() const;
             void Normalize(Vector2& result) const;
 
             void Clamp(const Vector2& vmin, const Vector2& vmax);
@@ -289,6 +290,7 @@ namespace DirectX
             Vector3 Cross(const Vector3& V) const;
 
             Vector3& Normalize();
+            Vector3 Normalized() const;
             void Normalize(Vector3& result) const;
 
             void ToDegree();

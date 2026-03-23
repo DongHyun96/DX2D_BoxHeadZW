@@ -71,8 +71,8 @@ void DestroyObject(GameObject* _Object)
 
 void DrawDebugRect(const Vec3& _Pos, const Vec3& _Scale, const Vec3& _Rot, const Vec4& _Color, float _Duration, bool EnableDepthTest)
 {
-    DbgInfo info{};
-    info.Shape      = DBG_SHAPE::RECT;
+    DebugInfo info{};
+    info.Shape      = DEBUG_SHAPE::RECT;
     info.Pos        = _Pos;
     info.Scale      = _Scale;
     info.Rotation   = _Rot;
@@ -89,8 +89,8 @@ void DrawDebugRect(const Vec3& _Pos, const Vec3& _Scale, const Vec3& _Rot, const
 
 void DrawDebugRect(const Matrix& _matWorld, const Vec4& _Color, float _Duration, bool EnableDepthTest)
 {
-    DbgInfo info{};
-    info.Shape      = DBG_SHAPE::RECT;
+    DebugInfo info{};
+    info.Shape      = DEBUG_SHAPE::RECT;
     
     info.matWorld = _matWorld;
     
@@ -105,8 +105,8 @@ void DrawDebugRect(const Matrix& _matWorld, const Vec4& _Color, float _Duration,
 
 void DrawDebugCircle(const Vec3& _Pos, float _Radius, const Vec4& _Color, float _Duration, bool EnableDepthTest)
 {
-    DbgInfo info{};
-    info.Shape      = DBG_SHAPE::CIRCLE;
+    DebugInfo info{};
+    info.Shape      = DEBUG_SHAPE::CIRCLE;
     info.Pos        = _Pos;
     info.Scale      = Vec3(_Radius * 2.f, _Radius * 2.f, 0.f);
     info.Color      = _Color;
@@ -129,8 +129,8 @@ void DrawDebugLine(const Vec3& _Start, const Vec3& _End, const Vec4& _Color, flo
     const Vec3 mid  = (_Start + _End) * 0.5f;
     const float rad = atan2f(dir.y, dir.x);
 
-    DbgInfo info{};
-    info.Shape      = DBG_SHAPE::LINE;
+    DebugInfo info{};
+    info.Shape      = DEBUG_SHAPE::LINE;
     info.Pos        = mid;
     info.Scale      = Vec3(len, 1.f, 1.f);      // Y=두께(기본 1)
     info.Rotation   = Vec3(0.f, 0.f, rad);

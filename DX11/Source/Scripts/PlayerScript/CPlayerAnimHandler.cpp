@@ -25,28 +25,40 @@ void CPlayerAnimHandler::Begin()
 
 void CPlayerAnimHandler::Tick()
 {
-    UpdateAnimDirection();
-    UpdateAction();    
-}
-
-void CPlayerAnimHandler::UpdateAnimDirection()
-{
     const Vec2 MousePos     = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
     const Vec2 PlayerPos2D  = ToVec2(Transform()->GetRelativePos());
-    Vec2 PlayerToMousePos   = MousePos - PlayerPos2D;
+    const Vec2 PlayerToMousePos   = MousePos - PlayerPos2D;
     
-    m_AnimDirection = GetDirection(PlayerToMousePos);
+    UpdateAnimDirection(PlayerToMousePos);
+    UpdateWalkingBackward(PlayerToMousePos);
+    UpdateAnimTransition();    
+}
+
+void CPlayerAnimHandler::UpdateAnimDirection(const Vec2& _PlayerToMousePos)
+{
+    m_AnimDirection = GetDirection(_PlayerToMousePos);
     // 이 경우, 마우스포인터 좌표와 Player의 위치가 완전히 일치하는 상황 (거의 아예 안나올거다)
     // 따로 DOWN 방향으로 처리
     if (m_AnimDirection == EDIRECTION::END) m_AnimDirection = EDIRECTION::DOWN;
 }
 
-void CPlayerAnimHandler::UpdateAction()
+void CPlayerAnimHandler::UpdateWalkingBackward(const Vec2& _PlayerToMousePos)
+{
+    const Vec3 VelocityDirection = m_MainPlayerScript->GetVelocity().Normalized();
+    const Vec2 VelocityDirection2D = ToVec2(VelocityDirection);
+    
+    const float DotProduct = VelocityDirection2D.Dot(_PlayerToMousePos.Normalized());
+    const float AngleBetween = acosf(DotProduct); // 바라보는 방향과 진행방향과의 사잇각
+
+    m_WalkingBackward = AngleBetween > XM_PIDIV2; 
+}
+
+void CPlayerAnimHandler::UpdateAnimTransition()
 {
     Vec3 CurrentVelocity = m_MainPlayerScript->GetVelocity();
     const int FlipBookIndexByDirection = static_cast<int>(m_AnimDirection);
 
-    if (CurrentVelocity.LengthSquared() == 0.f)
+    if (CurrentVelocity.LengthSquared() == 0.f) // 이동하고 있지 않은 상태ㄴ
     {
         // 해당 방향으로 자연스럽게 멈춤
         // 2번 index가 멈춘 상태의 Sprite 모양
@@ -54,12 +66,13 @@ void CPlayerAnimHandler::UpdateAction()
         m_PrevAnimDirection = EDIRECTION::END;
         return;
     }
+
+    // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
+    if (m_AnimDirection == m_PrevAnimDirection && m_WalkingBackward == m_PrevWalkingBackward) return;
+
     
-    if (m_AnimDirection == m_PrevAnimDirection) return; // 한 번 더 재생 처리 방지
+    FlipbookRender()->Play(FlipBookIndexByDirection, 12, -1, m_WalkingBackward);
 
-
-    // 방향을 확인해서 뒤로이동하는 중인지 알아야 함
-    FlipbookRender()->Play(FlipBookIndexByDirection, 12);
-
-    m_PrevAnimDirection = m_AnimDirection;    
+    m_PrevAnimDirection = m_AnimDirection;
+    m_PrevWalkingBackward = m_WalkingBackward;
 }

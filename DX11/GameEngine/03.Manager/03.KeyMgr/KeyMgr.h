@@ -18,8 +18,8 @@ enum class KEY
 	C,
 	V,
 	
-	LMB, // 마우스 왼쪽 클릭
-	RMB, // 마우스 오른쪽 클릭
+	MLB, // 마우스 왼쪽 클릭
+	MRB, // 마우스 오른쪽 클릭
 	MMB,
 	
 	LEFT,

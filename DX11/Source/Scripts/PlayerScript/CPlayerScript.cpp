@@ -73,7 +73,7 @@ void CPlayerScript::UpdateAnimDirection()
 
 void CPlayerScript::HandleRayCast()
 {
-    if (KEY_PRESSED(KEY::LMB))
+    if (KEY_PRESSED(KEY::MLB))
     {
         Ray2D Ray{};
         Ray.Origin = Transform()->GetWorldPos();

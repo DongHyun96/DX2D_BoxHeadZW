@@ -108,20 +108,20 @@ void RenderMgr::Render_End()
 
 void RenderMgr::Render_Debug()
 {
-    list<DbgInfo>::iterator iter = m_DbgInfoList.begin();
+    list<DebugInfo>::iterator iter = m_DbgInfoList.begin();
     while (iter != m_DbgInfoList.end())
     {
-        DbgInfo& info = *iter;
+        DebugInfo& info = *iter;
 
         wstring MeshName{};
         
         switch (info.Shape)
         {
-        case DBG_SHAPE::RECT:   MeshName = L"RectMesh_LineStrip";   break; 
-        case DBG_SHAPE::CIRCLE: MeshName = L"CircleMesh_LineStrip"; break;
-        case DBG_SHAPE::LINE:   MeshName = L"LineMesh_LineStrip";   break;
-        case DBG_SHAPE::CUBE:   MeshName = L"CubeMesh";             break;
-        case DBG_SHAPE::SPHERE: MeshName = L"SphereMesh";           break;
+        case DEBUG_SHAPE::RECT:   MeshName = L"RectMesh_LineStrip";   break; 
+        case DEBUG_SHAPE::CIRCLE: MeshName = L"CircleMesh_LineStrip"; break;
+        case DEBUG_SHAPE::LINE:   MeshName = L"LineMesh_LineStrip";   break;
+        case DEBUG_SHAPE::CUBE:   MeshName = L"CubeMesh";             break;
+        case DEBUG_SHAPE::SPHERE: MeshName = L"SphereMesh";           break;
         default: break;
         }
 

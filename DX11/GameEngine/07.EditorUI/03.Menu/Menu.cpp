@@ -130,6 +130,12 @@ void Menu::ViewTick()
         {
             pOutliner->SetActive(OutlinerActive);
         }
+
+        Ptr<EditorUI> pDebugLogUI = EditorMgr::GetInst()->FindUI("DebugLogUI"); 
+        bool DebugLogUIActive = pDebugLogUI->IsActive();
+        
+        if (ImGui::MenuItem("DebugLogger", nullptr, &DebugLogUIActive, true))
+            pDebugLogUI->SetActive(DebugLogUIActive);
         
         if (ImGui::MenuItem("Add Inspector"))
             EditorMgr::GetInst()->AddInspector();

@@ -17,6 +17,7 @@
 #include "GameEngine/07.EditorUI/09.MainWindowDropDetectorUI/MainWindowDropDetectorUI.h"
 #include "GameEngine/07.EditorUI/10.ConfirmUI/ConfirmUI.h"
 #include "GameEngine/07.EditorUI/11.CollisionMatrixUI/CollisionMatrixUI.h"
+#include "GameEngine/07.EditorUI/12.DebugLogUI/DebugLogUI.h"
 
 
 EditorMgr::EditorMgr()
@@ -245,6 +246,9 @@ void EditorMgr::CreateEditorUI()
     pUI->SetActive(false);
     AddUI(pUI->GetUIName(), pUI);
     
+    pUI = new DebugLogUI;
+    pUI->SetUIName("DebugLogUI");
+    AddUI(pUI->GetUIName(), pUI);
 }
 
 void EditorMgr::CreateEditorObject()

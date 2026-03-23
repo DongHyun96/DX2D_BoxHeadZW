@@ -5,13 +5,10 @@ namespace DebugUtil
     
 #ifdef _DEBUG
     /// <summary> 디버거 출력에 Debug log 남기기 </summary>
-    static void AddDebugLog(const std::wstring& msg)
-    {
-        const wstring debugString = msg + L"\n";
-        OutputDebugStringW(debugString.c_str());
-    }
+    void AddDebugLog(const wstring& _msg, const Vec4& _Color = Vec4(1.f, 1.f, 1.f, 1.f), float _TotalLifeTime = 3.f);
+    
 #else
-    static void AddDebugLog(const std::wstring&) {}
+    void AddDebugLog(const wstring& _msg, const Vec4& _Color = Vec4(1.f, 1.f, 1.f, 1.f), float _TotalLifeTime = 3.f) {}
 #endif
 }
 
