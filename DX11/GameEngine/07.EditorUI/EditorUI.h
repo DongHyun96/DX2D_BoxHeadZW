@@ -45,6 +45,7 @@ public:
 protected:
 
     SET(string, UIKey)
+    const string& GetUIKey() const { return m_UIKey; }
 
 public:
     

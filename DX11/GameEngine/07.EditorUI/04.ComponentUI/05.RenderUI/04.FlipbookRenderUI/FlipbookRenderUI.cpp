@@ -100,11 +100,6 @@ void FlipbookRenderUI::TickPreview(const Ptr<CFlipbookRender>& _FlipbookRender)
     string Temp = string(m_CurSelectedCategory.begin(), m_CurSelectedCategory.end()) + " : Flipbook List ";
     ImGui::Text(Temp.c_str());
 
-    // 오브젝트 C_FlipbookRender에 실질적으로 Setting된 FlipbookIdx
-    ImGui::BeginDisabled(_FlipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory) <= 0);
-    ImGui::SliderInt("Selected Flipbook Idx", &_FlipbookRender->m_CurSelectedFlipbookIdx, -1, _FlipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory) - 1);
-    ImGui::EndDisabled();
-
     ImGui::Button("Drop Flipbook To Append", ImVec2(240.f, 36.f));
     if (ImGui::BeginDragDropTarget())
     {

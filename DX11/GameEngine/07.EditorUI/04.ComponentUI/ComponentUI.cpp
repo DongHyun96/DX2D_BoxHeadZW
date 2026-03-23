@@ -20,7 +20,9 @@ void ComponentUI::Tick_UI()
     
     ImGui::SameLine(150);
     
-    if (ImGui::Button("Remove component"))
+    string RemoveButtonString = "Remove component##" + GetUIKey(); 
+    
+    if (ImGui::Button(RemoveButtonString.c_str()))
     {
         Ptr<ConfirmUI> pUI = dynamic_cast<ConfirmUI*>(EditorMgr::GetInst()->FindUI("ConfirmUI").Get());
         assert(pUI.Get());

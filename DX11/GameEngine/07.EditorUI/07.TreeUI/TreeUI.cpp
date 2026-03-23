@@ -11,7 +11,7 @@ TreeNode::TreeNode()
 {
     // 각 노드가 표기하려는 이름이 같을 수가 있기 때문에, 보여주려는 이름 뒤에 붙을 고유 문자열을 미리 생성해둔다.
     char szKey[50]{};
-    sprintf_s(szKey, 50, "##TreeNode%d", GetID());
+    sprintf_s(szKey, 50, "##TreeNode%d", GetEntityInstID());
     Key = szKey;
 }
 

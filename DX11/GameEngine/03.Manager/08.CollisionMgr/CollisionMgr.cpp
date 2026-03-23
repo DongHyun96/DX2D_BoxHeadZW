@@ -43,8 +43,8 @@ void CollisionMgr::CollisionBtwLayer(Layer* _Left, Layer* _Right)
 
             // 두 충돌체의 고유 ID로 조합을 한 키값 생성
             COL_ID colid{};
-            colid.LeftID    = leftObject->GetCollider2D()->GetID();
-            colid.RightID   = rightObject->GetCollider2D()->GetID();
+            colid.LeftID    = leftObject->GetCollider2D()->GetEntityInstID();
+            colid.RightID   = rightObject->GetCollider2D()->GetEntityInstID();
             
             map<ULONGLONG, bool>::iterator iter = m_mapColID.find(colid.ID);
             if (iter == m_mapColID.end())

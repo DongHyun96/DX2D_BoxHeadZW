@@ -13,7 +13,7 @@ ScriptUI::ScriptUI()
 	// Inspector 가 표기하려는 GameObject 가 여러개의 Script 를 가지고 있을 수 있기 때문에
 	// 각 Script 에 대응하는 ScriptUI 도 여러개가 될 수 있다.
 	// 따라서 ScriptUI 끼리 Inspector 의 자식으로서 서로의 이름이 겹치지 않도록 추가로 Key 를 작성한다
-	int idx = GetID();
+	int idx = GetEntityInstID();
 	char szNum[50]{};
 	_itoa_s(idx, szNum, 50, 10);
 
@@ -147,7 +147,7 @@ void ScriptUI::Tick_UI()
 void ScriptUI::AddItemHeight()
 {
 	ImVec2 vSize = ImGui::GetItemRectSize();
-	m_ItemHeight += vSize.y + 5.f;
+	m_ItemHeight += vSize.y + 200.f;
 }
 
 void ScriptUI::OnConfirmClicked(bool _Confirmed)
