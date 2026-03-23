@@ -100,9 +100,9 @@ HRESULT AFlipbook::Load(const wstring& _FilePath)
         return E_FAIL;
     }
 
-    // 이 Flipbook 전용 RenderOffset 및 RenderScale값 불러오기 (TODO : 저장하고 이 주석 풀기)
-    /*fread(&m_RenderOffset, sizeof(Vec2), 1, pFile);
-    fread(&m_RenderScale, sizeof(Vec2), 1, pFile);*/
+    // 이 Flipbook 전용 RenderOffset 및 RenderScale값 불러오기
+    fread(&m_RenderOffset, sizeof(Vec2), 1, pFile);
+    fread(&m_RenderScale, sizeof(Vec2), 1, pFile);
     
     UINT SpriteCount{};
     fread(&SpriteCount, sizeof(UINT), 1, pFile);
