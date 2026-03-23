@@ -15,7 +15,7 @@ TileRenderUI::~TileRenderUI()
 
 void TileRenderUI::Tick_UI()
 {
-    ComponentUI::Tick_UI();
+    RenderUI::Tick_UI();
 
     ImGui::Separator();
     ImGui::Text("Selected TileMap (Drop tilemap to change)");

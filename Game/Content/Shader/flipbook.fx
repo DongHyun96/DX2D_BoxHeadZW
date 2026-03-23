@@ -9,6 +9,9 @@
 #define BackgroundUV    g_vec2_2
 #define OffsetUV        g_vec2_3
 
+#define RenderOffset (g_vec4_3.xy)
+#define RenderScale (g_vec4_3.zw)
+
 
 struct VS_IN
 {
@@ -26,8 +29,10 @@ struct VS_OUT
 VS_OUT VS_Flipbook(VS_IN _input)
 {
     VS_OUT output = (VS_OUT) 0.f;
-             
-    float4 vWorld   = mul(float4(_input.vPos, 1.f), g_matWorld);
+
+    float2 localXY = _input.vPos.xy * RenderScale + RenderOffset;
+    float4 vWorld  = mul(float4(localXY, _input.vPos.z, 1.f), g_matWorld);
+    
     float4 vView    = mul(vWorld, g_matView);
     float4 vProj    = mul(vView, g_matProj);
      

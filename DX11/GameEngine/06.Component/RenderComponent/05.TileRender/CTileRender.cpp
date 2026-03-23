@@ -37,6 +37,8 @@ void CTileRender::Init()
 
 void CTileRender::FinalTick()
 {
+    CRenderComponent::FinalTick();
+    
     // 크기조정
     if (m_TileMap)
     {
@@ -57,7 +59,8 @@ void CTileRender::Render()
     GetMaterial()->SetScalar(INT_1, m_TileMap->GetCol());
     /*GetMaterial()->SetScalar(VEC2_0, m_vecSpriteInfo[0].LeftTop);
     GetMaterial()->SetScalar(VEC2_1, m_vecSpriteInfo[0].Slice);*/
-    
+
+    ApplyRenderTransformConst();
     GetMaterial()->Binding();
     
     GetMesh()->Render();

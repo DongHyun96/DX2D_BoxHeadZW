@@ -46,6 +46,8 @@ void CFlipbookRender::CreateMaterial()
 
 void CFlipbookRender::FinalTick()
 {
+    CRenderComponent::FinalTick();
+    
     // 현재 Selected된 카테고리가 없을 경우
     if (!m_vecCurSelectedCategoryFlipbooks) return;
     
@@ -110,7 +112,7 @@ void CFlipbookRender::Render()
     else GetMaterial()->SetScalar(VEC2_2, pCurSprite->GetBackgroundUV());
     
     GetMaterial()->SetScalar(VEC2_3, pCurSprite->GetOffsetUV());
-    
+    ApplyRenderTransformConst();
     GetMaterial()->Binding();
     GetMesh()->Render();
     

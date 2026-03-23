@@ -21,6 +21,7 @@ const Vector3 Vector3::Forward = {0.f, 0.f, 1.f};
 const Vector3 Vector3::Front   = {0.f, 0.f, 1.f};
 const Vector3 Vector3::Backward= {0.f, 0.f, -1.f};
 
+const Matrix Matrix::Identity = XMMatrixIdentity();
 
 Vector2 Vector2::Normalized() const
 {

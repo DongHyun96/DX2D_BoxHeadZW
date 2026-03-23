@@ -14,6 +14,7 @@ CSpriteRender::~CSpriteRender()
 
 void CSpriteRender::FinalTick()
 {
+    CRenderComponent::FinalTick();
 }
 
 void CSpriteRender::Render()
@@ -23,7 +24,7 @@ void CSpriteRender::Render()
     GetMaterial()->SetTexture(TEX_0, m_Sprite->GetAtlas());
     GetMaterial()->SetScalar(VEC2_0, m_Sprite->GetLeftTopUV());
     GetMaterial()->SetScalar(VEC2_1, m_Sprite->GetSliceUV());
-    
+    ApplyRenderTransformConst();
     GetMaterial()->Binding();
     GetMesh()->Render();
     

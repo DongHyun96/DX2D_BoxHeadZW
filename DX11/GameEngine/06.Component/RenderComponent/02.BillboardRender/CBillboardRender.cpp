@@ -14,6 +14,7 @@ CBillboardRender::~CBillboardRender()
 
 void CBillboardRender::FinalTick()
 {
+    CRenderComponent::FinalTick();
 }
 
 void CBillboardRender::Render()
@@ -22,7 +23,7 @@ void CBillboardRender::Render()
 
     
     GetMaterial()->SetScalar(VEC2_0, m_BillboardScale);
-    
+    ApplyRenderTransformConst();
     GetMaterial()->Binding();
     GetMesh()->Render();
     

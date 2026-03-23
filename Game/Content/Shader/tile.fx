@@ -18,6 +18,9 @@ StructuredBuffer<SpriteInfo> g_Buffer : register(t20);
 #define ROW         g_int_0
 #define COL         g_int_1
 
+#define RenderOffset (g_vec4_3.xy)
+#define RenderScale  (g_vec4_3.zw)
+
 
 struct VS_IN
 {
@@ -38,9 +41,12 @@ VS_OUT VS_Tile(VS_IN _input)
     
     // 게임오브젝트 위치(중점)에 TileMap 좌상단 지점으로 잡히게끔 일부러 처리
     // 타일맵에서 클릭된 타일의 위치를 손쉽게 구할 수 있는 등의 이점이 있다
-    _input.vPos.xy += float2(0.5f, -0.5f);    
+    // _input.vPos.xy += float2(0.5f, -0.5f);    
     
-    float4 vWorld = mul(float4(_input.vPos, 1.f), g_matWorld);
+    float2 baseXY  = _input.vPos.xy + float2(0.5f, -0.5f);
+    float2 localXY = baseXY * RenderScale + RenderOffset;
+    float4 vWorld  = mul(float4(localXY, _input.vPos.z, 1.f), g_matWorld);
+    
     float4 vView = mul(vWorld, g_matView);
     float4 vProj = mul(vView, g_matProj);
      

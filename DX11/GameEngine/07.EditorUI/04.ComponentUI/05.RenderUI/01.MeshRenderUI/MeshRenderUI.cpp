@@ -19,7 +19,7 @@ MeshRenderUI::~MeshRenderUI()
 
 void MeshRenderUI::Tick_UI()
 {
-    ComponentUI::Tick_UI();
+    RenderUI::Tick_UI();
 
     Ptr<CMeshRender> pMeshRender = GetTargetObject()->MeshRender();
 

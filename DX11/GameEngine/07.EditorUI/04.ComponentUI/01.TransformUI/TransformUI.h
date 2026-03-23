@@ -5,8 +5,6 @@ class TransformUI : public ComponentUI
 {
 private:
     
-    
-    
 public:
     
     TransformUI();

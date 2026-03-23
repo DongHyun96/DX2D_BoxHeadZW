@@ -13,7 +13,7 @@ BillboardRenderUI::~BillboardRenderUI()
 
 void BillboardRenderUI::Tick_UI()
 {
-    ComponentUI::Tick_UI();
+    RenderUI::Tick_UI();
     
     ImGui::Spacing();
     ImGui::Spacing();

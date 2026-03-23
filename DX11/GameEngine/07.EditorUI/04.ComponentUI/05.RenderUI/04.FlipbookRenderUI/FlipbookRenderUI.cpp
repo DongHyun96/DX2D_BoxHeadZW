@@ -19,7 +19,7 @@ FlipbookRenderUI::~FlipbookRenderUI()
 
 void FlipbookRenderUI::Tick_UI()
 {
-    ComponentUI::Tick_UI();
+    RenderUI::Tick_UI();
 
     Ptr<CFlipbookRender> flipbookRender = GetTargetObject()->FlipbookRender();
 

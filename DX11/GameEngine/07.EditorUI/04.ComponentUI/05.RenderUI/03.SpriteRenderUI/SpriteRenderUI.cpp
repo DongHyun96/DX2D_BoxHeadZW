@@ -16,7 +16,7 @@ SpriteRenderUI::~SpriteRenderUI()
 
 void SpriteRenderUI::Tick_UI()
 {
-    ComponentUI::Tick_UI();
+    RenderUI::Tick_UI();
     
     Ptr<CSpriteRender> SpriteRender = GetTargetObject()->SpriteRender();
     Ptr<ASprite> Sprite             = SpriteRender->GetSprite();

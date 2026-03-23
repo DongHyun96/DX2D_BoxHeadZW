@@ -5,6 +5,9 @@
 
 #define BILLBOARD_SCALE g_vec2_0 // 빌보드의 가로세로 크기정보로 사용
 
+#define RenderOffset (g_vec4_3.xy)
+#define RenderScale  (g_vec4_3.zw)
+
 struct VS_IN
 {
     float3 vPos     : POSITION; // Sementic : Layout 에서 설명한 이름       
@@ -30,10 +33,9 @@ VS_OUT VS_Billboard(VS_IN _input)
     //                          (  Pos.x    Pos.y      Pos.x    1) 
     // 동차좌표가 1이나 0 이냐에 따라서, 곱하는 변환행렬의 4행 이동정보를 적용할지 말지가 결정된다
     
-    float4 vWorld = mul(float4(0.f, 0.f, 0.f, 1.f), g_matWorld);
-    float4 vView = mul(vWorld, g_matView);
-
-    vView.xy += _input.vPos.xy * BILLBOARD_SCALE;
+    float4 vWorld = mul(float4(RenderOffset, 0.f, 1.f), g_matWorld);
+    float4 vView  = mul(vWorld, g_matView);
+    vView.xy += (_input.vPos.xy * RenderScale) * BILLBOARD_SCALE;
 
     float4 vProj = mul(vView, g_matProj);
  

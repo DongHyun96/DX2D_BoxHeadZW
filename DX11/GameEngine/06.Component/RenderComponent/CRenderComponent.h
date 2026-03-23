@@ -12,6 +12,11 @@ private:
     Ptr<AMaterial>  m_Material{};           // 현재 사용중인 재질
     Ptr<AMaterial>  m_SharedMaterial{};     // 공유 재질(에셋 매니저의 관리를 받는..)
     Ptr<AMaterial>  m_DynamicMaterial{};    // 나만의 동적 재질(쓰고 버리는..)
+
+private:
+    
+    Vec2 m_RenderOffset{};
+    Vec2 m_RenderScale =  Vec2::One;
     
 public:
     
@@ -26,11 +31,14 @@ public:
     GET(Ptr<AMaterial>, Material)
     void SetMaterial(const Ptr<AMaterial>& _Material) { m_Material = m_SharedMaterial = _Material; }
     
+    GET_SET(Vec2, RenderOffset)
+    GET_SET(Vec2, RenderScale)
+    
 public:
 
     virtual void Init() override;
     virtual void Begin() override;
-    
+    virtual void FinalTick() override;
     virtual void Render() = 0;
 
 public:
@@ -55,9 +63,15 @@ public:
     /// <returns> 세팅된 DynamicMaterial 반환 </returns>
     Ptr<AMaterial> CreateDynamicMaterial();
     
+    
 protected:
     
     void PrintIrrelevantDebugLog() const;
+
+    /// <summary>
+    /// Material Const Vec4_3 슬롯을 사용할 예정
+    /// </summary>
+    void ApplyRenderTransformConst();
     
 public:
     

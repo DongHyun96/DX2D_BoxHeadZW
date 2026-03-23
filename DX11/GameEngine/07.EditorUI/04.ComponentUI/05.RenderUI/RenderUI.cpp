@@ -15,57 +15,25 @@ RenderUI::~RenderUI()
 
 void RenderUI::Tick_UI()
 {
-    /* Renderer Default 정보 */
-    
-    ColoredButtonTitle(m_Title);
-    ImGui::Spacing(); ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-    ImGui::Spacing();
-    
-    SubHeading("<MESH INFO>");
-    
-    ImGui::Spacing();
-    ImGui::Spacing();
-
-    wstring MeshName = GetTargetObject()->GetRenderCom()->GetMesh()->GetKey();
-    string Text = "Current Mesh : " + string(MeshName.begin(), MeshName.end()); 
-    ImGui::BulletText(Text.c_str());
-    ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
-
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-    ImGui::Spacing();
-    
-    SubHeading("<MATERIAL>");
-    
-    ImGui::Spacing();
-    ImGui::Spacing();
-    
-    wstring ShaderName = GetTargetObject()->GetRenderCom()->GetMaterial()->GetKey();
-    Text = "Current Shader : " + string(ShaderName.begin(), ShaderName.end());
-    ImGui::BulletText(Text.c_str());
-    
-    ImGui::Spacing();
-    ImGui::Spacing();
-    if (ImGui::TreeNode("Textures"))
-    {
-        for (UINT i = 0; i < TEX_END; ++i)
-        {
-            TEX_PARAM Param = static_cast<TEX_PARAM>(i);
-            Ptr<ATexture> TextureAsset = GetTargetObject()->GetRenderCom()->GetMaterial()->GetTexture(Param);
-            
-            wstring TextureName = (TextureAsset) ? TextureAsset->GetKey() : L"None";
-            
-            string Text = "TEX" + to_string(i) + " : " + string(TextureName.begin(), TextureName.end()); 
-            ImGui::BulletText(Text.c_str());
-        }
-        
-        ImGui::TreePop();
-    }
-    
     ComponentUI::Tick_UI();
+
+    ImGui::Spacing();
+    ImGui::Separator();
     
+    // Render Offset, Render Scale 조정
+    Vec2 vRenderOffset  = GetTargetObject()->GetRenderCom()->GetRenderOffset();
+    Vec2 vRenderScale   = GetTargetObject()->GetRenderCom()->GetRenderScale();
+
+    ImGui::Text("RenderOffset");
+    ImGui::SameLine(100);
+    if (ImGui::DragFloat2("##Render Offset", vRenderOffset))
+        GetTargetObject()->GetRenderCom()->SetRenderOffset(vRenderOffset);
+
+    ImGui::Text("RenderScale");
+    ImGui::SameLine(100); // 100Pixel 뒤로 이어붙이기
+    if (ImGui::DragFloat2("##RENDERSCALE", vRenderScale))
+        GetTargetObject()->GetRenderCom()->SetRenderScale(vRenderScale);
+    
+    ImGui::Spacing();
+    ImGui::Separator();
 }
