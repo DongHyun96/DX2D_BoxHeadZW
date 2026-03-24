@@ -1,14 +1,30 @@
 ﻿#pragma once
 #include "GameEngine/07.EditorUI/08.AssetUI/AssetUI.h"
 
-enum class AtlasCreateMode
-{
-    NEWNAME,
-    REUSE
-};
 
 class TileMapUI : public AssetUI
 {
+    enum class AtlasCreateMode
+    {
+        NEWNAME,
+        REUSE
+    };
+    
+    enum class PaintMode
+    {
+        BRUSH,
+        RECT_FILL,
+        BUCKET_FILL
+    };
+
+private:
+
+    PaintMode m_PaintMode{};
+    
+    bool m_RectDragging{};
+    int  m_RectStartRow = -1, m_RectStartCol = -1;
+    int  m_RectCurRow   = -1, m_RectCurCol   = -1;
+    
 private:
     
     ATileMap* m_CachedTarget{};     // 타겟 변경 감지
@@ -84,5 +100,9 @@ private:
     void DrawAtlasNameModal();
     
     void CleanupGeneratedAssets(ATileMap* tile);
+    
+private:
+    
+    void BucketFill(int startRow, int startCol, const Ptr<ASprite>& fillSprite);
     
 };

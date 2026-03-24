@@ -50,6 +50,8 @@ void TileMapUI::Tick_UI()
 
     ImGui::Spacing();
     DrawPalette();
+    
+    
 
     ImGui::Spacing();
     if (!m_OpenDetachedCanvasWindow)
@@ -281,6 +283,17 @@ void TileMapUI::DrawPalette()
 
 void TileMapUI::DrawTileCanvas()
 {
+    ImGui::Text("Paint Mode");
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Brush", m_PaintMode == PaintMode::BRUSH))
+        m_PaintMode = PaintMode::BRUSH;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Rect", m_PaintMode == PaintMode::RECT_FILL))
+        m_PaintMode = PaintMode::RECT_FILL;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Bucket", m_PaintMode == PaintMode::BUCKET_FILL))
+        m_PaintMode = PaintMode::BUCKET_FILL;
+    
     ImGui::Text("TileMap");
 
     // 줌 컨트롤(버튼)
@@ -328,29 +341,49 @@ void TileMapUI::DrawTileCanvas()
         {
             int idx = row * m_Col + col;
 
-            if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+            switch (m_PaintMode)
             {
-                if (idx != m_LastPaintIdx)
+            case PaintMode::BRUSH:
+                if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
                 {
-                    Ptr<ASprite> sel = (m_SelectedPalette >= 0 && m_SelectedPalette < m_Palette.size())
+                    if (idx != m_LastPaintIdx)
+                    {
+                        Ptr<ASprite> sel = (m_SelectedPalette >= 0 && m_SelectedPalette < m_Palette.size())
+                            ? m_Palette[m_SelectedPalette]
+                            : nullptr;
+                        PaintCell(row, col, sel);
+                        m_LastPaintIdx = idx;
+                    }
+                }
+                else if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+                {
+                    if (idx != m_LastPaintIdx)
+                    {
+                        EraseCell(row, col);
+                        m_LastPaintIdx = idx;
+                    }
+                }
+                else m_LastPaintIdx = -1;
+                break;
+            case PaintMode::RECT_FILL:
+                break;
+            case PaintMode::BUCKET_FILL:
+                if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                {
+                    Ptr<ASprite> sel = (m_SelectedPalette >= 0 && m_SelectedPalette < (int)m_Palette.size())
                         ? m_Palette[m_SelectedPalette]
                         : nullptr;
-                    PaintCell(row, col, sel);
-                    m_LastPaintIdx = idx;
+                    BucketFill(row, col, sel);
                 }
-            }
-            else if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
-            {
-                if (idx != m_LastPaintIdx)
+                else if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
                 {
-                    EraseCell(row, col);
-                    m_LastPaintIdx = idx;
+                    BucketFill(row, col, nullptr); // 우클릭은 지우기용 버킷
                 }
-            }
-            else
-            {
+
                 m_LastPaintIdx = -1;
+                break;
             }
+            
         }
     }
     else
@@ -899,4 +932,54 @@ void TileMapUI::CleanupGeneratedAssets(ATileMap* tile)
     }
 
     tile->ClearGeneratedAtlasMeta();
+}
+
+void TileMapUI::BucketFill(int startRow, int startCol, const Ptr<ASprite>& fillSprite)
+{
+    if (startRow < 0 || startRow >= m_Row || startCol < 0 || startCol >= m_Col)
+        return;
+
+    const int startIdx = startRow * m_Col + startCol;
+    Ptr<ASprite> target = m_WorkingCells[startIdx];
+
+    // 같은 값으로 채우려는 경우 불필요 작업 방지
+    if (target == fillSprite)
+        return;
+
+    vector<char> visited(m_Row * m_Col, 0);
+    queue<pair<int, int>> q;
+    q.push({ startRow, startCol });
+
+    auto inRange = [&](int r, int c)
+    {
+        return (0 <= r && r < m_Row && 0 <= c && c < m_Col);
+    };
+
+    while (!q.empty())
+    {
+        auto [r, c] = q.front();
+        q.pop();
+
+        const int idx = r * m_Col + c;
+        if (visited[idx]) continue;
+        visited[idx] = 1;
+
+        if (m_WorkingCells[idx] != target) continue;
+
+        m_WorkingCells[idx] = fillSprite;
+
+        const int dr[4] = { -1, 1, 0, 0 };
+        const int dc[4] = { 0, 0, -1, 1 };
+
+        for (int i = 0; i < 4; ++i)
+        {
+            const int nr = r + dr[i];
+            const int nc = c + dc[i];
+            if (!inRange(nr, nc)) continue;
+
+            const int nIdx = nr * m_Col + nc;
+            if (!visited[nIdx] && m_WorkingCells[nIdx] == target)
+                q.push({ nr, nc });
+        }
+    }
 }
