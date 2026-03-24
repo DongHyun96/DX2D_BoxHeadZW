@@ -305,6 +305,16 @@ void TileMapUI::DrawTileCanvas()
 
     ImGui::BeginChild("TileMapCanvas", ImVec2(0, !m_OpenDetachedCanvasWindow ? 300 : 1500), true, ImGuiWindowFlags_HorizontalScrollbar);
 
+    ImGuiIO& io = ImGui::GetIO();
+    const bool canvasHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
+
+    // 가운데 버튼 드래그 -> 실제 스크롤바 이동
+    if (canvasHovered && ImGui::IsMouseDragging(ImGuiMouseButton_Middle, 0.0f))
+    {
+        ImGui::SetScrollX(ImGui::GetScrollX() - io.MouseDelta.x);
+        ImGui::SetScrollY(ImGui::GetScrollY() - io.MouseDelta.y);
+    }
+    
     // 마우스 휠 줌 (캔버스 위에서만)
     if (ImGui::IsWindowHovered())
     {
