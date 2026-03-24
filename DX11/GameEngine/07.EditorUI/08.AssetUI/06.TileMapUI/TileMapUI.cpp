@@ -51,7 +51,8 @@ void TileMapUI::Tick_UI()
     ImGui::Spacing();
     DrawPalette();
     
-    
+    ImGui::Spacing();
+    DrawScatterToolUI();   // 여기 추가
 
     ImGui::Spacing();
     if (!m_OpenDetachedCanvasWindow)
@@ -991,5 +992,132 @@ void TileMapUI::BucketFill(int startRow, int startCol, const Ptr<ASprite>& fillS
             if (!visited[nIdx] && m_WorkingCells[nIdx] == target)
                 q.push({ nr, nc });
         }
+    }
+}
+
+void TileMapUI::DrawScatterToolUI()
+{
+    ImGui::Separator();
+    ImGui::Text("Scatter Tool");
+
+    Ptr<ASprite> target = (m_SelectedPalette >= 0 && m_SelectedPalette < (int)m_Palette.size())
+        ? m_Palette[m_SelectedPalette]
+        : nullptr;
+
+    string targetName = target ? string(target->GetKey().begin(), target->GetKey().end()) : "None";
+    ImGui::Text("Target Sprite: %s", targetName.c_str());
+
+    ImGui::Checkbox("Use Count Mode", &m_ScatterUseCountMode);
+    if (!m_ScatterUseCountMode)
+    {
+        ImGui::SetNextItemWidth(140.f);
+        ImGui::InputFloat("Chance (%)", &m_ScatterChancePercent, 1.f, 5.f, "%.1f");
+        m_ScatterChancePercent = max(0.f, min(100.f, m_ScatterChancePercent));
+    }
+    else
+    {
+        ImGui::SetNextItemWidth(140.f);
+        ImGui::InputInt("Count", &m_ScatterCount);
+        m_ScatterCount = max(0, m_ScatterCount);
+    }
+
+    ImGui::Checkbox("Use Fixed Seed", &m_ScatterUseFixedSeed);
+    if (m_ScatterUseFixedSeed)
+    {
+        ImGui::SetNextItemWidth(140.f);
+        ImGui::InputInt("Seed", &m_ScatterSeed);
+    }
+
+    ImGui::Spacing();
+    ImGui::Text("Replace Allow List (empty cell is always allowed)");
+
+    if (ImGui::Button("Allow All Existing"))
+    {
+        m_ScatterReplaceAllow.clear();
+        for (const Ptr<ASprite>& sp : m_WorkingCells)
+            if (sp) m_ScatterReplaceAllow.insert(sp.Get());
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Clear Allow List"))
+        m_ScatterReplaceAllow.clear();
+
+    ImGui::BeginChild("##ScatterReplaceAllow", ImVec2(0.f, 140.f), true);
+
+    unordered_set<ASprite*> seen;
+    for (const Ptr<ASprite>& sp : m_WorkingCells)
+    {
+        if (!sp) continue;
+        if (!seen.insert(sp.Get()).second) continue;
+
+        bool allowed = m_ScatterReplaceAllow.contains(sp.Get());
+        string label = string(sp->GetKey().begin(), sp->GetKey().end());
+
+        if (ImGui::Checkbox(label.c_str(), &allowed))
+        {
+            if (allowed) m_ScatterReplaceAllow.insert(sp.Get());
+            else         m_ScatterReplaceAllow.erase(sp.Get());
+        }
+    }
+
+    ImGui::EndChild();
+
+    ImGui::BeginDisabled(!target);
+    if (ImGui::Button("Scatter"))
+        ScatterSelectedSprite(false);
+    ImGui::SameLine();
+    if (ImGui::Button("Replace all"))
+        ScatterSelectedSprite(true);
+        
+    ImGui::EndDisabled();
+}
+
+bool TileMapUI::CanScatterOn(const Ptr<ASprite>& current) const
+{
+    if (!current) return true; // 빈 자리는 항상 허용
+    return m_ScatterReplaceAllow.contains(current.Get());
+}
+
+void TileMapUI::ScatterSelectedSprite(bool _bReplaceAll)
+{
+    Ptr<ASprite> target = (m_SelectedPalette >= 0 && m_SelectedPalette < m_Palette.size())
+        ? m_Palette[m_SelectedPalette] : nullptr;
+    if (!target) return;
+
+    vector<int> candidates;
+    candidates.reserve(m_WorkingCells.size());
+
+    for (int i = 0; i < m_WorkingCells.size(); ++i)
+    {
+        if (CanScatterOn(m_WorkingCells[i]))
+            candidates.push_back(i);
+    }
+    if (candidates.empty()) return;
+
+    mt19937 rng = m_ScatterUseFixedSeed
+        ? mt19937((uint32_t)m_ScatterSeed)
+        : mt19937(random_device{}());
+
+    if (_bReplaceAll)
+    {
+        for (int idx : candidates) m_WorkingCells[idx] = target;
+        return;
+    }
+    
+    if (!m_ScatterUseCountMode)
+    {
+        float p = std::clamp(m_ScatterChancePercent / 100.f, 0.f, 1.f);
+        std::bernoulli_distribution pick(p);
+
+        for (int idx : candidates)
+            if (pick(rng))
+                m_WorkingCells[idx] = target;
+    }
+    else
+    {
+        std::shuffle(candidates.begin(), candidates.end(), rng);
+        int n = min(m_ScatterCount, candidates.size());
+
+        for (int i = 0; i < n; ++i)
+            m_WorkingCells[candidates[i]] = target;
     }
 }

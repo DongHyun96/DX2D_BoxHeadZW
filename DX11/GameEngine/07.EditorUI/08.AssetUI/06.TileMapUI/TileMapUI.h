@@ -65,6 +65,16 @@ private:
     int                     m_PendingCol = 0;
     Vec2                    m_PendingCellSize = Vec2::Zero;
     
+private: // 타일 랜덤배치 관련
+    
+    float m_ScatterChancePercent = 15.f;   // 빈도수(%)
+    bool  m_ScatterUseCountMode = false;   // false: 확률, true: 개수
+    int   m_ScatterCount = 30;
+    bool  m_ScatterUseFixedSeed = false;
+    int   m_ScatterSeed = 0;
+
+    unordered_set<ASprite*> m_ScatterReplaceAllow; // 교체 허용 대상(빈 칸은 항상 허용)
+    
 public:
     TileMapUI();
     virtual ~TileMapUI() override;
@@ -104,5 +114,11 @@ private:
 private:
     
     void BucketFill(int startRow, int startCol, const Ptr<ASprite>& fillSprite);
+    
+private: // 타일 랜덤배치 관련
+    
+    void DrawScatterToolUI();
+    bool CanScatterOn(const Ptr<ASprite>& current) const;
+    void ScatterSelectedSprite(bool _bReplaceAll);
     
 };
