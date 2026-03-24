@@ -58,6 +58,9 @@ void CPlayerScript::Move()
     if (KEY_PRESSED(KEY::D)) Direction.x += 1.f; // Right
     if (KEY_PRESSED(KEY::W)) Direction.y += 1.f; // Up
     if (KEY_PRESSED(KEY::S)) Direction.y -= 1.f; // Down
+    
+    if (KEY_PRESSED(KEY::LSHIFT)) m_MoveSpeedFactor = 2.f;
+    else m_MoveSpeedFactor = 1.f;
 
     if (Direction.LengthSquared() == 0.f) return;
     Direction.Normalize();

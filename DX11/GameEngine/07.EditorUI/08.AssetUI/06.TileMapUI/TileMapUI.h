@@ -86,6 +86,7 @@ public:
 private:
     void SyncFromAsset(const Ptr<ATileMap>& tile);
     void ResizeGrid(int newRow, int newCol);
+    
     void DrawPalette();
     void DrawTileCanvas();
     void DrawDetachedTileCanvasWindow();
@@ -108,7 +109,6 @@ private:
 private:
     
     void DrawAtlasNameModal();
-    
     void CleanupGeneratedAssets(ATileMap* tile);
     
 private:
@@ -120,5 +120,9 @@ private: // 타일 랜덤배치 관련
     void DrawScatterToolUI();
     bool CanScatterOn(const Ptr<ASprite>& current) const;
     void ScatterSelectedSprite(bool _bReplaceAll);
+    
+private:
+    
+    void SelectTileByShortcut(); 
     
 };

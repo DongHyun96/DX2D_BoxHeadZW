@@ -48,6 +48,8 @@ void TileMapUI::Tick_UI()
     if (ImGui::InputFloat2("##CellSize", cs))
         m_CellSize = Vec2(max(1.f, cs[0]), max(1.f, cs[1]));
 
+    SelectTileByShortcut();
+    
     ImGui::Spacing();
     DrawPalette();
     
@@ -72,7 +74,10 @@ void TileMapUI::Tick_UI()
 
     ImGui::Spacing();
     if (ImGui::Button("Save TileMap"))
+    {
         BakeAndSaveTileMap();
+        DebugUtil::AddDebugLog("Save TileMap pressed", Vec4(1.f, 0.f, 0.f, 1.f));
+    }
     
     DrawDetachedTileCanvasWindow();
     DrawAtlasNameModal();
@@ -127,6 +132,16 @@ void TileMapUI::ResizeGrid(int newRow, int newCol)
     m_Col = newCol;
     m_WorkingCells.swap(newCells);
     m_LastPaintIdx = -1;
+}
+
+void TileMapUI::SelectTileByShortcut()
+{
+    if (m_Palette.empty()) return;
+    
+    if (ShortCut(ImGuiKey_Z, ImGuiInputFlags_RouteGlobal))
+        if (--m_SelectedPalette < 0) m_SelectedPalette = m_Palette.size() - 1;
+    if (ShortCut(ImGuiKey_X, ImGuiInputFlags_RouteGlobal))
+        if (++m_SelectedPalette >= m_Palette.size()) m_SelectedPalette = 0;
 }
 
 void TileMapUI::DrawPalette()
