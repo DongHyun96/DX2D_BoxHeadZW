@@ -141,19 +141,15 @@ void EditorMgr::Tick()
         if (KEY_TAP(KEY::ENTER)) ImGui::SetWindowFocus(nullptr);
         
         // 단축키 처리
-        if (!io.WantTextInput)
+        const ImGuiInputFlags flags = ImGuiInputFlags_RouteGlobal;
+        Menu* menu = static_cast<Menu*>(m_mapUI["Menu"].Get());
+        if (EditorUI::ShortCut(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_S, flags))
         {
-            const ImGuiInputFlags flags = ImGuiInputFlags_RouteGlobal;
-            Menu* menu = static_cast<Menu*>(m_mapUI["Menu"].Get());
-            if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_S, flags))
-            {
-                menu->TrySaveAllAssets();
-                menu->TrySaveCurrentLevel();
-            }
-            else if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_S, flags))
-                menu->TrySaveCurrentLevel();
-
+            menu->TrySaveAllAssets();
+            menu->TrySaveCurrentLevel();
         }
+        else if (EditorUI::ShortCut(ImGuiMod_Ctrl | ImGuiKey_S, flags))
+            menu->TrySaveCurrentLevel();
 
         // DemoUI
         if (m_bShowDemo) ImGui::ShowDemoWindow(&m_bShowDemo);

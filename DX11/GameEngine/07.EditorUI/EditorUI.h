@@ -75,9 +75,9 @@ private:
     virtual void Activate() {}
     virtual void Deactivate() {}
     
-protected:
+public:
     
-    bool Shortcut(ImGuiKeyChord _KeyChord, ImGuiInputFlags _Flags = ImGuiInputFlags_RouteFocused);
+    static bool ShortCut(ImGuiKeyChord _KeyChord, ImGuiInputFlags _Flags = ImGuiInputFlags_RouteFocused);
     
 public:
     

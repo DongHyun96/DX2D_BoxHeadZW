@@ -16,6 +16,11 @@ void DebugUtil::AddDebugLog(const wstring& _msg, const Vec4& _Color, float _Tota
         
     DebugLogUI::AddDebugInfo(LogData);
 }
+
+void DebugUtil::AddDebugLog(const string& _msg, const Vec4& _Color, float _TotalLifeTime)
+{
+    AddDebugLog(wstring(_msg.begin(), _msg.end()), _Color, _TotalLifeTime);
+}
 #else
 #endif
 

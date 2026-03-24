@@ -83,7 +83,7 @@ void EditorUI::CheckFocus()
     if (ImGui::IsWindowFocused()) EditorMgr::GetInst()->RegisterFocusedUI(this);
 }
 
-bool EditorUI::Shortcut(ImGuiKeyChord _KeyChord, ImGuiInputFlags _Flags)
+bool EditorUI::ShortCut(ImGuiKeyChord _KeyChord, ImGuiInputFlags _Flags)
 {
     ImGuiIO& io = ImGui::GetIO();
     return !io.WantTextInput && ImGui::Shortcut(_KeyChord, _Flags);

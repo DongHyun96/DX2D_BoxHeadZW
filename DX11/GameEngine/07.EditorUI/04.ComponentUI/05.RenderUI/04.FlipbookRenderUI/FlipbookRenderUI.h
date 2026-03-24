@@ -13,7 +13,10 @@ private:
     
 private:
     
+    // Editing 중 Select 한 NumberKey Shortcut (-1인 경우 아무 키 x)
+    int m_NumShortCutTapped = -1;
     
+    int m_CategoryShortCutTapped = -1;
     
 private: // 현재 선택된 Category 내에서의 Flipbook vector 관련 데이터
     
@@ -34,6 +37,8 @@ public:
     virtual void Tick_UI() override;
     
 private:
+    
+    void TickCheckNumberKey();
     
     /// <summary>
     /// 실질적으로 CFlipbookRender에 미리 처음에 세팅될 데이터들 세팅 (Category, 카테고리 내에서의 어떤 플립북을 선택할지 등) 
