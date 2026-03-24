@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Engine.h"
+#include "FontMgr.h"
 #include "GameEngine/02.Device/Device.h"
 #include "GameEngine/03.Manager/01.PathMgr/PathMgr.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
@@ -89,6 +90,8 @@ HRESULT Engine::Init(HINSTANCE _hInst, UINT _Width, UINT _Height, bool _EditorMo
     RenderMgr::GetInst()->Init();
     
     DebugUtil::AddDebugLog(L"[Engine Init] : RenderMgr INIT finished\n");
+
+    FontMgr::GetInst()->Init();
 
     if (m_EditorMode)
     {

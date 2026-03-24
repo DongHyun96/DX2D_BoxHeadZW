@@ -83,13 +83,10 @@ void EditorUI::CheckFocus()
     if (ImGui::IsWindowFocused()) EditorMgr::GetInst()->RegisterFocusedUI(this);
 }
 
-void EditorUI::SubHeading(const string& _SubHeadTitle) const
+bool EditorUI::Shortcut(ImGuiKeyChord _KeyChord, ImGuiInputFlags _Flags)
 {
-    float windowWidth = ImGui::GetWindowSize().x;
-    float textWidth   = ImGui::CalcTextSize(_SubHeadTitle.c_str()).x;
-
-    ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-    ImGui::Text(_SubHeadTitle.c_str());
+    ImGuiIO& io = ImGui::GetIO();
+    return !io.WantTextInput && ImGui::Shortcut(_KeyChord, _Flags);
 }
 
 void EditorUI::ColoredButtonTitle(const string& _Title, const ImVec4& _Color)

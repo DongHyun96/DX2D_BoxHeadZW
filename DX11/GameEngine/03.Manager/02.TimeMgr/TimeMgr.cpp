@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "TimeMgr.h"
 
+#include "FontMgr.h"
 #include "GameEngine/01.Engine/Engine.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 
@@ -73,6 +74,14 @@ void TimeMgr::Tick()
         g_Global.Time      += m_DeltaTime;
     }
     
+}
+
+void TimeMgr::Render()
+{
+    // 이거 지금 1초 간 쌓인 FPS 출력 형태로 되어있음
+    /*wchar_t buff[255];
+    swprintf_s(buff, L"DT : %f ms | %d FPS", m_DeltaTime, m_FPS);
+    FontMgr::GetInst()->DrawFont(buff, 10, 30, 24, FONT_RGBA(200, 20, 20, 255));*/
 }
 
 wstring TimeMgr::GetLocalTimeWString() const

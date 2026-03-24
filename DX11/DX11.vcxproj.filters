@@ -119,7 +119,6 @@
     <ClInclude Include="GameEngine\07.EditorUI\02.Outliner\Outliner.h" />
     <ClInclude Include="GameEngine\07.EditorUI\03.Menu\Menu.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\01.TransformUI\TransformUI.h" />
-    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\Collider2DUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\03.CameraUI\CameraUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\04.LightUI\Light2DUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\01.MeshRenderUI\MeshRenderUI.h" />
@@ -148,11 +147,28 @@
     <ClInclude Include="Header\extern.h" />
     <ClInclude Include="Source\Scripts\CCamMoveScript.h" />
     <ClInclude Include="Source\Scripts\CMonsterScript.h" />
-    <ClInclude Include="Source\Scripts\CPlayerScript.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBackgroundScript.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletScript.h" />
     <ClInclude Include="Source\ScriptMgr.h" />
+    <ClInclude Include="GameEngine\04.Asset\09.Prefab\APrefab.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\ColliderCircleUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\ColliderPointUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\ColliderRectUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\ScriptUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\08.AssetUI\03.TextureUI\TextureSpriteCreatorUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\09.MainWindowDropDetectorUI\MainWindowDropDetectorUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\10.ConfirmUI\ConfirmUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\11.CollisionMatrixUI\CollisionMatrixUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\12.DebugLogUI\DebugLogUI.h" />
+    <ClInclude Include="Module\Util.h" />
+    <ClInclude Include="Source\Manager\GameManager.h" />
+    <ClInclude Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.h" />
+    <ClInclude Include="Source\Scripts\PlayerScript\CPlayerScript.h" />
+    <ClInclude Include="Source\Scripts\PlayerScript\CPlayerSwapWeapon.h" />
+    <ClInclude Include="Source\UserHeader\userDefine.h" />
+    <ClInclude Include="Source\UserHeader\userEnum.h" />
+    <ClInclude Include="FontMgr.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Default\DX11.ico">
@@ -224,7 +240,6 @@
     <ClCompile Include="GameEngine\07.EditorUI\02.Outliner\Outliner.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\03.Menu\Menu.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\01.TransformUI\TransformUI.cpp" />
-    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\Collider2DUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\03.CameraUI\CameraUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\04.LightUI\Light2DUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\01.MeshRenderUI\MeshRenderUI.cpp" />
@@ -253,11 +268,30 @@
     <ClCompile Include="Module\SimpleMath.cpp" />
     <ClCompile Include="Source\Scripts\CCamMoveScript.cpp" />
     <ClCompile Include="Source\Scripts\CMonsterScript.cpp" />
-    <ClCompile Include="Source\Scripts\CPlayerScript.cpp" />
     <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBackgroundScript.cpp" />
     <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.cpp" />
     <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBulletScript.cpp" />
     <ClCompile Include="Source\ScriptMgr.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\05.LevelMgr\LevelMgr_Init.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\08.CollisionMgr\CollisionMgr_RayCast.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\09.EditorMgr\EditorMgr_Gizmo.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\09.Prefab\APrefab.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\ColliderCircleUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\ColliderPointUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\02.Collider2DUI\ColliderRectUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\ScriptUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\06.ContentUI\ContentUI_Delete.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\08.AssetUI\03.TextureUI\TextureSpriteCreatorUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\09.MainWindowDropDetectorUI\MainWindowDropDetectorUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\10.ConfirmUI\ConfirmUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\11.CollisionMatrixUI\CollisionMatrixUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\12.DebugLogUI\DebugLogUI.cpp" />
+    <ClCompile Include="Module\Util.cpp" />
+    <ClCompile Include="Source\Manager\GameManager.cpp" />
+    <ClCompile Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.cpp" />
+    <ClCompile Include="Source\Scripts\PlayerScript\CPlayerScript.cpp" />
+    <ClCompile Include="Source\Scripts\PlayerScript\CPlayerSwapWeapon.cpp" />
+    <ClCompile Include="FontMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Default\DX11.rc">

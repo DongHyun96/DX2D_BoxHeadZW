@@ -20,6 +20,7 @@ public:
     
     void Init();
     void Tick();
+    void Render();
     
 public:
 
@@ -33,7 +34,6 @@ public:
     /// 현재 시각 구하기(현실 시간)
     /// </summary>
     wstring GetLocalTimeWString() const;
-    
     
 };
 

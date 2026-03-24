@@ -77,7 +77,7 @@ private:
     
 protected:
     
-    void SubHeading(const string& _SubHeadTitle) const;
+    bool Shortcut(ImGuiKeyChord _KeyChord, ImGuiInputFlags _Flags = ImGuiInputFlags_RouteFocused);
     
 public:
     

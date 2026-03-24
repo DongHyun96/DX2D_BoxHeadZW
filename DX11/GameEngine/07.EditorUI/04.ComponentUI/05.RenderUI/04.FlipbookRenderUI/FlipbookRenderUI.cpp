@@ -24,16 +24,25 @@ void FlipbookRenderUI::Tick_UI()
 
     Ptr<CFlipbookRender> flipbookRender = GetTargetObject()->FlipbookRender();
     
-    // Preview에서 고른 정보를 토대로 Level의 캐릭터 멈춘 상태로 보여주기
+    // TODO : Preview에서 고른 정보를 토대로 Level의 캐릭터 멈춘 상태로 보여주기
+    /*if (ImGui::Button("Update Level Flipbook to Preview") || )
+    {
+        
+    }*/
+    ImGui::SameLine();
+    ImGui::Text("ShortCut : f");
+    
     flipbookRender->Stop(m_CurSelectedCategory, m_SelectedFlipbookIdx);
     
     // TickSelectingLevelBeginningInfo(flipbookRender);
+    // RenderUI 에서 설정한 Render Transform 현재 AFlipbook에 저장하기
     if (ImGui::Button("Save Current Transform to selected AFlipbook"))
     {
         if (Ptr<AFlipbook> TargetFlipbook = flipbookRender->GetFlipbook(m_CurSelectedCategory, m_SelectedFlipbookIdx))
         {
             TargetFlipbook->SetRenderOffset(flipbookRender->GetRenderOffset());
             TargetFlipbook->SetRenderScale(flipbookRender->GetRenderScale());
+            DebugUtil::AddDebugLog(L"RenderTransform Saved to AFlipbook");
         }
     }
 

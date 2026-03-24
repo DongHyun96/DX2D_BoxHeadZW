@@ -31,6 +31,8 @@ HRESULT Engine::Progress()
     
     // RenderMgr 렌더링
     RenderMgr::GetInst()->Progress();
+    
+    TimeMgr::GetInst()->Render();
 
     // EditorMgr
     if (m_EditorMode) EditorMgr::GetInst()->Progress();
