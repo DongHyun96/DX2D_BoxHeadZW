@@ -290,7 +290,7 @@ void TileMapUI::DrawTileCanvas()
     ImGui::SameLine();
     if (ImGui::Button("Reset")) m_Zoom = 1.0f;
 
-    ImGui::BeginChild("TileMapCanvas", ImVec2(0, 300), true, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::BeginChild("TileMapCanvas", ImVec2(0, !m_OpenDetachedCanvasWindow ? 300 : 1500), true, ImGuiWindowFlags_HorizontalScrollbar);
 
     // 마우스 휠 줌 (캔버스 위에서만)
     if (ImGui::IsWindowHovered())
@@ -332,7 +332,7 @@ void TileMapUI::DrawTileCanvas()
             {
                 if (idx != m_LastPaintIdx)
                 {
-                    Ptr<ASprite> sel = (m_SelectedPalette >= 0 && m_SelectedPalette < (int)m_Palette.size())
+                    Ptr<ASprite> sel = (m_SelectedPalette >= 0 && m_SelectedPalette < m_Palette.size())
                         ? m_Palette[m_SelectedPalette]
                         : nullptr;
                     PaintCell(row, col, sel);
@@ -398,7 +398,7 @@ void TileMapUI::DrawDetachedTileCanvasWindow()
 void TileMapUI::PaintCell(int row, int col, const Ptr<ASprite>& sp)
 {
     int idx = row * m_Col + col;
-    if (idx < 0 || idx >= (int)m_WorkingCells.size()) return;
+    if (idx < 0 || idx >= m_WorkingCells.size()) return;
     m_WorkingCells[idx] = sp;
 }
 

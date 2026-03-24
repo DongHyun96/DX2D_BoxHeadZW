@@ -23,6 +23,9 @@ CPlayerScript::~CPlayerScript()
 
 void CPlayerScript::Init()
 {
+
+    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_MoveSpeedBase, L"PlayerSpeedBase", false);
+    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_MoveSpeedFactor, L"PlayerSpeeFactor", false);
     
     /*AddScriptParam(SCRIPT_PARAM::FLOAT, &m_Speed, L"PlayerSpeed", false);
     AddScriptParam(SCRIPT_PARAM::TEXTURE, &m_Tex, L"TextureExample");
@@ -59,7 +62,7 @@ void CPlayerScript::Move()
     if (Direction.LengthSquared() == 0.f) return;
     Direction.Normalize();
     
-    m_Velocity = Direction * m_MoveSpeedBase * m_SpeedFactor;
+    m_Velocity = Direction * m_MoveSpeedBase * m_MoveSpeedFactor;
     
     Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
     Transform()->SetRelativePos(Pos);

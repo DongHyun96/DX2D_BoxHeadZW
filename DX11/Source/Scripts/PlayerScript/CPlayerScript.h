@@ -12,9 +12,8 @@ private:
     PLAYER_HANDSTATE m_HandState{}; // 현재 손에 들고 있는 무기 종류 State
     
 private:
-    
-    const float m_MoveSpeedBase     = 500.f;
-    float       m_SpeedFactor       = 1.f;
+    float m_MoveSpeedBase     = 300.f;
+    float       m_MoveSpeedFactor = 1.f;
     
     Vec3 m_Velocity{};
     

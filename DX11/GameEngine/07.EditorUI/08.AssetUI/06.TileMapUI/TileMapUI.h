@@ -32,7 +32,7 @@ private:
     float m_Zoom = 1.f;
     float m_MinZoom = 0.1f;
     float m_MaxZoom = 4.f;
-    bool  m_OpenDetachedCanvasWindow = false;
+    bool  m_OpenDetachedCanvasWindow{};
 
 private:
     

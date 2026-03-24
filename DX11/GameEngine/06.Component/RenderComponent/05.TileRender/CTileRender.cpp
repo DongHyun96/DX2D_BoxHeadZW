@@ -52,7 +52,6 @@ void CTileRender::Render()
     
     m_Buffer->Binding(20);
 
-    // TODO : 공통된 Atlas Texture가 아닐 수 있음
     GetMaterial()->SetTexture(TEX_0, m_TileMap->GetAtlas());
     
     GetMaterial()->SetScalar(INT_0, m_TileMap->GetRow());
