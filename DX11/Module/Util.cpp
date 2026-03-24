@@ -21,6 +21,15 @@ void DebugUtil::AddDebugLog(const string& _msg, const Vec4& _Color, float _Total
 {
     AddDebugLog(wstring(_msg.begin(), _msg.end()), _Color, _TotalLifeTime);
 }
+
+void DebugUtil::SetPermanentDebugLog(const string& _LogKey, const string& _Msg, const Vec4& _Color)
+{
+    DebugLogUIData LogData{};
+    LogData.LogStr = _Msg;
+    LogData.Color  = _Color;
+        
+    DebugLogUI::SetPermanentDebugInfo(_LogKey, LogData);
+}
 #else
 #endif
 

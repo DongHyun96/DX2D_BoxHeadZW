@@ -4,6 +4,7 @@
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 
 list<DebugLogUIData> DebugLogUI::m_listDebugLogs{};
+map<string, DebugLogUIData> DebugLogUI::m_mapPermanentDebugLogs{};
 
 DebugLogUI::DebugLogUI()
     : EditorUI("DebugLogUI")
@@ -16,6 +17,12 @@ DebugLogUI::~DebugLogUI()
 
 void DebugLogUI::Tick_UI()
 {
+    for (const pair<string, DebugLogUIData> Pair : m_mapPermanentDebugLogs)
+    {
+        const DebugLogUIData& Log = Pair.second;
+        ImGui::TextColored(Log.Color, Log.LogStr.c_str());
+    }
+    
     list<DebugLogUIData>::iterator iter = m_listDebugLogs.begin();
     
     while (iter != m_listDebugLogs.end())

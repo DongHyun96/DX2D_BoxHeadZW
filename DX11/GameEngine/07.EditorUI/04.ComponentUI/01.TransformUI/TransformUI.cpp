@@ -20,6 +20,7 @@ void TransformUI::Tick_UI()
     Vec3 vPos   = GetTargetObject()->Transform()->GetRelativePos();
     Vec3 vScale = GetTargetObject()->Transform()->GetRelativeScale();
     Vec3 vRot   = GetTargetObject()->Transform()->GetRelativeRot();
+    Vec3 vPivot = GetTargetObject()->Transform()->GetPivot();
 
     ImGui::Text("Position");
     ImGui::SameLine(100);
@@ -40,7 +41,11 @@ void TransformUI::Tick_UI()
         vRot = vDegree * (XM_PI / 180.f);
         GetTargetObject()->Transform()->SetRelativeRot(vRot);
     }
-
+    
+    ImGui::Text("Pivot");
+    ImGui::SameLine(100);
+    if (ImGui::DragFloat3("##PIVOT", vPivot))
+        GetTargetObject()->Transform()->SetPivot(vPivot);
 
     bool IndependentScale = GetTargetObject()->Transform()->GetIndependentScale(); 
 

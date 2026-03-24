@@ -4,6 +4,7 @@
 #include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
 #include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
 #include "GameEngine/07.EditorUI/11.CollisionMatrixUI/CollisionMatrixUI.h"
+#include "GameEngine/07.EditorUI/12.DebugLogUI/DebugLogUI.h"
 #include "Header/components.h"
 
 LevelMgr::LevelMgr()
@@ -17,7 +18,15 @@ LevelMgr::~LevelMgr()
 
 void LevelMgr::Init()
 {
-
+    switch (m_LevelState)
+    {
+    case LEVEL_STATE::PLAY: DebugUtil::SetPermanentDebugLog("LevelState", "LEVEL_STATE : PLAY", Vec4(1.f, 0.f, 0.f, 1.f));
+        break;
+    case LEVEL_STATE::PAUSE: DebugUtil::SetPermanentDebugLog("LevelState", "LEVEL_STATE : PAUSE", Vec4(1.f, 0.f, 0.f, 1.f));
+        break;
+    case LEVEL_STATE::STOP: DebugUtil::SetPermanentDebugLog("LevelState", "LEVEL_STATE : STOP", Vec4(1.f, 0.f, 0.f, 1.f));
+        break;
+    }
 }
 
 void LevelMgr::Progress()
@@ -63,6 +72,16 @@ void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
     
         
     m_LevelState = _NextState;
+    
+    switch (m_LevelState)
+    {
+    case LEVEL_STATE::PLAY: DebugUtil::SetPermanentDebugLog("LevelState", "LEVEL_STATE : PLAY", Vec4(1.f, 0.f, 0.f, 1.f));
+        break;
+    case LEVEL_STATE::PAUSE: DebugUtil::SetPermanentDebugLog("LevelState", "LEVEL_STATE : PAUSE", Vec4(1.f, 0.f, 0.f, 1.f));
+        break;
+    case LEVEL_STATE::STOP: DebugUtil::SetPermanentDebugLog("LevelState", "LEVEL_STATE : STOP", Vec4(1.f, 0.f, 0.f, 1.f));
+        break;
+    }
 }
 
 void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel)

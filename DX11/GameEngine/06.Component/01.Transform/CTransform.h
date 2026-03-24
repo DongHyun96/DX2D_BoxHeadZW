@@ -56,7 +56,8 @@ public:
 
     Vec3 GetWorldPos() const { return m_MatWorld.Translation(); }
     Vec3 GetWorldScale() const;
-    
+
+    Vec3 GetPivot() const { return m_Pivot; }
     void SetPivot(const Vec3& pivot) { this->m_Pivot = pivot; }
 
     const Matrix& GetWorldMatrix() const { return m_MatWorld; }
