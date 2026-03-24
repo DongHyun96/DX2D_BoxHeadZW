@@ -147,22 +147,33 @@ bool CFlipbookRender::CheckFinish()
     return false;
 }
 
-bool CFlipbookRender::SetCurrentCategory(const wstring& _CategoryKey)
+bool CFlipbookRender::SetCurrentCategory(const wstring& _CategoryKey, int _FlipbookToSelect, int _SpriteToSelect)
 {
     if (!m_mapCategoryFlipbooks.contains(_CategoryKey)) return false;
     
-    m_CurSelectedCategory = _CategoryKey;
-    m_vecCurSelectedCategoryFlipbooks = &m_mapCategoryFlipbooks[_CategoryKey];
-    m_CurSelectedFlipbookIdx = 0;
+    m_CurSelectedCategory               = _CategoryKey;
+    m_vecCurSelectedCategoryFlipbooks   = &m_mapCategoryFlipbooks[_CategoryKey];
+
+    // 현재 선택된 카테고리 내의 vecFlipbooks size를 넘기는 Idx가 들어왔다면 0으로 초기화
+    m_CurSelectedFlipbookIdx = (_FlipbookToSelect >= m_vecCurSelectedCategoryFlipbooks->size()) ? 0 : _FlipbookToSelect; 
     
-    m_CurAnimatingSpriteIdx = 0;
+    m_CurAnimatingSpriteIdx = _SpriteToSelect;
     m_RepeatCount           = 0;    
     m_bCurCycleFinished     = false;   
     
     m_FPS                   = 0.f;            
     m_FrameTimer            = 0.f;         
     m_bPlayReverse          = false;   
-    m_bStopped              = true;       
+    m_bStopped              = true;
+
+
+    // 빈 카테고리일 수도 있다
+    if (m_CurSelectedFlipbookIdx < m_vecCurSelectedCategoryFlipbooks->size())
+    {
+        Ptr<AFlipbook> TargetFlipbook = m_vecCurSelectedCategoryFlipbooks->at(m_CurSelectedFlipbookIdx);
+        SetRenderOffset(TargetFlipbook->GetRenderOffset());
+        SetRenderScale(TargetFlipbook->GetRenderScale());
+    }
 }
 
 bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool _bPlayReverse)

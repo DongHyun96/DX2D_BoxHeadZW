@@ -37,7 +37,7 @@ void FlipbookRenderUI::Tick_UI()
         }
     }
     ImGui::SameLine();
-    ImGui::Text("ShortCut : s"); // TODO : 이 SHortCut 사용 후 제거하기
+    ImGui::Text("ShortCut : s"); // TODO : 이 ShortCut 사용 후 제거하기
     
 
     ImGui::Separator(); ImGui::Separator(); ImGui::Separator();
@@ -199,7 +199,8 @@ void FlipbookRenderUI::TickSelectPreviewCategory(const Ptr<CFlipbookRender>& _Fl
                 if (ImGui::Selectable(strCategoryName.c_str(), selected))
                 {
                     m_CurSelectedCategory = wstring(strCategoryName.begin(), strCategoryName.end());
-                    _FlipbookRender->SetCurrentCategory(m_CurSelectedCategory);
+                    if (m_SelectedFlipbookIdx == -1) m_SelectedFlipbookIdx = 0;
+                    _FlipbookRender->SetCurrentCategory(m_CurSelectedCategory, m_SelectedFlipbookIdx, _FlipbookRender->m_CurAnimatingSpriteIdx);
                 }
             }
 
@@ -222,7 +223,8 @@ void FlipbookRenderUI::TickSelectPreviewCategory(const Ptr<CFlipbookRender>& _Fl
                 {
                     m_CategoryShortCutTapped = -1;
                     m_CurSelectedCategory = wstring(strCategoryName.begin(), strCategoryName.end());
-                    _FlipbookRender->SetCurrentCategory(m_CurSelectedCategory);
+                    if (m_SelectedFlipbookIdx == -1) m_SelectedFlipbookIdx = 0;
+                    _FlipbookRender->SetCurrentCategory(m_CurSelectedCategory, m_SelectedFlipbookIdx, _FlipbookRender->m_CurAnimatingSpriteIdx);
                     break;
                 }
                 ++index;
@@ -358,7 +360,7 @@ void FlipbookRenderUI::DrawFlipbookList(const Ptr<CFlipbookRender>& _FlipbookRen
             if (ImGui::Selectable(key.c_str(), m_SelectedFlipbookIdx == i, ImGuiSelectableFlags_AllowOverlap) || m_NumShortCutTapped - 1 == i)
             {
                 m_SelectedFlipbookIdx = i;
-                _FlipbookRender->Stop(m_CurSelectedCategory, m_SelectedFlipbookIdx, 2); // level에 배치된 Flipbook 또한 Preview로 보여주기
+                _FlipbookRender->Stop(m_CurSelectedCategory, m_SelectedFlipbookIdx, 2); // TODO : 2 지우기
                 m_NumShortCutTapped = -1;
             }
             

@@ -43,8 +43,9 @@ public:
     void CreateMaterial() override;
     
 public:
-    void FinalTick() override;
-    void Render() override;
+    
+    virtual void FinalTick() override;
+    virtual void Render() override;
     
 private:
     
@@ -56,7 +57,7 @@ public:
     /// 현재 카테고리 변경 
     /// </summary>
     /// <returns></returns>
-    bool SetCurrentCategory(const wstring& _CategoryKey);
+    bool SetCurrentCategory(const wstring& _CategoryKey, int _FlipbookToSelect = 0, int _SpriteToSelect = 0);
 
 public: // 재생 관련
 
