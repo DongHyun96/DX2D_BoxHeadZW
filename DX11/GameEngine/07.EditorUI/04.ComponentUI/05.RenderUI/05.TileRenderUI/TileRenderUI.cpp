@@ -18,6 +18,13 @@ void TileRenderUI::Tick_UI()
     RenderUI::Tick_UI();
 
     ImGui::Separator();
+    ImGui::SetNextItemOpen(false, ImGuiCond_FirstUseEver);
+    if (ImGui::CollapsingHeader("TileMap Preview", ImGuiTreeNodeFlags_None))
+        RenderPreview();
+}
+
+void TileRenderUI::RenderPreview()
+{
     ImGui::Text("Selected TileMap (Drop tilemap to change)");
 
     Ptr<CTileRender> tileRender = GetTargetObject()->TileRender();
@@ -80,8 +87,8 @@ void TileRenderUI::Tick_UI()
             {
                 for (UINT c = 0; c < col; ++c)
                 {
-                    int idx = (int)(r * col + c);
-                    if (idx < 0 || idx >= (int)sprites.size()) continue;
+                    int idx = static_cast<int>(r * col + c);
+                    if (idx < 0 || idx >= static_cast<int>(sprites.size())) continue;
 
                     Ptr<ASprite> sp = sprites[idx];
                     ImVec2 q0(start.x + c * cellW, start.y + r * cellH);
@@ -107,5 +114,5 @@ void TileRenderUI::Tick_UI()
         }
     }
 
-    ImGui::Spacing();
+    ImGui::Spacing();       
 }

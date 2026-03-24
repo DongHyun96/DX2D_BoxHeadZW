@@ -43,8 +43,8 @@ VS_OUT VS_Tile(VS_IN _input)
     // 타일맵에서 클릭된 타일의 위치를 손쉽게 구할 수 있는 등의 이점이 있다
     // _input.vPos.xy += float2(0.5f, -0.5f);    
     
-    float2 baseXY  = _input.vPos.xy + float2(0.5f, -0.5f);
-    float2 localXY = baseXY * RenderScale + RenderOffset;
+    // float2 baseXY  = _input.vPos.xy + float2(0.5f, -0.5f);
+    float2 localXY = _input.vPos.xy * RenderScale + RenderOffset;
     float4 vWorld  = mul(float4(localXY, _input.vPos.z, 1.f), g_matWorld);
     
     float4 vView = mul(vWorld, g_matView);

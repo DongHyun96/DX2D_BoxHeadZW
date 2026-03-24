@@ -94,8 +94,8 @@ float4 PS_Std2D(VS_OUT _input) : SV_Target
     if (vColor.a == 0.f) discard;
 
     // TODO : 이 if문 지우기 (ConstData testing)
-    if (g_int_0 == 1)
-        vColor.r *= 2.f;
+    /*if (g_int_0 == 1)
+        vColor.r *= 2.f;*/
     
     // 물체가 받는 빛의 총합
     float3 LightColor =  float3(0.f, 0.f, 0.f);

@@ -25,10 +25,10 @@ void CPlayerSwapWeapon::Begin()
 
 void CPlayerSwapWeapon::Tick()
 {
+    if (KEY_TAP(KEY::TILDE)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::UNARMED);
     if (KEY_TAP(KEY::NUM_1)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::PISTOL);
     if (KEY_TAP(KEY::NUM_2)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::UZI);
     if (KEY_TAP(KEY::NUM_3)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::SHOTGUN);
     if (KEY_TAP(KEY::NUM_4)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::MINIGUN);
     if (KEY_TAP(KEY::NUM_5)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::ROCKET);
-    if (KEY_TAP(KEY::NUM_6)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::UNARMED);
 }

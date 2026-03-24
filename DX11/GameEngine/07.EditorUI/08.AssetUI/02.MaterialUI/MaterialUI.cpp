@@ -140,7 +140,10 @@ void MaterialUI::ShaderParameterTick()
             
             SCALAR_PARAM Param = static_cast<SCALAR_PARAM>(static_cast<UINT>(SCALAR_PARAM::VEC4_0) + shaderParam.Index); 
             Vec4& Data = pMtrl->GetScalar<Vec4>(Param);
-            ImGui::DragFloat4("##DragFloat4", Data);
+            static ImGuiColorEditFlags base_flags = ImGuiColorEditFlags_Float;
+            if (ImGui::ColorEdit4("##Float4", Data, base_flags))
+                pMtrl->SetScalar<Vec4>(Param, Data);
+            
         }
             break;
         case SHADER_PARAM::MAT:
