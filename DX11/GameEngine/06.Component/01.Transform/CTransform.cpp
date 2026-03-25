@@ -51,7 +51,7 @@ CTransform CTransform::Lerp(const CTransform& a, const CTransform& b, float alph
 
 void CTransform::FinalTick()
 {
-	if (m_UpdateZDepthToYCoordOnEveryTick)
+	if (m_bUpdateZDepthToYCoordOnEveryTick)
 		m_RelativePos.z = m_RelativePos.y;
 	
 	Matrix matPivot		= XMMatrixTranslation(m_Pivot.x, m_Pivot.y, m_Pivot.z);
@@ -101,6 +101,7 @@ void CTransform::Binding()
 
 void CTransform::SaveToLevelFile(FILE* _File)
 {
+	fwrite(&m_bUpdateZDepthToYCoordOnEveryTick, sizeof(bool), 1, _File);
 	fwrite(&m_RelativePos  		, sizeof(Vec3), 1, _File);
 	fwrite(&m_RelativeScale		, sizeof(Vec3), 1, _File);
 	fwrite(&m_RelativeRot  		, sizeof(Vec3), 1, _File);
@@ -110,6 +111,7 @@ void CTransform::SaveToLevelFile(FILE* _File)
 
 void CTransform::LoadFromLevelFile(FILE* _File)
 {
+	fread(&m_bUpdateZDepthToYCoordOnEveryTick, sizeof(bool), 1, _File);
 	fread(m_RelativePos     	, sizeof(Vec3), 1, _File);
 	fread(m_RelativeScale   	, sizeof(Vec3), 1, _File);
 	fread(m_RelativeRot     	, sizeof(Vec3), 1, _File);

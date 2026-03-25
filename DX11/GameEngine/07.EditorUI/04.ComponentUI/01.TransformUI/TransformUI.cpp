@@ -22,6 +22,10 @@ void TransformUI::Tick_UI()
     Vec3 vRot   = GetTargetObject()->Transform()->GetRelativeRot();
     Vec3 vPivot = GetTargetObject()->Transform()->GetPivot();
 
+    bool bUpdateZDepthToYCoordOnEveryTick = GetTargetObject()->Transform()->GetUpdateZDepthToYCoordOnEveryTick();
+    if (ImGui::Checkbox("UpdateZDepthToYCoordOnEveryTick", &bUpdateZDepthToYCoordOnEveryTick))
+        GetTargetObject()->Transform()->SetUpdateZDepthToYCoordOnEveryTick(bUpdateZDepthToYCoordOnEveryTick);
+    
     ImGui::Text("Position");
     ImGui::SameLine(100);
     if (ImGui::DragFloat3("##POSITION", vPos)) // 인자로 넘긴 vPos의 값이 바뀌었다면 true

@@ -6,7 +6,7 @@ class CTransform : public Component
 {
 private:
 
-    bool        m_UpdateZDepthToYCoordOnEveryTick{}; // z depth를 매번 y로 갱신해야하는 GameObject들의 경우 해당 옵션을 켜줌
+    bool        m_bUpdateZDepthToYCoordOnEveryTick{}; // z depth를 매번 y로 갱신해야하는 GameObject들의 경우 해당 옵션을 켜줌
     Vec3        m_PrevRelativePos{}; // Blocking 용 PreRelativePos
     
 private:
@@ -70,6 +70,9 @@ public:
     void SetWorldMatrix(const Matrix& _matWorld) { m_MatWorld = _matWorld; }
     
     GET_SET(bool, IndependentScale)
+    
+    bool GetUpdateZDepthToYCoordOnEveryTick() const { return m_bUpdateZDepthToYCoordOnEveryTick; }
+    void SetUpdateZDepthToYCoordOnEveryTick(bool _UpdateTrue) { m_bUpdateZDepthToYCoordOnEveryTick = _UpdateTrue; } 
     
 public:
     
