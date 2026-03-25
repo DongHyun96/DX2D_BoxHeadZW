@@ -34,7 +34,8 @@ public:
     template<typename T>
     T& GetScalar(SCALAR_PARAM _Param);
 
-    GET_SET(RENDER_DOMAIN, Domain)
+    void SetDomain(RENDER_DOMAIN _Domain) { m_Domain = _Domain; }
+    RENDER_DOMAIN GetDomain() const { return m_Domain; }
 
 
     virtual HRESULT Save(const wstring& _FilePath) override;

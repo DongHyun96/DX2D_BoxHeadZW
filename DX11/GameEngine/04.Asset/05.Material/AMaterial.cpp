@@ -77,6 +77,11 @@ HRESULT AMaterial::Load(const wstring& _FilePath)
     
     // 재질이 사용하는 쉐이더 파이프라인 정보
     m_Shader = LoadAssetRef<AGraphicShader>(pFile);
+
+    if (GetKey() == L"Material\\Cliff1Material.mtrl")
+    {
+        int a = 0;
+    }
     
     // 파이프라인 동작 시, 어떤 텍스쳐를 전달하기로 했었는지
     for (Ptr<ATexture>& Texture : m_Tex)

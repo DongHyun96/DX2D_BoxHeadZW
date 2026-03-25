@@ -44,7 +44,15 @@ void MaterialUI::Tick_UI()
                 Ptr<Asset> pAsset = reinterpret_cast<Asset*>(data);
 
                 if (ASSET_TYPE::GRAPHICS_SHADER == pAsset->GetType())
-                    pMtrl->SetShader(static_cast<AGraphicShader*>(pAsset.Get()));
+                {
+                    AGraphicShader* ReceivedShader = static_cast<AGraphicShader*>(pAsset.Get()); 
+                    pMtrl->SetShader(ReceivedShader);
+                    if (ReceivedShader->GetKey() == L"Std2DShader")
+                    {
+                        SCALAR_PARAM Param = SCALAR_PARAM::VEC4_0; // TintColor
+                        pMtrl->SetScalar<Vec4>(Param, Vec4(1.f, 1.f, 1.f, 1.f)); // TintColor DefaultColor로 설정
+                    }
+                }
             }
         }
 
@@ -68,7 +76,8 @@ void MaterialUI::Tick_UI()
     }
 
 
-    // TODO : Render Domain 
+    // Render Domain 지정 기능
+    TickRenderDomain(pMtrl);
     
 
     ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
@@ -87,6 +96,27 @@ void MaterialUI::Tick_UI()
         wstring FilePath = CONTENT_PATH + pMtrl->GetKey();
         pMtrl->Save(FilePath);
     }*/
+}
+
+void MaterialUI::TickRenderDomain(const Ptr<AMaterial>& _InspectingMaterial)
+{
+    if (ImGui::BeginTable("##RenderDomain", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
+    {
+        RENDER_DOMAIN CurrentDomain = _InspectingMaterial->GetDomain();
+        
+        for (UINT i = 0; i < static_cast<UINT>(RENDER_DOMAIN::DOMAIN_NONE) + 1; ++i)
+        {
+            RENDER_DOMAIN Domain = static_cast<RENDER_DOMAIN>(i);
+            
+            ImGui::TableNextColumn();
+            
+            const bool Selected = (Domain == CurrentDomain);
+            if (ImGui::Selectable(RenderDomainTypeToString(Domain).c_str(), Selected))
+                _InspectingMaterial->SetDomain(Domain);
+        }
+        
+        ImGui::EndTable();
+    }
 }
 
 void MaterialUI::ShaderParameterTick()
@@ -199,4 +229,11 @@ void MaterialUI::OnSelectShader(DWORD_PTR _ListUI)
     const Ptr<AMaterial>        pMaterial   = static_cast<AMaterial*>(GetTargetAsset().Get());
     
     pMaterial->SetShader(pShader.Get());
+
+    // Std2DShader에 한해 TintColor DefaultColor로 바로 세팅
+    if (pShader->GetKey() == L"Std2DShader")
+    {
+        SCALAR_PARAM Param = SCALAR_PARAM::VEC4_0; // TintColor
+        pMaterial->SetScalar<Vec4>(Param, Vec4(1.f, 1.f, 1.f, 1.f)); // TintColor DefaultColor로 설정
+    }
 }

@@ -303,6 +303,31 @@ wstring GetExtension(const wstring& _FilePath)
     return filesystem::path(_FilePath).extension().wstring();
 }
 
+string RenderDomainTypeToString(RENDER_DOMAIN _RenderDomain)
+{
+    switch (_RenderDomain)
+    {
+    case RENDER_DOMAIN::DOMAIN_OPAQUE:      return "Domain Opaque";
+    case RENDER_DOMAIN::DOMAIN_MASKED:      return "Domain Masked";
+    case RENDER_DOMAIN::DOMAIN_TRANSPARENT: return "Domain Transparent";
+    case RENDER_DOMAIN::DOMAIN_POSTPROCESS: return "Domain PostProcess";
+    case RENDER_DOMAIN::DOMAIN_DEBUG:       return "Domain Debug";
+    case RENDER_DOMAIN::DOMAIN_NONE:        return "Domain None";
+    }
+}
+
+RENDER_DOMAIN StringToRenderDomain(const string& _RenderDomainString)
+{
+    
+    if (_RenderDomainString == "Domain Opaque")       return RENDER_DOMAIN::DOMAIN_OPAQUE;     
+    if (_RenderDomainString == "Domain Masked")       return RENDER_DOMAIN::DOMAIN_MASKED;     
+    if (_RenderDomainString == "Domain Transparent")  return RENDER_DOMAIN::DOMAIN_TRANSPARENT;
+    if (_RenderDomainString == "Domain PostProcess")  return RENDER_DOMAIN::DOMAIN_POSTPROCESS;
+    if (_RenderDomainString == "Domain Debug")        return RENDER_DOMAIN::DOMAIN_DEBUG;
+    
+    return RENDER_DOMAIN::DOMAIN_NONE;       
+}
+
 string AssetTypeToString(ASSET_TYPE _Type)
 {
     switch (_Type)

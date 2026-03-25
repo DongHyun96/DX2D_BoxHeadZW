@@ -10,6 +10,9 @@ public:
 public:
     virtual void Tick_UI() override;
 
+private:
+    
+    void TickRenderDomain(const Ptr<AMaterial>& _InspectingMaterial);
     
 private:
     

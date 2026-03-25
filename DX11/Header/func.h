@@ -126,5 +126,9 @@ bool CanRenameWindowAssetFileName(const wstring& _FilePath, const wstring& _NewF
 
 wstring GetExtension(const wstring& _FilePath);
 
+string RenderDomainTypeToString(RENDER_DOMAIN _RenderDomain);
+RENDER_DOMAIN StringToRenderDomain(const string& _RenderDomainString);
+
+
 string AssetTypeToString(ASSET_TYPE _Type);
 
