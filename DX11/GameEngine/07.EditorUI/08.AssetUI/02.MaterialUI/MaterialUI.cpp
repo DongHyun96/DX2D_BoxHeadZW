@@ -79,6 +79,11 @@ void MaterialUI::Tick_UI()
     // Render Domain 지정 기능
     TickRenderDomain(pMtrl);
     
+    // Shader BS Type 지정 기능
+    TickSelectBlendState(pMtrl);
+    
+    // Shader RS Type 지정 기능
+    TickSelectRasterizerState(pMtrl);
 
     ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
     ImGui::Text("Shader Parameter");
@@ -100,6 +105,8 @@ void MaterialUI::Tick_UI()
 
 void MaterialUI::TickRenderDomain(const Ptr<AMaterial>& _InspectingMaterial)
 {
+    if (!ImGui::CollapsingHeader("Render Domain", ImGuiTreeNodeFlags_None)) return;
+    
     if (ImGui::BeginTable("##RenderDomain", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
     {
         RENDER_DOMAIN CurrentDomain = _InspectingMaterial->GetDomain();
@@ -113,6 +120,54 @@ void MaterialUI::TickRenderDomain(const Ptr<AMaterial>& _InspectingMaterial)
             const bool Selected = (Domain == CurrentDomain);
             if (ImGui::Selectable(RenderDomainTypeToString(Domain).c_str(), Selected))
                 _InspectingMaterial->SetDomain(Domain);
+        }
+        
+        ImGui::EndTable();
+    }
+}
+
+void MaterialUI::TickSelectBlendState(const Ptr<AMaterial>& _InspectingMaterial)
+{
+    if (!_InspectingMaterial->GetShader()) return;
+    if (!ImGui::CollapsingHeader("Shader Blend State", ImGuiTreeNodeFlags_None)) return;
+    
+    if (ImGui::BeginTable("##BlendState", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
+    {
+        BS_TYPE CurrentBSType = _InspectingMaterial->GetShader()->GetBSType();
+        
+        for (UINT i = 0; i < static_cast<UINT>(BS_TYPE::END); ++i)
+        {
+            BS_TYPE BSType = static_cast<BS_TYPE>(i); 
+            
+            ImGui::TableNextColumn();
+            
+            const bool Selected = (CurrentBSType == BSType);
+            if (ImGui::Selectable(BSTypeToString(BSType).c_str(), Selected))
+                _InspectingMaterial->GetShader()->SetBSType(BSType);
+        }
+        
+        ImGui::EndTable();
+    }
+}
+
+void MaterialUI::TickSelectRasterizerState(const Ptr<AMaterial>& _InspectingMaterial)
+{
+    if (!_InspectingMaterial->GetShader()) return;
+    if (!ImGui::CollapsingHeader("Shader Rasterizer State", ImGuiTreeNodeFlags_None)) return;
+    
+    if (ImGui::BeginTable("##RasterizerState", 1, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
+    {
+        RS_TYPE CurrentRSType = _InspectingMaterial->GetShader()->GetRSType();
+        
+        for (UINT i = 0; i < static_cast<UINT>(RS_TYPE::END); ++i)
+        {
+            RS_TYPE RSType = static_cast<RS_TYPE>(i); 
+            
+            ImGui::TableNextColumn();
+            
+            const bool Selected = (CurrentRSType == RSType);
+            if (ImGui::Selectable(RSTypeToString(RSType).c_str(), Selected))
+                _InspectingMaterial->GetShader()->SetRSType(RSType);
         }
         
         ImGui::EndTable();

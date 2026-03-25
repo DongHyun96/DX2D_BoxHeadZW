@@ -31,6 +31,7 @@ void CPlayerScript::Init()
     AddScriptParam(SCRIPT_PARAM::TEXTURE, &m_Tex, L"TextureExample");
     
     m_BulletPrefab = LOAD_ASSET(APrefab, L"Prefab\\Bullet.pref");*/
+    // if (!APrefab::IsPrefabPrototypeObject(GetOwner()))
     GM->SetPlayerObject(GetOwner());
 }
 

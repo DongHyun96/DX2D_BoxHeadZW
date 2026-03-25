@@ -316,16 +316,29 @@ string RenderDomainTypeToString(RENDER_DOMAIN _RenderDomain)
     }
 }
 
-RENDER_DOMAIN StringToRenderDomain(const string& _RenderDomainString)
+string BSTypeToString(BS_TYPE _BSType)
 {
-    
-    if (_RenderDomainString == "Domain Opaque")       return RENDER_DOMAIN::DOMAIN_OPAQUE;     
-    if (_RenderDomainString == "Domain Masked")       return RENDER_DOMAIN::DOMAIN_MASKED;     
-    if (_RenderDomainString == "Domain Transparent")  return RENDER_DOMAIN::DOMAIN_TRANSPARENT;
-    if (_RenderDomainString == "Domain PostProcess")  return RENDER_DOMAIN::DOMAIN_POSTPROCESS;
-    if (_RenderDomainString == "Domain Debug")        return RENDER_DOMAIN::DOMAIN_DEBUG;
-    
-    return RENDER_DOMAIN::DOMAIN_NONE;       
+    switch (_BSType)
+    {
+    case BS_TYPE::DEFAULT:      return "BS Default";
+    case BS_TYPE::ALPHA_BLEND:  return "BS Alpha Blend";
+    case BS_TYPE::ONE_ONE:      return "BS One One";
+    case BS_TYPE::END:          return "Invalid";
+    }    
+    return "Invalid";
+}
+
+string RSTypeToString(RS_TYPE _RSType)
+{
+    switch (_RSType)
+    {
+    case RS_TYPE::CULL_BACK:    return "RS CullBack";
+    case RS_TYPE::CULL_FRONT:   return "RS CullFront";
+    case RS_TYPE::CULL_NONE:    return "RS CullNone";
+    case RS_TYPE::WIRE_FRAME:   return "RS WireFrame";
+    case RS_TYPE::END:          return "Invalid";
+    }
+    return "Invalid";
 }
 
 string AssetTypeToString(ASSET_TYPE _Type)

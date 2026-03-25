@@ -13,6 +13,8 @@ public:
 private:
     
     void TickRenderDomain(const Ptr<AMaterial>& _InspectingMaterial);
+    void TickSelectBlendState(const Ptr<AMaterial>& _InspectingMaterial);
+    void TickSelectRasterizerState(const Ptr<AMaterial>& _InspectingMaterial);
     
 private:
     

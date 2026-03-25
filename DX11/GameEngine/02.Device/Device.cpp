@@ -239,7 +239,7 @@ HRESULT Device::CreateBlendState()
     // 2. Alpha blend State
     D3D11_BLEND_DESC Desc{};
 
-    Desc.AlphaToCoverageEnable       = true;
+    Desc.AlphaToCoverageEnable       = false;
     Desc.IndependentBlendEnable      = false;
     Desc.RenderTarget[0].BlendEnable = true; // 현재 RenderTarget 1장 (0번 idx)
 
