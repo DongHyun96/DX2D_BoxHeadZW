@@ -25,7 +25,7 @@ void CPlayerScript::Init()
 {
 
     AddScriptParam(SCRIPT_PARAM::FLOAT, &m_MoveSpeedBase, L"PlayerSpeedBase", false);
-    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_MoveSpeedFactor, L"PlayerSpeeFactor", false);
+    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_MoveSpeedFactor, L"PlayerSpeedFactor", false);
     
     /*AddScriptParam(SCRIPT_PARAM::FLOAT, &m_Speed, L"PlayerSpeed", false);
     AddScriptParam(SCRIPT_PARAM::TEXTURE, &m_Tex, L"TextureExample");
@@ -39,6 +39,10 @@ void CPlayerScript::Begin()
 {
     if (GetOwner()->FlipbookRender())
         GetOwner()->FlipbookRender()->Stop(L"UnArmed", 6, 0);
+    
+    /*Collider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CBulletScript::BeginOverlap));
+    Collider2D()->AddDynamicOverlap     (this, static_cast<COLLISION_EVENT>(&CBulletScript::Overlap));
+    Collider2D()->AddDynamicEndOverlap  (this, static_cast<COLLISION_EVENT>(&CBulletScript::EndOverlap));*/
 }
 
 void CPlayerScript::Tick()
@@ -50,6 +54,8 @@ void CPlayerScript::Tick()
 
 void CPlayerScript::Move()
 {
+    Transform()->SetPrevRelativePos(Transform()->GetRelativePos()); // 이동 처리 직전에 이전 PrevPos 저장(blocking 처리용)
+    
     // Velocity 초기화
     m_Velocity = Vec3();
     

@@ -6,6 +6,10 @@ class Layer : public Entity
 {
     
     friend class ALevel;
+
+private:
+    
+    ALevel* m_OwnerLevel{};
     
 private:
 
@@ -21,6 +25,10 @@ public:
     Layer(const Layer& _Origin);
     
     virtual ~Layer() override;
+
+public:
+    
+    virtual void SetName(const wstring& name) override;
     
 public:
     

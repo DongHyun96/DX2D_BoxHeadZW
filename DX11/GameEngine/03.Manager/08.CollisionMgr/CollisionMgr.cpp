@@ -40,6 +40,7 @@ void CollisionMgr::CollisionBtwLayer(Layer* _Left, Layer* _Right)
         for (const Ptr<GameObject>& rightObject : vecRight)
         {
             if (!rightObject->GetCollider2D()) continue;
+            if (leftObject == rightObject) continue;
 
             // 두 충돌체의 고유 ID로 조합을 한 키값 생성
             COL_ID colid{};

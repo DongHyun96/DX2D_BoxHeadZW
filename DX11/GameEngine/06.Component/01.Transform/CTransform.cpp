@@ -51,6 +51,9 @@ CTransform CTransform::Lerp(const CTransform& a, const CTransform& b, float alph
 
 void CTransform::FinalTick()
 {
+	if (m_UpdateZDepthToYCoordOnEveryTick)
+		m_RelativePos.z = m_RelativePos.y;
+	
 	Matrix matPivot		= XMMatrixTranslation(m_Pivot.x, m_Pivot.y, m_Pivot.z);
 	Matrix matInvPivot	= XMMatrixInverse(nullptr, matPivot);
 

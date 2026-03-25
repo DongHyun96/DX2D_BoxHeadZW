@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "Layer.h"
 
+#include "GameEngine/04.Asset/04.Level/ALevel.h"
+
 Layer::Layer()
 {
 }
@@ -18,6 +20,12 @@ Layer::Layer(const Layer& _Origin)
 
 Layer::~Layer()
 {
+}
+
+void Layer::SetName(const wstring& name)
+{
+    if (m_OwnerLevel && m_OwnerLevel->IsLayerNameDuplicated(name, m_LayerIdx)) return;
+    Entity::SetName(name);
 }
 
 void Layer::AddObject(const Ptr<GameObject>& _Object)

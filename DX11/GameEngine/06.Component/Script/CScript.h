@@ -30,6 +30,10 @@ private:
     const int               m_ScriptType{};
     vector<tScriptParam>    m_vecScriptParam{};
     
+protected:
+    
+    Vec3 m_PrevRelativePosition{}; // Blocking 처리용 이전 PrevRelativePos 
+    
 public:
     
     CScript(int _ScriptType);

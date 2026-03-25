@@ -6,6 +6,11 @@ class CTransform : public Component
 {
 private:
 
+    bool        m_UpdateZDepthToYCoordOnEveryTick{}; // z depth를 매번 y로 갱신해야하는 GameObject들의 경우 해당 옵션을 켜줌
+    Vec3        m_PrevRelativePos{}; // Blocking 용 PreRelativePos
+    
+private:
+
     Vec3        m_RelativePos{};
     Vec3        m_RelativeScale = Vec3::One;
     Vec3        m_RelativeRot{};
@@ -41,7 +46,8 @@ public:
     Vec3 GetRelativePos()       const { return m_RelativePos; }
     Vec3 GetRelativeScale()     const { return m_RelativeScale; }
     Vec3 GetRelativeRot()       const { return m_RelativeRot; }
-    
+
+    void SetPrevRelativePos(const Vec3& pos) { m_PrevRelativePos = pos; }
     void SetRelativePos(const Vec3& pos) { m_RelativePos = pos; }
     void SetRelativeScale(const Vec3& scale) { m_RelativeScale = scale; }
     void SetRelativeRot(const Vec3& rotation) { m_RelativeRot = rotation; }
@@ -89,7 +95,7 @@ public:
     }
     
 public:
-
+    
     /// <summary> 세팅된 위치, 크기, 회전 정보를 하나의 World행렬로 묶어준다 </summary>
     virtual void FinalTick() override;
 
@@ -97,5 +103,16 @@ public:
     /// 데이터를 GPU 메모리로 전송
     /// </summary>
     void Binding();
+    
+public:
+    
+    /// <summary>
+    /// 충돌 처리 Block 반응으로 Prev RelativePos로 돌아갈 시에, 호출시킨다 
+    /// </summary>
+    void UpdateTransformToPrevRelativePos()
+    {
+        m_RelativePos = m_PrevRelativePos;
+        FinalTick();
+    }
     
 };

@@ -10,6 +10,14 @@ private:
     Layer   m_arrLayer[MAX_LAYER]{};        // 하나의 레벨안에 총 32개의 레이어가 존재
     UINT    m_CollisionMatrix[MAX_LAYER]{}; // 어떤 레이어와, 어떤 레이어가 충돌검사를 진행할지 마킹한 데이터 테이블
     bool    m_Changed{};                    // 레벨 안에 오브젝트들의 상태가 변경됐는지 확인하는 변수 (오브젝트 추가, 삭제, 또는 오브젝트끼리의 계층관계가 변경 등)
+
+private:
+    
+    /// <summary>
+    /// 레벨 Begin 시, 현재 LayerName과 Idx 저장 (UnNamed Layer의 경우 저장 x)
+    /// 주의 : 중복된 LayerName이 존재하면 안된다. -> 중복 안되게끔 사전 처리 모두 해놓음
+    /// </summary>
+    map<wstring, UINT> m_mapLayerNameIndex{};
     
 public:
     
@@ -33,6 +41,19 @@ public:
     void Tick();
     void FinalTick();
 
+public:
+    /// <summary>
+    /// 이미 해당 layer 이름이 이 Level에 존재하는지 체크 (자기 자신 Idx는 제외) 
+    /// </summary>
+    bool IsLayerNameDuplicated(const wstring& _LayerName, int _SelfIdx);
+
+    /// <summary>
+    /// LayerName으로 LayerIndex 찾기
+    /// </summary>
+    /// <param name="_LayerName"></param>
+    /// <returns> : 만약 해당하는 이름이 없다면 return -1 </returns>
+    UINT GetLayerIndexByLayerName(const wstring& _LayerName) const;
+    
 public:
     
     void CheckCollisionLayer(UINT _LayerIdx1, UINT _LayerIdx2);

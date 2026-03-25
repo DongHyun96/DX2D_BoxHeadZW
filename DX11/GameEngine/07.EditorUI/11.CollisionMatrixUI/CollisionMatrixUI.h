@@ -9,6 +9,8 @@ class CollisionMatrixUI : public EditorUI
 private:
     bool m_NameInit{};
     char m_LayerNameBuf[MAX_LAYER][64]{};
+    
+    bool m_arrLayerNameError[MAX_LAYER]{};
 
 public:
     CollisionMatrixUI();
@@ -17,4 +19,9 @@ public:
     virtual void Tick_UI() override;
     
     void RefreshFromLevel();
+    
+private:
+    
+    virtual void Deactivate() override;
+    
 };

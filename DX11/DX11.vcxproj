@@ -283,6 +283,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletScript.h" />
     <ClInclude Include="Source\Scripts\CCamMoveScript.h" />
     <ClInclude Include="Source\Scripts\CMonsterScript.h" />
+    <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
     <ClInclude Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.h" />
     <ClInclude Include="Source\Scripts\PlayerScript\CPlayerScript.h" />
     <ClInclude Include="Source\Scripts\PlayerScript\CPlayerSwapWeapon.h" />
@@ -1013,6 +1014,7 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Source\Scripts\Obstacle\CObstacle.cpp" />
     <ClCompile Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.cpp" />
     <ClCompile Include="Source\Scripts\PlayerScript\CPlayerScript.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>

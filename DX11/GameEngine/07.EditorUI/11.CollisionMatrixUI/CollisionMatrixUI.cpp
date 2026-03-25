@@ -43,14 +43,29 @@ void CollisionMatrixUI::Tick_UI()
         
         ImGui::Text("%02d", i);
         ImGui::SameLine();
+
+        if (m_arrLayerNameError[i]) ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 0.f, 0.f, 1.f));
+            
+        if (ImGui::InputText("##LayerName", m_LayerNameBuf[i], sizeof(m_LayerNameBuf[i])))
+        {
+            if (m_arrLayerNameError[i]) ImGui::PopStyleColor();
+            m_arrLayerNameError[i] = false;
+        }
         
-        ImGui::InputText("##LayerName", m_LayerNameBuf[i], sizeof(m_LayerNameBuf[i]));
+        if (m_arrLayerNameError[i]) ImGui::PopStyleColor();
+        
         if (ImGui::IsItemDeactivatedAfterEdit())
         {
             string s = m_LayerNameBuf[i];
             wstring ws(s.begin(), s.end());
-            CurLevel->GetLayer(i)->SetName(ws);
-            CurLevel->SetChanged();
+            
+            if (!CurLevel->IsLayerNameDuplicated(ws, i))
+            {
+                CurLevel->GetLayer(i)->SetName(ws);
+                CurLevel->SetChanged();
+            }
+            else m_arrLayerNameError[i] = true;
+            
         }
         ImGui::PopID();
     }
@@ -116,4 +131,13 @@ void CollisionMatrixUI::RefreshFromLevel()
     }
 
     m_NameInit = true;
+}
+
+void CollisionMatrixUI::Deactivate()
+{
+    for (int i = 0; i < MAX_LAYER; ++i)
+    {
+        if (m_arrLayerNameError[i])
+            m_LayerNameBuf[i][0] = '\0';
+    }
 }

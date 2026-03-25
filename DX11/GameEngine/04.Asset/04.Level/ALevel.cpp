@@ -9,7 +9,10 @@ ALevel::ALevel()
     , m_CollisionMatrix{}
 {
     for (int i = 0; i < MAX_LAYER; ++i)
+    {
         m_arrLayer[i].m_LayerIdx = i;
+        m_arrLayer[i].m_OwnerLevel = this;
+    }
 }
 
 ALevel::~ALevel()
@@ -28,8 +31,13 @@ void ALevel::Deregister()
 
 void ALevel::Begin()
 {
+    m_mapLayerNameIndex.clear();
+    
     for (Layer& layer : m_arrLayer)
+    {
+        m_mapLayerNameIndex[layer.GetName()] = layer.m_LayerIdx;
         layer.Begin();    
+    }
 }
 
 void ALevel::Tick()
@@ -42,6 +50,22 @@ void ALevel::FinalTick()
 {
     for (Layer& layer : m_arrLayer)
         layer.FinalTick();    
+}
+
+bool ALevel::IsLayerNameDuplicated(const wstring& _LayerName, int _SelfIdx)
+{
+    for (UINT i = 0; i < MAX_LAYER; ++i)
+    {
+        if (i == _SelfIdx) continue;        
+        if (m_arrLayer[i].GetName() == _LayerName) return true;
+    }
+    return false;
+}
+
+UINT ALevel::GetLayerIndexByLayerName(const wstring& _LayerName) const
+{
+    if (!m_mapLayerNameIndex.contains(_LayerName)) return -1;
+    return m_mapLayerNameIndex.at(_LayerName);
 }
 
 void ALevel::CheckCollisionLayer(UINT _LayerIdx1, UINT _LayerIdx2)

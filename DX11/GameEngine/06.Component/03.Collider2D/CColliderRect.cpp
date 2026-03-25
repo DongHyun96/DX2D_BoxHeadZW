@@ -40,15 +40,15 @@ bool CColliderRect::IsCollision(CColliderRect* _OtherRect)
 bool CColliderRect::IsCollision(CColliderCircle* _OtherCircle)
 {
     // this Rect의 회전이 들어가 있지 않다면 AABBCollision 검사로 처리
-    // return (this->Transform()->GetDir(DIR::RIGHT) == Vec3::Right) ? AABBCollision(_OtherCircle) : OBBCollision(_OtherCircle);
-    return OBBCollision(_OtherCircle);
+    return (this->Transform()->GetDir(DIR::RIGHT) == Vec3::Right) ? AABBCollision(_OtherCircle) : OBBCollision(_OtherCircle);
+    // return OBBCollision(_OtherCircle);
 }
 
 bool CColliderRect::IsCollision(CColliderPoint* _OtherPoint)
 {
     // this Rect의 회전이 들어가 있지 않다면 AABBCollision 검사로 처리
-    // return (this->Transform()->GetDir(DIR::RIGHT) == Vec3::Right) ? AABBCollision(_OtherPoint) : OBBCollision(_OtherPoint);
-    return OBBCollision(_OtherPoint);
+    return (this->Transform()->GetDir(DIR::RIGHT) == Vec3::Right) ? AABBCollision(_OtherPoint) : OBBCollision(_OtherPoint);
+    // return OBBCollision(_OtherPoint);
 }
 
 bool CColliderRect::AABBCollision(CColliderRect* _OtherRect)
@@ -92,7 +92,8 @@ bool CColliderRect::AABBCollision(CColliderCircle* _OtherCircle)
     
     ClosestPointToCircle.x = min(max(Left, CircleMid.x), Right);
     ClosestPointToCircle.y = min(max(Bottom, CircleMid.y), Top);
-    
+
+    // TODO : 이 라인 지우기
     DrawDebugCircle(ClosestPointToCircle, 5.f, Vec4(1.f, 0.f, 0.f, 1.f), 0.f);
     
     return _OtherCircle->IsCollision(ClosestPointToCircle);
@@ -177,7 +178,9 @@ bool CColliderRect::OBBCollision(CColliderCircle* _OtherCircle)
     const Vec2 vHalfSize = Transform()->GetWorldScale() * m_Scale * 0.5f;
     
     Vec3 vDiff = _OtherCircle->GetWorldPos() - this->GetWorldPos();
+    vDiff.z = 0.f;
     Vec3 vClosestPoint = this->GetWorldPos();
+    vClosestPoint.z = 0.f;
 
     for (int i = 0; i < 2; ++i)
     {
@@ -193,6 +196,7 @@ bool CColliderRect::OBBCollision(CColliderCircle* _OtherCircle)
     }
 
     Vec3 vDistVec = _OtherCircle->GetWorldPos() - vClosestPoint;
+    vDistVec.z = 0.f;
     
     const float fDistSq = vDistVec.LengthSquared(); 
     const float fRadius = _OtherCircle->GetRadius();

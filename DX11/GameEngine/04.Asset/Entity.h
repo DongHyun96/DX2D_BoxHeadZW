@@ -25,7 +25,7 @@ public:
 	
 	UINT GetEntityInstID() const { return m_InstID; }
 	
-	void SetName(const wstring& name){ this->m_Name = name; }
+	virtual void SetName(const wstring& name){ this->m_Name = name; }
 	const wstring& GetName() const { return m_Name; }
 	
 public:
