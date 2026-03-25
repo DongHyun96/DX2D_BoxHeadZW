@@ -26,6 +26,8 @@ GameObject::GameObject(const GameObject& _Origin)
 	, m_Parent(nullptr)
 	, m_Dead(false)
 	, m_LayerIdx(_Origin.m_LayerIdx) // 원본의 LayerIdx를 따르도록 처리
+	, m_IsActive(_Origin.m_IsActive)
+	, m_IsVisible(_Origin.m_IsVisible)
 {
 	// 원본 오브젝트와 동일한 세팅의 컴포넌트를 복사해서 나한테 넣어준다.
 	for (UINT i = 0; i < static_cast<UINT>(COMPONENT_TYPE::END); ++i)
@@ -116,7 +118,7 @@ void GameObject::FinalTick_Editor()
 
 void GameObject::Render()
 {
-	if (!m_IsActive) return;
+	if (!m_IsActive || !m_IsVisible) return;
 	
 	if (m_RenderCom)
 	{
@@ -362,6 +364,10 @@ void GameObject::SaveToLevelFile(FILE* _File)
 	
 	// Layer Idx 저장
 	fwrite(&m_LayerIdx, sizeof(UINT), 1, _File);
+	
+	// Active, Visible 상태 저장
+	fwrite(&m_IsActive, sizeof(bool), 1, _File);
+	fwrite(&m_IsVisible, sizeof(bool), 1, _File);
 }
 
 void GameObject::LoadFromLevelFile(FILE* _File)
@@ -428,4 +434,8 @@ void GameObject::LoadFromLevelFile(FILE* _File)
 	
 	// LayerIdx 복구 
 	fread(&m_LayerIdx, sizeof(UINT), 1, _File);
+	
+	// Active, Visible 상태 복구
+	fread(&m_IsActive, sizeof(bool), 1, _File);
+	fread(&m_IsVisible, sizeof(bool), 1, _File);
 }

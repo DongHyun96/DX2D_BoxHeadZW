@@ -60,6 +60,15 @@ void ObjectInspectorViewer::TickHeaderUI()
      
     ImGui::SeparatorText("");
     
+    bool bIsActive = m_TargetObject->GetIsActive();
+    if (ImGui::Checkbox("IsActive", &bIsActive))
+        m_TargetObject->SetIsActive(bIsActive);
+    
+    ImGui::SameLine();
+    bool bIsVisible = m_TargetObject->GetIsVisible();
+    if (ImGui::Checkbox("IsVisible", &bIsVisible))
+        m_TargetObject->SetIsVisible(bIsVisible);
+    
     ImGui::Spacing();
 
     ImGui::SetNextItemOpen(false, ImGuiCond_FirstUseEver);
@@ -344,6 +353,7 @@ void ObjectInspectorViewer::TickCreateThisObjectAsPrefabUI()
         Ptr<APrefab> Prefab = AssetMgr::GetInst()->CreateNewAsset<APrefab>(AssetName);
         Prefab->SetProtoObj(m_TargetObject);
         AssetMgr::GetInst()->AddAsset(Prefab->GetKey(), Prefab.Get());
+        DebugUtil::AddDebugLog(AssetName + L" created", COLOR_YELLOW);
     }
     
     ImGui::EndDisabled();

@@ -19,6 +19,7 @@ class GameObject : public Entity
 private:
 	
 	bool m_IsActive = true;
+	bool m_IsVisible = true;
 	
 private:
 
@@ -106,7 +107,12 @@ public:
 public:
 	
 	bool IsDead() const { return m_Dead; }
-	GET_SET(bool, IsActive)
+	
+	bool GetIsActive() const { return m_IsActive; }
+	void SetIsActive(bool _Active) { m_IsActive = _Active; }
+	
+	bool GetIsVisible() const { return m_IsVisible; }
+	void SetIsVisible(bool _Visible) { m_IsVisible = _Visible; }
 	
 public:
 	
