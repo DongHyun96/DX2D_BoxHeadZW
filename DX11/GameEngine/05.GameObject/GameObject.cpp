@@ -116,7 +116,7 @@ void GameObject::FinalTick_Editor()
 
 void GameObject::Render()
 {
-	if (!m_IsActive) return;	
+	if (!m_IsActive) return;
 	
 	if (m_RenderCom)
 	{

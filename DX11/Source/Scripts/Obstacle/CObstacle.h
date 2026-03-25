@@ -24,5 +24,5 @@ private:
     
     void BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
     void Overlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
-    void EndOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
+    // void EndOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
 };
