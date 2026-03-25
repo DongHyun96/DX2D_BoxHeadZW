@@ -228,7 +228,7 @@ void Outliner::OnAddChild(DWORD_PTR _Src, DWORD_PTR _Dest)
     Ptr<GameObject> SrcObj  = reinterpret_cast<GameObject*>(pDragNode->Data);
     Ptr<GameObject> DestObj = (pDropNode) ? reinterpret_cast<GameObject*>(pDropNode->Data) : nullptr;
 
-    // DestObj가 없을 때(공백에 드랍) 
+    // DestObj가 없을 때(공백에 드랍) -> 최상위 오브젝트로 해방 처리
     if (!DestObj)
     {
         if (SrcObj->GetParent()) // 자식타입 오브젝트인 경우

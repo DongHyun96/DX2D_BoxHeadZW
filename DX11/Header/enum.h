@@ -58,10 +58,10 @@ enum class ASSET_TYPE
 enum class COMPONENT_TYPE
 {
     // Engine 제공 Component Type들
-    TRANSFORM,
-    CAMERA,
+    TRANSFORM,              
+    CAMERA,                 
     
-    COLLIDER2D_RECT,
+    COLLIDER2D_RECT,        
     COLLIDER2D_CIRCLE,
     COLLIDER2D_POINT,
     

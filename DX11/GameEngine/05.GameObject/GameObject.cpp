@@ -269,7 +269,7 @@ void GameObject::DeregisterAsParent()
 
 void GameObject::RegisterAsParent()
 {
-	if (m_bInLayer) return;
+	// if (m_bInLayer) return;
 	LevelMgr::GetInst()->GetCurLevel()->GetLayer(m_LayerIdx)->AddObject(this);
 }
 
