@@ -14,7 +14,7 @@ private:
     UINT        m_LayerCheck{};     // 어떤 레이어만 화면에 렌더링 할 것인지 비트체크
     PROJ_TYPE   m_Type{};           // 투영방식
     
-    float       m_Far{};            // 카메라 시야 최대거리
+    float       m_Far{};            // 카메라 시야 최대거리 (현재 Clipping 공간 1~10000으로 설정되어 있음)
     float       m_Width{};          // 투영 가로길이 (직교투영)
     float       m_AspectRatio{};    // 종횡비 (가로 / 세로), 세로대비 가로의 길이 비율
     
@@ -53,7 +53,10 @@ public:
 public:
 
     GET_SET(PROJ_TYPE, Type)
-    GET_SET(float, Far)
+    
+    float GetFar() const { return m_Far; }
+    void SetFar(float _Far) { m_Far = _Far; }
+    
     GET_SET(float, Width)
     GET_SET(float, AspectRatio)
     
@@ -76,7 +79,8 @@ public:
     
     
 public:
-    
+
+    virtual void Init() override;
     virtual void Begin() override;
     virtual void FinalTick() override;
     

@@ -32,3 +32,6 @@
 #define COLOR_WHITE_HALF   Vec4(1.f, 1.f, 1.f, 0.5f)
 #define COLOR_BLACK_HALF   Vec4(0.f, 0.f, 0.f, 0.5f)
 
+
+
+constexpr float CAMERA2D_POS_Z = -5000.f;

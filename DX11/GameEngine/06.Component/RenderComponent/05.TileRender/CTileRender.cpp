@@ -114,7 +114,7 @@ void CTileRender::SetTileMap(const Ptr<ATileMap>& _TileMap)
     // 이전 정보 리셋
     m_vecSpriteInfo.clear();
     
-    // 크기조정 -> TODO : 직접 Scale 잡을 것
+    // 크기조정 ->
     /*const UINT Row        = m_TileMap->GetRow();
     const UINT Col        = m_TileMap->GetCol();
     const Vec2 TileSize   = m_TileMap->GetTileSize();

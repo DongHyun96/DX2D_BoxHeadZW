@@ -24,9 +24,8 @@ void CCamMoveScript::Tick()
     // Move();
     
     // 일단은 Player를 무조건 따라가도록 처리
-    float z = Transform()->GetRelativePosZ();
     const Vec3 PlayerPos = GM->GetPlayerObject()->Transform()->GetRelativePos();
-    const Vec3 CamPos = {PlayerPos.x, PlayerPos.y, z}; 
+    const Vec3 CamPos = {PlayerPos.x, PlayerPos.y, CAMERA2D_POS_Z}; 
     Transform()->SetRelativePos(CamPos);
 }
 

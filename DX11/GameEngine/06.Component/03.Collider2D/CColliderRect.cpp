@@ -92,9 +92,6 @@ bool CColliderRect::AABBCollision(CColliderCircle* _OtherCircle)
     
     ClosestPointToCircle.x = min(max(Left, CircleMid.x), Right);
     ClosestPointToCircle.y = min(max(Bottom, CircleMid.y), Top);
-
-    // TODO : 이 라인 지우기
-    DrawDebugCircle(ClosestPointToCircle, 5.f, Vec4(1.f, 0.f, 0.f, 1.f), 0.f);
     
     return _OtherCircle->IsCollision(ClosestPointToCircle);
 }

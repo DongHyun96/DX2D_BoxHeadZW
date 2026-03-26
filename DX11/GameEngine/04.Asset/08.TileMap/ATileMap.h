@@ -10,7 +10,7 @@ private:
     UINT                    m_Col{};              // 타일맵의 열 개수
     Vec2                    m_TileSize{};         // 타일맵을 구성하는 타일 1개의 크기
 
-    Ptr<ATexture>           m_Atlas{};            // 타일맵을 구성하는 Sprite 들의 공통 아틀라스 텍스쳐 -> TODO : 공통된 Atlas Texture가 아닌 구조가 될수도 있음
+    Ptr<ATexture>           m_Atlas{};            // 타일맵을 구성하는 Sprite 들의 공통 아틀라스 텍스쳐
     vector<Ptr<ASprite>>    m_vecSpriteInfo{};
     
 private:

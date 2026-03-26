@@ -16,24 +16,26 @@ CCamera::~CCamera()
 
 void CCamera::SaveToLevelFile(FILE* _File)
 {
-    fwrite(&m_LayerCheck, sizeof(UINT), 1, _File);      
-    fwrite(&m_Type, sizeof(PROJ_TYPE), 1, _File);       
-    fwrite(&m_Far, sizeof(float), 1, _File);            
-    fwrite(&m_Width, sizeof(float), 1, _File);          
-    fwrite(&m_AspectRatio, sizeof(float), 1, _File);    
-    fwrite(&m_FOV, sizeof(float), 1, _File);            
-    fwrite(&m_OrthoScale, sizeof(float), 1, _File);     
+    fwrite(&m_LayerCheck,    sizeof(UINT),       1, _File);      
+    fwrite(&m_Type,          sizeof(PROJ_TYPE),  1, _File);       
+    fwrite(&m_Far,           sizeof(float),      1, _File);            
+    fwrite(&m_Width,         sizeof(float),      1, _File);          
+    fwrite(&m_AspectRatio,   sizeof(float),      1, _File);    
+    fwrite(&m_FOV,           sizeof(float),      1, _File);            
+    fwrite(&m_OrthoScale,    sizeof(float),      1, _File);     
 }
 
 void CCamera::LoadFromLevelFile(FILE* _File)
 {
-    fread(&m_LayerCheck, sizeof(UINT), 1, _File);      
-    fread(&m_Type, sizeof(PROJ_TYPE), 1, _File);       
-    fread(&m_Far, sizeof(float), 1, _File);            
-    fread(&m_Width, sizeof(float), 1, _File);          
-    fread(&m_AspectRatio, sizeof(float), 1, _File);    
-    fread(&m_FOV, sizeof(float), 1, _File);            
-    fread(&m_OrthoScale, sizeof(float), 1, _File);
+    fread(&m_LayerCheck,    sizeof(UINT),       1, _File);      
+    fread(&m_Type,          sizeof(PROJ_TYPE),  1, _File);       
+    fread(&m_Far,           sizeof(float),      1, _File);            
+    fread(&m_Width,         sizeof(float),      1, _File);          
+    fread(&m_AspectRatio,   sizeof(float),      1, _File);    
+    fread(&m_FOV,           sizeof(float),      1, _File);            
+    fread(&m_OrthoScale,    sizeof(float),      1, _File);
+    
+    // 강제로 z값 맞추기
 }
 
 void CCamera::LayerCheck(int _Idx)
@@ -41,12 +43,17 @@ void CCamera::LayerCheck(int _Idx)
     m_LayerCheck ^= (1 << _Idx);
 }
 
+void CCamera::Init()
+{
+    // Clipping Plane -> 1 ~ 10000
+    // -2500 ~ 2500 -> 맵 z 범위 (또는 y 범위)
+    // -5000 ~ 5000
+}
+
 void CCamera::Begin()
 {
     // RenderMgr에 카메라(본인)을 등록
     RenderMgr::GetInst()->RegisterMainCamera(this);
-    
-    Transform()->SetRelativePosZ(-300.f);
 }
 
 void CCamera::FinalTick()

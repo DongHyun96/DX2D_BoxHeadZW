@@ -32,9 +32,10 @@ void CEditorCamMoveScript::Tick()
     if (KEY_PRESSED(KEY::MRB))
     {
         Vec2 vMouseDir = KeyMgr::GetInst()->GetMouseDir();
-        Vec3 Direction = Vec3(-vMouseDir.x, vMouseDir.y, 0.f);
+        Vec3 Direction = Vec3(-vMouseDir.x, vMouseDir.y, Transform()->GetRelativePosZ());
         
         m_TransformPosDest += Direction * Speed * E_DT;
+        m_TransformPosDest.z = CAMERA2D_POS_Z;
     }
     
     Vec3 Pos = Transform()->GetRelativePos();
