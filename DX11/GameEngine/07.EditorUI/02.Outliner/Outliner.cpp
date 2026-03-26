@@ -112,7 +112,8 @@ void Outliner::DuplicateObjectTick()
     for (const Ptr<GameObject>& gameObject : vecToDuplicate)
     {
         Ptr<GameObject> ClonedObject = gameObject->Clone();
-        LevelMgr::GetInst()->GetCurLevel()->AddObject(ClonedObject->GetLayerIdx(), ClonedObject);
+        if (gameObject->GetParent()) gameObject->GetParent()->AddChild(ClonedObject); // 원본의 부모가 존재한다면, 원본의 부모 밑으로 들어가도록 처리
+        else LevelMgr::GetInst()->GetCurLevel()->AddObject(ClonedObject->GetLayerIdx(), ClonedObject); // 최상위 부모 처리
     }
     ReNew();
 }

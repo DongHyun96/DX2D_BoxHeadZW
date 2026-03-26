@@ -35,6 +35,16 @@ void TransformUI::Tick_UI()
     ImGui::SameLine(100); // 100Pixel 뒤로 이어붙이기
     if (ImGui::DragFloat3("##SCALE", vScale))
         GetTargetObject()->Transform()->SetRelativeScale(vScale);
+    
+    ImGui::SameLine(490);
+    if (ImGui::SmallButton("Swap XY"))
+    {
+        
+        const float X = GetTargetObject()->Transform()->GetRelativeScaleX();
+        const float Y = GetTargetObject()->Transform()->GetRelativeScaleY();
+        GetTargetObject()->Transform()->SetRelativeScaleX(Y);
+        GetTargetObject()->Transform()->SetRelativeScaleY(X);
+    }
 
     Vec3 vDegree = vRot * 180.f / XM_PI;
 
