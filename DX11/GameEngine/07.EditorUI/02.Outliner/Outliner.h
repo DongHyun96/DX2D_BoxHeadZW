@@ -12,6 +12,7 @@ private:
 private:
     
     Ptr<GameObject>         m_GizmoSelectedObject{};    // Gizmo 처리 SelectedObject
+    
     vector<Ptr<GameObject>> m_PendingToKillObjects{};   // 삭제 요청이 들어왔고, Confirm창 Yes 누르면 곧 레벨에서 삭제될 오브젝트들
     
 private: // Renaming 관련
