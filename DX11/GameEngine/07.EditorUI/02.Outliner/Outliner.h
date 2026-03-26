@@ -69,6 +69,7 @@ private:
 public:
     
     const Ptr<GameObject>& GetSelectedObject() const { return m_GizmoSelectedObject; }
+    vector<Ptr<GameObject>> GetSelectedObjects() const;
     
 private:
 

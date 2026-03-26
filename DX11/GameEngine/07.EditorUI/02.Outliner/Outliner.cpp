@@ -259,6 +259,30 @@ void Outliner::AddGameObject(const Ptr<TreeNode>& _ParentNode, const Ptr<GameObj
         AddGameObject(ParentNode, ChildObject);
 }
 
+vector<Ptr<GameObject>> Outliner::GetSelectedObjects() const
+{
+    vector<Ptr<GameObject>> selectedObjects{};
+
+    const auto& selectedNodes = m_Tree->GetSelectedNodes();
+    if (!selectedNodes.empty())
+    {
+        selectedObjects.reserve(selectedNodes.size());
+        for (const Ptr<TreeNode>& node : selectedNodes)
+        {
+            if (!node || node->Data == 0) continue;
+            selectedObjects.push_back(reinterpret_cast<GameObject*>(node->Data));
+        }
+    }
+    else
+    {
+        Ptr<TreeNode> single = m_Tree->GetSelected();
+        if (single && single->Data != 0)
+            selectedObjects.push_back(reinterpret_cast<GameObject*>(single->Data));
+    }
+
+    return selectedObjects;
+}
+
 void Outliner::OnSelectGameObject(DWORD_PTR _Object)
 {
     Ptr<GameObject> pSelectedObject = reinterpret_cast<GameObject*>(_Object);
