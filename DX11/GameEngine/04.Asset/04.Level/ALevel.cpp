@@ -203,6 +203,27 @@ HRESULT ALevel::Load(const wstring& _FilePath)
         }
     }
     
+    // Scale Z값 처리 (0인 경우 자동적으로 1로 잡는 처리를 넣어주었다)
+    for (Layer& layer : m_arrLayer)
+    {
+        for (const Ptr<GameObject>& ParentObject : layer.GetParentObjects())
+        {
+            queue<Ptr<GameObject>> q{};
+            q.push(ParentObject);
+            
+            while (!q.empty())
+            {
+                Ptr<GameObject> pCurrent = q.front(); q.pop();
+                for (const Ptr<GameObject>& Child : pCurrent->GetChildren())
+                    q.push(Child);
+                
+                if (pCurrent->Transform() && pCurrent->Transform()->GetRelativeScaleZ() == 0.f)
+                    pCurrent->Transform()->SetRelativeScaleZ(1.f);
+            }
+        }
+    }
+    
+    
     fclose(pFile);
     
     return S_OK;

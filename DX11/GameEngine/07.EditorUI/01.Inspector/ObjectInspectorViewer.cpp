@@ -239,7 +239,12 @@ if (ImGui::BeginPopup("AddComponentPopup"))
     auto EnsureTransform = [&]()
     {
         if (!m_TargetObject->GetComponent(COMPONENT_TYPE::TRANSFORM))
-            m_TargetObject->AddComponent(new CTransform);
+        {
+            Ptr<CTransform> pNewTransform = new CTransform;
+            pNewTransform->SetRelativeScale(200.f, 200.f, 1.f);
+            m_TargetObject->AddComponent(pNewTransform.Get());
+            
+        }
     };
 
     // Transform은 대부분 항상 존재한다고 가정한다면, 그냥 숨겨도 됨
@@ -303,8 +308,14 @@ if (ImGui::BeginPopup("AddComponentPopup"))
 
             switch (item.type)
             {
-            case COMPONENT_TYPE::TRANSFORM:       pNew = new CTransform;      break;
-            case COMPONENT_TYPE::CAMERA:          pNew = new CCamera;         break;
+            case COMPONENT_TYPE::TRANSFORM:
+            {
+                CTransform* pNewTransform = new CTransform;
+                pNewTransform->SetRelativeScale(200.f, 200.f, 1.f);
+                pNew = pNewTransform;
+            }
+                break;
+            case COMPONENT_TYPE::CAMERA:          pNew = new CCamera; break;
             case COMPONENT_TYPE::COLLIDER2D_RECT:
                 EnsureTransform();
                 pNew = new CColliderRect;

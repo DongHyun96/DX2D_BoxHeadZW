@@ -48,9 +48,15 @@ public:
     Vec3 GetRelativeRot()       const { return m_RelativeRot; }
 
     void SetPrevRelativePos(const Vec3& pos) { m_PrevRelativePos = pos; }
+    
     void SetRelativePos(const Vec3& pos) { m_RelativePos = pos; }
+    void SetRelativePos(float x, float y, float z) { m_RelativePos = Vec3(x, y, z); }
+    
     void SetRelativeScale(const Vec3& scale) { m_RelativeScale = scale; }
+    void SetRelativeScale(float x, float y, float z) { m_RelativeScale = Vec3(x, y, z); }
+    
     void SetRelativeRot(const Vec3& rotation) { m_RelativeRot = rotation; }
+    void SetRelativeRot(float x, float y, float z) { m_RelativeRot = Vec3(x, y, z); }
 
     float GetRelativePosX() const { return m_RelativePos.x; }
     float GetRelativePosY() const { return m_RelativePos.y; }
@@ -59,6 +65,22 @@ public:
     void SetRelativePosX(float x) { m_RelativePos.x = x; }
     void SetRelativePosY(float y) { m_RelativePos.y = y; }
     void SetRelativePosZ(float z) { m_RelativePos.z = z; }
+    
+    float GetRelativeScaleX() const { return m_RelativeScale.x; }
+    float GetRelativeScaleY() const { return m_RelativeScale.y; }
+    float GetRelativeScaleZ() const { return m_RelativeScale.z; }
+    
+    void SetRelativeScaleX(float x) { m_RelativeScale.x = x; }
+    void SetRelativeScaleY(float y) { m_RelativeScale.y = y; }
+    void SetRelativeScaleZ(float z) { m_RelativeScale.z = z; }
+    
+    float GetRelativeRotX() const { return m_RelativeRot.x; }
+    float GetRelativeRotY() const { return m_RelativeRot.y; }
+    float GetRelativeRotZ() const { return m_RelativeRot.z; }
+    
+    void SetRelativeRotX(float x) { m_RelativeRot.x = x; }
+    void SetRelativeRotY(float y) { m_RelativeRot.y = y; }
+    void SetRelativeRotZ(float z) { m_RelativeRot.z = z; }
 
     Vec3 GetWorldPos() const { return m_MatWorld.Translation(); }
     Vec3 GetWorldScale() const;

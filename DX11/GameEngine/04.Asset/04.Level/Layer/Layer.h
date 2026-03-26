@@ -15,7 +15,7 @@ private:
 
     vector<Ptr<GameObject>> m_vecParents{};     // Layer에 소속된 최상위 부모타입 오브젝트 -> 실질적으로 이 벡터로 GameObject들을 관리한다 
     
-    vector<Ptr<GameObject>> m_vecAllObjects{};  // Layer에 소속된 모든(부모, 자식타입) 오브젝트 -> Tick에서 매번 갱신된다
+    vector<Ptr<GameObject>> m_vecAllObjects{};  // Layer에 소속된 모든(부모, 자식타입) 오브젝트 -> FinalTick에서 매번 갱신된다 (실질적으로 Level이 Play인 상황에서만 담긴다)
 
     int                     m_LayerIdx{}; // Layer 본인의 인덱스(0 ~ 31)
     
@@ -42,6 +42,7 @@ public:
     
     
     const vector<Ptr<GameObject>>& GetParentObjects() const { return m_vecParents; }
+    
     const vector<Ptr<GameObject>>& GetAllObjects()    const { return m_vecAllObjects; }
     
 public:

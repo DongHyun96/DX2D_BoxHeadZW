@@ -29,6 +29,8 @@ public:
     {
         m_TransformPosDest.x = _TransformPosDestXY.x;
         m_TransformPosDest.y = _TransformPosDestXY.y;
+        m_TransformPosDest.x = clamp(m_TransformPosDest.x, -50000.f, 50000.f);
+        m_TransformPosDest.y = clamp(m_TransformPosDest.y, -50000.f, 50000.f);
     }
     
 public:
