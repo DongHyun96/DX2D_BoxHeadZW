@@ -18,7 +18,6 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBulletMgrScript");
 	_vec.push_back(L"CBulletScript");
 	_vec.push_back(L"CCamMoveScript");
-	_vec.push_back(L"CCharacterScript");
 	_vec.push_back(L"CMonsterScript");
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CPlayerAnimHandler");
@@ -37,7 +36,7 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 	if (L"CCamMoveScript" == _strScriptName)
 		return new CCamMoveScript;
 	if (L"CCharacterScript" == _strScriptName)
-		return new CCharacterScript;
+		return nullptr;
 	if (L"CMonsterScript" == _strScriptName)
 		return new CMonsterScript;
 	if (L"CObstacle" == _strScriptName)
@@ -64,7 +63,7 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 	case (UINT)SCRIPT_TYPE::CAMMOVESCRIPT:
 		return new CCamMoveScript;
 	case (UINT)SCRIPT_TYPE::CHARACTERSCRIPT:
-		return new CCharacterScript;
+		return nullptr;
 	case (UINT)SCRIPT_TYPE::MONSTERSCRIPT:
 		return new CMonsterScript;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
