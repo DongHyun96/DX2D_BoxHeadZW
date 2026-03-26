@@ -282,6 +282,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletScript.h" />
     <ClInclude Include="Source\Scripts\CCamMoveScript.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\CCharacterScript.h" />
     <ClInclude Include="Source\Scripts\CMonsterScript.h" />
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
     <ClInclude Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.h" />
@@ -937,6 +938,7 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Source\Scripts\CharacterScript\CCharacterScript.cpp" />
     <ClCompile Include="Source\Scripts\CMonsterScript.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -1175,6 +1177,9 @@ CodeGen.exe</Command>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Tile</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Tile</EntryPointName>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Source\Scripts\EnemyScript\" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

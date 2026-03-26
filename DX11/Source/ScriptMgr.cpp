@@ -5,6 +5,7 @@
 #include "Source/Scripts/AirplaneShootingScript\CBulletMgrScript.h"
 #include "Source/Scripts/AirplaneShootingScript\CBulletScript.h"
 #include "Source/Scripts/CCamMoveScript.h"
+#include "Source/Scripts/CharacterScript\CCharacterScript.h"
 #include "Source/Scripts/CMonsterScript.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/PlayerScript\CPlayerAnimHandler.h"
@@ -17,6 +18,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBulletMgrScript");
 	_vec.push_back(L"CBulletScript");
 	_vec.push_back(L"CCamMoveScript");
+	_vec.push_back(L"CCharacterScript");
 	_vec.push_back(L"CMonsterScript");
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CPlayerAnimHandler");
@@ -34,6 +36,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CBulletScript;
 	if (L"CCamMoveScript" == _strScriptName)
 		return new CCamMoveScript;
+	if (L"CCharacterScript" == _strScriptName)
+		return new CCharacterScript;
 	if (L"CMonsterScript" == _strScriptName)
 		return new CMonsterScript;
 	if (L"CObstacle" == _strScriptName)
@@ -59,6 +63,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CBulletScript;
 	case (UINT)SCRIPT_TYPE::CAMMOVESCRIPT:
 		return new CCamMoveScript;
+	case (UINT)SCRIPT_TYPE::CHARACTERSCRIPT:
+		return new CCharacterScript;
 	case (UINT)SCRIPT_TYPE::MONSTERSCRIPT:
 		return new CMonsterScript;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
@@ -85,6 +91,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CBulletScript";
 	case SCRIPT_TYPE::CAMMOVESCRIPT:
 		return L"CCamMoveScript";
+	case SCRIPT_TYPE::CHARACTERSCRIPT:
+		return L"CCharacterScript";
 	case SCRIPT_TYPE::MONSTERSCRIPT:
 		return L"CMonsterScript";
 	case SCRIPT_TYPE::OBSTACLE:
