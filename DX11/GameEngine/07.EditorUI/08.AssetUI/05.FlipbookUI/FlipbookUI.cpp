@@ -54,7 +54,8 @@ float FlipbookUI::DrawSpritePreview
     const Ptr<ASprite>& _Sprite,
     float               _MaxPreviewSize,
     bool                _EnableZoom,
-    float               _CurrentZoomFactor    
+    float               _CurrentZoomFactor,
+    bool                _DrawReferencePoint
 )
 {
     if (!_Sprite)
@@ -110,6 +111,26 @@ float FlipbookUI::DrawSpritePreview
         Vec2(UV1.x, UV1.y),
         ImVec4(0.0f, 0.0f, 0.0f, 1.0f)
     );
+
+    if (_DrawReferencePoint && m_ShowEditReferencePoint)
+    {
+        const float refU = std::clamp(m_EditReferencePointUV.x, 0.f, 1.f);
+        const float refV = std::clamp(m_EditReferencePointUV.y, 0.f, 1.f);
+
+        const ImVec2 rectMin = ImGui::GetItemRectMin();
+        const ImVec2 rectMax = ImGui::GetItemRectMax();
+        const ImVec2 rectSize = ImVec2(rectMax.x - rectMin.x, rectMax.y - rectMin.y);
+        const ImVec2 refPos = ImVec2(rectMin.x + rectSize.x * refU, rectMin.y + rectSize.y * refV);
+
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        const ImU32 lineCol = IM_COL32(255, 70, 70, 255);
+        const ImU32 centerCol = IM_COL32(255, 255, 255, 255);
+        const float lineLen = 7.f;
+
+        drawList->AddLine(ImVec2(refPos.x - lineLen, refPos.y), ImVec2(refPos.x + lineLen, refPos.y), lineCol, 1.5f);
+        drawList->AddLine(ImVec2(refPos.x, refPos.y - lineLen), ImVec2(refPos.x, refPos.y + lineLen), lineCol, 1.5f);
+        drawList->AddCircleFilled(refPos, 2.f, centerCol);
+    }
     
     return _CurrentZoomFactor;
 }
@@ -378,8 +399,20 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
 
     static float ZoomFactor = 1.f;
     ImGui::PushID("UVEditorSection");
-    ZoomFactor = DrawSpritePreview(pEditSprite, 200.f, true, ZoomFactor);
+    ZoomFactor = DrawSpritePreview(pEditSprite, 200.f, true, ZoomFactor, true);
     ImGui::PopID();
+
+    ImGui::Checkbox("Show Ref Point", &m_ShowEditReferencePoint);
+    ImGui::BeginDisabled(!m_ShowEditReferencePoint);
+    {
+        float refUV[2] = { m_EditReferencePointUV.x, m_EditReferencePointUV.y };
+        if (ImGui::DragFloat2("Ref Point UV (0~1)", refUV, 0.001f, 0.f, 1.f, "%.3f"))
+        {
+            m_EditReferencePointUV.x = std::clamp(refUV[0], 0.f, 1.f);
+            m_EditReferencePointUV.y = std::clamp(refUV[1], 0.f, 1.f);
+        }
+    }
+    ImGui::EndDisabled();
 
     ImGui::BeginDisabled(!isAtlas);
     {

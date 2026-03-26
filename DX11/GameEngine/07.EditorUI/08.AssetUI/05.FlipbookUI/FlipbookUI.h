@@ -11,6 +11,9 @@ private:
     float       m_PreviewAccTime{};
     int         m_PreviewCurFrame{};
     AFlipbook*  m_PreviewTarget{};
+
+    bool        m_ShowEditReferencePoint = true;
+    Vec2        m_EditReferencePointUV = Vec2(0.5f, 0.5f);
     
 public:
     FlipbookUI();
@@ -27,7 +30,8 @@ private:
         const Ptr<ASprite>& _Sprite,
         float               _MaxPreviewSize,
         bool                _EnableZoom = false,
-        float               _CurrentZoomFactor = 1.f
+        float               _CurrentZoomFactor = 1.f,
+        bool                _DrawReferencePoint = false
     );
     
     void DrawPreviewSection(const Ptr<AFlipbook>& _Flipbook);
