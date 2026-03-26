@@ -44,10 +44,7 @@ void Outliner::Tick_UI()
     Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
     
     if (pCurLevel && pCurLevel->HasChanged())
-    {
-        ReNew();
-        EditorMgr::GetInst()->SetTargetObjectToInspectors(nullptr);
-    }
+        ReNew(); // 복원 실패 시, inspector clear 까지 처리
 }
 
 void Outliner::DeleteObjectTick()
@@ -171,9 +168,9 @@ void Outliner::ChangeObjectNameTick()
     }
 }
 
-void Outliner::ReNew()
+bool Outliner::ReNew()
 {
-    // 매 프레임 현재 Level에 존재하는 GameObject 정보 업데이트
+    /*// 매 프레임 현재 Level에 존재하는 GameObject 정보 업데이트
     m_Tree->Clear();
 
     // Stop 중인 경우, Editor 전용 오브젝트들 띄우기
@@ -189,7 +186,67 @@ void Outliner::ReNew()
     {
         for (const Ptr<GameObject>& ParentObject : CurLevel->GetLayer(i)->GetParentObjects())
             AddGameObject(nullptr, ParentObject);
+    }*/
+    
+    
+    
+    vector<DWORD_PTR> prevSelectedData{};
+    for (const Ptr<TreeNode>& node : m_Tree->GetSelectedNodes())
+    {
+        if (node && node->Data != 0)
+            prevSelectedData.push_back(node->Data);
     }
+    if (prevSelectedData.empty())
+    {
+        Ptr<TreeNode> single = m_Tree->GetSelected();
+        if (single && single->Data != 0)
+            prevSelectedData.push_back(single->Data);
+    }
+
+    vector<DWORD_PTR> prevOpenedData{};
+    m_Tree->GetOpenedNodeData(prevOpenedData);
+
+    m_Tree->Clear();
+
+    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
+    {
+        for (const Ptr<GameObject>& editorObject : EditorMgr::GetInst()->GetGameObjects())
+            AddGameObject(nullptr, editorObject);
+    }
+
+    Ptr<ALevel> curLevel = LevelMgr::GetInst()->GetCurLevel();
+    for (int i = 0; i < MAX_LAYER; ++i)
+    {
+        for (const Ptr<GameObject>& parentObject : curLevel->GetLayer(i)->GetParentObjects())
+            AddGameObject(nullptr, parentObject);
+    }
+
+    for (DWORD_PTR data : prevOpenedData)
+    {
+        Ptr<TreeNode> node = m_Tree->FindNodeByData(data);
+        if (node) m_Tree->ExpandToNode(node);
+    }
+
+    bool hasRestoredSelection = false;
+    for (DWORD_PTR data : prevSelectedData)
+    {
+        Ptr<TreeNode> node = m_Tree->FindNodeByData(data);
+        if (!node) continue;
+
+        m_Tree->ExpandToNode(node);
+        m_Tree->RegisterSelectedEx(node, hasRestoredSelection, false);
+        hasRestoredSelection = true;
+    }
+
+    if (!hasRestoredSelection)
+    {
+        m_GizmoSelectedObject = nullptr;
+        EditorMgr::GetInst()->SetTargetObjectToInspectors(nullptr);
+    }
+
+    return hasRestoredSelection;
+    
+    
 }
 
 void Outliner::AddGameObject(const Ptr<TreeNode>& _ParentNode, const Ptr<GameObject>& _Object)

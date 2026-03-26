@@ -46,6 +46,7 @@ void TreeNode::Tick()
     }
     
     const bool Opened = ImGui::TreeNodeEx(NodeName.c_str(), Flags);
+    WasOpen = Opened;
 
     if (FolderVisual)
         ImGui::PopStyleColor();
@@ -334,6 +335,19 @@ void TreeUI::SetDropPayload(const ImGuiPayload* _Payload)
     memcpy(m_DropPayload.data(), _Payload->Data, count * sizeof(DWORD_PTR));
 }
 
+void TreeUI::Clear()
+{
+    m_vecNode.clear();
+    m_Selected = nullptr;
+    m_DragNode = nullptr;
+    m_DropNode = nullptr;
+    m_SelectedNodes.clear();
+    m_SelectAnchor = nullptr;
+    m_OrderedNodes.clear();
+    m_DragPayload.clear();
+    m_DropPayload.clear();
+}
+
 bool TreeUI::IsPayloadMultiData(const ImGuiPayload* _Payload)
 {
     const int count = _Payload->DataSize / sizeof(DWORD_PTR);
@@ -394,4 +408,22 @@ void TreeUI::NotifyDoubleClicked()
 {
     if (m_DoubleClickedInst)
         (m_DoubleClickedInst->*m_DoubleClickedInstMemFunc)(m_Selected->Data);
+}
+
+void TreeUI::CollectOpenedNodeDataRecursive(const Ptr<TreeNode>& _Node, vector<DWORD_PTR>& _OutData) const
+{
+    if (!_Node) return;
+
+    if (_Node->IsOpen() && _Node->Data != 0)
+        _OutData.push_back(_Node->Data);
+
+    for (const Ptr<TreeNode>& child : _Node->vecChildNode)
+        CollectOpenedNodeDataRecursive(child, _OutData);
+}
+
+void TreeUI::GetOpenedNodeData(vector<DWORD_PTR>& _OutData) const
+{
+    _OutData.clear();
+    for (const Ptr<TreeNode>& node : m_vecNode)
+        CollectOpenedNodeDataRecursive(node, _OutData);
 }

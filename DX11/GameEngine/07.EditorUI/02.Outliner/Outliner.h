@@ -38,7 +38,7 @@ private:
 public:
     
     /// <summary> Tree 갱신, 현재 레벨의 최신 상태를 Tree 에 표시 </summary>
-    void ReNew();
+    bool ReNew();
     
 private:
     

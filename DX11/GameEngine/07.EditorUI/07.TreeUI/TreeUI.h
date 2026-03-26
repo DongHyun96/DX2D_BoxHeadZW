@@ -21,6 +21,7 @@ public:
 private:
 
     bool OpenRequested{}; // 다음 프레임에 한 번 강제 오픈 (ReNew 이 후, 이전에 골랐던 TreeNode를 다시 열기 위함)
+    bool WasOpen{}; // 직전 프레임 Open 상태 캐시
     
 private:
     
@@ -36,6 +37,7 @@ public:
 public:
 
     void RequestOpen() { OpenRequested = true; }
+    bool IsOpen() const { return WasOpen; }
     
     void AddChildNode(const Ptr<TreeNode>& _Node)
     {
@@ -167,7 +169,7 @@ public:
     void BuildDragPayload();
     void SetDropPayload(const ImGuiPayload* _Payload);
     
-    void Clear() { m_vecNode.clear(); m_SelectedNodes.clear(); m_SelectAnchor = nullptr; }
+    void Clear();
     
     const vector<DWORD_PTR>& GetDragPayloads() const { return m_DragPayload; }
     const vector<DWORD_PTR>& GetDropPayloads() const { return m_DropPayload; }
@@ -191,5 +193,14 @@ private:
 public:
     
     void NotifyDoubleClicked();
+    
+private:
+    
+    void CollectOpenedNodeDataRecursive(const Ptr<TreeNode>& _Node, vector<DWORD_PTR>& _OutData) const;
+
+public:
+    
+    void GetOpenedNodeData(vector<DWORD_PTR>& _OutData) const;
+    
     
 };
