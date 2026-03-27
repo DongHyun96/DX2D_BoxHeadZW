@@ -45,7 +45,23 @@ private:
     void CollisionBtwLayer(Layer* _Left, Layer* _Right);
 
     /// <summary>
-    /// Basic Rect vs Rect OBB Collision testing (Not in use)
+    /// 같은 레이어 내에서의 충돌검사 처리를 해야할 때
+    /// 중복검사 처리를 피함
+    /// </summary>
+    /// <param name="_Layer"></param>
+    void CollisionBtwSameLayer(Layer* _Layer);
+
+private:
+    
+    /// <summary>
+    /// 두 물체의 Collision 검사 진행 & 이전 tick 결과와 현재 tick 검사결과에 따라 Notify 처리 
+    /// </summary>
+    void CheckCollisionAndNotify(const Ptr<GameObject>& _LeftObject, const Ptr<GameObject>& _RightObject);
+    
+private:
+    
+    /// <summary>
+    /// (Deprecated) Basic Rect vs Rect OBB Collision testing
     /// </summary>
     bool IsCollision(const Ptr<CCollider2D>& _LeftCol, const Ptr<CCollider2D>& _RightCol);
 

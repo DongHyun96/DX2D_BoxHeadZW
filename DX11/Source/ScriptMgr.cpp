@@ -6,11 +6,12 @@
 #include "Source/Scripts/AirplaneShootingScript\CBulletScript.h"
 #include "Source/Scripts/CCamMoveScript.h"
 #include "Source/Scripts/CharacterScript\CCharacterScript.h"
+#include "Source/Scripts/CharacterScript\EnemyScript\CEnemyScript.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\CPlayerAnimHandler.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\CPlayerScript.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\CPlayerSwapWeapon.h"
 #include "Source/Scripts/CMonsterScript.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
-#include "Source/Scripts/PlayerScript\CPlayerAnimHandler.h"
-#include "Source/Scripts/PlayerScript\CPlayerScript.h"
-#include "Source/Scripts/PlayerScript\CPlayerSwapWeapon.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
@@ -18,11 +19,12 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBulletMgrScript");
 	_vec.push_back(L"CBulletScript");
 	_vec.push_back(L"CCamMoveScript");
-	_vec.push_back(L"CMonsterScript");
-	_vec.push_back(L"CObstacle");
+	_vec.push_back(L"CEnemyScript");
 	_vec.push_back(L"CPlayerAnimHandler");
 	_vec.push_back(L"CPlayerScript");
 	_vec.push_back(L"CPlayerSwapWeapon");
+	_vec.push_back(L"CMonsterScript");
+	_vec.push_back(L"CObstacle");
 }
 
 CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
@@ -37,16 +39,18 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CCamMoveScript;
 	if (L"CCharacterScript" == _strScriptName)
 		return nullptr;
-	if (L"CMonsterScript" == _strScriptName)
-		return new CMonsterScript;
-	if (L"CObstacle" == _strScriptName)
-		return new CObstacle;
+	if (L"CEnemyScript" == _strScriptName)
+		return new CEnemyScript;
 	if (L"CPlayerAnimHandler" == _strScriptName)
 		return new CPlayerAnimHandler;
 	if (L"CPlayerScript" == _strScriptName)
 		return new CPlayerScript;
 	if (L"CPlayerSwapWeapon" == _strScriptName)
 		return new CPlayerSwapWeapon;
+	if (L"CMonsterScript" == _strScriptName)
+		return new CMonsterScript;
+	if (L"CObstacle" == _strScriptName)
+		return new CObstacle;
 	return nullptr;
 }
 
@@ -64,16 +68,18 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CCamMoveScript;
 	case (UINT)SCRIPT_TYPE::CHARACTERSCRIPT:
 		return nullptr;
-	case (UINT)SCRIPT_TYPE::MONSTERSCRIPT:
-		return new CMonsterScript;
-	case (UINT)SCRIPT_TYPE::OBSTACLE:
-		return new CObstacle;
+	case (UINT)SCRIPT_TYPE::ENEMYSCRIPT:
+		return new CEnemyScript;
 	case (UINT)SCRIPT_TYPE::PLAYERANIMHANDLER:
 		return new CPlayerAnimHandler;
 	case (UINT)SCRIPT_TYPE::PLAYERSCRIPT:
 		return new CPlayerScript;
 	case (UINT)SCRIPT_TYPE::PLAYERSWAPWEAPON:
 		return new CPlayerSwapWeapon;
+	case (UINT)SCRIPT_TYPE::MONSTERSCRIPT:
+		return new CMonsterScript;
+	case (UINT)SCRIPT_TYPE::OBSTACLE:
+		return new CObstacle;
 	}
 	return nullptr;
 }
@@ -92,16 +98,18 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CCamMoveScript";
 	case SCRIPT_TYPE::CHARACTERSCRIPT:
 		return L"CCharacterScript";
-	case SCRIPT_TYPE::MONSTERSCRIPT:
-		return L"CMonsterScript";
-	case SCRIPT_TYPE::OBSTACLE:
-		return L"CObstacle";
+	case SCRIPT_TYPE::ENEMYSCRIPT:
+		return L"CEnemyScript";
 	case SCRIPT_TYPE::PLAYERANIMHANDLER:
 		return L"CPlayerAnimHandler";
 	case SCRIPT_TYPE::PLAYERSCRIPT:
 		return L"CPlayerScript";
 	case SCRIPT_TYPE::PLAYERSWAPWEAPON:
 		return L"CPlayerSwapWeapon";
+	case SCRIPT_TYPE::MONSTERSCRIPT:
+		return L"CMonsterScript";
+	case SCRIPT_TYPE::OBSTACLE:
+		return L"CObstacle";
 	}
 	return nullptr;
 }

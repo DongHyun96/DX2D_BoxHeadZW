@@ -25,9 +25,9 @@ void CPlayerAnimHandler::Begin()
 
 void CPlayerAnimHandler::Tick()
 {
-    const Vec2 MousePos     = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
-    const Vec2 PlayerPos2D  = ToVec2(Transform()->GetRelativePos());
-    const Vec2 PlayerToMousePos   = MousePos - PlayerPos2D;
+    const Vec2 MousePos             = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
+    const Vec2 PlayerPos2D          = ToVec2(Transform()->GetRelativePos());
+    const Vec2 PlayerToMousePos     = MousePos - PlayerPos2D;
     
     UpdateAnimDirection(PlayerToMousePos);
     UpdateWalkingBackward(PlayerToMousePos);

@@ -13,7 +13,7 @@
 #include "Source/Manager/GameManager.h"
 
 CPlayerScript::CPlayerScript()
-    : CScript(static_cast<int>(SCRIPT_TYPE::PLAYERSCRIPT))
+    : CCharacterScript(static_cast<int>(SCRIPT_TYPE::PLAYERSCRIPT))
 {
 }
 
@@ -47,8 +47,8 @@ void CPlayerScript::Begin()
 
 void CPlayerScript::Tick()
 {
-    Move();
-    HandleRayCast();    
+    CCharacterScript::Tick();
+    HandleRayCast();
     // MeshRender()->GetMaterial()->SetScalar(INT_0, KEY_PRESSED(KEY::X) ? 1 : 0);
 }
 
@@ -65,9 +65,9 @@ void CPlayerScript::Move()
     if (KEY_PRESSED(KEY::D)) Direction.x += 1.f; // Right
     if (KEY_PRESSED(KEY::W)) Direction.y += 1.f; // Up
     if (KEY_PRESSED(KEY::S)) Direction.y -= 1.f; // Down
-    
-    if (KEY_PRESSED(KEY::LSHIFT)) m_MoveSpeedFactor = 2.f;
-    else m_MoveSpeedFactor = 1.f;
+
+    // TODO : 이 라인 지우기 (testing 환경에서의 Fast Move 처리)
+    m_MoveSpeedFactor = KEY_PRESSED(KEY::LSHIFT) ? 2.f : 1.f; 
 
     if (Direction.LengthSquared() == 0.f) return;
     Direction.Normalize();

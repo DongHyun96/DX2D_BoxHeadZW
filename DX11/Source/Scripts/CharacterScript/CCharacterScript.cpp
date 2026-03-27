@@ -8,11 +8,16 @@ CCharacterScript::CCharacterScript()
 {
 }
 
+CCharacterScript::CCharacterScript(int _ScriptType)
+    : CScript(_ScriptType)
+{
+}
+
 CCharacterScript::~CCharacterScript()
 {
 }
 
 void CCharacterScript::Tick()
 {
-    
+    Move();
 }

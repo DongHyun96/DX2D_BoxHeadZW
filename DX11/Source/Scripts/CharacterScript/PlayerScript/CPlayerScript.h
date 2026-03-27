@@ -1,21 +1,16 @@
 ﻿#pragma once
 
-#include "GameEngine/06.Component/Script/CScript.h"
+// #include "GameEngine/06.Component/Script/CScript.h"
+#include "Source/Scripts/CharacterScript/CCharacterScript.h"
 
 /// <summary>
 /// Basic Movement 및 MainState Holder 담당
 /// </summary>
-class CPlayerScript : public CScript
+class CPlayerScript : public CCharacterScript
 {
 private:
     
     PLAYER_HANDSTATE m_HandState{}; // 현재 손에 들고 있는 무기 종류 State
-    
-private:
-    float m_MoveSpeedBase       = 300.f;
-    float m_MoveSpeedFactor     = 1.f;
-    
-    Vec3 m_Velocity{};
     
 public:
     
@@ -31,7 +26,7 @@ public:
     
 private:
     
-    void Move();
+    virtual void Move() override;
     
 private:
     

@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "Engine.h"
-#include "FontMgr.h"
+
 #include "GameEngine/02.Device/Device.h"
 #include "GameEngine/03.Manager/01.PathMgr/PathMgr.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
@@ -9,6 +9,7 @@
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/03.Manager/06.RenderMgr/RenderMgr.h"
 #include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
+#include "GameEngine/03.Manager/10.FontMgr/FontMgr.h"
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 

@@ -1,9 +1,9 @@
 ﻿#include "pch.h"
 #include "TimeMgr.h"
 
-#include "FontMgr.h"
 #include "GameEngine/01.Engine/Engine.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
+#include "GameEngine/03.Manager/10.FontMgr/FontMgr.h"
 
 TimeMgr::TimeMgr()
     /*: m_Frequency{}

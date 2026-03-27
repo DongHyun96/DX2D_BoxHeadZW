@@ -163,12 +163,15 @@
     <ClInclude Include="GameEngine\07.EditorUI\12.DebugLogUI\DebugLogUI.h" />
     <ClInclude Include="Module\Util.h" />
     <ClInclude Include="Source\Manager\GameManager.h" />
-    <ClInclude Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.h" />
-    <ClInclude Include="Source\Scripts\PlayerScript\CPlayerScript.h" />
-    <ClInclude Include="Source\Scripts\PlayerScript\CPlayerSwapWeapon.h" />
     <ClInclude Include="Source\UserHeader\userDefine.h" />
     <ClInclude Include="Source\UserHeader\userEnum.h" />
-    <ClInclude Include="FontMgr.h" />
+    <ClInclude Include="GameEngine\03.Manager\10.FontMgr\FontMgr.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\CCharacterScript.h" />
+    <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerSwapWeapon.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Default\DX11.ico">
@@ -288,10 +291,13 @@
     <ClCompile Include="GameEngine\07.EditorUI\12.DebugLogUI\DebugLogUI.cpp" />
     <ClCompile Include="Module\Util.cpp" />
     <ClCompile Include="Source\Manager\GameManager.cpp" />
-    <ClCompile Include="Source\Scripts\PlayerScript\CPlayerAnimHandler.cpp" />
-    <ClCompile Include="Source\Scripts\PlayerScript\CPlayerScript.cpp" />
-    <ClCompile Include="Source\Scripts\PlayerScript\CPlayerSwapWeapon.cpp" />
-    <ClCompile Include="FontMgr.cpp" />
+    <ClCompile Include="GameEngine\03.Manager\10.FontMgr\FontMgr.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\CCharacterScript.cpp" />
+    <ClCompile Include="Source\Scripts\Obstacle\CObstacle.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerSwapWeapon.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Default\DX11.rc">

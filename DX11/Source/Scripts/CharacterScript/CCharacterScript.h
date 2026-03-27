@@ -12,6 +12,7 @@ protected:
 public:
     
     CCharacterScript();
+    CCharacterScript(int _ScriptType);
     virtual ~CCharacterScript() override;
     
 public:

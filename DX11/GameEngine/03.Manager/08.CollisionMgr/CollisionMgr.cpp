@@ -30,6 +30,12 @@ void CollisionMgr::Progress(const Ptr<ALevel>& _Level)
 
 void CollisionMgr::CollisionBtwLayer(Layer* _Left, Layer* _Right)
 {
+    if (_Left == _Right) // 같은 layer 내에서의 충돌검사 판정
+    {
+        CollisionBtwSameLayer(_Left);
+        return;
+    }
+    
     const vector<Ptr<GameObject>>& vecLeft  = _Left->GetAllObjects();    
     const vector<Ptr<GameObject>>& vecRight = _Right->GetAllObjects();
 
@@ -40,49 +46,72 @@ void CollisionMgr::CollisionBtwLayer(Layer* _Left, Layer* _Right)
         for (const Ptr<GameObject>& rightObject : vecRight)
         {
             if (!rightObject->GetCollider2D()) continue;
-            if (leftObject == rightObject) continue;
-
-            // 두 충돌체의 고유 ID로 조합을 한 키값 생성
-            COL_ID colid{};
-            colid.LeftID    = leftObject->GetCollider2D()->GetEntityInstID();
-            colid.RightID   = rightObject->GetCollider2D()->GetEntityInstID();
-            
-            map<ULONGLONG, bool>::iterator iter = m_mapColID.find(colid.ID);
-            if (iter == m_mapColID.end())
-            {
-                m_mapColID.insert(make_pair(colid.ID, false));
-                iter = m_mapColID.find(colid.ID);
-            }
-
-            
-            // if (IsCollision(leftObject->Collider2D(), rightObject->Collider2D()))    // Only for Rect vs Rect OBB Collision
-            if (leftObject->GetCollider2D()->IsCollision(rightObject->GetCollider2D()))       // 각 모양 및 AABB or OBB 충돌검사 알아서 선택되어 처리됨
-            {
-                if (iter->second) // 이전에도 충돌했었는지
-                {
-                    leftObject->GetCollider2D()->Overlap(rightObject->GetCollider2D());
-                    rightObject->GetCollider2D()->Overlap(leftObject->GetCollider2D());
-                }
-                else // 이전에는 충돌하지 않았었다.
-                {
-                    leftObject->GetCollider2D()->BeginOverlap(rightObject->GetCollider2D());
-                    rightObject->GetCollider2D()->BeginOverlap(leftObject->GetCollider2D());
-                }
-                
-                iter->second = true;
-            }
-            else // 현재 충돌중이 아니다
-            {
-                // 이전 프레임에는 충돌 중이었다.
-                if (iter->second)
-                {
-                    leftObject->GetCollider2D()->EndOverlap(rightObject->GetCollider2D());
-                    rightObject->GetCollider2D()->EndOverlap(leftObject->GetCollider2D());
-                }
-                
-                iter->second = false;
-            }
+            CheckCollisionAndNotify(leftObject, rightObject);
         }
+    }
+}
+
+void CollisionMgr::CollisionBtwSameLayer(Layer* _Layer)
+{
+    const vector<Ptr<GameObject>>& vecAllObjects = _Layer->GetAllObjects();
+
+    for (int i = 0; i < vecAllObjects.size(); ++i)
+    {
+        const Ptr<GameObject>& leftObject = vecAllObjects[i];
+        if (!leftObject->GetCollider2D()) continue;
+        
+        for (int j = i + 1; j < vecAllObjects.size(); ++j)
+        {
+            const Ptr<GameObject>& rightObject = vecAllObjects[j];
+            if (!rightObject->GetCollider2D()) continue;
+            
+            CheckCollisionAndNotify(leftObject, rightObject);
+        }
+    }
+}
+
+void CollisionMgr::CheckCollisionAndNotify(const Ptr<GameObject>& _LeftObject, const Ptr<GameObject>& _RightObject)
+{
+    // 두 충돌체의 고유 ID로 조합을 한 키값 생성
+    COL_ID colid{};
+    colid.LeftID    = _LeftObject->GetCollider2D()->GetEntityInstID();
+    colid.RightID   = _RightObject->GetCollider2D()->GetEntityInstID();
+
+    // 이전 Tick 충돌정보 불러오기
+    map<ULONGLONG, bool>::iterator iter = m_mapColID.find(colid.ID);
+    if (iter == m_mapColID.end())
+    {
+        m_mapColID.insert(make_pair(colid.ID, false));
+        iter = m_mapColID.find(colid.ID);
+    }
+
+            
+    // if (IsCollision(_LeftObject->Collider2D(), _RightObject->Collider2D()))          // Only for Rect vs Rect OBB Collision
+    if (_LeftObject->GetCollider2D()->IsCollision(_RightObject->GetCollider2D()))       // 각 모양 및 AABB or OBB 충돌검사 알아서 선택되어 처리됨
+    {
+        if (iter->second) // 이전에도 충돌했었는지
+        {
+            _LeftObject->GetCollider2D()->Overlap(_RightObject->GetCollider2D());
+            _RightObject->GetCollider2D()->Overlap(_LeftObject->GetCollider2D());
+        }
+        else // 이전에는 충돌하지 않았었다.
+        {
+            _LeftObject->GetCollider2D()->BeginOverlap(_RightObject->GetCollider2D());
+            _RightObject->GetCollider2D()->BeginOverlap(_LeftObject->GetCollider2D());
+        }
+                
+        iter->second = true;
+    }
+    else // 현재 충돌중이 아니다
+    {
+        // 이전 프레임에는 충돌 중이었다.
+        if (iter->second)
+        {
+            _LeftObject->GetCollider2D()->EndOverlap(_RightObject->GetCollider2D());
+            _RightObject->GetCollider2D()->EndOverlap(_LeftObject->GetCollider2D());
+        }
+                
+        iter->second = false;
     }
 }
 
