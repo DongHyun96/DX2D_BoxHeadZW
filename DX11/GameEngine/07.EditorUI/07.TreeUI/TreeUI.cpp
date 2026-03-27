@@ -156,6 +156,51 @@ void TreeNode::DropCheck()
 }
 
 
+namespace
+{
+    void CollectAssetDataRecursive(const Ptr<TreeNode>& node,
+                                   vector<DWORD_PTR>& out,
+                                   unordered_set<DWORD_PTR>& dedup)
+    {
+        if (!node) return;
+
+        // Asset node
+        if (node->Data != 0)
+        {
+            if (dedup.insert(node->Data).second)
+                out.push_back(node->Data);
+            return;
+        }
+
+        // Folder/Group node
+        for (const Ptr<TreeNode>& child : node->vecChildNode)
+            CollectAssetDataRecursive(child, out, dedup);
+    }
+
+    void AppendPayloadFromNode(const Ptr<TreeNode>& node,
+                               vector<DWORD_PTR>& out,
+                               unordered_set<DWORD_PTR>& dedup)
+    {
+        if (!node) return;
+
+        // 일반 Asset 노드
+        if (node->Data != 0)
+        {
+            if (dedup.insert(node->Data).second)
+                out.push_back(node->Data);
+            return;
+        }
+
+        // 폴더 노드면 하위 Asset 전체 수집
+        if (node->IsFolderNode)
+            CollectAssetDataRecursive(node, out, dedup);
+
+        // Data==0 이지만 폴더가 아닌 타입 헤더 노드 등은 무시
+    }
+}
+
+
+
 // ==========================================
 // TreeUI
 // ==========================================
@@ -310,19 +355,26 @@ void TreeUI::BuildDragPayloadForNode(const Ptr<TreeNode>& _Node)
     m_DragPayload.clear();
     if (!_Node) return;
 
+    unordered_set<DWORD_PTR> dedup{};
+    dedup.reserve(64);
+
     if (IsSelected(_Node.Get()))
     {
         for (const Ptr<TreeNode>& n : m_SelectedNodes)
-            if (n->Data != 0) m_DragPayload.push_back(n->Data);
+            AppendPayloadFromNode(n, m_DragPayload, dedup);
     }
-    else if (_Node->Data != 0) m_DragPayload.push_back(_Node->Data);
+    else AppendPayloadFromNode(_Node, m_DragPayload, dedup);
 }
 
 void TreeUI::BuildDragPayload()
 {
     m_DragPayload.clear();
+
+    unordered_set<DWORD_PTR> dedup{};
+    dedup.reserve(64);
+
     for (const Ptr<TreeNode>& n : m_SelectedNodes)
-        if (n->Data != 0) m_DragPayload.push_back(n->Data);
+        AppendPayloadFromNode(n, m_DragPayload, dedup);
 }
 
 void TreeUI::SetDropPayload(const ImGuiPayload* _Payload)
