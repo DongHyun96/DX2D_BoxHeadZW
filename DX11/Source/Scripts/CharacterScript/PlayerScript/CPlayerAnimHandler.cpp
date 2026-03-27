@@ -36,7 +36,7 @@ void CPlayerAnimHandler::Tick()
 
 void CPlayerAnimHandler::UpdateAnimDirection(const Vec2& _PlayerToMousePos)
 {
-    m_AnimDirection = GetDirection(_PlayerToMousePos);
+    m_AnimDirection = GetEightDirection(_PlayerToMousePos);
     // 이 경우, 마우스포인터 좌표와 Player의 위치가 완전히 일치하는 상황 (거의 아예 안나올거다)
     // 따로 DOWN 방향으로 처리
     if (m_AnimDirection == EDIRECTION::END) m_AnimDirection = EDIRECTION::DOWN;

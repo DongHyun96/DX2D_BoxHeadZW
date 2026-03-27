@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+enum class SIXTEEN_DIRECTION;
+
 namespace DebugUtil
 {
     
@@ -102,5 +104,11 @@ enum class EDIRECTION;
 /// 해당 Vector 방향에 대응되는 EDIRECTION 구하기 
 /// 만약 Zero vector를 받았다면 END를 return
 /// </summary>
-EDIRECTION GetDirection(const Vec3& _Vector);
-EDIRECTION GetDirection(const Vec2& _Vector);
+EDIRECTION GetEightDirection(const Vec3& _Vector);
+EDIRECTION GetEightDirection(const Vec2& _Vector);
+
+/// <summary>
+/// 해당 Vector 방향에 대응되는 SIXTEEN_DIRECTION 구하기
+/// </summary>
+SIXTEEN_DIRECTION GetSixteenDirection(const Vec3& _Vector);
+SIXTEEN_DIRECTION GetSixteenDirection(const Vec2& _Vector);

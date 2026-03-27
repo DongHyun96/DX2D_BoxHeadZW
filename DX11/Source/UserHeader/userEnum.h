@@ -16,6 +16,38 @@ enum class EDIRECTION
 };
 
 /// <summary>
+/// Runner Enemy용 Sixteen direction -> 길찾기 알고리즘 사용이 아닌, 해당 방향 직진으로 달려갈 때 Anim 방향 State를 정하기 위함
+/// </summary>
+enum class SIXTEEN_DIRECTION
+{
+    RIGHT,
+    
+    RIGHT_UP1,
+    RIGHT_UP2,
+    RIGHT_UP3,
+    
+    UP,
+    
+    UP_LEFT1,
+    UP_LEFT2,
+    UP_LEFT3,
+    
+    LEFT,
+    
+    LEFT_DOWN1,
+    LEFT_DOWN2,
+    LEFT_DOWN3,
+    
+    DOWN,
+    
+    DOWN_RIGHT1,
+    DOWN_RIGHT2,
+    DOWN_RIGHT3,
+    
+    END
+};
+
+/// <summary>
 /// Player HandState
 /// </summary>
 enum class PLAYER_HANDSTATE

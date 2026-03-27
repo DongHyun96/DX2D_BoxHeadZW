@@ -33,7 +33,7 @@ void CEnemyAnimHandler::Tick()
 void CEnemyAnimHandler::UpdateAnimDirection()
 {
     // Update Current AnimDirection
-    EDIRECTION CurrentDirection = GetDirection(m_MainEnemyScript->GetVelocity());
+    EDIRECTION CurrentDirection = GetEightDirection(m_MainEnemyScript->GetVelocity());
     
     // 현재 Velocity 크기가 0이면, 이전 AnimDirection 유지 
     m_AnimDirection = (CurrentDirection == EDIRECTION::END) ? m_PrevAnimDirection : CurrentDirection; 

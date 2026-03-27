@@ -52,13 +52,12 @@ float Lerp(float _Src, float _Dst, float _Alpha)
     return _Src * (1.f - _Alpha) + _Dst * _Alpha;
 }
 
-EDIRECTION GetDirection(const Vec3& _Vector)
+EDIRECTION GetEightDirection(const Vec3& _Vector)
 {
-    Vec2 v = ToVec2(_Vector);
-    return GetDirection(v);
+    return GetEightDirection(ToVec2(_Vector));
 }
 
-EDIRECTION GetDirection(const Vec2& _Vector)
+EDIRECTION GetEightDirection(const Vec2& _Vector)
 {
     Vec2 v = _Vector;
     
@@ -80,4 +79,29 @@ EDIRECTION GetDirection(const Vec2& _Vector)
     return static_cast<EDIRECTION>(DirIndex);
 }
 
+SIXTEEN_DIRECTION GetSixteenDirection(const Vec3& _Vector)
+{
+    return GetSixteenDirection(ToVec2(_Vector));
+}
 
+SIXTEEN_DIRECTION GetSixteenDirection(const Vec2& _Vector)
+{
+    Vec2 v = _Vector;
+    
+    if (v.LengthSquared() == 0.f)
+        return SIXTEEN_DIRECTION::END;
+    
+    v.Normalize();
+    
+    const float Angle = atan2f(v.y, v.x);
+    float Degree = XMConvertToDegrees(Angle);
+    
+    if (Degree < 0.f) Degree += 360.f; // 음수값 방지
+
+    // 0 ~ 30
+    Degree += 30.f;
+    if (Degree >= 360.f) Degree -= 360.f;
+    
+    const int DirIndex = static_cast<int>(Degree / 30.f); // 이걸 30도로 나누면 0 ~ 15 사이의 정수 인덱스로 나누어 떨어짐
+    return static_cast<SIXTEEN_DIRECTION>(DirIndex);
+}
