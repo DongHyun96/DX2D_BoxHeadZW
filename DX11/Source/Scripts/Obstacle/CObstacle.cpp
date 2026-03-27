@@ -3,6 +3,7 @@
 
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Scripts/CharacterScript/CCharacterScript.h"
 
 CObstacle::CObstacle()
     : CScript(SCRIPT_TYPE::OBSTACLE)
@@ -49,29 +50,19 @@ void CObstacle::LoadFromLevelFile(FILE* _File)
 
 void CObstacle::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
-    const ALevel* CurLevel = LevelMgr::GetInst()->GetCurLevel().Get(); 
-    if (_OtherCollider->GetOwner()->GetLayerIdx() == CurLevel->GetLayerIndexByLayerName(L"Character"))
-    {
-        // DebugUtil::AddDebugLog(_OtherCollider->GetOwner()->GetName() + L" BeginOverlap");
-        // Character의 경우, blocking 처리
-        _OtherCollider->Transform()->UpdateTransformToPrevRelativePos();
-    }
+    if (BlockCharacterCollider(_OtherCollider)) return;
 }
 
 void CObstacle::Overlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
-    /*wstring temp = _OtherCollider->GetOwner()->GetName();
-    DebugUtil::SetPermanentDebugLog("TempKey", string(temp.begin(), temp.end()).c_str(), Vec4(1.f, 1.f, 0.f ,1.f));*/
-    const ALevel* CurLevel = LevelMgr::GetInst()->GetCurLevel().Get(); 
-    if (_OtherCollider->GetOwner()->GetLayerIdx() == CurLevel->GetLayerIndexByLayerName(L"Character"))
-    {
-        // DebugUtil::AddDebugLog(_OtherCollider->GetOwner()->GetName() + L" BeginOverlap");
-        // Character의 경우, blocking 처리
-        _OtherCollider->Transform()->UpdateTransformToPrevRelativePos();
-    }
+    if (BlockCharacterCollider(_OtherCollider)) return;
 }
 
-/*void CObstacle::EndOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
+bool CObstacle::BlockCharacterCollider(CCollider2D* _OtherCollider)
 {
-    
-}*/
+    if (!_OtherCollider->GetOwner()->GetScriptComponent<CCharacterScript>()) return false;
+
+    _OtherCollider->Transform()->UpdateTransformToPrevRelativePos();
+    return true;
+}
+

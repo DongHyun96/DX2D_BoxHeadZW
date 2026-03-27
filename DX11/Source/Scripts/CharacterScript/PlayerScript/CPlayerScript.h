@@ -37,8 +37,6 @@ private:
     
 public:
     
-    const Vec3& GetVelocity() const { return m_Velocity; }
-    
     void SetHandState(PLAYER_HANDSTATE _HandState) { m_HandState = _HandState; }
     PLAYER_HANDSTATE GetHandState() const { return m_HandState; }
     

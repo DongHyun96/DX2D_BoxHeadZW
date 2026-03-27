@@ -27,7 +27,7 @@ void FlipbookRenderUI::Tick_UI()
     
     // TickSelectingLevelBeginningInfo(flipbookRender);
     // RenderUI 에서 설정한 Render Transform 현재 AFlipbook에 저장하기
-    if (ImGui::Button("Save Current Transform to selected AFlipbook") || ShortCut(ImGuiKey_S))
+    if (ImGui::Button("Save Current RenderTransform to selected AFlipbook") || ShortCut(ImGuiKey_S))
     {
         if (Ptr<AFlipbook> TargetFlipbook = flipbookRender->GetFlipbook(m_CurSelectedCategory, m_SelectedFlipbookIdx))
         {

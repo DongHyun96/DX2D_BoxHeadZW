@@ -65,6 +65,18 @@ void ScriptUI::Tick_UI()
 		switch (vecParam[i].Param)
 		{
 		case SCRIPT_PARAM::INT:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			ImGui::SameLine(120);
+
+			string Key = "##Int";
+			Key += ID;
+			
+			if (vecParam[i].IsInput) ImGui::InputInt(Key.c_str(), static_cast<int*>(vecParam[i].Data), vecParam[i].Step);
+			else					 ImGui::DragInt(Key.c_str(), static_cast<int*>(vecParam[i].Data), vecParam[i].Step);
+
+			AddItemHeight();
+		}
 			break;
 		case SCRIPT_PARAM::FLOAT:
 		{

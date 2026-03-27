@@ -283,6 +283,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletScript.h" />
     <ClInclude Include="Source\Scripts\CCamMoveScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\CCharacterScript.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.h" />
@@ -1016,6 +1017,7 @@ CodeGen.exe</Command>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Source\Scripts\CharacterScript\CCharacterScript.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyAnimHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.cpp" />

@@ -58,7 +58,7 @@ void CPlayerAnimHandler::UpdateAnimTransition()
     PLAYER_HANDSTATE CurrentHandState = m_MainPlayerScript->GetHandState();
     const wstring& AnimCategory = mapPlayerHandStateAnimCategory.at(CurrentHandState); 
     
-    Vec3 CurrentVelocity = m_MainPlayerScript->GetVelocity();
+    const Vec3 CurrentVelocity = m_MainPlayerScript->GetVelocity();
     const int FlipBookIndexByDirection = static_cast<int>(m_AnimDirection);
 
     if (CurrentVelocity.LengthSquared() == 0.f) // 이동하고 있지 않은 상태

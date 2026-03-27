@@ -42,7 +42,24 @@ static const map<PLAYER_HANDSTATE, wstring> mapPlayerHandStateAnimCategory =
     { PLAYER_HANDSTATE::ROCKET,     L"Rocket"}
 };
 
-static const wstring& GetHandStateAnimCategory(PLAYER_HANDSTATE _HandState)
+
+/// <summary>
+/// Enemy MainState
+/// </summary>
+enum class ENEMY_STATE
 {
-    return mapPlayerHandStateAnimCategory.at(_HandState);
-}
+    WALK,
+    ATTACK,
+    PUSHED_OUT,
+    DIE,
+    END
+};
+
+static const map<ENEMY_STATE, wstring> mapEnemyMainStateAnimCategory = 
+{
+    {ENEMY_STATE::WALK,         L"Walk"},
+    {ENEMY_STATE::ATTACK,       L"Attack"},
+    {ENEMY_STATE::PUSHED_OUT,   L"PushedOut"},
+    {ENEMY_STATE::DIE,          L"Die"}
+};
+

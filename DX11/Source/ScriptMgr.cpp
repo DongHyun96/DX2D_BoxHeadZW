@@ -6,6 +6,7 @@
 #include "Source/Scripts/AirplaneShootingScript\CBulletScript.h"
 #include "Source/Scripts/CCamMoveScript.h"
 #include "Source/Scripts/CharacterScript\CCharacterScript.h"
+#include "Source/Scripts/CharacterScript\EnemyScript\CEnemyAnimHandler.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\CEnemyScript.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerAnimHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerScript.h"
@@ -19,6 +20,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBulletMgrScript");
 	_vec.push_back(L"CBulletScript");
 	_vec.push_back(L"CCamMoveScript");
+	_vec.push_back(L"CEnemyAnimHandler");
 	_vec.push_back(L"CEnemyScript");
 	_vec.push_back(L"CPlayerAnimHandler");
 	_vec.push_back(L"CPlayerScript");
@@ -39,6 +41,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CCamMoveScript;
 	if (L"CCharacterScript" == _strScriptName)
 		return nullptr;
+	if (L"CEnemyAnimHandler" == _strScriptName)
+		return new CEnemyAnimHandler;
 	if (L"CEnemyScript" == _strScriptName)
 		return new CEnemyScript;
 	if (L"CPlayerAnimHandler" == _strScriptName)
@@ -68,6 +72,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CCamMoveScript;
 	case (UINT)SCRIPT_TYPE::CHARACTERSCRIPT:
 		return nullptr;
+	case (UINT)SCRIPT_TYPE::ENEMYANIMHANDLER:
+		return new CEnemyAnimHandler;
 	case (UINT)SCRIPT_TYPE::ENEMYSCRIPT:
 		return new CEnemyScript;
 	case (UINT)SCRIPT_TYPE::PLAYERANIMHANDLER:
@@ -98,6 +104,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CCamMoveScript";
 	case SCRIPT_TYPE::CHARACTERSCRIPT:
 		return L"CCharacterScript";
+	case SCRIPT_TYPE::ENEMYANIMHANDLER:
+		return L"CEnemyAnimHandler";
 	case SCRIPT_TYPE::ENEMYSCRIPT:
 		return L"CEnemyScript";
 	case SCRIPT_TYPE::PLAYERANIMHANDLER:

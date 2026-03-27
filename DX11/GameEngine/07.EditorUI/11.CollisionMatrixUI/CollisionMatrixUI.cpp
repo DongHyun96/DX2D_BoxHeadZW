@@ -37,6 +37,7 @@ void CollisionMatrixUI::Tick_UI()
     ImGui::Text("Layer Names");
 
     ImGui::PushItemWidth(140.f);
+    ImGui::Text("........");
     for (int i = 0; i < MAX_LAYER; ++i)
     {
         ImGui::PushID(i);

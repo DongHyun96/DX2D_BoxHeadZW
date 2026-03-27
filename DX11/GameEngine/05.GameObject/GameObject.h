@@ -86,8 +86,13 @@ public:
 	/// <returns> : 제거할 대상이 없을 경우 return false </returns>
 	bool RemoveScript(const Ptr<CScript>& _TargetScript);
 
+	/// <summary>
+	/// T Pointer 형으로 dynamic casting 처리가능한 첫 번째 Script 반환 
+	/// </summary>
+	/// <returns> : 해당 Script Type이 없다면 return nullptr </returns>
 	template<typename T>
 	Ptr<T> GetScriptComponent() const;
+	
 	vector<Ptr<CScript>> GetScripts() const { return m_vecScripts; }
 
 public:

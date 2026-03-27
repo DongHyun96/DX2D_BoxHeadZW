@@ -36,7 +36,7 @@ void TransformUI::Tick_UI()
     if (ImGui::DragFloat3("##SCALE", vScale))
         GetTargetObject()->Transform()->SetRelativeScale(vScale);
     
-    ImGui::SameLine(490);
+    ImGui::SameLine();
     if (ImGui::SmallButton("Swap XY"))
     {
         

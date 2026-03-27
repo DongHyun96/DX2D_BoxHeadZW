@@ -159,7 +159,7 @@ HRESULT Device::CreateSwapChain()
     // 렌더타겟의 이미지를 출력후 버려도 된다.
     m_Desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
     
-    m_Desc.BufferDesc.RefreshRate.Numerator     = 60;
+    m_Desc.BufferDesc.RefreshRate.Numerator     = 240;
     m_Desc.BufferDesc.RefreshRate.Denominator   = 1;
     m_Desc.BufferDesc.Scaling                   = DXGI_MODE_SCALING_UNSPECIFIED;
     m_Desc.BufferDesc.ScanlineOrdering          = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;

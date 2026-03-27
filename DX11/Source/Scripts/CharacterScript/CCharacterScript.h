@@ -4,7 +4,7 @@ class CCharacterScript : public CScript
 {
 protected:
     
-    float m_MoveSpeedBase       = 300.f;
+    float m_MoveSpeedBase       = 300.f; // TODO : const 변수로 바꿀 것
     float m_MoveSpeedFactor     = 1.f;
     
     Vec3 m_Velocity{};
@@ -22,10 +22,14 @@ public:
 private:
     
     virtual void Move() = 0;
-    
+
 public:
     
     virtual void SaveToLevelFile(FILE* _File) override {};
     virtual void LoadFromLevelFile(FILE* _File) override {};
+    
+public:
+    
+    const Vec3& GetVelocity() const { return m_Velocity; }
     
 };
