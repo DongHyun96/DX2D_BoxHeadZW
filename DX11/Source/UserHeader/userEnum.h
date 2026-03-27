@@ -20,29 +20,29 @@ enum class EDIRECTION
 /// </summary>
 enum class SIXTEEN_DIRECTION
 {
-    RIGHT,
+    RIGHT,          // 1
     
-    RIGHT_UP1,
-    RIGHT_UP2,
-    RIGHT_UP3,
+    RIGHT_UP1,      // 2
+    RIGHT_UP2,      // 3
+    RIGHT_UP3,      // 4
     
-    UP,
+    UP,             // 5
     
-    UP_LEFT1,
-    UP_LEFT2,
-    UP_LEFT3,
+    UP_LEFT1,       // 6
+    UP_LEFT2,       // 7
+    UP_LEFT3,       // 8
     
-    LEFT,
+    LEFT,           // 9
     
-    LEFT_DOWN1,
-    LEFT_DOWN2,
-    LEFT_DOWN3,
+    LEFT_DOWN1,     // 10
+    LEFT_DOWN2,     // 11
+    LEFT_DOWN3,     // 12
     
-    DOWN,
+    DOWN,           // 13
     
-    DOWN_RIGHT1,
-    DOWN_RIGHT2,
-    DOWN_RIGHT3,
+    DOWN_RIGHT1,    // 14
+    DOWN_RIGHT2,    // 15
+    DOWN_RIGHT3,    // 16
     
     END
 };
