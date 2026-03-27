@@ -165,6 +165,7 @@ void ContentUI::DuplicateAssetTick()
         Ptr<Asset> NewAsset = asset->CreateNewAsset();
         
         // 제대로 복사되었다면(해당 Ctrl+D를 사용하기 위한 CreateNewAsset을 override 한 Asset이라면), AssetMgr에 등록 처리
+        // 현재는 AFlipbook만 제대로 override 되어있는 상태
         if (NewAsset)
         {
             AssetMgr::GetInst()->AddAsset(NewAsset->GetKey(), NewAsset);
@@ -172,11 +173,50 @@ void ContentUI::DuplicateAssetTick()
         }
     }
 
-    if (bCopySucceeded) ReNew();
+    if (bCopySucceeded)
+    {
+        ReNew();
+    }
 }
 
 void ContentUI::ReNew()
 {
+    auto ToLower = [](string s)
+    {
+        std::transform(s.begin(), s.end(), s.begin(),
+            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        return s;
+    };
+
+    auto SortFoldersRecursively = [&](auto&& self, const Ptr<TreeNode>& parent) -> void
+    {
+        if (!parent) return;
+
+        auto& children = parent->vecChildNode;
+
+        // stable_sort: 파일(Asset) 기존 순서는 유지, 폴더만 정렬
+        std::stable_sort(children.begin(), children.end(),
+            [&](const Ptr<TreeNode>& a, const Ptr<TreeNode>& b)
+            {
+                const bool aFolder = (a && a->IsFolderNode);
+                const bool bFolder = (b && b->IsFolderNode);
+
+                if (aFolder && bFolder)
+                    return ToLower(a->Str) < ToLower(b->Str); // 폴더끼리 이름순
+
+                if (aFolder != bFolder)
+                    return aFolder; // 폴더를 파일보다 위로
+
+                return false; // 파일끼리는 기존 순서 유지
+            });
+
+        for (const Ptr<TreeNode>& c : children)
+            self(self, c);
+    };
+    
+    
+    
+    
     // 이전 선택 Asset Key로 백업
     vector<wstring> prevSelectedKeys{};
     for (const Ptr<TreeNode>& node : m_Tree->GetSelectedNodes())
@@ -274,6 +314,7 @@ void ContentUI::ReNew()
             if (selectedKeySet.find(pAsset->GetKey()) != selectedKeySet.end())
                 nodesToRestore.push_back(leafNode);
         }
+        SortFoldersRecursively(SortFoldersRecursively, Node);
     }
     
     // ReNew 이후 선택 복원 (없어진 Asset은 자동 스킵)

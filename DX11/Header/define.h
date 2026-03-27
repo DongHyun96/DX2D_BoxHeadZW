@@ -30,11 +30,11 @@ SET(ValueType, MemName)
 
 #define CLONE(Type) Type* Clone() const { return new Type(*this); }
 
-//#define RESOL_X 1600.f
-//#define RESOL_Y 900.f
+#define RESOL_X 1600.f
+#define RESOL_Y 900.f
 
-#define RESOL_X 1920.f
-#define RESOL_Y 1080.f
+//#define RESOL_X 1920.f
+//#define RESOL_Y 1080.f
 
 // #define TEXTURE_LOADING_FLAG WIC_FLAGS_NONE
 #define TEXTURE_LOADING_FLAG WIC_FLAGS_IGNORE_SRGB
