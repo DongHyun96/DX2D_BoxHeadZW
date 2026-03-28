@@ -85,7 +85,7 @@ void CollisionMgr::CheckCollisionAndNotify(const Ptr<GameObject>& _LeftObject, c
         iter = m_mapColID.find(colid.ID);
     }
 
-            
+    
     // if (IsCollision(_LeftObject->Collider2D(), _RightObject->Collider2D()))          // Only for Rect vs Rect OBB Collision
     if (_LeftObject->GetCollider2D()->IsCollision(_RightObject->GetCollider2D()))       // 각 모양 및 AABB or OBB 충돌검사 알아서 선택되어 처리됨
     {
@@ -119,8 +119,8 @@ bool CollisionMgr::IsCollision(const Ptr<CCollider2D>& _LeftCol, const Ptr<CColl
 {
     // Rect vs Rect OBB Collision testing
     
-    if (!_LeftCol->GetOwner()->GetIsActive() || !_RightCol->GetOwner()->GetIsActive())  return false;    // Active가 꺼진 오브젝트
-    if (_LeftCol->GetOwner()->IsDead()       || _RightCol->GetOwner()->IsDead())        return false;    // 곧 삭제 처리될 오브젝트
+    if (!_LeftCol->GetOwner()->GetActive() || !_RightCol->GetOwner()->GetActive())  return false;    // Active가 꺼진 오브젝트
+    if (_LeftCol->GetOwner()->IsObjectDestroyed() || _RightCol->GetOwner()->IsObjectDestroyed())        return false;    // 곧 삭제 처리될 오브젝트
 
     Ptr<AMesh> pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
 

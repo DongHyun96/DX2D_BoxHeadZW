@@ -40,7 +40,7 @@ private:
 	int						m_LayerIdx = -1;
 	bool					m_bInLayer{}; // 레이어에 현재 속해 있는지 체크
 	
-	bool					m_Dead{}; // 곧 사라질 GameObject
+	bool					m_ObjectDestroyed{}; // 곧 사라질 GameObject
 	
 public:
 
@@ -111,10 +111,10 @@ public:
 
 public:
 	
-	bool IsDead() const { return m_Dead; }
+	bool IsObjectDestroyed() const { return m_ObjectDestroyed; }
 	
-	bool GetIsActive() const { return m_IsActive; }
-	void SetIsActive(bool _Active) { m_IsActive = _Active; }
+	bool GetActive() const { return m_IsActive; }
+	void SetActive(bool _Active) { m_IsActive = _Active; }
 	
 	bool GetIsVisible() const { return m_IsVisible; }
 	void SetIsVisible(bool _Visible) { m_IsVisible = _Visible; }

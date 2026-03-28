@@ -37,6 +37,7 @@ protected:
 public:
     
     CScript(int _ScriptType);
+    CScript(enum SCRIPT_TYPE _ScriptType);
     CScript(const CScript& _Origin);
     virtual ~CScript() override;
     

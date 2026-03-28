@@ -11,8 +11,7 @@ protected:
 
 public:
     
-    CCharacterScript();
-    CCharacterScript(int _ScriptType);
+    CCharacterScript(enum SCRIPT_TYPE _ScriptType);
     virtual ~CCharacterScript() override;
     
 public:

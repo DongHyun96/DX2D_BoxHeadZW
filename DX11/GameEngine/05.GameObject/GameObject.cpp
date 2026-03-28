@@ -15,7 +15,7 @@
 GameObject::GameObject()
 	: m_Components{}
 	, m_Parent(nullptr)
-	, m_Dead(false)
+	, m_ObjectDestroyed(false)
 	, m_LayerIdx(-1)
 {
 }
@@ -24,7 +24,7 @@ GameObject::GameObject(const GameObject& _Origin)
 	: Entity(_Origin)
 	, m_Components{}
 	, m_Parent(nullptr)
-	, m_Dead(false)
+	, m_ObjectDestroyed(false)
 	, m_LayerIdx(_Origin.m_LayerIdx) // 원본의 LayerIdx를 따르도록 처리
 	, m_IsActive(_Origin.m_IsActive)
 	, m_IsVisible(_Origin.m_IsVisible)
@@ -63,8 +63,6 @@ void GameObject::Begin()
 
 void GameObject::Tick()
 {
-	if (!m_IsActive) return;
-	
 	for (const Ptr<CScript>& script : m_vecScripts)
 		script->Tick();
 	
@@ -74,12 +72,6 @@ void GameObject::Tick()
 
 void GameObject::FinalTick()
 {
-	if (!m_IsActive)
-	{
-		RegisterLayer();
-		return;
-	}
-	
 	for (const Ptr<Component>& component : m_Components)
 		if (component) component->FinalTick();
 
@@ -92,7 +84,7 @@ void GameObject::FinalTick()
 		Ptr<GameObject>& child = *iter;
 		child->FinalTick();
 		
-		if (child->IsDead()) iter = m_vecChild.erase(iter);
+		if (child->IsObjectDestroyed()) iter = m_vecChild.erase(iter);
 		else ++iter;
 	}
 }
@@ -111,7 +103,7 @@ void GameObject::FinalTick_Editor()
 		Ptr<GameObject>& child = *iter;
 		child->FinalTick();
 		
-		if (child->IsDead()) iter = m_vecChild.erase(iter);
+		if (child->IsObjectDestroyed()) iter = m_vecChild.erase(iter);
 		else ++iter;
 	}
 }
@@ -314,7 +306,7 @@ void GameObject::RegisterLayer()
 
 void GameObject::Destroy()
 {
-	if (m_Dead) return; // 이미 삭제 요청이 들어갔었던 Object
+	if (m_ObjectDestroyed) return; // 이미 삭제 요청이 들어갔었던 Object
     
 	TaskInfo info = {};
     

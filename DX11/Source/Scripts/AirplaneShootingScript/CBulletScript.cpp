@@ -29,7 +29,7 @@ void CBulletScript::Begin()
 
 void CBulletScript::Tick()
 {
-    if (!GetOwner()->GetIsActive()) return;
+    if (!GetOwner()->GetActive()) return;
 
     m_TimeAfterSpawned += DT;
     
@@ -56,7 +56,7 @@ void CBulletScript::Tick()
     if (m_TimeAfterSpawned > 10.f)
     {
         m_TimeAfterSpawned = 0.f;
-        GetOwner()->SetIsActive(false);
+        GetOwner()->SetActive(false);
     }
     
     // Border check
@@ -68,7 +68,7 @@ void CBulletScript::Tick()
 void CBulletScript::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
     GetCollider2D()->SetColor(Vec4(1.f, 0.f, 0.f, 1.f));
-    GetOwner()->SetIsActive(false);
+    GetOwner()->SetActive(false);
 }
 
 void CBulletScript::Overlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
@@ -92,9 +92,9 @@ void CBulletScript::LoadFromLevelFile(FILE* _File)
 
 bool CBulletScript::Fire(const Vec3& _StartPosition, const Vec3& _FireDirection, float _Speed)
 {
-    if (GetOwner()->GetIsActive()) return false;
+    if (GetOwner()->GetActive()) return false;
 
-    GetOwner()->SetIsActive(true);
+    GetOwner()->SetActive(true);
     Transform()->SetRelativePos(_StartPosition);
 
     float zRot = atan2f(_FireDirection.y, _FireDirection.x);

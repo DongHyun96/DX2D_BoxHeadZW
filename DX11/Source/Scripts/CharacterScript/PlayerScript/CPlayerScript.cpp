@@ -13,7 +13,7 @@
 #include "Source/Manager/GameManager.h"
 
 CPlayerScript::CPlayerScript()
-    : CCharacterScript(static_cast<int>(SCRIPT_TYPE::PLAYERSCRIPT))
+    : CCharacterScript(SCRIPT_TYPE::PLAYERSCRIPT)
 {
 }
 

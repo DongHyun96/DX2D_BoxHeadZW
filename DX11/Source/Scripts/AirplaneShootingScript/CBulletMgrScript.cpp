@@ -24,7 +24,7 @@ CBulletMgrScript::~CBulletMgrScript()
 
 void CBulletMgrScript::AddBulletToPool(const Ptr<GameObject>& _Bullet)
 {
-    _Bullet->SetIsActive(false);
+    _Bullet->SetActive(false);
     Ptr<CBulletScript> BulletScript = _Bullet->GetScriptComponent<CBulletScript>();
     m_BulletPool.push_back( {_Bullet, BulletScript} );
 }
@@ -37,7 +37,7 @@ bool CBulletMgrScript::FireBullet(const Vec3& _StartPosition, const Vec3& _FireD
 {
     for (pair<Ptr<GameObject>, Ptr<CBulletScript>>& bullet : m_BulletPool)
     {
-        if (bullet.first->GetIsActive()) continue;
+        if (bullet.first->GetActive()) continue;
 
         bullet.second->Fire(_StartPosition, _FireDirection, _Speed);
         return true;

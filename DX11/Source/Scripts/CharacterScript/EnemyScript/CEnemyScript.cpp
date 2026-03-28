@@ -6,7 +6,7 @@
 #include "Source/ScriptMgr.h"
 
 CEnemyScript::CEnemyScript()
-    :CCharacterScript(static_cast<int>(SCRIPT_TYPE::ENEMYSCRIPT))
+    : CCharacterScript(SCRIPT_TYPE::ENEMYSCRIPT)
 {
 }
 

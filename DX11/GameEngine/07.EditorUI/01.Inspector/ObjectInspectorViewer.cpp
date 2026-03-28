@@ -60,9 +60,9 @@ void ObjectInspectorViewer::TickHeaderUI()
      
     ImGui::SeparatorText("");
     
-    bool bIsActive = m_TargetObject->GetIsActive();
+    bool bIsActive = m_TargetObject->GetActive();
     if (ImGui::Checkbox("IsActive", &bIsActive))
-        m_TargetObject->SetIsActive(bIsActive);
+        m_TargetObject->SetActive(bIsActive);
     
     ImGui::SameLine();
     bool bIsVisible = m_TargetObject->GetIsVisible();

@@ -1,0 +1,52 @@
+﻿#pragma once
+
+/// <summary>
+/// Stat Script - Character의 Stat이 될 수도 있고, 설치물의 Stat이 될 수도 있는 부모 클래스
+/// </summary>
+class CStatScript : public CScript
+{
+private:
+
+    float   m_HPMax{};
+    float   m_HP{};
+    
+public:
+    
+    CStatScript();
+    
+protected:
+    
+    CStatScript(enum SCRIPT_TYPE _ScriptType);
+
+public:
+    
+    virtual ~CStatScript() override;
+    CLONE(CStatScript)
+
+public:
+    
+    void Tick() override;
+    
+public:
+    
+    /// <summary>
+    /// Damage 입히기 시도
+    /// </summary>
+    /// <param name="_DamageAmount"> : Damage 총량 </param>
+    /// <param name="_DamageSourcePos"> : Damage를 준 Source의 위치 </param>
+    /// <returns> : 제대로 Damage 처리가 되었다면 return true </returns>
+    virtual bool TakeDamage(float _DamageAmount, Vec3 _DamageSourcePos);
+    
+    virtual bool ApplyHeal(float _HealAmount);
+
+public:
+    
+    float GetHP() const { return m_HP; }
+    bool IsDead() const { return m_HP <= 0.f; }
+    
+public:
+    
+    void SaveToLevelFile(FILE* _File) override {};
+    void LoadFromLevelFile(FILE* _File) override {};
+    
+};

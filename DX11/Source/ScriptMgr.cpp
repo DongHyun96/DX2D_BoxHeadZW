@@ -11,8 +11,12 @@
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerAnimHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerScript.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerSwapWeapon.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\InvenScript\CEquipmentScript.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\InvenScript\CInvenScript.h"
 #include "Source/Scripts/CMonsterScript.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
+#include "Source/Scripts/StatScript\CStatScript.h"
+#include "Source/Scripts/StatScript\PlayerStat\CPlayerStat.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
@@ -25,8 +29,12 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CPlayerAnimHandler");
 	_vec.push_back(L"CPlayerScript");
 	_vec.push_back(L"CPlayerSwapWeapon");
+	_vec.push_back(L"CEquipmentScript");
+	_vec.push_back(L"CInvenScript");
 	_vec.push_back(L"CMonsterScript");
 	_vec.push_back(L"CObstacle");
+	_vec.push_back(L"CStatScript");
+	_vec.push_back(L"CPlayerStat");
 }
 
 CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
@@ -51,10 +59,18 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CPlayerScript;
 	if (L"CPlayerSwapWeapon" == _strScriptName)
 		return new CPlayerSwapWeapon;
+	if (L"CEquipmentScript" == _strScriptName)
+		return new CEquipmentScript;
+	if (L"CInvenScript" == _strScriptName)
+		return new CInvenScript;
 	if (L"CMonsterScript" == _strScriptName)
 		return new CMonsterScript;
 	if (L"CObstacle" == _strScriptName)
 		return new CObstacle;
+	if (L"CStatScript" == _strScriptName)
+		return new CStatScript;
+	if (L"CPlayerStat" == _strScriptName)
+		return new CPlayerStat;
 	return nullptr;
 }
 
@@ -82,10 +98,18 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CPlayerScript;
 	case (UINT)SCRIPT_TYPE::PLAYERSWAPWEAPON:
 		return new CPlayerSwapWeapon;
+	case (UINT)SCRIPT_TYPE::EQUIPMENTSCRIPT:
+		return new CEquipmentScript;
+	case (UINT)SCRIPT_TYPE::INVENSCRIPT:
+		return new CInvenScript;
 	case (UINT)SCRIPT_TYPE::MONSTERSCRIPT:
 		return new CMonsterScript;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
 		return new CObstacle;
+	case (UINT)SCRIPT_TYPE::STATSCRIPT:
+		return new CStatScript;
+	case (UINT)SCRIPT_TYPE::PLAYERSTAT:
+		return new CPlayerStat;
 	}
 	return nullptr;
 }
@@ -114,10 +138,18 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CPlayerScript";
 	case SCRIPT_TYPE::PLAYERSWAPWEAPON:
 		return L"CPlayerSwapWeapon";
+	case SCRIPT_TYPE::EQUIPMENTSCRIPT:
+		return L"CEquipmentScript";
+	case SCRIPT_TYPE::INVENSCRIPT:
+		return L"CInvenScript";
 	case SCRIPT_TYPE::MONSTERSCRIPT:
 		return L"CMonsterScript";
 	case SCRIPT_TYPE::OBSTACLE:
 		return L"CObstacle";
+	case SCRIPT_TYPE::STATSCRIPT:
+		return L"CStatScript";
+	case SCRIPT_TYPE::PLAYERSTAT:
+		return L"CPlayerStat";
 	}
 	return nullptr;
 }

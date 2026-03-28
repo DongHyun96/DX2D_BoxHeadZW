@@ -43,9 +43,9 @@ void TaskMgr::Progress()
         {
             Ptr<GameObject> gObject = reinterpret_cast<GameObject*>(task.Param_0);
             
-            if (gObject->IsDead()) continue;
+            if (gObject->IsObjectDestroyed()) continue;
             
-            gObject->m_Dead = true;
+            gObject->m_ObjectDestroyed = true;
             m_Garbage.push_back(gObject);
             
             Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();

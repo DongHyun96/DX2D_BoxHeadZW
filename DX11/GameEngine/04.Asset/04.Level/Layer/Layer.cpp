@@ -71,7 +71,10 @@ void Layer::DeregisterAsParent(const Ptr<GameObject>& _Object)
 void Layer::Tick()
 {
     for (const Ptr<GameObject>& gameObject : m_vecParents)
-        gameObject->Tick();
+    {
+        if (gameObject->GetActive())
+            gameObject->Tick();
+    }
 }
 
 void Layer::FinalTick()
@@ -81,9 +84,9 @@ void Layer::FinalTick()
     while (iter != m_vecParents.end())
     {
         Ptr<GameObject>& gameObject = *iter;
-        gameObject->FinalTick();
+        if (gameObject->GetActive()) gameObject->FinalTick();
         
-        if (gameObject->IsDead()) iter = m_vecParents.erase(iter);
+        if (gameObject->IsObjectDestroyed()) iter = m_vecParents.erase(iter);
         else ++iter;
     }
 }

@@ -60,7 +60,7 @@ void CreateObject(GameObject* _Object, int _LayerIdx)
 
 void DestroyObject(GameObject* _Object)
 {
-    if (!_Object || _Object->IsDead()) return;
+    if (!_Object || _Object->IsObjectDestroyed()) return;
     
     TaskInfo info = {};
     
@@ -439,7 +439,7 @@ bool GenerateNewAssetKeyBasedOnAssetName(ASSET_TYPE _AssetType, const wstring& _
 
 bool IsValid(Ptr<GameObject>& _Object)
 {
-    if (!_Object || _Object->IsDead())
+    if (!_Object || _Object->IsObjectDestroyed())
     {
         // Valid하지 않은 Object에 대한 IsValid 호출이 들어왔을 때, 원본값 또한 nullptr로 처리해버린다
         _Object = nullptr;
