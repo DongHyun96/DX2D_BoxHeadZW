@@ -364,7 +364,7 @@ void ObjectInspectorViewer::TickCreateThisObjectAsPrefabUI()
         Ptr<APrefab> Prefab = AssetMgr::GetInst()->CreateNewAsset<APrefab>(AssetName);
         Prefab->SetProtoObj(m_TargetObject);
         AssetMgr::GetInst()->AddAsset(Prefab->GetKey(), Prefab.Get());
-        DebugUtil::AddDebugLog(AssetName + L" created", COLOR_YELLOW);
+        DebugUtil::AddDebugLog(AssetName + L" created", DEF_COLOR_YELLOW);
     }
     
     ImGui::EndDisabled();

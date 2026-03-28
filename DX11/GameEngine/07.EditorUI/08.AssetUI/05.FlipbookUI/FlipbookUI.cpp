@@ -35,6 +35,8 @@ void FlipbookUI::Tick_UI()
     ImGui::Text("%u", pFlipbook->GetSpriteCount());
 
     DrawPreviewSection(pFlipbook);
+    
+    TickNextSpriteShortCut(pFlipbook);
 
     int removeIndex = -1;
     int insertIndex = -1;
@@ -47,6 +49,20 @@ void FlipbookUI::Tick_UI()
     DrawAppendSection(pFlipbook);
 
     SaveButton();
+}
+
+void FlipbookUI::TickNextSpriteShortCut(const Ptr<AFlipbook>& _Flipbook)
+{
+    if (_Flipbook->GetSpriteCount() <= 0) return;
+    
+    if (ShortCut(ImGuiKey_Z))
+    {
+        if(--m_SelectedSpriteIdx < 0) m_SelectedSpriteIdx = _Flipbook->GetSpriteCount() - 1;
+        return;
+    }
+    
+    if (ShortCut(ImGuiKey_X))
+        if(++m_SelectedSpriteIdx >= _Flipbook->GetSpriteCount()) m_SelectedSpriteIdx = 0;
 }
 
 float FlipbookUI::DrawSpritePreview
@@ -391,6 +407,8 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
 
     Ptr<ATexture> pAtlas = pEditSprite->GetAtlas();
     const bool isAtlas = pAtlas.Get();
+    
+    ImGui::Text(("Selected : " + to_string(m_SelectedSpriteIdx)).c_str());
 
     string editKeyStr = string(pEditSprite->GetKey().begin(), pEditSprite->GetKey().end());
     ImGui::Text("Sprite Key");
@@ -444,19 +462,19 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
                 static_cast<int>(offUV.y * pAtlas->GetHeight())
             };
 
-            if (ImGui::DragInt2("Offset (px)", offPixel, 1.0f))
-            {
-                //offPixel[0] = max(0, offPixel[0]);
-                //offPixel[1] = max(0, offPixel[1]);
-                
-                offPixel[0] = offPixel[0];
-                offPixel[1] = offPixel[1];
-
-                pEditSprite->SetOffsetUV
-                (
-                    Vec2(offPixel[0] / pAtlas->GetWidth(), offPixel[1] / pAtlas->GetHeight())
-                );
-            }
+            ImGui::DragInt2("Offset (px)", offPixel, 1.0f);
+            
+            // Shortcut
+            if (ShortCut(ImGuiKey_LeftArrow)) --offPixel[0];
+            if (ShortCut(ImGuiKey_RightArrow)) ++offPixel[0];
+            if (ShortCut(ImGuiKey_UpArrow)) --offPixel[1];
+            if (ShortCut(ImGuiKey_DownArrow)) ++offPixel[1];
+            
+            pEditSprite->SetOffsetUV
+            (
+                Vec2(offPixel[0] / pAtlas->GetWidth(), offPixel[1] / pAtlas->GetHeight())
+            );
+            
         }
         else
         {
@@ -467,8 +485,12 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
     }
     ImGui::EndDisabled();
 
-    if (ImGui::Button("Save Sprite"))
+    ImGui::Text("Save Sprite : spacebar");
+    if (ImGui::Button("Save Sprite") || ShortCut(ImGuiKey_Space))
+    {
         pEditSprite->SaveBySelfRelativePath();
+        DebugUtil::AddDebugLog("Sprite UV saved!", DEF_COLOR_CYAN);
+    }
     
     ImGui::SameLine(200);
     if (ImGui::Button("Close Edit UV"))

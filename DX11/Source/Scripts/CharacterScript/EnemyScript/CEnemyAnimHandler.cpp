@@ -2,6 +2,7 @@
 #include "CEnemyAnimHandler.h"
 
 #include "CEnemyScript.h"
+#include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
 
 CEnemyAnimHandler::CEnemyAnimHandler()
@@ -28,6 +29,17 @@ void CEnemyAnimHandler::Tick()
 {
     UpdateAnimDirection();
     UpdateAnimTransition();
+    
+    // Just for testing
+    if (KEY_TAP(KEY::NUM_1)) FlipbookRender()->Play(L"Die", 0, 8, 1);
+    if (KEY_TAP(KEY::NUM_2)) FlipbookRender()->Play(L"Die", 1, 8, 1);
+    if (KEY_TAP(KEY::NUM_3)) FlipbookRender()->Play(L"Die", 2, 8, 1);
+    if (KEY_TAP(KEY::NUM_4)) FlipbookRender()->Play(L"Die", 3, 8, 1);
+    if (KEY_TAP(KEY::NUM_5)) FlipbookRender()->Play(L"Die", 4, 8, 1);
+    if (KEY_TAP(KEY::NUM_6)) FlipbookRender()->Play(L"Die", 5, 8, 1);
+    if (KEY_TAP(KEY::NUM_7)) FlipbookRender()->Play(L"Die", 6, 8, 1);
+    if (KEY_TAP(KEY::NUM_8)) FlipbookRender()->Play(L"Die", 7, 8, 1);
+    if (KEY_TAP(KEY::NUM_9)) FlipbookRender()->Play(L"Die", 8, 8, 1);
 }
 
 void CEnemyAnimHandler::UpdateAnimDirection()

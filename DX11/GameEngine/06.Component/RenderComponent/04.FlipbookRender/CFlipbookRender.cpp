@@ -3,6 +3,7 @@
 
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 
 CFlipbookRender::CFlipbookRender()
     : CRenderComponent(COMPONENT_TYPE::FLIPBOOK_RENDER)
@@ -60,8 +61,10 @@ void CFlipbookRender::FinalTick()
 
     const float frameTimeLimit = 1.f / m_FPS;
 
-    m_FrameTimer += DT;
-
+    // m_FrameTimer += DT;
+    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) m_FrameTimer += E_DT;
+    else m_FrameTimer += DT;
+    
     if (m_FrameTimer > frameTimeLimit) // 한 프레임 보여주기 시간 끝
     {
         m_FrameTimer -= frameTimeLimit;
@@ -156,8 +159,8 @@ bool CFlipbookRender::SetCurrentCategory(const wstring& _CategoryKey, int _Flipb
 
     // 현재 선택된 카테고리 내의 vecFlipbooks size를 넘기는 Idx가 들어왔다면 0으로 초기화
     m_CurSelectedFlipbookIdx = (_FlipbookToSelect >= m_vecCurSelectedCategoryFlipbooks->size()) ? 0 : _FlipbookToSelect; 
-    
-    m_CurAnimatingSpriteIdx = _SpriteToSelect;
+
+    m_CurAnimatingSpriteIdx = 0;
     m_RepeatCount           = 0;    
     m_bCurCycleFinished     = false;   
     
@@ -181,9 +184,8 @@ bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool 
     assert(_FPS > 0.f);
 
     if (!m_vecCurSelectedCategoryFlipbooks) return false; // 현재 골라놓은 카테고리가 없음
-    
-    if (_FlipbookIdx < 0 || _FlipbookIdx >= m_vecCurSelectedCategoryFlipbooks->size())
-        return false;
+    if (_FlipbookIdx < 0 || _FlipbookIdx >= m_vecCurSelectedCategoryFlipbooks->size()) return false;
+    if (_RepeatCount < -1 || _RepeatCount == 0) return false; // Invalid Repeat Count
     
     m_bPlayReverse = _bPlayReverse;
     m_CurSelectedFlipbookIdx = _FlipbookIdx;
@@ -194,7 +196,7 @@ bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool 
     m_RepeatCount            = _RepeatCount;
     m_FPS                    = _FPS;
     m_FrameTimer             = 0.f;
-    m_bCurCycleFinished      = false;
+    m_bCurCycleFinished      = true; // 이걸 true로 맞춰주어야 PlayCount가 정상적으로 동작
     m_bStopped               = false;
     
     // Render Transform 관련값 맞추기

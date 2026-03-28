@@ -42,7 +42,7 @@ void FlipbookRenderUI::Tick_UI()
 
     ImGui::Separator(); ImGui::Separator(); ImGui::Separator();
     
-    TickCheckNumberKey();
+    TickCheckNumberKey(flipbookRender);
     
     TickSelectPreviewCategory(flipbookRender);
     TickAddNewCategory(flipbookRender);
@@ -53,25 +53,14 @@ void FlipbookRenderUI::Tick_UI()
     TickPreview(flipbookRender);
 }
 
-void FlipbookRenderUI::TickCheckNumberKey()
+void FlipbookRenderUI::TickCheckNumberKey(const Ptr<CFlipbookRender>& _FlipbookRender)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP)
     {
-        m_NumShortCutTapped = -1;
+        m_NumShortCutIdxTapped = -1;
         return;
     }
-    
-    if (ShortCut(ImGuiKey_1)) m_NumShortCutTapped = 1;
-    else if (ShortCut(ImGuiKey_2)) m_NumShortCutTapped = 2;
-    else if (ShortCut(ImGuiKey_3)) m_NumShortCutTapped = 3;
-    else if (ShortCut(ImGuiKey_4)) m_NumShortCutTapped = 4;
-    else if (ShortCut(ImGuiKey_5)) m_NumShortCutTapped = 5;
-    else if (ShortCut(ImGuiKey_6)) m_NumShortCutTapped = 6;
-    else if (ShortCut(ImGuiKey_7)) m_NumShortCutTapped = 7;
-    else if (ShortCut(ImGuiKey_8)) m_NumShortCutTapped = 8;
-    else if (ShortCut(ImGuiKey_9)) m_NumShortCutTapped = 9;
-    else m_NumShortCutTapped = -1;
-    
+
     if (ShortCut(ImGuiKey_Q)) m_CategoryShortCutTapped = 0;
     else if (ShortCut(ImGuiKey_W)) m_CategoryShortCutTapped = 1;
     else if (ShortCut(ImGuiKey_E)) m_CategoryShortCutTapped = 2;
@@ -83,6 +72,36 @@ void FlipbookRenderUI::TickCheckNumberKey()
     else if (ShortCut(ImGuiKey_O)) m_CategoryShortCutTapped = 8;
     else if (ShortCut(ImGuiKey_P)) m_CategoryShortCutTapped = 9;
     else m_CategoryShortCutTapped = -1;
+    
+    const int CurrentFlipbookCount = _FlipbookRender->GetCategoryFlipbookCount(m_CurSelectedCategory);
+    if (CurrentFlipbookCount <= 0) return;
+    
+    if (ShortCut(ImGuiKey_1)) { m_NumShortCutIdxTapped = 0; return;}
+    if (ShortCut(ImGuiKey_2)) { m_NumShortCutIdxTapped = 1; return; }
+    if (ShortCut(ImGuiKey_3)) { m_NumShortCutIdxTapped = 2; return; }
+    if (ShortCut(ImGuiKey_4)) { m_NumShortCutIdxTapped = 3; return; }
+    if (ShortCut(ImGuiKey_5)) { m_NumShortCutIdxTapped = 4; return; }
+    if (ShortCut(ImGuiKey_6)) { m_NumShortCutIdxTapped = 5; return; }
+    if (ShortCut(ImGuiKey_7)) { m_NumShortCutIdxTapped = 6; return; }
+    if (ShortCut(ImGuiKey_8)) { m_NumShortCutIdxTapped = 7; return; }
+    if (ShortCut(ImGuiKey_9)) { m_NumShortCutIdxTapped = 8; return; }
+    if (ShortCut(ImGuiKey_Z))
+    {
+        m_NumShortCutIdxTapped = m_SelectedFlipbookIdx - 1;
+        
+        if (m_NumShortCutIdxTapped <= -1)
+            m_NumShortCutIdxTapped = CurrentFlipbookCount - 1;
+        return;
+    }
+    if (ShortCut(ImGuiKey_X))
+    {
+        m_NumShortCutIdxTapped = m_SelectedFlipbookIdx + 1;
+        if (m_NumShortCutIdxTapped >= CurrentFlipbookCount)
+            m_NumShortCutIdxTapped = 0;
+        return;
+    }
+    
+    m_NumShortCutIdxTapped = -1;
 }
 
 void FlipbookRenderUI::TickSelectingLevelBeginningInfo(const Ptr<CFlipbookRender>& _FlipbookRender)
@@ -200,13 +219,15 @@ void FlipbookRenderUI::TickSelectPreviewCategory(const Ptr<CFlipbookRender>& _Fl
                 {
                     m_CurSelectedCategory = wstring(strCategoryName.begin(), strCategoryName.end());
                     if (m_SelectedFlipbookIdx == -1) m_SelectedFlipbookIdx = 0;
-                    _FlipbookRender->SetCurrentCategory(m_CurSelectedCategory, m_SelectedFlipbookIdx, _FlipbookRender->m_CurAnimatingSpriteIdx);
+                    bool CategoryChanged = _FlipbookRender->SetCurrentCategory(m_CurSelectedCategory, m_SelectedFlipbookIdx, _FlipbookRender->m_CurAnimatingSpriteIdx);
+                    if (CategoryChanged) m_SelectedFlipbookIdx = _FlipbookRender->m_CurSelectedFlipbookIdx;
                 }
             }
 
             ImGui::EndTable();
         }
 
+        // ShortCut으로 처리
         if (m_CategoryShortCutTapped != -1 && m_CategoryShortCutTapped < _FlipbookRender->m_mapCategoryFlipbooks.size())
         {
             int index{};
@@ -224,7 +245,8 @@ void FlipbookRenderUI::TickSelectPreviewCategory(const Ptr<CFlipbookRender>& _Fl
                     m_CategoryShortCutTapped = -1;
                     m_CurSelectedCategory = wstring(strCategoryName.begin(), strCategoryName.end());
                     if (m_SelectedFlipbookIdx == -1) m_SelectedFlipbookIdx = 0;
-                    _FlipbookRender->SetCurrentCategory(m_CurSelectedCategory, m_SelectedFlipbookIdx, _FlipbookRender->m_CurAnimatingSpriteIdx);
+                    bool CategoryChanged = _FlipbookRender->SetCurrentCategory(m_CurSelectedCategory, m_SelectedFlipbookIdx, _FlipbookRender->m_CurAnimatingSpriteIdx);
+                    if (CategoryChanged) m_SelectedFlipbookIdx = _FlipbookRender->m_CurSelectedFlipbookIdx;
                     break;
                 }
                 ++index;
@@ -357,11 +379,14 @@ void FlipbookRenderUI::DrawFlipbookList(const Ptr<CFlipbookRender>& _FlipbookRen
             ImGui::Text("%d", i);
 
             ImGui::TableSetColumnIndex(1);
-            if (ImGui::Selectable(key.c_str(), m_SelectedFlipbookIdx == i, ImGuiSelectableFlags_AllowOverlap) || m_NumShortCutTapped - 1 == i)
+            
+            // Selectable 클릭 또는 단축키 처리로 골랐을 경우
+            if (ImGui::Selectable(key.c_str(), m_SelectedFlipbookIdx == i, ImGuiSelectableFlags_AllowOverlap) ||
+                m_NumShortCutIdxTapped == i)
             {
                 m_SelectedFlipbookIdx = i;
                 _FlipbookRender->Stop(m_CurSelectedCategory, m_SelectedFlipbookIdx, 2); // TODO : 2 지우기
-                m_NumShortCutTapped = -1;
+                m_NumShortCutIdxTapped = -1;
             }
             
             ImGui::TableSetColumnIndex(2);
@@ -387,12 +412,17 @@ void FlipbookRenderUI::DrawFlipbookList(const Ptr<CFlipbookRender>& _FlipbookRen
             ImGui::SameLine();
             if (ImGui::SmallButton("Remove"))
                 removeIndex = i;
+            
+            ImGui::SameLine();
+            ImGui::Text("F : Play once");
 
             ImGui::PopID();
 
             if (removeIndex != -1 || swapA != -1)
                 break;
         }
+        
+        if (ShortCut(ImGuiKey_F)) _FlipbookRender->Play(m_CurSelectedCategory, m_SelectedFlipbookIdx, m_PreviewFPS, 1);
 
         ImGui::EndTable();
     }

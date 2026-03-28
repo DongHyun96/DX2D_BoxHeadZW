@@ -24,6 +24,8 @@ public:
 
 private:
     
+    void TickNextSpriteShortCut(const Ptr<AFlipbook>& _Flipbook);
+    
     /// <returns> : 수정된 Current Zoom Factor </returns>
     float DrawSpritePreview
     (
