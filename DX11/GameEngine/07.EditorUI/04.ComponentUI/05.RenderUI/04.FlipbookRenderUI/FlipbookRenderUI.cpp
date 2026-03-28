@@ -37,7 +37,7 @@ void FlipbookRenderUI::Tick_UI()
         }
     }
     ImGui::SameLine();
-    ImGui::Text("ShortCut : s"); // TODO : 이 ShortCut 사용 후 제거하기
+    ImGui::Text("ShortCut : s");
     
 
     ImGui::Separator(); ImGui::Separator(); ImGui::Separator();

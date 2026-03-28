@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "RenderUI.h"
 
+#include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
+
 RenderUI::RenderUI(COMPONENT_TYPE _Type, const string& _UIName)
     : ComponentUI(_Type, _UIName)
 {
@@ -24,10 +26,37 @@ void RenderUI::Tick_UI()
     Vec2 vRenderOffset  = GetTargetObject()->GetRenderCom()->GetRenderOffset();
     Vec2 vRenderScale   = GetTargetObject()->GetRenderCom()->GetRenderScale();
 
+    ImGui::Checkbox("Enable RenderOffest Ctrl + IJKL editing", &m_bEnableRenderOffsetIJKLKeyInput);
+    
+    ImGui::BeginDisabled(!m_bEnableRenderOffsetIJKLKeyInput);
+    ImGui::DragFloat("IJKL Speed", &m_IJKLOffsetModifySpeed);
+    ImGui::EndDisabled();
+    
     ImGui::Text("RenderOffset");
     ImGui::SameLine(100);
     if (ImGui::DragFloat2("##Render Offset", vRenderOffset, 0.001f))
         GetTargetObject()->GetRenderCom()->SetRenderOffset(vRenderOffset);
+    
+    ImGuiIO& io = ImGui::GetIO();
+    const bool canEditByIJKL =
+        m_bEnableRenderOffsetIJKLKeyInput &&
+        !io.WantTextInput &&
+        ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+
+    if (canEditByIJKL && ImGui::IsKeyDown(ImGuiMod_Ctrl))
+    {
+        Vec2 RenderOffset = GetTargetObject()->GetRenderCom()->GetRenderOffset();
+
+        Vec2 Direction{};
+        if (ImGui::IsKeyDown(ImGuiKey_J)) Direction.x -= 1.f;
+        if (ImGui::IsKeyDown(ImGuiKey_L)) Direction.x += 1.f;
+        if (ImGui::IsKeyDown(ImGuiKey_K)) Direction.y -= 1.f;
+        if (ImGui::IsKeyDown(ImGuiKey_I)) Direction.y += 1.f;
+        Direction.Normalize();
+        
+        RenderOffset += Direction * E_DT * m_IJKLOffsetModifySpeed;
+        GetTargetObject()->GetRenderCom()->SetRenderOffset(RenderOffset);
+    }
 
     ImGui::Text("RenderScale");
     ImGui::SameLine(100); // 100Pixel 뒤로 이어붙이기

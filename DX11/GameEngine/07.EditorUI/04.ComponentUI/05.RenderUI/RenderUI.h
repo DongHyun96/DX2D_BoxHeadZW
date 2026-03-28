@@ -7,6 +7,8 @@ class RenderUI : public ComponentUI
 private:
 
     string m_Title{};
+    bool m_bEnableRenderOffsetIJKLKeyInput{};
+    float m_IJKLOffsetModifySpeed = 2.f;
     
 public:
     
