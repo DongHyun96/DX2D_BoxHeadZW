@@ -289,9 +289,11 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.h" />
-    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerSwapWeapon.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CEquipmentScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CInvenScript.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponPistol.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponScript.h" />
     <ClInclude Include="Source\Scripts\CMonsterScript.h" />
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
     <ClInclude Include="Source\Scripts\StatScript\CStatScript.h" />
@@ -1029,9 +1031,11 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.cpp" />
-    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerSwapWeapon.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CEquipmentScript.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CInvenScript.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponPistol.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponScript.cpp" />
     <ClCompile Include="Source\Scripts\CMonsterScript.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

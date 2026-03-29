@@ -61,6 +61,7 @@ void CFlipbookRender::FinalTick()
 
     const float frameTimeLimit = 1.f / m_FPS;
 
+    // TODO : 다시 DT로 수정하기
     // m_FrameTimer += DT;
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) m_FrameTimer += E_DT;
     else m_FrameTimer += DT;

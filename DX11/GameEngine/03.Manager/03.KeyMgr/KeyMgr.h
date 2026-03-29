@@ -20,7 +20,8 @@ enum class KEY
 	
 	MLB, // 마우스 왼쪽 클릭
 	MRB, // 마우스 오른쪽 클릭
-	MMB,
+	MMB, // 마우스 가운데 클릭
+	MOUSE_X1, MOUSE_X2, // 측각 마우스버튼
 	
 	TILDE, NUM_1, NUM_2, NUM_3, NUM_4, NUM_5, NUM_6,
 	NUM_7, NUM_8, NUM_9,
@@ -101,6 +102,7 @@ public:
 	/// 현재 마우스 Client 좌표를 인게임 월드 좌표(2D Orthographic)로 변환
 	/// </summary>
 	Vec3 GetMouseWorldPos() const;
+	Vec2 GetMouseWorldPos2D() const { return ToVec2(GetMouseWorldPos()); }
 
 	/// <summary>
 	/// 지정한 뷰포트 사각형(로컬좌표 기준)으로 마우스 월드좌표 계산

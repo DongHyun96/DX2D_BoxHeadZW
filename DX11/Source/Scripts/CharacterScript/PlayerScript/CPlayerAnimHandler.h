@@ -4,10 +4,8 @@ class CPlayerAnimHandler : public CScript
 {
 private:
 
-    class CPlayerScript* m_MainPlayerScript{};
-    
-    EDIRECTION  m_AnimDirection = EDIRECTION::DOWN;
-    bool        m_WalkingBackward{};
+    class CPlayerScript*    m_MainPlayerScript{};
+    bool                    m_WalkingBackward{};
     
     
 private: /* Animation FSM에서(UpdateAction) transition 조건에 필요한 변수들 */
@@ -33,12 +31,10 @@ public:
     
 private:
     
-    void UpdateAnimDirection(const Vec2& _PlayerToMousePos);
-
     /// <summary>
     /// 바라보는 방향과 움직이는 방향을 비교해서 뒤로 걷는 중인지 판단
     /// </summary>
-    void UpdateWalkingBackward(const Vec2& _PlayerToMousePos);
+    void UpdateWalkingBackward();
     
     
     void UpdateAnimTransition();

@@ -54,6 +54,20 @@ void ScriptUI::Tick_UI()
 	ImGui::PopStyleColor(3);
 	ImGui::PopID();
 
+	ImGui::Separator();
+	ImGui::SetNextItemOpen(false, ImGuiCond_FirstUseEver);
+	
+	const string CollapsingHeaderKey = "Serialized Params##" + GetUIKey();
+	if (ImGui::CollapsingHeader(CollapsingHeaderKey.c_str(), ImGuiTreeNodeFlags_None))
+		TickScriptParams();
+
+	SetSizeAsChild(Vec2(0.f, static_cast<float>(m_ItemHeight)));
+	
+	ComponentUI::Tick_UI();
+}
+
+void ScriptUI::TickScriptParams()
+{
 	// Script 파라미터
 	const vector<tScriptParam>& vecParam = m_TargetScript->GetScriptParam();
 
@@ -94,9 +108,36 @@ void ScriptUI::Tick_UI()
 		break;
 		case SCRIPT_PARAM::VEC2:
 		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			ImGui::SameLine(120);
+
+			string Key = "##Vec2";
+			Key += ID;
+
+			Vec2* ReceivedVecAddress = static_cast<Vec2*>(vecParam[i].Data);
 			
+			if (vecParam[i].IsInput) ImGui::InputFloat2(Key.c_str(), *ReceivedVecAddress);
+			else					 ImGui::DragFloat2(Key.c_str(), static_cast<float*>(vecParam[i].Data), vecParam[i].Step);
+
+			AddItemHeight();
 		}
-			break;
+		break;
+		case SCRIPT_PARAM::VEC3:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			ImGui::SameLine(120);
+
+			string Key = "##Vec3";
+			Key += ID;
+
+			Vec3* ReceivedVecAddress = static_cast<Vec3*>(vecParam[i].Data);
+			
+			if (vecParam[i].IsInput) ImGui::InputFloat3(Key.c_str(), *ReceivedVecAddress);
+			else					 ImGui::DragFloat3(Key.c_str(), static_cast<float*>(vecParam[i].Data), vecParam[i].Step);
+
+			AddItemHeight();
+		}
+		break;
 		case SCRIPT_PARAM::VEC4:
 		{
 			
@@ -150,10 +191,6 @@ void ScriptUI::Tick_UI()
 			break;
 		}
 	}
-
-	SetSizeAsChild(Vec2(0.f, static_cast<float>(m_ItemHeight)));
-	
-	ComponentUI::Tick_UI();
 }
 
 void ScriptUI::AddItemHeight()

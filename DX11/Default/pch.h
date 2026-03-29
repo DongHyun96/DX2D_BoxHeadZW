@@ -63,6 +63,7 @@ typedef SimpleMath::Matrix      Matrix;
 #include <unordered_set>
 #include <string>
 #include <algorithm>
+#include <array>
 
 #include <cfloat>
 #include <cmath>

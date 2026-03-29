@@ -8,6 +8,10 @@ protected:
     float m_MoveSpeedFactor     = 1.f;
     
     Vec3 m_Velocity{};
+    
+protected:
+    
+    EDIRECTION m_CurrentFacedDirection{};
 
 public:
     
@@ -21,6 +25,7 @@ public:
 private:
     
     virtual void Move() = 0;
+    virtual void UpdateCurrentFacedDirection() = 0;
 
 public:
     
@@ -30,5 +35,6 @@ public:
 public:
     
     const Vec3& GetVelocity() const { return m_Velocity; }
+    EDIRECTION GetCurrentFacedDirection() const { return m_CurrentFacedDirection; }
     
 };

@@ -39,3 +39,20 @@ void CEnemyScript::Move()
     Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
     Transform()->SetRelativePos(Pos);
 }
+
+void CEnemyScript::UpdateCurrentFacedDirection()
+{
+    EDIRECTION CurrentDirection = GetEightDirection(m_Velocity);
+    
+    // 속력이 0인 멈춰있는 상황
+    if (CurrentDirection == EDIRECTION::END)
+    {
+        // 만약 이전에도 END였으면, 맨 처음으로 들어오는 Update tick -> 기본 방향인 Down으로 맞춰춘다.
+        if (m_CurrentFacedDirection == EDIRECTION::END)
+            m_CurrentFacedDirection = EDIRECTION::DOWN;
+        
+        return; // 이전에 바라봤던 방향으로 처리
+    }
+    
+    m_CurrentFacedDirection = CurrentDirection;
+}

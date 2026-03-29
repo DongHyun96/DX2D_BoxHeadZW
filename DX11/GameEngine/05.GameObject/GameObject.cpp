@@ -74,6 +74,9 @@ void GameObject::FinalTick()
 {
 	for (const Ptr<Component>& component : m_Components)
 		if (component) component->FinalTick();
+	
+	/*for (const Ptr<CScript>& script : m_vecScripts)
+		if (script) script->FinalTick();*/
 
 	RegisterLayer(); // 자신이 소속된 Layer에 자신을 알림
 
@@ -418,7 +421,7 @@ void GameObject::LoadFromLevelFile(FILE* _File)
 		case COMPONENT_TYPE::TILE_RENDER:		pComponent = new CTileRender;		break;
 		case COMPONENT_TYPE::POOL:				pComponent = new CPoolComponent;	break;
 		}
-		
+
 		AddComponent(pComponent);
 		pComponent->LoadFromLevelFile(_File);
 	}
@@ -430,9 +433,16 @@ void GameObject::LoadFromLevelFile(FILE* _File)
 	for (size_t i = 0; i < ScriptCount; ++i)
 	{
 		wstring ScriptName = LoadWString(_File);
-		Ptr<CScript> pScript = ScriptMgr::GetScript(ScriptName); 
-		AddComponent(pScript.Get());
+		Ptr<CScript> pScript = ScriptMgr::GetScript(ScriptName);
 		
+		if (!pScript)
+		{
+			wstring DebugMsg = GetName() + L"'s " + ScriptName + L" failed to load. Prolly Script class name changed";
+			DebugUtil::AddDebugLog(L"[GameObject::LoadFromLevelFile] : " + DebugMsg, DEF_COLOR_RED, 10.f);
+			continue;
+		}
+		
+		AddComponent(pScript.Get());
 		pScript->LoadFromLevelFile(_File);
 	}
 	

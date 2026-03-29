@@ -10,8 +10,8 @@ class CPlayerScript : public CCharacterScript
 {
 private:
     
-    PLAYER_HANDSTATE m_HandState{}; // 현재 손에 들고 있는 무기 종류 State
-    vector<GameObject*> m_Temp{}; // TODO : 이 Temp 지우기
+    Vec2                m_PlayerToMousePos{};
+    PLAYER_HANDSTATE    m_HandState{}; // 현재 손에 들고 있는 무기 종류 State
     
 public:
     
@@ -28,6 +28,7 @@ public:
 private:
     
     virtual void Move() override;
+    virtual void UpdateCurrentFacedDirection() override;
     
 private:
     
@@ -40,6 +41,8 @@ public:
     
     void SetHandState(PLAYER_HANDSTATE _HandState) { m_HandState = _HandState; }
     PLAYER_HANDSTATE GetHandState() const { return m_HandState; }
+    
+    const Vec2& GetPlayerToMousePos() const { return m_PlayerToMousePos; }
     
 public:
     

@@ -25,29 +25,16 @@ void CPlayerAnimHandler::Begin()
 
 void CPlayerAnimHandler::Tick()
 {
-    const Vec2 MousePos             = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
-    const Vec2 PlayerPos2D          = ToVec2(Transform()->GetRelativePos());
-    const Vec2 PlayerToMousePos     = MousePos - PlayerPos2D;
-    
-    UpdateAnimDirection(PlayerToMousePos);
-    UpdateWalkingBackward(PlayerToMousePos);
+    UpdateWalkingBackward();
     UpdateAnimTransition();    
 }
 
-void CPlayerAnimHandler::UpdateAnimDirection(const Vec2& _PlayerToMousePos)
-{
-    m_AnimDirection = GetEightDirection(_PlayerToMousePos);
-    // 이 경우, 마우스포인터 좌표와 Player의 위치가 완전히 일치하는 상황 (거의 아예 안나올거다)
-    // 따로 DOWN 방향으로 처리
-    if (m_AnimDirection == EDIRECTION::END) m_AnimDirection = EDIRECTION::DOWN;
-}
-
-void CPlayerAnimHandler::UpdateWalkingBackward(const Vec2& _PlayerToMousePos)
+void CPlayerAnimHandler::UpdateWalkingBackward()
 {
     const Vec3 VelocityDirection = m_MainPlayerScript->GetVelocity().Normalized();
     const Vec2 VelocityDirection2D = ToVec2(VelocityDirection);
     
-    const float DotProduct = VelocityDirection2D.Dot(_PlayerToMousePos.Normalized());
+    const float DotProduct = VelocityDirection2D.Dot(m_MainPlayerScript->GetPlayerToMousePos().Normalized());
     const float AngleBetween = acosf(DotProduct); // 바라보는 방향과 진행방향과의 사잇각
 
     m_WalkingBackward = AngleBetween > XM_PIDIV2; 
@@ -59,7 +46,7 @@ void CPlayerAnimHandler::UpdateAnimTransition()
     const wstring& AnimCategory = mapPlayerHandStateAnimCategory.at(CurrentHandState); 
     
     const Vec3 CurrentVelocity = m_MainPlayerScript->GetVelocity();
-    const int FlipBookIndexByDirection = static_cast<int>(m_AnimDirection);
+    const int FlipBookIndexByDirection = static_cast<int>(m_MainPlayerScript->GetCurrentFacedDirection());
 
     if (CurrentVelocity.LengthSquared() == 0.f) // 이동하고 있지 않은 상태
     {
@@ -71,14 +58,14 @@ void CPlayerAnimHandler::UpdateAnimTransition()
     }
 
     // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
-    if (m_AnimDirection == m_PrevAnimDirection &&
+    if (m_MainPlayerScript->GetCurrentFacedDirection() == m_PrevAnimDirection &&
         m_WalkingBackward == m_PrevWalkingBackward &&
         CurrentHandState == m_PrevHandState
         ) return;
 
     FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 12, -1, m_WalkingBackward);
 
-    m_PrevAnimDirection     = m_AnimDirection;
+    m_PrevAnimDirection     = m_MainPlayerScript->GetCurrentFacedDirection();
     m_PrevWalkingBackward   = m_WalkingBackward;
     m_PrevHandState         = CurrentHandState;
 }

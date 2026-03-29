@@ -97,6 +97,7 @@ T GetRandom(const T& _Start, const T& _End)
 /// Z값을 제외한 X, Y값으로 Vec3에서 Vec2값 반환
 /// </summary>
 static Vec2 ToVec2(const Vec3& _V) { return {_V.x, _V.y}; }
+static Vec3 ToVec3(const Vec2& _V) { return {_V.x, _V.y, 0.f}; } // z값 0으로 고정
 
 enum class EDIRECTION;
 

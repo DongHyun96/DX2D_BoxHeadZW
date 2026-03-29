@@ -19,12 +19,16 @@ private:
     Ptr<CCamera>            m_EditorCam{};
     
     Ptr<GameObject>         m_DbgObj{};             // 디버그 렌더링을 위한 Dummy GameObject (Level안에 있는 GameObject가 아니다)
-    list<DebugInfo>           m_DbgInfoList{};        // 디버그 요청 정보
+    list<DebugInfo>         m_DbgInfoList{};        // 디버그 요청 정보
 
     vector<Ptr<CLight2D>>   m_vecLight2D{};         // 레벨 안에있는 모든 광원
     Ptr<StructuredBuffer>   m_Light2DBuffer{};      // 광원의 데이터를 입력받을 구조화버퍼
     
     bool                    m_bDebugRender = true;  // 디버그 랜더 기능 on / off
+    
+private:
+    
+    float                   m_ScreenResolDiagLength = sqrtf(RESOL_X * RESOL_X + RESOL_Y * RESOL_Y);
     
 public:
     
@@ -55,4 +59,8 @@ public:
     Ptr<CCamera> GetEditorCam() const { return m_EditorCam; }
     
     void RegisterLight2D(const Ptr<CLight2D>& _Light2D) { m_vecLight2D.push_back(_Light2D); }
+    
+public:
+    
+    float GetScreenResolDiagLength() const { return m_ScreenResolDiagLength; }
 };

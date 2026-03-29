@@ -15,6 +15,8 @@ UINT g_KeyIndex[static_cast<UINT>(KEY::KEY_END)] =
     VK_LBUTTON,
     VK_RBUTTON,
     VK_MBUTTON,
+    VK_XBUTTON1,
+    VK_XBUTTON2,
     
     VK_OEM_3, '1', '2', '3', '4', '5', '6', 
     '7', '8', '9',

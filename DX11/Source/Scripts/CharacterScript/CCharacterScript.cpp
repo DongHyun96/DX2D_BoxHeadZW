@@ -15,4 +15,5 @@ CCharacterScript::~CCharacterScript()
 void CCharacterScript::Tick()
 {
     Move();
+    UpdateCurrentFacedDirection();
 }

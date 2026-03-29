@@ -37,10 +37,10 @@ void ALevel::Begin()
     GM->OnLevelBegin();
     
     for (Layer& layer : m_arrLayer)
-    {
         m_mapLayerNameIndex[layer.GetName()] = layer.m_LayerIdx;
-        layer.Begin();    
-    }
+        
+    for (Layer& layer : m_arrLayer)
+        layer.Begin();
 }
 
 void ALevel::Tick()

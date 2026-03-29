@@ -18,6 +18,7 @@ public:
 private:
     
     virtual void Move() override;
+    virtual void UpdateCurrentFacedDirection() override;
     
 public:
     

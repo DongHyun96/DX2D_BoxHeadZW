@@ -13,16 +13,16 @@ union COL_ID
 
 struct Ray2D
 {
-    Vec3    Origin{};
-    Vec3    Dir{};
+    Vec2    Origin{};
+    Vec2    Direction{};
     float   MaxDistance{};
 };
 
 struct RayCastHit
 {
     Ptr<CCollider2D>    Collider{};
-    Vec3                Point{};
-    Vec3                Normal{};
+    Vec2                Point{};
+    Vec2                Normal{};
     float               Distance{};
 };
 
@@ -99,7 +99,7 @@ public:
         RayCastHit*         _OutHit  = nullptr,
         const CCollider2D*  _Ignore = nullptr
     );
-
+    
 private:
     /// <summary>
     /// TargetLayerMask에서의 Hit 했는지의 판정과, BestHit 찾기
@@ -133,8 +133,8 @@ private:
         const Ray2D&        _Ray,
         CColliderCircle*    _Circle,
         float&              _OutT,
-        Vec3&               _OutPoint,
-        Vec3&               _OutNormal
+        Vec2&               _OutPoint,
+        Vec2&               _OutNormal
     );
 
     /// <summary>
@@ -151,8 +151,8 @@ private:
         const Ray2D&    _Ray,
         const Matrix&   _RectWorldMat,
         float&          _OutT,
-        Vec3&           _OutPoint,
-        Vec3&           _OutNormal
+        Vec2&           _OutPoint,
+        Vec2&           _OutNormal
     );
     
 };

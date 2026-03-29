@@ -49,22 +49,9 @@ void CPlayerScript::Tick()
 {
     CCharacterScript::Tick();
     
-    HandleRayCast(); // TODO : Raycasting Test 라인 지우기
+    // HandleRayCast(); // TODO : Raycasting Test 라인 지우기
     // MeshRender()->GetMaterial()->SetScalar(INT_0, KEY_PRESSED(KEY::X) ? 1 : 0);
     
-    // TODO : 이 라인 지우기 ForTesting
-    if (KEY_TAP(KEY::MRB))
-    {
-        GameObject* gObject = GM->GetZombiePoolManager()->SpawnObject(Transform()->GetWorldPos() + Vec3::UnitX * 300.f);
-        if (gObject) m_Temp.push_back(gObject);
-    }
-    if (KEY_TAP(KEY::MLB))
-    {
-        for (GameObject* gObject : m_Temp)
-            gObject->SetActive(false);
-        
-        m_Temp.clear();
-    }
 }
 
 void CPlayerScript::Move()
@@ -93,17 +80,30 @@ void CPlayerScript::Move()
     Transform()->SetRelativePos(Pos);
 }
 
+void CPlayerScript::UpdateCurrentFacedDirection()
+{
+    const Vec2 MousePos     = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
+    const Vec2 PlayerPos2D  = ToVec2(Transform()->GetRelativePos());
+    
+    m_PlayerToMousePos      = MousePos - PlayerPos2D;
+    m_CurrentFacedDirection = GetEightDirection(m_PlayerToMousePos);
+    
+    // 이 경우, 마우스포인터 좌표와 Player의 위치가 완전히 일치하는 상황 (거의 아예 안나올거다)
+    // 따로 DOWN 방향으로 처리
+    if (m_CurrentFacedDirection == EDIRECTION::END) m_CurrentFacedDirection = EDIRECTION::DOWN;
+}
+
 void CPlayerScript::HandleRayCast()
 {
     if (KEY_PRESSED(KEY::MLB))
     {
         Ray2D Ray{};
         Ray.Origin = Transform()->GetWorldPos();
-        const Vec3 MousePos = KeyMgr::GetInst()->GetMouseWorldPos();
+        const Vec2 MousePos = KeyMgr::GetInst()->GetMouseWorldPos2D();
         
-        Ray.Dir = MousePos - Ray.Origin;
-        Ray.MaxDistance = Ray.Dir.Length();
-        Ray.Dir.Normalize();
+        Ray.Direction = MousePos - Ray.Origin;
+        Ray.MaxDistance = Ray.Direction.Length();
+        Ray.Direction.Normalize();
 
         RayCastHit Hit{};
 
@@ -111,10 +111,10 @@ void CPlayerScript::HandleRayCast()
         
         if (CollisionMgr::GetInst()->RayCast(Ray, {5, 2, 0}, &Hit))
         {
-            DrawDebugCircle(Hit.Point, 10.f, Vec4(0.f, 1.f, 1.f, 1.f), 0.f);
+            DrawDebugCircle(ToVec3(Hit.Point), 10.f, Vec4(0.f, 1.f, 1.f, 1.f), 0.f);
             Color = Vec4(1.f, 0.f, 0.f, 1.f);
         }
         
-        DrawDebugLine(Transform()->GetWorldPos(), Transform()->GetWorldPos() + Ray.Dir * Ray.MaxDistance, Color, 0.f);
+        DrawDebugLine(Transform()->GetWorldPos(), Transform()->GetWorldPos() + Ray.Direction * Ray.MaxDistance, Color, 0.f);
     }
 }

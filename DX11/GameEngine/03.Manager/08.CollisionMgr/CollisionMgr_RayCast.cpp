@@ -16,18 +16,16 @@ bool CollisionMgr::RayCast
 )
 {
 
-    Ray2D Ray       = _Ray;
-    Ray.Origin.z    = 0.f;
-    Ray.Dir.z       = 0.f;
+    Ray2D Ray = _Ray;
 
     if (_OutHit) *_OutHit = {}; // OutHit 초기화
     
     if (Ray.MaxDistance <= 0.f) Ray.MaxDistance = FLT_MAX;
 
-    if (Ray.Dir.LengthSquared() <= RAY_EPSILON * RAY_EPSILON)
+    if (Ray.Direction.LengthSquared() <= RAY_EPSILON * RAY_EPSILON)
         return false;
 
-    Ray.Dir.Normalize();
+    Ray.Direction.Normalize();
 
     bool bFoundHit{};
     RayCastHit BestHit{}; BestHit.Distance = FLT_MAX;
@@ -47,18 +45,16 @@ bool CollisionMgr::RayCast
     const CCollider2D*  _Ignore
 )
 {
-    Ray2D Ray       = _Ray;
-    Ray.Origin.z    = 0.f;
-    Ray.Dir.z       = 0.f;
+    Ray2D Ray = _Ray;
     
     if (_OutHit) *_OutHit = {}; // OutHit 초기화
 
     if (Ray.MaxDistance <= 0.f) Ray.MaxDistance = FLT_MAX;
 
-    if (Ray.Dir.LengthSquared() <= RAY_EPSILON * RAY_EPSILON)
+    if (Ray.Direction.LengthSquared() <= RAY_EPSILON * RAY_EPSILON)
         return false;
 
-    Ray.Dir.Normalize();
+    Ray.Direction.Normalize();
 
     bool bFoundHit{};
     RayCastHit BestHit{}; BestHit.Distance = FLT_MAX;
@@ -94,16 +90,16 @@ void CollisionMgr::RayCastFindBestHit
             for (const Ptr<GameObject>& child : Object->GetChildren())
                 q.push(child);
             
-            if (!Object->GetCollider2D())                      continue;
+            if (!Object->GetCollider2D())                            continue;
             if (!Object->GetActive() || Object->IsObjectDestroyed()) continue;
 
             Ptr<CCollider2D> pCollider = Object->GetCollider2D();
-            if (pCollider.Get() == _Ignore)                       continue;
+            if (pCollider.Get() == _Ignore)                                        continue;
             if (pCollider->GetComponentType() == COMPONENT_TYPE::COLLIDER2D_POINT) continue;
 
             bool bHit{};
             float fDistance{};
-            Vec3 vPoint{}, vNormal{};
+            Vec2 vPoint{}, vNormal{};
 
             if (pCollider->GetComponentType() == COMPONENT_TYPE::COLLIDER2D_RECT)
             {
@@ -131,16 +127,16 @@ void CollisionMgr::RayCastFindBestHit
     }
 }
 
-bool CollisionMgr::RayVsCircle(const Ray2D& _Ray, CColliderCircle* _Circle, float& _OutT, Vec3& _OutPoint, Vec3& _OutNormal)
+bool CollisionMgr::RayVsCircle(const Ray2D& _Ray, CColliderCircle* _Circle, float& _OutT, Vec2& _OutPoint, Vec2& _OutNormal)
 {
-    Vec3 vOrigin = _Ray.Origin; vOrigin.z = 0.f;
-    Vec3 vCenter = _Circle->GetWorldPos(); vCenter.z = 0.f;
+    Vec2 vOrigin = _Ray.Origin;
+    Vec2 vCenter = ToVec2(_Circle->GetWorldPos());
 
     const float fRadius = _Circle->GetRadius();
-    const Vec3 vOC = vOrigin - vCenter;
+    const Vec2 vOC = vOrigin - vCenter;
 
     // (oc + dir * t)^2 = r^2
-    const float b = vOC.Dot(_Ray.Dir);
+    const float b = vOC.Dot(_Ray.Direction);
     const float c = vOC.LengthSquared() - fRadius * fRadius;
     const float discriminant = b * b - c;
 
@@ -158,14 +154,13 @@ bool CollisionMgr::RayVsCircle(const Ray2D& _Ray, CColliderCircle* _Circle, floa
     if (tHit > _Ray.MaxDistance) return false;
 
     _OutT = tHit;
-    _OutPoint = vOrigin + _Ray.Dir * tHit;
-    _OutPoint.z = 0.f;
+    _OutPoint = vOrigin + _Ray.Direction * tHit;
 
     _OutNormal = _OutPoint - vCenter;
     if (_OutNormal.LengthSquared() > RAY_EPSILON * RAY_EPSILON)
         _OutNormal.Normalize();
     else
-        _OutNormal = -_Ray.Dir;
+        _OutNormal = -_Ray.Direction;
 
     return true;
 }
@@ -175,8 +170,8 @@ bool CollisionMgr::RayVsRectOBB
     const Ray2D&    _Ray,
     const Matrix&   _RectWorldMat,
     float&          _OutT,
-    Vec3&           _OutPoint,
-    Vec3&           _OutNormal
+    Vec2&           _OutPoint,
+    Vec2&           _OutNormal
 )
 {
     constexpr float fMinX = -0.5f;
@@ -186,7 +181,7 @@ bool CollisionMgr::RayVsRectOBB
     
     
     // Z scale이 0인 경우 XMMatrixInverse 실패 가능 -> Vec2 역변환 사용
-    const Vec3 vCenter  = _RectWorldMat.Translation();
+    const Vec2 vCenter  = ToVec2(_RectWorldMat.Translation());
     const Vec2 axisX    = Vec2(_RectWorldMat.Right().x, _RectWorldMat.Right().y);
     const Vec2 axisY    = Vec2(_RectWorldMat.Up().x,    _RectWorldMat.Up().y);
 
@@ -204,7 +199,7 @@ bool CollisionMgr::RayVsRectOBB
     const float inv11 = axisX.x * invDet;
 
     const Vec2 relOrigin = Vec2(_Ray.Origin.x - vCenter.x, _Ray.Origin.y - vCenter.y);
-    const Vec2 rayDir2D = Vec2(_Ray.Dir.x, _Ray.Dir.y);
+    const Vec2 rayDir2D = Vec2(_Ray.Direction.x, _Ray.Direction.y);
 
     Vec3 vLocalOrigin{};
     vLocalOrigin.x = inv00 * relOrigin.x + inv01 * relOrigin.y;
@@ -259,8 +254,7 @@ bool CollisionMgr::RayVsRectOBB
         return false;
 
     _OutT = tHit;
-    _OutPoint = _Ray.Origin + _Ray.Dir * tHit;
-    _OutPoint.z = 0.f;
+    _OutPoint = _Ray.Origin + _Ray.Direction * tHit;
 
     // 로컬 히트점을 이용해 면 노멀 결정
     const Vec3 vLocalHit = vLocalOrigin + vLocalDir * tHit;
@@ -290,11 +284,10 @@ bool CollisionMgr::RayVsRectOBB
     }
     
     _OutNormal = _RectWorldMat.Right() * vLocalNormal.x + _RectWorldMat.Up() * vLocalNormal.y;
-    _OutNormal.z = 0.f;
     if (_OutNormal.LengthSquared() > RAY_EPSILON * RAY_EPSILON)
         _OutNormal.Normalize();
     else
-        _OutNormal = -_Ray.Dir;
+        _OutNormal = -_Ray.Direction;
 
     return true;
 }

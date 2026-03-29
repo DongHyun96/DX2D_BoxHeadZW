@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 /// <summary>
-/// Owned by Player object
+/// Owned by Player object (탄알, 배낭, 힐 및 부스트 아이템, 
 /// </summary>
 class CInvenScript : public CScript
 {
