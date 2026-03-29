@@ -3,6 +3,8 @@
 
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
+#include "GameEngine/03.Manager/07.TaskMgr/TaskMgr.h"
+#include "Source/Manager/GameManager.h"
 
 
 CPoolComponent::CPoolComponent()
@@ -24,8 +26,10 @@ CPoolComponent::~CPoolComponent()
 
 void CPoolComponent::Init()
 {
-    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) return; // PLAY 시에만 실질적인 Pooling 처리
-    
+}
+
+void CPoolComponent::Begin()
+{
     if (!m_PrefabToPool)
     {
         const wstring& OwnerName = GetOwner()->GetName();
@@ -37,37 +41,76 @@ void CPoolComponent::Init()
     for (UINT i = 0; i < m_PoolCount; ++i)
     {
         GameObject* CreatedObject = m_PrefabToPool->Instantiate();
+
+        const wstring& OwnerName = GetOwner()->GetName();
+        
         if (!CreatedObject)
         {
-            const wstring& OwnerName = GetOwner()->GetName();
+            
             DebugUtil::AddDebugLog(L"[CPoolComponent::Init] : " + OwnerName + L" Pooling failed!, ProtoObject not set to Prefab!");
             return;
         }
         
+        if (!CreatedObject->Transform())
+        {
+            DebugUtil::AddDebugLog(L"[CPoolComponent::Init] : " + OwnerName + L" Pooling failed!, ProtoObject must have Transform component!");
+            return;                        
+        }
+        
         // TODO : 여기서 Level에 추가를 하면, 음... 괜찮나? -> PLAY시에만 처리를 하니까 괜찮으려나
+        const wstring Name = CreatedObject->GetName() + L"(PooledObject" + to_wstring(i) + L")";
+        CreatedObject->SetName(Name);
+        
         LevelMgr::GetInst()->GetCurLevel()->AddObject(CreatedObject->GetLayerIdx(), CreatedObject);
         CreatedObject->SetActive(false);
+        
+        // SetActive(false) Callback 처리이기 때문에 SetActive(false) 이후로 두어야한다
+        CreatedObject->AddDeactivateDelegate(bind(&CPoolComponent::OnDeactivateActiveObject, this, placeholders::_1));
+        m_SpawningPool.push(CreatedObject);
     }
-}
-
-void CPoolComponent::Begin()
-{
+    
+    // TODO : 이 라인 지우기 (For testing)
+    GM->SetZombiePoolManager(this);
 }
 
 void CPoolComponent::FinalTick()
 {
+    // Nothing to do
 }
 
-GameObject* CPoolComponent::Spawn()
+GameObject* CPoolComponent::SpawnObject()
 {
-    if (m_SpawningPool.empty()) return nullptr;
+    if (m_SpawningPool.empty())
+    {
+        DebugUtil::AddDebugLog(L"[CPoolComponent::SpawnObject] : " + GetOwner()->GetName() + L"'s Maximum pool count reached!");
+        return nullptr;
+    }
+    
+    TaskInfo info{};
 
-    return nullptr;
+    Ptr<GameObject> gObject = m_SpawningPool.front(); m_SpawningPool.pop();
+    
+    info.Type       = TASK_TYPE::SPAWN_POOLED_OBJECT;
+    info.Param_0    = reinterpret_cast<DWORD_PTR>(gObject.Get());
+    TaskMgr::GetInst()->AddTask(info);
 }
 
 GameObject* CPoolComponent::SpawnObject(const Vec3& _SpawnPosition)
 {
-    return nullptr;
+    if (m_SpawningPool.empty())
+    {
+        DebugUtil::AddDebugLog(L"[CPoolComponentSpawnObject] : " + GetOwner()->GetName() + L"'s Maximum pool count reached!");
+        return nullptr;
+    }
+    
+    TaskInfo info{};
+
+    Ptr<GameObject> gObject = m_SpawningPool.front(); m_SpawningPool.pop();
+    gObject->Transform()->SetRelativePos(_SpawnPosition);
+    
+    info.Type       = TASK_TYPE::SPAWN_POOLED_OBJECT;
+    info.Param_0    = reinterpret_cast<DWORD_PTR>(gObject.Get());
+    TaskMgr::GetInst()->AddTask(info);
 }
 
 void CPoolComponent::SaveToLevelFile(FILE* _File)

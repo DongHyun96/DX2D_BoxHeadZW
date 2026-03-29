@@ -20,6 +20,7 @@
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/03.SpriteRenderUI/SpriteRenderUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/04.FlipbookRenderUI/FlipbookRenderUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/05.TileRenderUI/TileRenderUI.h"
+#include "GameEngine/07.EditorUI/04.ComponentUI/07.PoolUI/PoolUI.h"
 
 #define ADD_COMPONENT_UI(ComponentType, type, Size)                          \
     m_arrComUI[static_cast<UINT>(ComponentType)] = new type;                 \
@@ -94,6 +95,7 @@ void ObjectInspectorViewer::CreateChildUI()
     ADD_COMPONENT_UI(COMPONENT_TYPE::SPRITE_RENDER,     SpriteRenderUI,         Vec2(0.f, 200.f));
     ADD_COMPONENT_UI(COMPONENT_TYPE::FLIPBOOK_RENDER,   FlipbookRenderUI,       Vec2(0.f, 500.f));
     ADD_COMPONENT_UI(COMPONENT_TYPE::TILE_RENDER,       TileRenderUI,           Vec2(0.f, 500.f));
+    ADD_COMPONENT_UI(COMPONENT_TYPE::POOL,              PoolUI,                 Vec2(0.f, 300.f));
 }
 
 void ObjectInspectorViewer::SetTargetObject(const Ptr<GameObject>& _Object)
@@ -268,10 +270,11 @@ if (ImGui::BeginPopup("AddComponentPopup"))
         {"ColliderPoint",   COMPONENT_TYPE::COLLIDER2D_POINT},
         {"Light2D",         COMPONENT_TYPE::LIGHT2D},
         {"MeshRender",      COMPONENT_TYPE::MESH_RENDER},
-        {"BillboardRender",      COMPONENT_TYPE::BILLBOARD_RENDER},
+        {"BillboardRender", COMPONENT_TYPE::BILLBOARD_RENDER},
         {"SpriteRender",    COMPONENT_TYPE::SPRITE_RENDER},
         {"FlipbookRender",  COMPONENT_TYPE::FLIPBOOK_RENDER},
         {"TileRender",      COMPONENT_TYPE::TILE_RENDER},
+        {"Pool",            COMPONENT_TYPE::POOL},
     };
 
     const bool bHasAnyCollider = m_TargetObject->GetCollider2D().Get();
@@ -334,6 +337,7 @@ if (ImGui::BeginPopup("AddComponentPopup"))
             case COMPONENT_TYPE::SPRITE_RENDER:         pNew = new CSpriteRender;     break;
             case COMPONENT_TYPE::FLIPBOOK_RENDER:       pNew = new CFlipbookRender;   break;
             case COMPONENT_TYPE::TILE_RENDER:           pNew = new CTileRender;       break;
+            case COMPONENT_TYPE::POOL:                  pNew = new CPoolComponent;    break;
             default: break;
             }
 

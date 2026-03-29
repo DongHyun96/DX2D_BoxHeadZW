@@ -29,7 +29,7 @@ public:
     
 private:
     
-    void ChangeCurLevel(const Ptr<ALevel>& _NextLevel);
+    void ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLevelStateToStop);
     void ChangeLevelState(LEVEL_STATE _NextState);
     
 private:

@@ -17,11 +17,14 @@ class GameObject : public Entity
 	friend class Menu;
 
 private:
-	
+
+	// SetActive(false) 시, 한 번은 다음 FinalTick()을 호출받아 vecAllObjects에 들어가 있어야 제대로 된 충돌검사 및 CallBack호출이 이루어지기 때문에
+	// SetActive(false) 조작 시, Pending 처리로 FinalTick 한번은 호출처리한다.
+	bool m_ObjectMarkedDeactivated{}; 
 	bool m_IsActive = true;
 	bool m_IsVisible = true;
 
-	vector<function<void()>> m_vecDelegateOnDeactivate; // SetActive false 처리될 때 CallBack 처리
+	vector<function<void(const Ptr<GameObject>&)>> m_vecDelegateOnDeactivate; // SetActive false 처리될 때 CallBack 처리
 	
 private:
 
@@ -80,8 +83,8 @@ public:
 	bool AddComponent(const Ptr<Component>& _Com);
 	Ptr<Component> GetComponent(COMPONENT_TYPE _Type) { return m_Components[static_cast<UINT>(_Type)]; }
 
-	void AddDeactivateDelegate(const function<void()>& _Delegate) { m_vecDelegateOnDeactivate.push_back(_Delegate); }
-	// void RemoveDeactivateDelegate(const function<void()>& _Delegate) 
+	void AddDeactivateDelegate(const function<void(const Ptr<GameObject>&)>& _Delegate) { m_vecDelegateOnDeactivate.push_back(_Delegate); }
+	// void RemoveDeactivateDelegate(const function<void()>& _Delegate) // 이건 functional 특성 상 wrapper이기 때문에 직접 비교가 불가능 -> 특정 요소를 찝어서 remove처리 불가능
 	
 public:
 	
@@ -119,7 +122,10 @@ public:
 	bool IsObjectDestroyed() const { return m_ObjectDestroyed; }
 	
 	bool GetActive() const { return m_IsActive; }
-	void SetActive(bool _Active) { m_IsActive = _Active; }
+	void SetActive(bool _Active);
+
+	void ConsumeObjectMarkedDeactivated() { m_ObjectMarkedDeactivated = false; }
+	bool GetObjectMarkedDeactivated() const { return m_ObjectMarkedDeactivated; }
 	
 	bool GetIsVisible() const { return m_IsVisible; }
 	void SetIsVisible(bool _Visible) { m_IsVisible = _Visible; }

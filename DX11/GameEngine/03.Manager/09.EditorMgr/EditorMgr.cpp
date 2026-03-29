@@ -259,6 +259,7 @@ void EditorMgr::CreateEditorObject()
     pObject->AddComponent(new CEditorCamMoveScript);
 
     pObject->Camera()->LayerCheckAll();
+    pObject->Camera()->LayerCheck(31); // UI Layer 체크 해제 -> UI 카메라로만 UI GameObject는 처리할 것
 
     pObject->Camera()->SetType(PROJ_TYPE::ORTHOGRAPHIC);
     pObject->Camera()->SetFar(10000.f);
@@ -268,6 +269,7 @@ void EditorMgr::CreateEditorObject()
     Vec2 vResolution = Device::GetInst()->GetRenderResolution();
     pObject->Camera()->SetAspectRatio(vResolution.x / vResolution.y); // 종횡비(AspectRatio)
     pObject->Camera()->SetWidth(vResolution.x);
+    
 
     
     m_vecEditorObject.push_back(pObject);

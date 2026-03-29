@@ -61,8 +61,10 @@ void TaskMgr::Progress()
         case TASK_TYPE::CHANGE_LEVEL:
         {
             const wchar_t* pLevelName = reinterpret_cast<const wchar_t*>(task.Param_0);
+            bool NextLevelStateToStop = static_cast<bool>(task.Param_1);
+            
             Ptr<ALevel> pLevel = FIND_ASSET(ALevel, pLevelName);
-            LevelMgr::GetInst()->ChangeCurLevel(pLevel);
+            LevelMgr::GetInst()->ChangeCurLevel(pLevel, NextLevelStateToStop);
         }
             break;
         case TASK_TYPE::CHANGE_LEVEL_STATE:

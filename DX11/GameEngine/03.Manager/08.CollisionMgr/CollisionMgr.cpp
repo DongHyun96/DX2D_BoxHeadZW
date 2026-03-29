@@ -115,12 +115,12 @@ void CollisionMgr::CheckCollisionAndNotify(const Ptr<GameObject>& _LeftObject, c
     }
 }
 
-bool CollisionMgr::IsCollision(const Ptr<CCollider2D>& _LeftCol, const Ptr<CCollider2D>& _RightCol)
+bool CollisionMgr::IsCollisionDeprecated(const Ptr<CCollider2D>& _LeftCol, const Ptr<CCollider2D>& _RightCol)
 {
     // Rect vs Rect OBB Collision testing
     
-    if (!_LeftCol->GetOwner()->GetActive() || !_RightCol->GetOwner()->GetActive())  return false;    // Active가 꺼진 오브젝트
-    if (_LeftCol->GetOwner()->IsObjectDestroyed() || _RightCol->GetOwner()->IsObjectDestroyed())        return false;    // 곧 삭제 처리될 오브젝트
+    if (!_LeftCol->GetOwner()->GetActive() || !_RightCol->GetOwner()->GetActive())               return false;    // Active가 꺼진 오브젝트
+    if (_LeftCol->GetOwner()->IsObjectDestroyed() || _RightCol->GetOwner()->IsObjectDestroyed()) return false;    // 곧 삭제 처리될 오브젝트
 
     Ptr<AMesh> pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
 

@@ -200,7 +200,7 @@ void SaveAssetRef(FILE* _File, Asset* _Asset)
 
 wchar_t Buff[255] = {};
 
-void ChangeLevel(const wstring& _NextLevelName)
+void ChangeLevel(const wstring& _NextLevelName, bool _NextLevelStateToStop)
 {
     TaskInfo info{};
     
@@ -208,6 +208,7 @@ void ChangeLevel(const wstring& _NextLevelName)
     
     info.Type = TASK_TYPE::CHANGE_LEVEL;
     info.Param_0 = reinterpret_cast<DWORD_PTR>(Buff);
+    info.Param_1 = static_cast<DWORD_PTR>(_NextLevelStateToStop);
     
     TaskMgr::GetInst()->AddTask(info);
 }

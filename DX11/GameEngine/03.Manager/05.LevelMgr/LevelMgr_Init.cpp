@@ -288,7 +288,7 @@ void LevelMgr::CreateTestLevel()
     pLevel->Save(ContentPath + L"Level\\TestLevel.lv");
     
     // 레벨을 변경
-    ChangeLevel(L"Level\\TestLevel.lv");
+    ChangeLevel(L"Level\\TestLevel.lv", true);
 }
 
 void LevelMgr::LoadTestLevel()
@@ -301,5 +301,5 @@ void LevelMgr::LoadTestLevel()
         return;
     }
     
-    ChangeLevel(L"Level\\TestLevel.lv");
+    ChangeLevel(L"Level\\TestLevel.lv", true);
 }

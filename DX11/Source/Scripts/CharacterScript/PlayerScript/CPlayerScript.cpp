@@ -48,8 +48,23 @@ void CPlayerScript::Begin()
 void CPlayerScript::Tick()
 {
     CCharacterScript::Tick();
-    HandleRayCast();
+    
+    HandleRayCast(); // TODO : Raycasting Test 라인 지우기
     // MeshRender()->GetMaterial()->SetScalar(INT_0, KEY_PRESSED(KEY::X) ? 1 : 0);
+    
+    // TODO : 이 라인 지우기 ForTesting
+    if (KEY_TAP(KEY::MRB))
+    {
+        GameObject* gObject = GM->GetZombiePoolManager()->SpawnObject(Transform()->GetWorldPos() + Vec3::UnitX * 300.f);
+        if (gObject) m_Temp.push_back(gObject);
+    }
+    if (KEY_TAP(KEY::MLB))
+    {
+        for (GameObject* gObject : m_Temp)
+            gObject->SetActive(false);
+        
+        m_Temp.clear();
+    }
 }
 
 void CPlayerScript::Move()

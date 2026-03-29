@@ -15,5 +15,5 @@ void LevelUI::Tick_UI()
     AssetUI::Tick_UI();
     
     if (ImGui::Button("Change Level"))
-        ChangeLevel(GetTargetAsset()->GetKey());
+        ChangeLevel(GetTargetAsset()->GetKey(), true);
 }

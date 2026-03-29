@@ -267,6 +267,22 @@ void GameObject::RegisterAsParent()
 	LevelMgr::GetInst()->GetCurLevel()->GetLayer(m_LayerIdx)->AddObject(this);
 }
 
+void GameObject::SetActive(bool _Active)
+{
+	m_IsActive = _Active;
+	
+	if (!_Active)
+	{
+		// 여기서 한 Tick에 대해서는 처리를 해주어여 함 -> 바로 Active false를 하는 순간 VecAllObject에 들어가질 않아버림
+		// 최종 TaskMgr에서 해당 MarkedDeactivated된 GameObject들에 대해 false로 풀어줌으로써 다음 Tick부터 FinalTick 호출이 안되게끔 처리를 한다
+		m_ObjectMarkedDeactivated = true;
+		
+		// OnDeactivate 대리자 호출
+		for (const function<void(const Ptr<GameObject>&)>& OnDeactivate : m_vecDelegateOnDeactivate)
+			OnDeactivate(this);
+	}
+}
+
 bool GameObject::SetLayerIdx(int _LayerIdx)
 {
 	// 현재 레벨이 Stop 상태가 아니라면, Layer 변경 불가

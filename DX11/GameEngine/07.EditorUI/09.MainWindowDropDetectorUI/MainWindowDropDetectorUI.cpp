@@ -81,7 +81,7 @@ void MainWindowDropDetectorUI::Tick_UI()
                 
                 if (pAsset->GetType() == ASSET_TYPE::LEVEL)
                 {
-                    ChangeLevel(pAsset->GetKey());
+                    ChangeLevel(pAsset->GetKey(), true);
                     return;
                 }
                 

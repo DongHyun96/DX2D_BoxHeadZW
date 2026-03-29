@@ -11,6 +11,7 @@ class CPlayerScript : public CCharacterScript
 private:
     
     PLAYER_HANDSTATE m_HandState{}; // 현재 손에 들고 있는 무기 종류 State
+    vector<GameObject*> m_Temp{}; // TODO : 이 Temp 지우기
     
 public:
     

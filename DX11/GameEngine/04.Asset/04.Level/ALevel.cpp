@@ -3,6 +3,7 @@
 
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
+#include "Source/Manager/GameManager.h"
 
 ALevel::ALevel()
     : Asset(ASSET_TYPE::LEVEL)
@@ -32,6 +33,8 @@ void ALevel::Deregister()
 void ALevel::Begin()
 {
     m_mapLayerNameIndex.clear();
+    
+    GM->OnLevelBegin();
     
     for (Layer& layer : m_arrLayer)
     {

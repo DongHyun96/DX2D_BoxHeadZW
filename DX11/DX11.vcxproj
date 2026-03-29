@@ -226,6 +226,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\05.TileRenderUI\TileRenderUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\RenderUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\ScriptUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\07.PoolUI\PoolUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\ComponentUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\05.ListUI\ListUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\06.ContentUI\ContentUI.h" />
@@ -896,6 +897,7 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\05.TileRenderUI\TileRenderUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\RenderUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\ScriptUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\07.PoolUI\PoolUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\ComponentUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\05.ListUI\ListUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\06.ContentUI\ContentUI.cpp" />

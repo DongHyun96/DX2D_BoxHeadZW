@@ -63,7 +63,7 @@ private:
     /// <summary>
     /// (Deprecated) Basic Rect vs Rect OBB Collision testing
     /// </summary>
-    bool IsCollision(const Ptr<CCollider2D>& _LeftCol, const Ptr<CCollider2D>& _RightCol);
+    bool IsCollisionDeprecated(const Ptr<CCollider2D>& _LeftCol, const Ptr<CCollider2D>& _RightCol);
 
 public:
     

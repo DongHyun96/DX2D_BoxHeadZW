@@ -34,11 +34,11 @@ void RenderMgr::Progress()
     // 렌더링 시작전에 할 일 처리
     Render_Start();
     
-    /*if (m_UICam)
+    if (m_UICam && m_UICam->GetOwner()->GetActive())
     {
         m_UICam->SortObject();
         m_UICam->Render();
-    }*/
+    }
 
     // Level의 상태가 Play 상태면, 등록된 MainCam으로 렌더링
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY)

@@ -84,10 +84,12 @@ void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
     }
 }
 
-void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel)
+void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLevelStateToStop)
 {
-    m_CurLevel = m_SharedLevel = _NextLevel; 
-    m_LevelState = LEVEL_STATE::STOP; // TODO : Release용 or 플레이 도중 Level 전환 시, 이전 LevelState로 continue
+    m_CurLevel = m_SharedLevel = _NextLevel;
+    
+    if (_ChangeNextLevelStateToStop) // Editor에서 ChangeLevel 처리는 기본적으로 다음 LevelState를 Stop으로 처리 -> User Client의 Level 바꾸는건 이전 State를 계속해서 사용(Play)
+        m_LevelState = LEVEL_STATE::STOP; 
     
     EditorUI* pUI = EditorMgr::GetInst()->GetEditorUI("CollisionMatrixUI").Get();
     if (CollisionMatrixUI* MatUI = dynamic_cast<CollisionMatrixUI*>(pUI))

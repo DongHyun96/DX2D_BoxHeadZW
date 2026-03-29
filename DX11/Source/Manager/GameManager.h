@@ -10,10 +10,18 @@ class GameManager : public Singleton<GameManager>
 private:
     
     Ptr<GameObject> m_PlayerObject{};
+    CPoolComponent* m_ZombiePoolManager{};
+
+public:
+    
+    void OnLevelBegin();
     
 public:
     
     Ptr<GameObject>	GetPlayerObject() const { return m_PlayerObject; }
     void SetPlayerObject(const Ptr<GameObject>& _PlayerObject) { m_PlayerObject = _PlayerObject; }
+    
+    CPoolComponent* GetZombiePoolManager() const { return m_ZombiePoolManager; }
+    void SetZombiePoolManager(CPoolComponent* _ZombiePoolManager) { m_ZombiePoolManager = _ZombiePoolManager; }
     
 };

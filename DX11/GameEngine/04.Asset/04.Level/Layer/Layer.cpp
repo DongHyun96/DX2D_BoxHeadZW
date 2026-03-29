@@ -84,7 +84,13 @@ void Layer::FinalTick()
     while (iter != m_vecParents.end())
     {
         Ptr<GameObject>& gameObject = *iter;
-        if (gameObject->GetActive()) gameObject->FinalTick();
+        
+        // 이번 Tick에서 Deactivate 처리된 GameObject 또한 AllObject에 등록 처리를 해야 CollisionMgr에서 제대로된 충돌검사 Callback 처리를 할 수 있음
+        if (gameObject->GetActive() || gameObject->GetObjectMarkedDeactivated())
+        {
+            gameObject->FinalTick();
+            gameObject->ConsumeObjectMarkedDeactivated(); // FinalTick 호출 이후, 해당 마킹 지워버리기
+        }
         
         if (gameObject->IsObjectDestroyed()) iter = m_vecParents.erase(iter);
         else ++iter;
