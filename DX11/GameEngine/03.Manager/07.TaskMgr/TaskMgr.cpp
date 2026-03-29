@@ -52,6 +52,12 @@ void TaskMgr::Progress()
             pCurLevel->SetChanged();
         }
             break;
+        case TASK_TYPE::SPAWN_POOLED_OBJECT:
+        {
+            Ptr<GameObject> gObject = reinterpret_cast<GameObject*>(task.Param_0);
+            gObject->SetActive(true);
+        }
+            break;
         case TASK_TYPE::CHANGE_LEVEL:
         {
             const wchar_t* pLevelName = reinterpret_cast<const wchar_t*>(task.Param_0);

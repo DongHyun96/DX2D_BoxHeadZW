@@ -15,11 +15,13 @@ class GameObject : public Entity
 	friend class TaskMgr;
 	friend class Layer;
 	friend class Menu;
-	
+
 private:
 	
 	bool m_IsActive = true;
 	bool m_IsVisible = true;
+
+	vector<function<void()>> m_vecDelegateOnDeactivate; // SetActive false 처리될 때 CallBack 처리
 	
 private:
 
@@ -78,6 +80,9 @@ public:
 	bool AddComponent(const Ptr<Component>& _Com);
 	Ptr<Component> GetComponent(COMPONENT_TYPE _Type) { return m_Components[static_cast<UINT>(_Type)]; }
 
+	void AddDeactivateDelegate(const function<void()>& _Delegate) { m_vecDelegateOnDeactivate.push_back(_Delegate); }
+	// void RemoveDeactivateDelegate(const function<void()>& _Delegate) 
+	
 public:
 	
 	/// <summary>
@@ -140,6 +145,7 @@ public:
 	GET_COMPONENT(FlipbookRender,	FLIPBOOK_RENDER)
 	GET_COMPONENT(TileRender,		TILE_RENDER)
 	GET_COMPONENT(Light2D,			LIGHT2D)
+	GET_COMPONENT(PoolComponent,    POOL)
 
 public:
 	

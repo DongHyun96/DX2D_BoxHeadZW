@@ -74,6 +74,8 @@ enum class COMPONENT_TYPE
     PARTICLE_RENDER,
     SPRITE_RENDER,
     TILE_RENDER,
+    
+    POOL,   // Object Pooling Component
 
     END,
     
@@ -148,6 +150,7 @@ enum class TASK_TYPE
 {
     CREATE_OBJECT,
     DESTROY_OBJECT,
+    SPAWN_POOLED_OBJECT,
     CHANGE_LEVEL,
     CHANGE_LEVEL_STATE,
 };

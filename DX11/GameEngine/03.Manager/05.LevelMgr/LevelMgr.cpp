@@ -50,10 +50,13 @@ void LevelMgr::Progress()
 
 void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
 {
-    if (m_LevelState == _NextState) return;
+    if (m_LevelState == _NextState) return; // 이미 해당 State
+    
+    LEVEL_STATE PrevState = m_LevelState;
+    m_LevelState = _NextState;
 
     // Stop -> Play
-    if (m_LevelState == LEVEL_STATE::STOP && _NextState == LEVEL_STATE::PLAY)
+    if (PrevState == LEVEL_STATE::STOP && _NextState == LEVEL_STATE::PLAY)
     {
         // 원본 Asset 레벨의 복제본 레벨을 만들어서 현재 레벨로 가리킨다.
         m_CurLevel = m_SharedLevel->Clone();
@@ -62,16 +65,13 @@ void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
     }
 
     // Play, Pause -> Stop
-    else if (   (m_LevelState == LEVEL_STATE::PLAY || m_LevelState == LEVEL_STATE::PAUSE) && _NextState == LEVEL_STATE::STOP   )
+    else if (   (PrevState == LEVEL_STATE::PLAY || PrevState == LEVEL_STATE::PAUSE) && _NextState == LEVEL_STATE::STOP   )
     {
         // 원본 Asset 
         m_CurLevel = m_SharedLevel;
         m_CurLevel->SetChanged();
     }
 
-    
-        
-    m_LevelState = _NextState;
     
     switch (m_LevelState)
     {

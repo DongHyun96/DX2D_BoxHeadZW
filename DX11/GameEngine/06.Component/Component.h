@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "GameEngine/04.Asset/Entity.h"
-#include "GameEngine/05.GameObject/GameObject.h"
 
 #define GET_OTHER_COMPONENT(COM_NAME) class C##COM_NAME* COM_NAME() const
 
@@ -52,6 +51,8 @@ public:
     GET_OTHER_COMPONENT(SpriteRender);
     GET_OTHER_COMPONENT(FlipbookRender);
 	GET_OTHER_COMPONENT(TileRender);
+	
+	GET_OTHER_COMPONENT(PoolComponent);
 	
 	
 	class CCollider2D* GetCollider2D() const;

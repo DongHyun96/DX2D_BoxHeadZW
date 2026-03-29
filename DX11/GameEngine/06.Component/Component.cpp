@@ -33,6 +33,7 @@ GET_OTHER_COMPONENT_BODY(BillboardRender)
 GET_OTHER_COMPONENT_BODY(SpriteRender)
 GET_OTHER_COMPONENT_BODY(FlipbookRender)
 GET_OTHER_COMPONENT_BODY(TileRender)
+GET_OTHER_COMPONENT_BODY(PoolComponent)
 
 CCollider2D* Component::GetCollider2D() const
 {

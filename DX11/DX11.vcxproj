@@ -190,6 +190,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CColliderPoint.h" />
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CColliderRect.h" />
     <ClInclude Include="GameEngine\06.Component\04.Light2D\CLight2D.h" />
+    <ClInclude Include="GameEngine\06.Component\05.PoolComponent\CPoolComponent.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\01.MeshRender\CMeshRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\CBillboardRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\CSpriteRender.h" />
@@ -400,6 +401,7 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CColliderPoint.cpp" />
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CColliderRect.cpp" />
     <ClCompile Include="GameEngine\06.Component\04.Light2D\CLight2D.cpp" />
+    <ClCompile Include="GameEngine\06.Component\05.PoolComponent\CPoolComponent.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\01.MeshRender\CMeshRender.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

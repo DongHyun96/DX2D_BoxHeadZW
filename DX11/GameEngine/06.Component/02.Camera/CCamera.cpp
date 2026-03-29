@@ -53,7 +53,12 @@ void CCamera::Init()
 void CCamera::Begin()
 {
     // RenderMgr에 카메라(본인)을 등록
-    RenderMgr::GetInst()->RegisterMainCamera(this);
+    if (GetOwner()->GetName() == L"MainCamera")
+        RenderMgr::GetInst()->RegisterMainCamera(this);
+
+    // TODO : 더 명확하게 Camera 짜기
+    if (GetOwner()->GetName() == L"UICamera")
+        RenderMgr::GetInst()->RegisterUICamera(this);
 }
 
 void CCamera::FinalTick()

@@ -16,6 +16,9 @@
 #include "GameEngine/06.Component/RenderComponent/05.TileRender/CTileRender.h"
 #include "GameEngine/06.Component/04.Light2D/CLight2D.h"
 
+#include "GameEngine/06.Component/05.PoolComponent/CPoolComponent.h"
+
+
 /*
 #include "GameEngine/06.Component/Script/CPlayerScript.h"
 #include "GameEngine/06.Component/Script/AirplaneShootingScript/CBackgroundScript.h"

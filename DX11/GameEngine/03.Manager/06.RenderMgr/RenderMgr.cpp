@@ -33,6 +33,12 @@ void RenderMgr::Progress()
     
     // 렌더링 시작전에 할 일 처리
     Render_Start();
+    
+    /*if (m_UICam)
+    {
+        m_UICam->SortObject();
+        m_UICam->Render();
+    }*/
 
     // Level의 상태가 Play 상태면, 등록된 MainCam으로 렌더링
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY)
@@ -44,7 +50,6 @@ void RenderMgr::Progress()
         // 카메라를 이용해서 Render 처리
         m_MainCam->SortObject(); // RenderDomain 별 정렬
         m_MainCam->Render();
-    
     }
     else // Level의 상태가 Pause, Stop, 상태면 등록된 EditorCam으로 렌더링
     {

@@ -15,6 +15,7 @@ class RenderMgr : public Singleton<RenderMgr>
 private:
 
     Ptr<CCamera>            m_MainCam{};
+    Ptr<CCamera>            m_UICam{};
     Ptr<CCamera>            m_EditorCam{};
     
     Ptr<GameObject>         m_DbgObj{};             // 디버그 렌더링을 위한 Dummy GameObject (Level안에 있는 GameObject가 아니다)
@@ -46,6 +47,8 @@ private:
 public:
     
     void RegisterMainCamera(const Ptr<CCamera>& _Cam) { m_MainCam = _Cam; }
+    void RegisterUICamera(const Ptr<CCamera>& _Cam) { m_UICam = _Cam; }
+    
     void RegisterEditorCamera(const Ptr<CCamera>& _Cam) { m_EditorCam = _Cam; }
     
     Ptr<CCamera> GetPOVCam() const; // 현재 바라보고 있는 카메라 (Play 중인 경우 MainCam, Editing 중인 경우 EditorCam)

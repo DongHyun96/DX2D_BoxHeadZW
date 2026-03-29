@@ -367,13 +367,19 @@ void GameObject::LoadFromLevelFile(FILE* _File)
 	// 이름
 	SetName(LoadWString(_File));
 	
+	if (GetName() == L"Cliff1")
+	{
+		int a = 0;
+	}
+	
 	// 컴포넌트
 	UINT ComType{};
 	
 	while (true)
 	{
 		fread(&ComType, sizeof(UINT), 1, _File);
-		if (ComType == static_cast<UINT>(COMPONENT_TYPE::END)) break;\
+		if (ComType == static_cast<UINT>(COMPONENT_TYPE::END)) break;
+		// if (ComType == 13) break;
 
 		Ptr<Component> pComponent{};
 		
@@ -394,6 +400,7 @@ void GameObject::LoadFromLevelFile(FILE* _File)
 		case COMPONENT_TYPE::PARTICLE_RENDER:	break;
 		case COMPONENT_TYPE::SPRITE_RENDER: 	pComponent = new CSpriteRender;		break;
 		case COMPONENT_TYPE::TILE_RENDER:		pComponent = new CTileRender;		break;
+		case COMPONENT_TYPE::POOL:				pComponent = new CPoolComponent;	break;
 		}
 		
 		AddComponent(pComponent);
