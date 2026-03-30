@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "Source/Scripts/CharacterScript/PlayerScript/WeaponScript/CWeaponScript.h"
 
+
+
+
 class CEquipmentScript : public CScript
 {
 private:
-
     
     map<PLAYER_HANDSTATE, Ptr<CWeaponScript>> m_mapEquippedWeapons{};
     

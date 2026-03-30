@@ -5,11 +5,16 @@
 #include "Source/ScriptMgr.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/WeaponScript/CWeaponPistol.h"
 
+
 CEquipmentScript::CEquipmentScript()
     : CScript(SCRIPT_TYPE::EQUIPMENTSCRIPT)
 {
-    // TODO : 권총을 제외한 다른 무기들은 파밍을 통해 구할 것
+    // TODO : 다른 무기들은 파밍을 통해서 얻을 것
     EquipWeapon(PLAYER_HANDSTATE::PISTOL);
+    EquipWeapon(PLAYER_HANDSTATE::UZI);
+    EquipWeapon(PLAYER_HANDSTATE::SHOTGUN);
+    EquipWeapon(PLAYER_HANDSTATE::MINIGUN);
+    EquipWeapon(PLAYER_HANDSTATE::ROCKET);
 }
 
 CEquipmentScript::~CEquipmentScript()

@@ -16,14 +16,8 @@ CWeaponScript::~CWeaponScript()
 {
 }
 
-void CWeaponScript::Tick()
-{
-    // NOT IN USED (호출되지 않을 예정)
-}
-
 void CWeaponScript::WeaponTick()
 {
     m_TimeAfterLastFire = min(m_TimeAfterLastFire + DT, m_FireIntervalTime + 1.f);
 }
-
 

@@ -9,6 +9,15 @@
 CPlayerWeaponHandler::CPlayerWeaponHandler()
     : CScript(SCRIPT_TYPE::PLAYERWEAPONHANDLER)
 {
+    // TODO : 추후 게임 불러오기 및 저장하기 까지 할꺼면 이 데이터 저장할 것
+    m_mapCurrentMastery = 
+    {
+        { PLAYER_HANDSTATE::PISTOL,     WeaponMasteryData(WEAPON_MASTERY::MASTER, 0.f) },    
+        { PLAYER_HANDSTATE::UZI,        WeaponMasteryData() },    
+        { PLAYER_HANDSTATE::SHOTGUN,    WeaponMasteryData() },    
+        { PLAYER_HANDSTATE::MINIGUN,    WeaponMasteryData() },    
+        { PLAYER_HANDSTATE::ROCKET,     WeaponMasteryData() },    
+    };
 }
 
 CPlayerWeaponHandler::~CPlayerWeaponHandler()
@@ -76,12 +85,32 @@ void CPlayerWeaponHandler::Tick()
 
 void CPlayerWeaponHandler::TickSwapWeapon()
 {
-    if (KEY_TAP(KEY::TILDE)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::UNARMED);
-    if (KEY_TAP(KEY::NUM_1)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::PISTOL);
-    if (KEY_TAP(KEY::NUM_2)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::UZI);
-    if (KEY_TAP(KEY::NUM_3)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::SHOTGUN);
-    if (KEY_TAP(KEY::NUM_4)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::MINIGUN);
-    if (KEY_TAP(KEY::NUM_5)) m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::ROCKET);
+    if (KEY_TAP(KEY::TILDE))
+    {
+        m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::UNARMED);
+        return;
+    }
+    
+    PLAYER_HANDSTATE NextHandState = KEY_TAP(KEY::NUM_1) ? PLAYER_HANDSTATE::PISTOL :
+                                     KEY_TAP(KEY::NUM_2) ? PLAYER_HANDSTATE::UZI :
+                                     KEY_TAP(KEY::NUM_3) ? PLAYER_HANDSTATE::SHOTGUN :
+                                     KEY_TAP(KEY::NUM_4) ? PLAYER_HANDSTATE::MINIGUN :
+                                     KEY_TAP(KEY::NUM_5) ? PLAYER_HANDSTATE::ROCKET : PLAYER_HANDSTATE::END;
+    
+    if (NextHandState == PLAYER_HANDSTATE::END) return; // 아무 무기 Swap 시도도 이루어지지 않음
+
+    // 해당 Slot에 무기가 존재한다면
+    if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(NextHandState))
+    {
+        m_PlayerMainScript->SetHandState(NextHandState);
+
+        WEAPON_MASTERY NextWeaponMasteryState = m_mapCurrentMastery[NextHandState].CurrentMasteryState;
+        const WeaponMasteryBuff& BuffData = EACH_WEAPON_MASTERY_BUFF.at(NextHandState).at(static_cast<int>(NextWeaponMasteryState));
+        
+        const float FireInterval = 60.f / BuffData.FireRPM;
+        Weapon->SetFireIntervalTime(FireInterval);
+        Weapon->SetDamageAmountPerRound(BuffData.DamageAmountPerRound);
+    }
 }
 
 void CPlayerWeaponHandler::TickFireWeapon()

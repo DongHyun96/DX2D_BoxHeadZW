@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+/// <summary>
+/// Non-attachable
+/// </summary>
 class CWeaponScript : public CScript
 {
 private:
@@ -15,9 +18,14 @@ public:
     CWeaponScript(SCRIPT_TYPE _ScriptType);
     virtual ~CWeaponScript() override;
     
+public: // 시점함수들 호출 안되는 것 유의 ( Non-Attachable Script )
+
+    virtual void Init() override final {};
+    virtual void Begin() override final {};
+    virtual void Tick() override final {}; 
+    
 public:
     
-    virtual void Tick() override; // 시점함수들 호출 안되는 것 유의
     void WeaponTick(); // EquipmentScript 에서 호출처리해줄 것 / FireIntervalTime 계산해서 무기 발사 가능한지 Update
 
 public:

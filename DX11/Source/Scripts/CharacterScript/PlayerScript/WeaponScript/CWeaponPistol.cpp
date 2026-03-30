@@ -19,7 +19,7 @@ CWeaponPistol::~CWeaponPistol()
 bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
 {
     // 아직 발사간견 시간을 다 채우지 못했을 때
-    // if (GetTimeAfterLastFire() < GetFireIntervalTime()) return false;
+    if (GetTimeAfterLastFire() < GetFireIntervalTime()) return false;
     RewindTimeAfterLastFire();
     
     Ray2D Ray{};
@@ -32,8 +32,8 @@ bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
     if (CollisionMgr::GetInst()->RayCast(Ray, GetHitScanLayers(), &Hit))
     {
         const Vec3 RayOrigin = ToVec3(Ray.Origin);
-        DrawDebugLine(RayOrigin, ToVec3(Hit.Point), DEF_COLOR_RED, 0.f);
-        DrawDebugCircle(ToVec3(Hit.Point), 10.f, DEF_COLOR_RED, 0.f);
+        DrawDebugLine(RayOrigin, ToVec3(Hit.Point), DEF_COLOR_RED, 2.f);
+        DrawDebugCircle(ToVec3(Hit.Point), 10.f, DEF_COLOR_RED, 2.f);
 
         // Enemy Hit 판정 (MapObstacle의 경우, Stat이 없음, Character와 설치물 밖에 없다)
         // 검사 허용 Layer 판정에 의해 StatScript를 가지고 있으면 그 StatScript는 Enemy의 것 
@@ -48,8 +48,7 @@ bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
         const Vec3 RayOrigin = ToVec3(Ray.Origin);
         const Vec3 RayDirectionVec3 = ToVec3(Ray.Direction);
         
-        // DrawDebugLine(RayOrigin, RayOrigin + RayDirectionVec3 * Ray.MaxDistance, DEF_COLOR_GREEN, 3.f);
-        DrawDebugLine(RayOrigin, RayOrigin + RayDirectionVec3 * Ray.MaxDistance, DEF_COLOR_GREEN, 0.f);
+        DrawDebugLine(RayOrigin, RayOrigin + RayDirectionVec3 * Ray.MaxDistance, DEF_COLOR_GREEN, 2.f);
     }
     
     return true;

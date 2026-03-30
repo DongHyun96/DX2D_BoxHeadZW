@@ -75,6 +75,16 @@ static const map<PLAYER_HANDSTATE, wstring> mapPlayerHandStateAnimCategory =
 };
 
 
+enum class ENEMY_TYPE
+{
+    ZOMBIE,
+    MUMMY,
+    RUNNER,
+    VAMPIRE,
+    DEVIL,
+    END
+};
+
 /// <summary>
 /// Enemy MainState
 /// </summary>

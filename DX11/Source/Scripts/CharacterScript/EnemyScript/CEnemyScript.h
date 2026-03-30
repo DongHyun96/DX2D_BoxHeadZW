@@ -1,10 +1,15 @@
 ﻿#pragma once
 #include "Source/Scripts/CharacterScript/CCharacterScript.h"
 
+enum class ENEMY_TYPE;
 enum class ENEMY_STATE;
 
 class CEnemyScript : public CCharacterScript
 {
+protected:
+
+    ENEMY_TYPE m_EnemyType{};
+    
 private:
 
     ENEMY_STATE m_MainState{};
