@@ -19,6 +19,7 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+    if (m_FMODSystem) m_FMODSystem->release();
 }
 
 HRESULT Engine::Progress()

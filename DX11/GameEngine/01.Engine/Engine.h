@@ -25,7 +25,11 @@ private:
 	HINSTANCE	m_hInst{};
 	HWND		m_hWnd{};
 	Vec2		m_Resolution{};
-
+	
+private:
+	
+	FMOD::System*	m_FMODSystem{};	// FMOD 관리자
+	
 private:
 	
 #ifdef _DEBUG
@@ -42,8 +46,12 @@ public:
 	
 	HINSTANCE GetHInstance() const { return m_hInst; }
 	HWND GetMainWndHwnd() const { return m_hWnd; }
+	FMOD::System* GetFMODSystem() const { return m_FMODSystem; }
 	Vec2 GetResolution() const { return m_Resolution; }
 	
 	bool IsEditorMode() const { return m_EditorMode; }
 	
 };
+
+// FMOD 관리자 매크로
+#define FMOD_SYSTEM Engine::GetInst()->GetFMODSystem()

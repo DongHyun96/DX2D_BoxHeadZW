@@ -40,6 +40,9 @@ void CPlayerScript::Begin()
     if (GetOwner()->FlipbookRender())
         GetOwner()->FlipbookRender()->Stop(L"UnArmed", 6, 0);
     
+    Ptr<ASound> pSound = LOAD_ASSET(ASound, L"Sound\\ParadiseOnE.wav");
+    pSound->Play(0, 0.5f, false);
+    
     /*Collider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CBulletScript::BeginOverlap));
     Collider2D()->AddDynamicOverlap     (this, static_cast<COLLISION_EVENT>(&CBulletScript::Overlap));
     Collider2D()->AddDynamicEndOverlap  (this, static_cast<COLLISION_EVENT>(&CBulletScript::EndOverlap));*/

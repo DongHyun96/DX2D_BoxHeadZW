@@ -184,6 +184,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\04.Asset\07.Flipbook\AFlipbook.h" />
     <ClInclude Include="GameEngine\04.Asset\08.TileMap\ATileMap.h" />
     <ClInclude Include="GameEngine\04.Asset\09.Prefab\APrefab.h" />
+    <ClInclude Include="GameEngine\04.Asset\10.Sound\ASound.h" />
     <ClInclude Include="GameEngine\06.Component\01.Transform\CTransform.h" />
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CCollider2D.h" />
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.h" />
@@ -398,6 +399,7 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\04.Asset\07.Flipbook\AFlipbook.cpp" />
     <ClCompile Include="GameEngine\04.Asset\08.TileMap\ATileMap.cpp" />
     <ClCompile Include="GameEngine\04.Asset\09.Prefab\APrefab.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\10.Sound\ASound.cpp" />
     <ClCompile Include="GameEngine\06.Component\01.Transform\CTransform.cpp" />
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CCollider2D.cpp" />
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.cpp" />

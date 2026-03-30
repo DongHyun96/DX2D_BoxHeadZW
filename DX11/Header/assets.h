@@ -9,5 +9,6 @@
 #include "GameEngine/04.Asset/07.Flipbook/AFlipbook.h"
 #include "GameEngine/04.Asset/08.TileMap/ATileMap.h"
 #include "GameEngine/04.Asset/09.Prefab/APrefab.h"
+#include "GameEngine/04.Asset/10.Sound/ASound.h"
 
 

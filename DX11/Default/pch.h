@@ -77,6 +77,18 @@ typedef SimpleMath::Matrix      Matrix;
 
 using namespace std;
 
+// FMOD
+#include <FMOD/fmod.h>
+#include <FMOD/fmod.hpp>
+#include <FMOD/fmod_codec.h>
+
+#ifdef _DEBUG
+#pragma comment(lib, "FMOD/fmodL64_vc.lib")
+#else
+#pragma comment(lib, "FMOD/fmod64_vc.lib")
+#endif
+
+
 #include "resource.h"
 #include "Header/global.h"
 #include "Module/Ptr.h"
