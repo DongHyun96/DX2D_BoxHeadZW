@@ -2,7 +2,7 @@
 #include "Source/Scripts/CharacterScript/CCharacterScript.h"
 
 enum class ENEMY_TYPE;
-enum class ENEMY_STATE;
+enum class ENEMY_MAINSTATE;
 
 class CEnemyScript : public CCharacterScript
 {
@@ -12,7 +12,7 @@ protected:
     
 private:
 
-    ENEMY_STATE m_MainState{};
+    ENEMY_MAINSTATE m_MainState{};
     
 public:
     
@@ -27,7 +27,7 @@ private:
     
 public:
     
-    void SetMainState(ENEMY_STATE _MainState) { m_MainState = _MainState; }
-    ENEMY_STATE GetMainState() const { return m_MainState; }
+    void SetMainState(ENEMY_MAINSTATE _MainState) { m_MainState = _MainState; }
+    ENEMY_MAINSTATE GetMainState() const { return m_MainState; }
     
 };

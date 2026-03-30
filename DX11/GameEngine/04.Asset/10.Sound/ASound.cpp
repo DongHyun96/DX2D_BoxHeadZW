@@ -64,7 +64,7 @@ int ASound::Play(int _iRoopCount, float _fVolume, bool _bOverlap)
 
 void ASound::Stop()
 {
-	list<FMOD::Channel*>::iterator iter;
+	list<FMOD::Channel*>::iterator iter{};
 
 	while (!m_listChannel.empty())
 	{

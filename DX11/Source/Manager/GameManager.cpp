@@ -11,5 +11,4 @@ GameManager::~GameManager()
 
 void GameManager::OnLevelBegin()
 {
-    
 }

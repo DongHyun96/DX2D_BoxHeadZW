@@ -298,6 +298,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\CMonsterScript.h" />
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
     <ClInclude Include="Source\Scripts\StatScript\CStatScript.h" />
+    <ClInclude Include="Source\Scripts\StatScript\EnemyStat\CEnemyStat.h" />
     <ClInclude Include="Source\Scripts\StatScript\PlayerStat\CPlayerStat.h" />
     <ClInclude Include="Source\UserHeader\userDefine.h" />
     <ClInclude Include="Source\UserHeader\userEnum.h" />
@@ -1193,6 +1194,7 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Source\Scripts\StatScript\EnemyStat\CEnemyStat.cpp" />
     <ClCompile Include="Source\Scripts\StatScript\PlayerStat\CPlayerStat.cpp" />
   </ItemGroup>
   <ItemGroup>

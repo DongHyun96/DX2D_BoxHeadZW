@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+/// <summary>
+/// MainState 업데이트 
+/// </summary>
 class CCharacterScript : public CScript
 {
 protected:

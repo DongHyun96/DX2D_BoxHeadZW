@@ -34,3 +34,14 @@ bool CPlayerStat::ApplyBoost(float _BoostAmount)
     m_Boost = min(m_Boost + _BoostAmount, m_BoostMax);
     return true;
 }
+
+// TODO : 나중에 전체 저장 및 게임 불러오기 처리로 할거면 제대로 구현할 것
+void CPlayerStat::SaveToLevelFile(FILE* _File)
+{
+    CStatScript::SaveToLevelFile(_File);
+}
+
+void CPlayerStat::LoadFromLevelFile(FILE* _File)
+{
+    CStatScript::LoadFromLevelFile(_File);
+}

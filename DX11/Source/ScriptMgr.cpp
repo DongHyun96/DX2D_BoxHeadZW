@@ -18,6 +18,7 @@
 #include "Source/Scripts/CMonsterScript.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/StatScript\CStatScript.h"
+#include "Source/Scripts/StatScript\EnemyStat\CEnemyStat.h"
 #include "Source/Scripts/StatScript\PlayerStat\CPlayerStat.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
@@ -37,6 +38,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CMonsterScript");
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CStatScript");
+	_vec.push_back(L"CEnemyStat");
 	_vec.push_back(L"CPlayerStat");
 }
 
@@ -76,6 +78,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CObstacle;
 	if (L"CStatScript" == _strScriptName)
 		return new CStatScript;
+	if (L"CEnemyStat" == _strScriptName)
+		return new CEnemyStat;
 	if (L"CPlayerStat" == _strScriptName)
 		return new CPlayerStat;
 	return nullptr;
@@ -119,6 +123,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CObstacle;
 	case (UINT)SCRIPT_TYPE::STATSCRIPT:
 		return new CStatScript;
+	case (UINT)SCRIPT_TYPE::ENEMYSTAT:
+		return new CEnemyStat;
 	case (UINT)SCRIPT_TYPE::PLAYERSTAT:
 		return new CPlayerStat;
 	}
@@ -163,6 +169,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CObstacle";
 	case SCRIPT_TYPE::STATSCRIPT:
 		return L"CStatScript";
+	case SCRIPT_TYPE::ENEMYSTAT:
+		return L"CEnemyStat";
 	case SCRIPT_TYPE::PLAYERSTAT:
 		return L"CPlayerStat";
 	}

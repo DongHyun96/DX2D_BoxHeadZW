@@ -287,7 +287,7 @@ void GameObject::SetActive(bool _Active)
 		// 최종 TaskMgr에서 해당 MarkedDeactivated된 GameObject들에 대해 false로 풀어줌으로써 다음 Tick부터 FinalTick 호출이 안되게끔 처리를 한다
 		m_ObjectMarkedDeactivated = true;
 		
-		// OnDeactivate 대리자 호출
+		// PoolingObject의 OnDeactivate 대리자 호출
 		for (const function<void(const Ptr<GameObject>&)>& OnDeactivate : m_vecDelegateOnDeactivate)
 			OnDeactivate(this);
 	}

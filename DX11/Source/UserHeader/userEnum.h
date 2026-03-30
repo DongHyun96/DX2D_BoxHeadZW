@@ -61,6 +61,26 @@ enum class PLAYER_HANDSTATE
     END
 };
 
+enum class PLAYER_MAINSTATE
+{
+    IDLE,
+    PUSHED_OUT,
+    DIE,
+    END
+};
+
+/// <summary>
+/// Enemy MainState
+/// </summary>
+enum class ENEMY_MAINSTATE
+{
+    WALK,
+    ATTACK,
+    PUSHED_OUT,
+    DIE,
+    END
+};
+
 /// <summary>
 /// P_HANDSTATE -> CFlipbookRender에서 지정한 카테고리 항목 이름
 /// </summary>
@@ -85,23 +105,32 @@ enum class ENEMY_TYPE
     END
 };
 
-/// <summary>
-/// Enemy MainState
-/// </summary>
-enum class ENEMY_STATE
+// 우선순위로 따지면 : Die / PushedOut / Attack / Walk 순
+static const map<ENEMY_MAINSTATE, wstring> mapEnemyMainStateAnimCategory = 
 {
-    WALK,
-    ATTACK,
-    PUSHED_OUT,
-    DIE,
-    END
+    {ENEMY_MAINSTATE::WALK,         L"Walk"},
+    {ENEMY_MAINSTATE::ATTACK,       L"Attack"},
+    {ENEMY_MAINSTATE::PUSHED_OUT,   L"PushedOut"},
+    {ENEMY_MAINSTATE::DIE,          L"Die"}
 };
 
-static const map<ENEMY_STATE, wstring> mapEnemyMainStateAnimCategory = 
+static const map<PLAYER_MAINSTATE, wstring> mapPlayerMainStateAnimCategory =
 {
-    {ENEMY_STATE::WALK,         L"Walk"},
-    {ENEMY_STATE::ATTACK,       L"Attack"},
-    {ENEMY_STATE::PUSHED_OUT,   L"PushedOut"},
-    {ENEMY_STATE::DIE,          L"Die"}
+    // Attack은 애초에 없고, Walk의 경우 현재 HandState에 따른 Animation으로 이어진다
+    {PLAYER_MAINSTATE::PUSHED_OUT, L"PushedOut"},    
+    {PLAYER_MAINSTATE::DIE, L"Die"},    
 };
+
+static const wstring& GetEnemyMainAnimCategory(ENEMY_MAINSTATE _EMainState)
+{
+    if (!mapEnemyMainStateAnimCategory.contains(_EMainState)) return L"";
+    return mapEnemyMainStateAnimCategory.at(_EMainState);
+}
+
+static const wstring& GetPlayerMainAnimCategory(PLAYER_MAINSTATE _PlayerState)
+{
+    if (!mapPlayerMainStateAnimCategory.contains(_PlayerState)) return L"";
+    return mapPlayerMainStateAnimCategory.at(_PlayerState);
+}
+
 

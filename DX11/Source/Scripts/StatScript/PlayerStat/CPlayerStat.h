@@ -25,8 +25,7 @@ public:
     
 public:
 
-    // TODO : 나중에 전체 저장 및 게임 불러오기 처리로 할거면 제대로 구현할 것
-    void SaveToLevelFile(FILE* _File) override {};
-    void LoadFromLevelFile(FILE* _File) override {};
+    void SaveToLevelFile(FILE* _File) override;
+    void LoadFromLevelFile(FILE* _File) override;
     
 };

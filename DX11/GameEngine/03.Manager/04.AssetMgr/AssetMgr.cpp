@@ -288,6 +288,15 @@ HRESULT AssetMgr::SaveAllAssets()
     return SaveResult;
 }
 
+void AssetMgr::StopAllSounds()
+{
+    for (const pair<const wstring, Ptr<Asset>>& assetPair : m_mapAsset[static_cast<int>(ASSET_TYPE::SOUND)])
+    {
+        ASound* Sound = dynamic_cast<ASound*>(assetPair.second.Get());
+        Sound->Stop();
+    }
+}
+
 /*HRESULT AssetMgr::SaveAssetMetaData(const wstring& _Key, const GUID& _Guid)
 {
     if (IsEqualGUID(_Guid, GUID_NULL)) return E_FAIL; // 초기화되지 않은 Guid로 MetaData 저장 시도

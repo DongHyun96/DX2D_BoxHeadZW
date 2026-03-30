@@ -12,7 +12,7 @@ CPlayerWeaponHandler::CPlayerWeaponHandler()
     // TODO : 추후 게임 불러오기 및 저장하기 까지 할꺼면 이 데이터 저장할 것
     m_mapCurrentMastery = 
     {
-        { PLAYER_HANDSTATE::PISTOL,     WeaponMasteryData(WEAPON_MASTERY::MASTER, 0.f) },    
+        { PLAYER_HANDSTATE::PISTOL,     WeaponMasteryData() },    
         { PLAYER_HANDSTATE::UZI,        WeaponMasteryData() },    
         { PLAYER_HANDSTATE::SHOTGUN,    WeaponMasteryData() },    
         { PLAYER_HANDSTATE::MINIGUN,    WeaponMasteryData() },    

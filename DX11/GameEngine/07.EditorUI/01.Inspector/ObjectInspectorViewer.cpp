@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ObjectInspectorViewer.h"
+#include <algorithm>
 
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "Source/ScriptMgr.h"
@@ -224,6 +225,7 @@ void ObjectInspectorViewer::TickAddScriptUI()
     {
         vector<wstring> vecScriptName{};
         ScriptMgr::GetScriptInfo(vecScriptName);
+        sort(vecScriptName.begin(), vecScriptName.end());
 
         for (const wstring& ScriptName : vecScriptName)
         {

@@ -13,7 +13,7 @@ private:
     
 private:
     
-    ENEMY_STATE m_PrevMainState = ENEMY_STATE::END;
+    ENEMY_MAINSTATE m_PrevMainState = ENEMY_MAINSTATE::END;
     EDIRECTION m_PrevAnimDirection = EDIRECTION::END;
     
 public:

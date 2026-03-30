@@ -30,7 +30,7 @@ void CEnemyAnimHandler::Tick()
     UpdateAnimDirection();
     UpdateAnimTransition();
     
-    // Just for testing
+    /*// Just for testing
     if (KEY_TAP(KEY::NUM_1)) FlipbookRender()->Play(L"Die", 0, 8, 1);
     if (KEY_TAP(KEY::NUM_2)) FlipbookRender()->Play(L"Die", 1, 8, 1);
     if (KEY_TAP(KEY::NUM_3)) FlipbookRender()->Play(L"Die", 2, 8, 1);
@@ -39,7 +39,7 @@ void CEnemyAnimHandler::Tick()
     if (KEY_TAP(KEY::NUM_6)) FlipbookRender()->Play(L"Die", 5, 8, 1);
     if (KEY_TAP(KEY::NUM_7)) FlipbookRender()->Play(L"Die", 6, 8, 1);
     if (KEY_TAP(KEY::NUM_8)) FlipbookRender()->Play(L"Die", 7, 8, 1);
-    if (KEY_TAP(KEY::NUM_9)) FlipbookRender()->Play(L"Die", 8, 8, 1);
+    if (KEY_TAP(KEY::NUM_9)) FlipbookRender()->Play(L"Die", 8, 8, 1);*/
 }
 
 void CEnemyAnimHandler::UpdateAnimDirection()
@@ -53,7 +53,8 @@ void CEnemyAnimHandler::UpdateAnimDirection()
 
 void CEnemyAnimHandler::UpdateAnimTransition()
 {
-    ENEMY_STATE CurrentMainState = m_MainEnemyScript->GetMainState();
+    ENEMY_MAINSTATE CurrentMainState = m_MainEnemyScript->GetMainState();
+    
     // ENEMY_STATE CurrentMainState = ENEMY_STATE::ATTACK;
     const wstring& AnimCategory = mapEnemyMainStateAnimCategory.at(CurrentMainState);
     

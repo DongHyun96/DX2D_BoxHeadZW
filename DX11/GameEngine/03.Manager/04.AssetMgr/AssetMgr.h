@@ -29,7 +29,7 @@ private:
         {ASSET_TYPE::TILEMAP,           {L".tilemap"}},
         {ASSET_TYPE::PREFAB,            {L".pref"}},
         {ASSET_TYPE::LEVEL,             {L".lv"}},
-        {ASSET_TYPE::SOUND,             {}}, // TODO : Sound 파일 확장자들 추가할 것
+        {ASSET_TYPE::SOUND,             {L"mp3", L"wav"}}, // TODO : Sound 파일 확장자들 추가할 것
     };
     
 public:
@@ -188,6 +188,13 @@ public:
     /// <returns> : 만일 겹치는 키값이 있다면 생성 x return false </returns>
     template<typename T>
     bool CreateNewAssetsBySuffixXYCount(const wstring& _AssetNameCommon, vector<Ptr<T>>& _OutAssets, const Vec2& _SuffixXYCount);
+
+public:
+    
+    /// <summary>
+    /// 현재 재생중인 모든 Sound 멈추기
+    /// </summary>
+    void StopAllSounds();
     
 };
 

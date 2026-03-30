@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CPlayerScript.h"
 
+#include "CPlayerAnimHandler.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
@@ -40,8 +41,8 @@ void CPlayerScript::Begin()
     if (GetOwner()->FlipbookRender())
         GetOwner()->FlipbookRender()->Stop(L"UnArmed", 6, 0);
     
-    Ptr<ASound> pSound = LOAD_ASSET(ASound, L"Sound\\ParadiseOnE.wav");
-    pSound->Play(0, 0.5f, false);
+    //Ptr<ASound> pSound = LOAD_ASSET(ASound, L"Sound\\ParadiseOnE.wav");
+    //pSound->Play(0, 0.5f, false);
     
     /*Collider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CBulletScript::BeginOverlap));
     Collider2D()->AddDynamicOverlap     (this, static_cast<COLLISION_EVENT>(&CBulletScript::Overlap));
@@ -96,30 +97,11 @@ void CPlayerScript::UpdateCurrentFacedDirection()
     if (m_CurrentFacedDirection == EDIRECTION::END) m_CurrentFacedDirection = EDIRECTION::DOWN;
 }
 
-void CPlayerScript::HandleRayCast()
+void CPlayerScript::SetMainState(PLAYER_MAINSTATE _MainState)
 {
-    if (KEY_PRESSED(KEY::MLB))
-    {
-        Ray2D Ray{};
-        Ray.Origin = Transform()->GetWorldPos();
-        const Vec2 MousePos = KeyMgr::GetInst()->GetMouseWorldPos2D();
-        
-        Ray.Direction = MousePos - Ray.Origin;
-        Ray.MaxDistance = Ray.Direction.Length();
-        Ray.Direction.Normalize();
-
-        RayCastHit Hit{};
-
-        Vec4 Color = Vec4(0.f, 1.f, 0.f, 1.f); 
-        
-        if (CollisionMgr::GetInst()->RayCast(Ray, {5, 2, 0}, &Hit))
-        {
-            DrawDebugCircle(ToVec3(Hit.Point), 10.f, Vec4(0.f, 1.f, 1.f, 1.f), 0.f);
-            Color = Vec4(1.f, 0.f, 0.f, 1.f);
-        }
-        
-        DrawDebugLine(Transform()->GetWorldPos(), Transform()->GetWorldPos() + Ray.Direction * Ray.MaxDistance, Color, 0.f);
-    }
+    m_PlayerMainState = _MainState;
+    if (_MainState == PLAYER_MAINSTATE::PUSHED_OUT)
+        GetOwner()->GetScriptComponent<CPlayerAnimHandler>()->RewindPushedOutTime();
 }
 
 void CPlayerScript::SaveToLevelFile(FILE* _File)

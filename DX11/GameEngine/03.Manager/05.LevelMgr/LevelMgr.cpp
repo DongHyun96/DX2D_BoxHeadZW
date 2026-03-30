@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "LevelMgr.h"
 
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
 #include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
 #include "GameEngine/07.EditorUI/11.CollisionMatrixUI/CollisionMatrixUI.h"
@@ -70,6 +71,9 @@ void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
         // 원본 Asset 
         m_CurLevel = m_SharedLevel;
         m_CurLevel->SetChanged();
+        
+        // 모든 재생중이었던 Sound들 멈추기
+        AssetMgr::GetInst()->StopAllSounds();
     }
 
     
