@@ -38,7 +38,8 @@ void CFlipbookRender::CreateMaterial()
         // 찾는 쉐이더가 없으면 만들어서 에셋매니저에 등록해준다.
         Ptr<AGraphicShader> pShader = AssetMgr::GetInst()->Find<AGraphicShader>(ShaderName);
         pMtrl->SetShader(pShader);
-        pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_MASKED);
+        pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_TRANSPARENT);
+        pMtrl->SetScalar(VEC4_0, DEF_COLOR_WHITE);
         pMtrl->SetIsProvidedByEngine(true);
     }
 

@@ -9,6 +9,8 @@
 #define BackgroundUV    g_vec2_2
 #define OffsetUV        g_vec2_3
 
+#define TintColor       g_vec4_0
+
 #define RenderOffset (g_vec4_3.xy)
 #define RenderScale (g_vec4_3.zw)
 
@@ -72,6 +74,8 @@ float4 PS_Flipbook(VS_OUT _input) : SV_Target
             
         if (vColor.a == 0.f) discard;
     }
+    
+    vColor *= TintColor;
     
     // 물체가 받는 빛의 총합
     float3 LightColor =  float3(0.f, 0.f, 0.f);

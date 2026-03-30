@@ -1,12 +1,8 @@
 ﻿#include "pch.h"
 #include "CPlayerScript.h"
 
-#include "CPlayerAnimHandler.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
-#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
-#include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
-#include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
 #include "GameEngine/05.GameObject/GameObject.h"
 #include "GameEngine/06.Component/01.Transform/CTransform.h"
 #include "GameEngine/06.Component/03.Collider2D/CColliderRect.h"
@@ -65,6 +61,8 @@ void CPlayerScript::Move()
     
     switch (m_PlayerMainState)
     {
+    case PLAYER_MAINSTATE::DIE: case PLAYER_MAINSTATE::END: return;
+        
     case PLAYER_MAINSTATE::IDLE:
     {
         m_Velocity = Vec3(); // Velocity 초기화
@@ -86,28 +84,19 @@ void CPlayerScript::Move()
         Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
         Transform()->SetRelativePos(Pos);
     }
-        break;
-    case PLAYER_MAINSTATE::PUSHED_OUT:
-    {
-        if (MovePushedOut()) // MovePushedOut 처리 완료
-        {
-            PLAYER_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
-                                         ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::IDLE;
-            SetMainState(NextState);
-        }
+        return;
+        
+    case PLAYER_MAINSTATE::PUSHED_OUT: MovePushedOut(); break;
+        
     }
-        break;
-    case PLAYER_MAINSTATE::DIE:
-        break;
-    case PLAYER_MAINSTATE::END:
-        break;
-    }
-    
 }
 
 void CPlayerScript::UpdateCurrentFacedDirection()
 {
-    switch (m_PlayerMainState) {
+    switch (m_PlayerMainState) 
+    {
+    // PushedOut과 Die의 경우, Flipbook 관련 방향 처리가 다르기 때문에 FacedDirection Update 필요 없이 따로 처리
+    case PLAYER_MAINSTATE::PUSHED_OUT: case PLAYER_MAINSTATE::DIE: case PLAYER_MAINSTATE::END: return;
     case PLAYER_MAINSTATE::IDLE:
     {
         const Vec2 MousePos     = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
@@ -120,13 +109,16 @@ void CPlayerScript::UpdateCurrentFacedDirection()
         // 따로 DOWN 방향으로 처리
         if (m_CurrentFacedDirection == EDIRECTION::END) m_CurrentFacedDirection = EDIRECTION::DOWN;
     }
-        break;
-    case PLAYER_MAINSTATE::PUSHED_OUT: case PLAYER_MAINSTATE::DIE: // AnimHandler에서 방향 직접 잡아서 처리 중
-        break;
-    case PLAYER_MAINSTATE::END:
-        break;
+        return;
     }
     
+}
+
+void CPlayerScript::AfterPushedOutFin()
+{
+    PLAYER_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
+                                         ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::IDLE;
+    SetMainState(NextState);    
 }
 
 void CPlayerScript::SaveToLevelFile(FILE* _File)

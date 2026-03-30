@@ -21,6 +21,7 @@ void CEnemyScript::Move()
     
     switch (m_MainState)
     {
+    case ENEMY_MAINSTATE::ATTACK: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
     case ENEMY_MAINSTATE::WALK:
     {
         m_Velocity = Vec3(); // Velocity 초기화
@@ -42,51 +43,43 @@ void CEnemyScript::Move()
         Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
         Transform()->SetRelativePos(Pos);
     }
-        break;
-    case ENEMY_MAINSTATE::ATTACK: break;
-    case ENEMY_MAINSTATE::PUSHED_OUT:
-    {
-        if (MovePushedOut()) // MovePushedOut 처리 완료
-        {
-            ENEMY_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
-                                         ? ENEMY_MAINSTATE::DIE : ENEMY_MAINSTATE::WALK;
-            SetMainState(NextState);
-        }
+        return;
+    case ENEMY_MAINSTATE::PUSHED_OUT: MovePushedOut(); break;
     }
-        break;
-        break;
-    case ENEMY_MAINSTATE::DIE:
-        break;
-    case ENEMY_MAINSTATE::END:
-        break;
-    }
-    
-    
 }
 
 void CEnemyScript::UpdateCurrentFacedDirection()
 {
     switch (m_MainState)
     {
-    case ENEMY_MAINSTATE::WALK: case ENEMY_MAINSTATE::ATTACK:
-        break;
-    case ENEMY_MAINSTATE::PUSHED_OUT: case ENEMY_MAINSTATE::DIE: break; // AnimHandler에서 직접 Direction 처리를 진행할 예정
-        
-    case ENEMY_MAINSTATE::END:
-        break;
-    }
-    
-    EDIRECTION CurrentDirection = GetEightDirection(m_Velocity);
-    
-    // 속력이 0인 멈춰있는 상황
-    if (CurrentDirection == EDIRECTION::END)
+    // PushedOut과 Die의 경우, Flipbook 관련 방향 처리가 다르기 때문에 FacedDirection Update 필요 없이 따로 처리
+    case ENEMY_MAINSTATE::PUSHED_OUT: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return; 
+    case ENEMY_MAINSTATE::WALK:
     {
-        // 만약 이전에도 END였으면, 맨 처음으로 들어오는 Update tick -> 기본 방향인 Down으로 맞춰춘다.
-        if (m_CurrentFacedDirection == EDIRECTION::END)
-            m_CurrentFacedDirection = EDIRECTION::DOWN;
-        
-        return; // 이전에 바라봤던 방향으로 처리
-    }
+        EDIRECTION NextDirection = GetEightDirection(m_Velocity);
     
-    m_CurrentFacedDirection = CurrentDirection;
+        // 속력이 0인 멈춰있는 상황
+        if (NextDirection == EDIRECTION::END)
+        {
+            // 만약 이전에도 END였으면, 맨 처음으로 들어오는 Update tick -> 기본 방향인 Down으로 맞춰춘다.
+            if (m_CurrentFacedDirection == EDIRECTION::END) m_CurrentFacedDirection = EDIRECTION::DOWN;
+            return; // 이전에 바라봤던 방향으로 처리
+        }
+    
+        m_CurrentFacedDirection = NextDirection;        
+    }
+        return;
+    case ENEMY_MAINSTATE::ATTACK:
+    {
+        // TODO : 공격방향을 향해 Direction 지정할 것
+    }
+        return;
+    }
+}
+
+void CEnemyScript::AfterPushedOutFin()
+{
+    ENEMY_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
+                                         ? ENEMY_MAINSTATE::DIE : ENEMY_MAINSTATE::WALK;
+    SetMainState(NextState);
 }

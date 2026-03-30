@@ -24,6 +24,7 @@ private:
     
     virtual void Move() override;
     virtual void UpdateCurrentFacedDirection() override;
+    virtual void AfterPushedOutFin() override;
     
 public:
     

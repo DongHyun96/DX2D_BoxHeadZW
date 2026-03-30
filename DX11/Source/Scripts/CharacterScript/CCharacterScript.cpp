@@ -25,7 +25,8 @@ bool CCharacterScript::MovePushedOut()
     m_PushedOutTime += DT;
 
     // Velocity 구하고 Position 업데이트 시키고 이렇게 하면 됨
-    const float alpha = std::clamp(m_PushedOutTime / m_PushedOutTotalTime, 0.f, 1.f);
+    // const float alpha = clamp(m_PushedOutTime / m_PushedOutTotalTime, 0.f, 1.f);
+    const float alpha = m_PushedOutTime / m_PushedOutTotalTime;
 
     constexpr float kBurstRatio = 0.12f;  // 초반 12% 구간만 강하게
     constexpr float kMaxSpeed   = 750.f;
@@ -49,7 +50,11 @@ bool CCharacterScript::MovePushedOut()
     
     // PushedOut End
     m_PushedOutTime = 0.f;
-    return true;
+    
+    // 각자의 MainState enum이 달라서 -> 각자의 다음 MainState 처리는 순수가상함수로 호출처리함
+    AfterPushedOutFin();
+    
+    return true; // 이후 Player, Enemy 각자의 MainState 세팅 처리 -> 여기 처리만 따로 빼서 하면 될듯?
 }
 
 void CCharacterScript::RewindPushedOut(const Vec2& _PushedOutDirection)

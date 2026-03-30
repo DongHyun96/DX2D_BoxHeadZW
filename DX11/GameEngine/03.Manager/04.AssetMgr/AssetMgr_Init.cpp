@@ -229,9 +229,11 @@ void AssetMgr::CreateEngineShader()
     shader->SetName(L"FlipbookShader");
     shader->CreateVertexShader(L"Shader\\flipbook.fx","VS_Flipbook");
     shader->CreatePixelShader(L"Shader\\flipbook.fx", "PS_Flipbook");
-    shader->SetBSType(BS_TYPE::DEFAULT);
+    shader->SetBSType(BS_TYPE::ALPHA_BLEND);
     shader->SetRSType(RS_TYPE::CULL_NONE);
     shader->SetIsProvidedByEngine(true);
+    
+    shader->AddShaderParam(SHADER_PARAM::VEC4, 0, L"TintColor");
     AddAsset(shader->GetName(), shader.Get());
     // =============
     // TileShader

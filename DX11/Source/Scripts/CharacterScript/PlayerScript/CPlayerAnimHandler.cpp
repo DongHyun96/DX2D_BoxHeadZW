@@ -33,13 +33,12 @@ void CPlayerAnimHandler::Tick()
 
 void CPlayerAnimHandler::UpdateWalkingBackward()
 {
-    const Vec3 VelocityDirection = m_MainPlayerScript->GetVelocity().Normalized();
-    const Vec2 VelocityDirection2D = ToVec2(VelocityDirection);
+    const Vec3 VelocityDirection    = m_MainPlayerScript->GetVelocity().Normalized();
+    const Vec2 VelocityDirection2D  = ToVec2(VelocityDirection);
     
-    const float DotProduct = VelocityDirection2D.Dot(m_MainPlayerScript->GetPlayerToMousePos().Normalized());
-    const float AngleBetween = acosf(DotProduct); // 바라보는 방향과 진행방향과의 사잇각
-
-    m_WalkingBackward = AngleBetween > XM_PIDIV2; 
+    const float DotProduct      = VelocityDirection2D.Dot(m_MainPlayerScript->GetPlayerToMousePos().Normalized());
+    const float AngleBetween    = acosf(DotProduct); // 바라보는 방향과 진행방향과의 사잇각
+    m_WalkingBackward           = AngleBetween > XM_PIDIV2; 
 }
 
 void CPlayerAnimHandler::UpdateAnimTransition()
@@ -75,6 +74,13 @@ void CPlayerAnimHandler::UpdateAnimTransition()
         break;
     case PLAYER_MAINSTATE::PUSHED_OUT: FlipbookRender()->Stop(L"PushedOut", 0, m_PushedOutSpriteIdxToShow); break;
     case PLAYER_MAINSTATE::DIE:
+    {
+        if (m_PrevMainState == PLAYER_MAINSTATE::DIE) return; // 중복재생 방지
+        
+        // 이전 PushedOut 방향에 따라 Die Flipbook 고르기
+        const UINT BaseIdx = GetDieFlipbookIdxBase();
+        FlipbookRender()->Play(L"Die", BaseIdx, 10.f, 1);
+    }
         break;
     case PLAYER_MAINSTATE::END:
         break;

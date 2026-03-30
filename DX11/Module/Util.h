@@ -93,6 +93,19 @@ T GetRandom(const T& _Start, const T& _End)
     }
 }
 
+template<typename T>
+T PickRandom(const vector<T>& _Vec)
+{
+    if (_Vec.empty())
+    {
+        assert(nullptr);
+        return T();
+    }
+    
+    int RandomIdx = GetRandom<int>(0, _Vec.size() - 1);
+    return _Vec[RandomIdx];
+}
+
 /// <summary>
 /// Z값을 제외한 X, Y값으로 Vec3에서 Vec2값 반환
 /// </summary>
