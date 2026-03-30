@@ -124,9 +124,6 @@ public:
     virtual ~CPlayerWeaponHandler() override;
     
     CLONE(CPlayerWeaponHandler)
-
-    // TODO : 여기 무조건 위에꺼로 수정할 것!!!
-    // CPlayerWeaponHandler* Clone() const override { return const_cast<CPlayerWeaponHandler*>(this); }
     
 public:
 

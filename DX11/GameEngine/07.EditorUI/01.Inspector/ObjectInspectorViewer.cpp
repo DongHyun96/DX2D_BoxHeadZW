@@ -21,6 +21,7 @@
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/04.FlipbookRenderUI/FlipbookRenderUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/05.TileRenderUI/TileRenderUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/07.PoolUI/PoolUI.h"
+#include "GameEngine/07.EditorUI/10.ConfirmUI/ConfirmUI.h"
 
 #define ADD_COMPONENT_UI(ComponentType, type, Size)                          \
     m_arrComUI[static_cast<UINT>(ComponentType)] = new type;                 \
@@ -79,7 +80,18 @@ void ObjectInspectorViewer::TickHeaderUI()
     ImGui::Spacing();
     ImGui::SeparatorText("");
     
+    ImGui::Text("Added Scripts : ");
+    string ScriptList{};
+    for (const Ptr<CScript>& Script : m_TargetObject->GetScripts())
+    {
+        const wstring& ScriptName = ScriptMgr::GetScriptName(Script.Get());
+        const string ScriptNameStr = string(ScriptName.begin(), ScriptName.end());
+        ScriptList.append("* " + ScriptNameStr + "\n");
+    }
+    ImGui::Text(ScriptList.c_str());
     
+    ImGui::Spacing();
+    ImGui::SeparatorText("");
 }
 
 void ObjectInspectorViewer::CreateChildUI()
@@ -139,6 +151,18 @@ void ObjectInspectorViewer::RefreshScripts()
         if (vecScripts.size() <= i)  m_vecScriptUI[i]->SetScript(nullptr);
         else                         m_vecScriptUI[i]->SetScript(vecScripts[i].Get());
     }
+}
+
+void ObjectInspectorViewer::OnConfirmAddPendingScript(bool _Yes)
+{
+    if (_Yes)
+    {
+        m_TargetObject->AddComponent(m_AddPendingScript);
+        SetTargetObject(m_TargetObject);
+    }
+    else delete m_AddPendingScript;
+    
+    m_AddPendingScript = nullptr;
 }
 
 void ObjectInspectorViewer::TickLayerUI()
@@ -205,9 +229,20 @@ void ObjectInspectorViewer::TickAddScriptUI()
         {
             if (ImGui::MenuItem(string(ScriptName.begin(), ScriptName.end()).c_str()))
             {
-                if (m_TargetObject)
+                CScript* pNewScript = ScriptMgr::GetScript(ScriptName);
+                
+                if (m_TargetObject->HasScript(static_cast<SCRIPT_TYPE>(pNewScript->GetScriptType())))
                 {
-                    CScript* pNewScript = ScriptMgr::GetScript(ScriptName);
+                    m_AddPendingScript = pNewScript;
+                    Ptr<ConfirmUI> pUI = dynamic_cast<ConfirmUI*>(EditorMgr::GetInst()->FindUI("ConfirmUI").Get());
+                    assert(pUI.Get());
+                    
+                    pUI->SetWarningText("Same type of script already exists in this gameObject!. Continue?");
+                    pUI->AddDelegate(this, static_cast<DELEGATE_BOOL>(&ObjectInspectorViewer::OnConfirmAddPendingScript));
+                    pUI->SetActive(true);
+                }
+                else
+                {
                     m_TargetObject->AddComponent(pNewScript);
                     SetTargetObject(m_TargetObject);
                 }

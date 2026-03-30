@@ -26,6 +26,6 @@ private:
 private:
     void AddItemHeight();
     
-    virtual void OnConfirmClicked(bool _Confirmed) override;
+    virtual void OnRemoveScriptConfirmed(bool _Confirmed) override;
 
 };

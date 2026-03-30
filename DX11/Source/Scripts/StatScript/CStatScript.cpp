@@ -17,11 +17,23 @@ CStatScript::~CStatScript()
 {
 }
 
+void CStatScript::Init()
+{
+    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_HP, L"CurrentHP", false, 1.f, false);
+    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_HPMax, L"MaxHP", false, 1.f, true);
+}
+
+void CStatScript::Begin()
+{
+    // TODO : 게임 전체 불러오기, 저장 처리로 한다면 이 Line 지울것
+    m_HP = m_HPMax;
+}
+
 void CStatScript::Tick()
 {
 }
 
-bool CStatScript::TakeDamage(float _DamageAmount, Vec3 _DamageSourcePos)
+bool CStatScript::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
 {
     if (IsDead()) return false; // 이미 사망처리된 캐릭터
     if (_DamageAmount <= 0.f) return false; // 잘못된 Damage량
@@ -36,4 +48,16 @@ bool CStatScript::ApplyHeal(float _HealAmount)
 
     m_HP = min(m_HP + _HealAmount, m_HPMax);
     return true;
+}
+
+void CStatScript::SaveToLevelFile(FILE* _File)
+{
+    fwrite(&m_HP, sizeof(float), 1, _File);
+    fwrite(&m_HPMax, sizeof(float), 1, _File);
+}
+
+void CStatScript::LoadFromLevelFile(FILE* _File)
+{
+    fread(&m_HP, sizeof(float), 1, _File);
+    fread(&m_HPMax, sizeof(float), 1, _File);
 }

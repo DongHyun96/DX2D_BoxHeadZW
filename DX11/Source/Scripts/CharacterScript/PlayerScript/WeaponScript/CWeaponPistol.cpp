@@ -39,9 +39,9 @@ bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
         // 검사 허용 Layer 판정에 의해 StatScript를 가지고 있으면 그 StatScript는 Enemy의 것 
         
         // TODO : 다음 Damage 처리 주석 풀 것
-        /*Ptr<CCollider2D> CollidedCollider = Hit.Collider;
+        Ptr<CCollider2D> CollidedCollider = Hit.Collider;
         if (Ptr<CStatScript> Stat = CollidedCollider->GetOwner()->GetScriptComponent<CStatScript>())
-            Stat->TakeDamage(GetDamageAmountPerRound(), _MuzzleWorldPos);*/
+            Stat->TakeDamage(GetDamageAmountPerRound(), _MuzzleWorldPos);
     }
     else
     {

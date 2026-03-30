@@ -118,3 +118,13 @@ void CPlayerScript::HandleRayCast()
         DrawDebugLine(Transform()->GetWorldPos(), Transform()->GetWorldPos() + Ray.Direction * Ray.MaxDistance, Color, 0.f);
     }
 }
+
+void CPlayerScript::SaveToLevelFile(FILE* _File)
+{
+    CCharacterScript::SaveToLevelFile(_File);
+}
+
+void CPlayerScript::LoadFromLevelFile(FILE* _File)
+{
+    CCharacterScript::LoadFromLevelFile(_File);
+}

@@ -24,8 +24,10 @@ public:
     CLONE(CStatScript)
 
 public:
-    
-    void Tick() override;
+
+    virtual void Init() override;
+    virtual void Begin() override;
+    virtual void Tick() override;
     
 public:
     
@@ -35,7 +37,7 @@ public:
     /// <param name="_DamageAmount"> : Damage 총량 </param>
     /// <param name="_DamageSourcePos"> : Damage를 준 Source의 위치 </param>
     /// <returns> : 제대로 Damage 처리가 되었다면 return true </returns>
-    virtual bool TakeDamage(float _DamageAmount, Vec3 _DamageSourcePos);
+    virtual bool TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos);
     
     virtual bool ApplyHeal(float _HealAmount);
 
@@ -46,7 +48,7 @@ public:
     
 public:
     
-    void SaveToLevelFile(FILE* _File) override {};
-    void LoadFromLevelFile(FILE* _File) override {};
+    void SaveToLevelFile(FILE* _File) override;
+    void LoadFromLevelFile(FILE* _File) override;
     
 };

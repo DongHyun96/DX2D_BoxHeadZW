@@ -6,8 +6,7 @@ class ConfirmUI : public EditorUI
 private:
     
     string              m_WarningText{};
-    
-    EditorUI*           m_Inst{};     // Delegate Binding된 객체
+    Entity*             m_EntityInst{}; // Delegate Binding된 객체
     DELEGATE_BOOL       m_MemFunc{};  // Delegate Binding된 callback 함수
 
 public:
@@ -27,7 +26,7 @@ private:
 public:
 
     void SetWarningText(const string& _WarningText) { m_WarningText = _WarningText; }
-    void AddDelegate(EditorUI* _Inst, DELEGATE_BOOL _MemFunc) { m_Inst = _Inst; m_MemFunc = _MemFunc; }
+    void AddDelegate(Entity* _Inst, DELEGATE_BOOL _MemFunc) { m_EntityInst = _Inst; m_MemFunc = _MemFunc; }
     
 private:
     

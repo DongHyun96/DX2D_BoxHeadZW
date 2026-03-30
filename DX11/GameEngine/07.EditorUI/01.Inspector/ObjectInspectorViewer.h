@@ -10,6 +10,11 @@ private:
     Ptr<GameObject>         m_TargetObject{};
     Ptr<ComponentUI>        m_arrComUI[static_cast<UINT>(COMPONENT_TYPE::END)]{};
     vector<Ptr<ScriptUI>>   m_vecScriptUI{};
+
+private:
+    
+    CScript* m_AddPendingScript{};
+    
 public:
     
     ObjectInspectorViewer();
@@ -36,5 +41,9 @@ private:
     
     void CreateChildUI();
     void RefreshScripts();
+    
+private:
+    
+    void OnConfirmAddPendingScript(bool _Yes);
 
 };

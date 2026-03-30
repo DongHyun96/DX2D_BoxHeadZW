@@ -100,8 +100,15 @@ public:
 	/// <returns> : 해당 Script Type이 없다면 return nullptr </returns>
 	template<typename T>
 	Ptr<T> GetScriptComponent() const;
+
+	/// <summary>
+	/// 이미 해당하는 Type의 Script를 보유중인지 조사
+	/// </summary>
+	/// <param name="_ScriptType"></param>
+	/// <returns></returns>
+	bool HasScript(SCRIPT_TYPE _ScriptType) const;
 	
-	vector<Ptr<CScript>> GetScripts() const { return m_vecScripts; }
+	const vector<Ptr<CScript>>& GetScripts() const { return m_vecScripts; }
 
 public:
 	

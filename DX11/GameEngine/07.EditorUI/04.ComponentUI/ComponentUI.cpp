@@ -28,7 +28,7 @@ void ComponentUI::Tick_UI()
         assert(pUI.Get());
 
         pUI->SetWarningText("Are you sure you want to remove this component?");
-        pUI->AddDelegate(this, static_cast<DELEGATE_BOOL>(&ComponentUI::OnConfirmClicked));
+        pUI->AddDelegate(this, static_cast<DELEGATE_BOOL>(&ComponentUI::OnRemoveScriptConfirmed));
         pUI->SetActive(true);
     }
     
@@ -54,7 +54,7 @@ void ComponentUI::SetTargetObject(const Ptr<GameObject>& _TargetObject)
     SetActive(m_TargetObject->GetComponent(m_ComType) != nullptr);
 }
 
-void ComponentUI::OnConfirmClicked(bool _Confirmed)
+void ComponentUI::OnRemoveScriptConfirmed(bool _Confirmed)
 {
     if (_Confirmed)
     {

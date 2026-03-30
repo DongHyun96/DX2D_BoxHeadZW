@@ -42,6 +42,6 @@ public:
     
 private:
     
-    virtual void OnConfirmClicked(bool _Confirmed);
+    virtual void OnRemoveScriptConfirmed(bool _Confirmed);
     
 };

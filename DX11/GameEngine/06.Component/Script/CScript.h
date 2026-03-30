@@ -22,6 +22,7 @@ struct tScriptParam
     wstring         Desc{};
     bool            IsInput{};
     float           Step{};
+    bool            Enabled{};
 };
 
 class CScript : public Component
@@ -64,9 +65,9 @@ protected:
     /// <param name="_Desc"> : 노출하는 Description </param>
     /// <param name="_IsInput"> : Input인지 Drag인지 </param>
     /// <param name="_Step"> : Drag Step </param>
-    void AddScriptParam(SCRIPT_PARAM _Type, void* _Data, const wstring& _Desc, bool _IsInput = true, float _Step = 1.f)
+    void AddScriptParam(SCRIPT_PARAM _Type, void* _Data, const wstring& _Desc, bool _IsInput = true, float _Step = 1.f, bool _Enabled = true)
     {
-        m_vecScriptParam.push_back(tScriptParam{ _Type , _Data, _Desc, _IsInput, _Step });
+        m_vecScriptParam.push_back(tScriptParam{ _Type , _Data, _Desc, _IsInput, _Step, _Enabled });
     }
 
     /// <summary>

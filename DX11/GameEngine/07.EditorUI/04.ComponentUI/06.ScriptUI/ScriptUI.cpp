@@ -18,6 +18,8 @@ ScriptUI::ScriptUI()
 	_itoa_s(idx, szNum, 50, 10);
 
 	SetUIKey(szNum);
+	
+	SetSeparator(false);
 }
 
 ScriptUI::~ScriptUI()
@@ -75,7 +77,8 @@ void ScriptUI::TickScriptParams()
 	{
 		char ID[255]{};
 		sprintf_s(ID, 255, "%d", i);
-		
+
+		ImGui::BeginDisabled(!vecParam[i].Enabled);
 		switch (vecParam[i].Param)
 		{
 		case SCRIPT_PARAM::INT:
@@ -86,9 +89,9 @@ void ScriptUI::TickScriptParams()
 			string Key = "##Int";
 			Key += ID;
 			
+			
 			if (vecParam[i].IsInput) ImGui::InputInt(Key.c_str(), static_cast<int*>(vecParam[i].Data), vecParam[i].Step);
 			else					 ImGui::DragInt(Key.c_str(), static_cast<int*>(vecParam[i].Data), vecParam[i].Step);
-
 			AddItemHeight();
 		}
 			break;
@@ -190,6 +193,7 @@ void ScriptUI::TickScriptParams()
 		default:
 			break;
 		}
+		ImGui::EndDisabled();
 	}
 }
 
@@ -199,7 +203,7 @@ void ScriptUI::AddItemHeight()
 	m_ItemHeight += vSize.y + 200.f;
 }
 
-void ScriptUI::OnConfirmClicked(bool _Confirmed)
+void ScriptUI::OnRemoveScriptConfirmed(bool _Confirmed)
 {
 	if (_Confirmed)
 	{

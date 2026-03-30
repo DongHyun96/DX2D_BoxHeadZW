@@ -20,7 +20,8 @@ public:
     
 public:
 
-    bool ApplyBoost(float _BoostAmount);
+    virtual bool TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos) override;
+    virtual bool ApplyBoost(float _BoostAmount);
     
 public:
 

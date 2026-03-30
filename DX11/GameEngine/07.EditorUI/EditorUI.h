@@ -85,9 +85,9 @@ public:
     
 };
 
-typedef void(EditorUI::* DELEGATE_0)(void);
-typedef void(EditorUI::* DELEGATE_1)(DWORD_PTR);
-typedef void(EditorUI::* DELEGATE_2)(DWORD_PTR, DWORD_PTR);
+typedef void(Entity::* DELEGATE_0)(void);
+typedef void(Entity::* DELEGATE_1)(DWORD_PTR);
+typedef void(Entity::* DELEGATE_2)(DWORD_PTR, DWORD_PTR);
 
-typedef void(EditorUI::* DELEGATE_BOOL)(bool);
+typedef void(Entity::* DELEGATE_BOOL)(bool);
 

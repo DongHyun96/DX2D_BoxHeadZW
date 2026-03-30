@@ -25,31 +25,23 @@ void ConfirmUI::Tick_UI()
 
 void ConfirmUI::OnYes()
 {
-    EditorUI* inst = m_Inst;
-    DELEGATE_BOOL mem = m_MemFunc;
-
-    // 먼저 현재 Confirm를 닫는다.
-    // 콜백 내부에서 다시 Confirm를 열면 그 상태를 유지할 수 있다.
+    if (m_EntityInst && m_MemFunc)
+        (m_EntityInst->*m_MemFunc)(true);
+    
     SetActive(false);
-
-    if (inst && mem)
-        (inst->*mem)(true);
 }
 
 void ConfirmUI::OnNo()
 {
-    EditorUI* inst = m_Inst;
-    DELEGATE_BOOL mem = m_MemFunc;
-
+    if (m_EntityInst && m_MemFunc)
+        (m_EntityInst->*m_MemFunc)(false);
+    
     SetActive(false);
-
-    if (inst && mem)
-        (inst->*mem)(false);
 }
 
 void ConfirmUI::Deactivate()
 {
     m_WarningText.clear();
-    m_Inst = nullptr;
+    m_EntityInst = nullptr;
     m_MemFunc = nullptr;
 }
