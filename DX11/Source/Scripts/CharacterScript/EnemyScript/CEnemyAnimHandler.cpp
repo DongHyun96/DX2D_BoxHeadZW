@@ -4,6 +4,7 @@
 #include "CEnemyScript.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Scripts/StatScript/EnemyStat/CEnemyStat.h"
 
 CEnemyAnimHandler::CEnemyAnimHandler()
     : CCharacterAnimHandler(SCRIPT_TYPE::ENEMYANIMHANDLER)
@@ -28,34 +29,47 @@ void CEnemyAnimHandler::Begin()
 void CEnemyAnimHandler::UpdateAnimTransition()
 {
     ENEMY_MAINSTATE CurrentMainState = m_MainEnemyScript->GetMainState();
-    
-    // ENEMY_STATE CurrentMainState = ENEMY_STATE::ATTACK;
-    const wstring& AnimCategory = mapEnemyMainStateAnimCategory.at(CurrentMainState);
-    
-    const Vec3 CurrentVelocity = m_MainEnemyScript->GetVelocity();
-    const EDIRECTION CurrentDirection = m_MainEnemyScript->GetCurrentFacedDirection();
-    const int FlipBookIndexByDirection = static_cast<int>(CurrentDirection);
+    const Vec3 CurrentVelocity          = m_MainEnemyScript->GetVelocity();
+    const EDIRECTION CurrentDirection   = m_MainEnemyScript->GetCurrentFacedDirection();
 
-    if (CurrentVelocity.LengthSquared() == 0.f) // 이동하고 있지 않은 상태
+    switch (CurrentMainState)
     {
-        // 해당 방향으로 자연스럽게 멈춤
-        // 2번 index가 멈춘 상태의 Sprite 모양
-        FlipbookRender()->Stop(AnimCategory, FlipBookIndexByDirection, 2);
-        m_PrevAnimDirection = EDIRECTION::END;
-        return;
+    case ENEMY_MAINSTATE::WALK:
+    {
+        
+        const wstring& AnimCategory         = mapEnemyMainStateAnimCategory.at(CurrentMainState);
+        const int FlipBookIndexByDirection = static_cast<int>(CurrentDirection);
+    
+        if (CurrentVelocity.LengthSquared() == 0.f) // 이동하고 있지 않은 상태
+        {
+            // 해당 방향으로 자연스럽게 멈춤
+            // 2번 index가 멈춘 상태의 Sprite 모양
+            FlipbookRender()->Stop(AnimCategory, FlipBookIndexByDirection, 2);
+            m_PrevAnimDirection = EDIRECTION::END;
+            return;
+        }
+
+        // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
+        if (CurrentDirection == m_PrevAnimDirection &&
+            CurrentMainState == m_PrevMainState
+            ) return;
+
+        // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 12, -1); // Walk
+        FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, m_AnimFPSTemp, -1); // Walk
+        // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 16, -1); // Attack 공격 속도 16
+    }
+        break;
+    case ENEMY_MAINSTATE::ATTACK:
+        break;
+    case ENEMY_MAINSTATE::PUSHED_OUT: FlipbookRender()->Stop(L"PushedOut", 0, m_PushedOutSpriteIdxToShow); break; 
+    case ENEMY_MAINSTATE::DIE:
+        break;
+    case ENEMY_MAINSTATE::END:
+        break;
     }
 
-    // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
-    if (CurrentDirection == m_PrevAnimDirection &&
-        CurrentMainState == m_PrevMainState
-        ) return;
-
-    // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 12, -1); // Walk
-    FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, m_AnimFPSTemp, -1); // Walk
-    // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 16, -1); // Attack 공격 속도 16
-
-    m_PrevAnimDirection     = CurrentDirection;
     m_PrevMainState         = CurrentMainState;
+    m_PrevAnimDirection     = CurrentDirection;
 }
 
 void CEnemyAnimHandler::SaveToLevelFile(FILE* _File)

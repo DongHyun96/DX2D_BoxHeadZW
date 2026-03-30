@@ -16,6 +16,12 @@ protected:
     
     EDIRECTION m_CurrentFacedDirection{};
 
+private: // PushedOut 관련
+
+    const float     m_PushedOutTotalTime = 0.4f; // PushedOut 멈춰있는 모습 처리로 보여질 총 시간
+    float           m_PushedOutTime{};
+    Vec2            m_PushedOutFaceDirection{};
+
 public:
     
     CCharacterScript(enum SCRIPT_TYPE _ScriptType);
@@ -29,6 +35,14 @@ private:
     
     virtual void Move() = 0;
     virtual void UpdateCurrentFacedDirection() = 0;
+    
+protected:
+    
+    /// <summary>
+    /// PushedOut Movement 처리
+    /// </summary>
+    /// <returns> : 해당 처리가 모두 끝났다면(PushedOut Time이 모두 소진되었다면) return true </returns>
+    bool MovePushedOut();
 
 public:
     
@@ -39,5 +53,9 @@ public:
     
     const Vec3& GetVelocity() const { return m_Velocity; }
     EDIRECTION GetCurrentFacedDirection() const { return m_CurrentFacedDirection; }
+
+public:
+    
+    void RewindPushedOut(const Vec2& _PushedOutDirection);
     
 };

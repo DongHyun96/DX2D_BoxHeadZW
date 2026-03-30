@@ -7,13 +7,7 @@ private:
 
     class CPlayerScript*    m_MainPlayerScript{};
     bool                    m_WalkingBackward{};
-    
 
-private:
-
-    const float             m_PushedOutTotalTime = 1.5f; // PushedOut 멈춰있는 모습 처리로 보여질 총 시간
-    float                   m_PushedOutTime{};
-    
     
 private: /* Animation FSM에서(UpdateAction) transition 조건에 필요한 변수들 */
 	
@@ -21,8 +15,6 @@ private: /* Animation FSM에서(UpdateAction) transition 조건에 필요한 변
 
     PLAYER_MAINSTATE m_PrevMainState    = PLAYER_MAINSTATE::END;
     PLAYER_HANDSTATE m_PrevHandState    = PLAYER_HANDSTATE::END;
-    
-    EDIRECTION m_PrevAnimDirection      = EDIRECTION::END;
     bool m_PrevWalkingBackward{};
     
 public:
@@ -46,9 +38,6 @@ private:
     void UpdateWalkingBackward();
     virtual void UpdateAnimTransition() override;
 
-public:
-    
-    void RewindPushedOutTime() { m_PushedOutTime = 0.f; }
     
 public:
     

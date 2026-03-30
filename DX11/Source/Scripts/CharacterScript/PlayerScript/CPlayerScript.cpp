@@ -12,6 +12,7 @@
 #include "GameEngine/06.Component/03.Collider2D/CColliderRect.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/StatScript/CStatScript.h"
 
 CPlayerScript::CPlayerScript()
     : CCharacterScript(SCRIPT_TYPE::PLAYERSCRIPT)
@@ -62,46 +63,70 @@ void CPlayerScript::Move()
 {
     Transform()->SetPrevRelativePos(Transform()->GetRelativePos()); // 이동 처리 직전에 이전 PrevPos 저장(blocking 처리용)
     
-    // Velocity 초기화
-    m_Velocity = Vec3();
-    
-    Vec3 Direction{};
-    
-    if (KEY_PRESSED(KEY::A)) Direction.x -= 1.f; // Left
-    if (KEY_PRESSED(KEY::D)) Direction.x += 1.f; // Right
-    if (KEY_PRESSED(KEY::W)) Direction.y += 1.f; // Up
-    if (KEY_PRESSED(KEY::S)) Direction.y -= 1.f; // Down
+    switch (m_PlayerMainState)
+    {
+    case PLAYER_MAINSTATE::IDLE:
+    {
+        m_Velocity = Vec3(); // Velocity 초기화
+        Vec3 Direction{};
+        
+        if (KEY_PRESSED(KEY::A)) Direction.x -= 1.f; // Left
+        if (KEY_PRESSED(KEY::D)) Direction.x += 1.f; // Right
+        if (KEY_PRESSED(KEY::W)) Direction.y += 1.f; // Up
+        if (KEY_PRESSED(KEY::S)) Direction.y -= 1.f; // Down
 
-    // TODO : 이 라인 지우기 (testing 환경에서의 Fast Move 처리)
-    m_MoveSpeedFactor = KEY_PRESSED(KEY::LSHIFT) ? 2.f : 1.f; 
+        // TODO : 이 라인 지우기 (testing 환경에서의 Fast Move 처리)
+        m_MoveSpeedFactor = KEY_PRESSED(KEY::LSHIFT) ? 2.f : 1.f; 
 
-    if (Direction.LengthSquared() == 0.f) return;
-    Direction.Normalize();
+        if (Direction.LengthSquared() == 0.f) return;
+        Direction.Normalize();
+        
+        m_Velocity = Direction * m_MoveSpeedBase * m_MoveSpeedFactor;
+        
+        Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
+        Transform()->SetRelativePos(Pos);
+    }
+        break;
+    case PLAYER_MAINSTATE::PUSHED_OUT:
+    {
+        if (MovePushedOut()) // MovePushedOut 처리 완료
+        {
+            PLAYER_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
+                                         ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::IDLE;
+            SetMainState(NextState);
+        }
+    }
+        break;
+    case PLAYER_MAINSTATE::DIE:
+        break;
+    case PLAYER_MAINSTATE::END:
+        break;
+    }
     
-    m_Velocity = Direction * m_MoveSpeedBase * m_MoveSpeedFactor;
-    
-    Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
-    Transform()->SetRelativePos(Pos);
 }
 
 void CPlayerScript::UpdateCurrentFacedDirection()
 {
-    const Vec2 MousePos     = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
-    const Vec2 PlayerPos2D  = ToVec2(Transform()->GetRelativePos());
+    switch (m_PlayerMainState) {
+    case PLAYER_MAINSTATE::IDLE:
+    {
+        const Vec2 MousePos     = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
+        const Vec2 PlayerPos2D  = ToVec2(Transform()->GetRelativePos());
     
-    m_PlayerToMousePos      = MousePos - PlayerPos2D;
-    m_CurrentFacedDirection = GetEightDirection(m_PlayerToMousePos);
+        m_PlayerToMousePos      = MousePos - PlayerPos2D;
+        m_CurrentFacedDirection = GetEightDirection(m_PlayerToMousePos);
     
-    // 이 경우, 마우스포인터 좌표와 Player의 위치가 완전히 일치하는 상황 (거의 아예 안나올거다)
-    // 따로 DOWN 방향으로 처리
-    if (m_CurrentFacedDirection == EDIRECTION::END) m_CurrentFacedDirection = EDIRECTION::DOWN;
-}
-
-void CPlayerScript::SetMainState(PLAYER_MAINSTATE _MainState)
-{
-    m_PlayerMainState = _MainState;
-    if (_MainState == PLAYER_MAINSTATE::PUSHED_OUT)
-        GetOwner()->GetScriptComponent<CPlayerAnimHandler>()->RewindPushedOutTime();
+        // 이 경우, 마우스포인터 좌표와 Player의 위치가 완전히 일치하는 상황 (거의 아예 안나올거다)
+        // 따로 DOWN 방향으로 처리
+        if (m_CurrentFacedDirection == EDIRECTION::END) m_CurrentFacedDirection = EDIRECTION::DOWN;
+    }
+        break;
+    case PLAYER_MAINSTATE::PUSHED_OUT: case PLAYER_MAINSTATE::DIE: // AnimHandler에서 방향 직접 잡아서 처리 중
+        break;
+    case PLAYER_MAINSTATE::END:
+        break;
+    }
+    
 }
 
 void CPlayerScript::SaveToLevelFile(FILE* _File)

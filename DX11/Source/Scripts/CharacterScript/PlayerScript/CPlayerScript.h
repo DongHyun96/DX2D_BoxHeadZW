@@ -41,7 +41,7 @@ public:
     void SetHandState(PLAYER_HANDSTATE _HandState) { m_HandState = _HandState; }
     PLAYER_HANDSTATE GetHandState() const { return m_HandState; }
     
-    void SetMainState(PLAYER_MAINSTATE _MainState);
+    void SetMainState(PLAYER_MAINSTATE _MainState) { m_PlayerMainState = _MainState; }
     PLAYER_MAINSTATE GetMainState() const { return m_PlayerMainState; }
     
     const Vec2& GetPlayerToMousePos() const { return m_PlayerToMousePos; }

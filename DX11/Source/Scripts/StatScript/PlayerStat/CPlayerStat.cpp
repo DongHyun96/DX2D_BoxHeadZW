@@ -2,6 +2,8 @@
 #include "CPlayerStat.h"
 
 #include "Source/ScriptMgr.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerAnimHandler.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 
 CPlayerStat::CPlayerStat()
     : CStatScript(SCRIPT_TYPE::PLAYERSTAT)
@@ -10,6 +12,11 @@ CPlayerStat::CPlayerStat()
 
 CPlayerStat::~CPlayerStat()
 {
+}
+
+void CPlayerStat::Begin()
+{
+    CStatScript::Begin();
 }
 
 void CPlayerStat::Tick()
@@ -22,8 +29,11 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
     // 기본 Damage 입히기 처리 실패했다면 return false 
     if (!CStatScript::TakeDamage(_DamageAmount, _DamageSourcePos)) return false;
 
+    const PLAYER_MAINSTATE NextState = IsDead() ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::PUSHED_OUT;
+    const Ptr<CPlayerScript>& MainPlayerScript = GetOwner()->GetScriptComponent<CPlayerScript>();
     
-    
+    MainPlayerScript->SetMainState(NextState);
+
     return true;
 }
 

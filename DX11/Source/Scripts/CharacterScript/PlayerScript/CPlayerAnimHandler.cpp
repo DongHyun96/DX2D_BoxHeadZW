@@ -5,6 +5,7 @@
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Scripts/StatScript/PlayerStat/CPlayerStat.h"
 
 CPlayerAnimHandler::CPlayerAnimHandler()
     : CCharacterAnimHandler(SCRIPT_TYPE::PLAYERANIMHANDLER)
@@ -72,19 +73,7 @@ void CPlayerAnimHandler::UpdateAnimTransition()
         FlipbookRender()->Play(WeaponCategory, FlipBookIndexByDirection, 12, -1, m_WalkingBackward);
     }
         break;
-    case PLAYER_MAINSTATE::PUSHED_OUT: // 얘는 계속해서 Stop처리로 해도 되긴 하겠다
-    {
-        // PushedOut 방향에 따른 Flipbook Idx를 골라주어야 함
-        
-        // FlipbookRender()->Play(L"PushedOut", )
-        
-        m_PushedOutTime += DT;
-        if (m_PushedOutTime > m_PushedOutTotalTime) // MainState 전환 처리
-        {
-            
-        }
-    }
-        break;
+    case PLAYER_MAINSTATE::PUSHED_OUT: FlipbookRender()->Stop(L"PushedOut", 0, m_PushedOutSpriteIdxToShow); break;
     case PLAYER_MAINSTATE::DIE:
         break;
     case PLAYER_MAINSTATE::END:

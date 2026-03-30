@@ -15,8 +15,9 @@ public:
     CLONE(CPlayerStat)
     
 public:
-    
-    void Tick() override;
+
+    virtual void Begin() override;
+    virtual void Tick() override;
     
 public:
 
