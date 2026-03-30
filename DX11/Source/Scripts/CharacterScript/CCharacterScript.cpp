@@ -15,5 +15,5 @@ CCharacterScript::~CCharacterScript()
 void CCharacterScript::Tick()
 {
     Move();
-    UpdateCurrentFacedDirection();
+    UpdateCurrentFacedDirection(); // TODO -> 피격중일 때에는 피격당하는 방향을 계속해서 바라보게끔 처리를 해주어야 함
 }

@@ -1,6 +1,7 @@
 ﻿#pragma once
+#include "Source/Scripts/CharacterScript/CCharacterAnimHandler.h"
 
-class CEnemyAnimHandler : public CScript
+class CEnemyAnimHandler : public CCharacterAnimHandler
 {
 private:
     
@@ -9,7 +10,6 @@ private:
 private:
 
     class CEnemyScript* m_MainEnemyScript{};
-    EDIRECTION m_AnimDirection = EDIRECTION::DOWN;
     
 private:
     
@@ -26,12 +26,10 @@ public:
 
     virtual void Init() override;    
     virtual void Begin() override;
-    virtual void Tick() override;
 
 private:
     
-    void UpdateAnimDirection();
-    void UpdateAnimTransition();
+    virtual void UpdateAnimTransition() override;
 
     
 public:

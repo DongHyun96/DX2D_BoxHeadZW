@@ -7,7 +7,7 @@
 #include "Source/ScriptMgr.h"
 
 CPlayerAnimHandler::CPlayerAnimHandler()
-    : CScript(static_cast<int>(SCRIPT_TYPE::PLAYERANIMHANDLER))
+    : CCharacterAnimHandler(SCRIPT_TYPE::PLAYERANIMHANDLER)
 {
 }
 
@@ -27,7 +27,7 @@ void CPlayerAnimHandler::Begin()
 void CPlayerAnimHandler::Tick()
 {
     UpdateWalkingBackward();
-    UpdateAnimTransition();    
+    CCharacterAnimHandler::Tick();
 }
 
 void CPlayerAnimHandler::UpdateWalkingBackward()

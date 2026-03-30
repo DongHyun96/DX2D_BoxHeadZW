@@ -5,6 +5,7 @@
 #include "Source/Scripts/AirplaneShootingScript\CBulletMgrScript.h"
 #include "Source/Scripts/AirplaneShootingScript\CBulletScript.h"
 #include "Source/Scripts/CCamMoveScript.h"
+#include "Source/Scripts/CharacterScript\CCharacterAnimHandler.h"
 #include "Source/Scripts/CharacterScript\CCharacterScript.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\CEnemyAnimHandler.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\CEnemyScript.h"
@@ -52,6 +53,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CBulletScript;
 	if (L"CCamMoveScript" == _strScriptName)
 		return new CCamMoveScript;
+	if (L"CCharacterAnimHandler" == _strScriptName)
+		return nullptr;
 	if (L"CCharacterScript" == _strScriptName)
 		return nullptr;
 	if (L"CEnemyAnimHandler" == _strScriptName)
@@ -97,6 +100,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CBulletScript;
 	case (UINT)SCRIPT_TYPE::CAMMOVESCRIPT:
 		return new CCamMoveScript;
+	case (UINT)SCRIPT_TYPE::CHARACTERANIMHANDLER:
+		return nullptr;
 	case (UINT)SCRIPT_TYPE::CHARACTERSCRIPT:
 		return nullptr;
 	case (UINT)SCRIPT_TYPE::ENEMYANIMHANDLER:
@@ -143,6 +148,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CBulletScript";
 	case SCRIPT_TYPE::CAMMOVESCRIPT:
 		return L"CCamMoveScript";
+	case SCRIPT_TYPE::CHARACTERANIMHANDLER:
+		return L"CCharacterAnimHandler";
 	case SCRIPT_TYPE::CHARACTERSCRIPT:
 		return L"CCharacterScript";
 	case SCRIPT_TYPE::ENEMYANIMHANDLER:

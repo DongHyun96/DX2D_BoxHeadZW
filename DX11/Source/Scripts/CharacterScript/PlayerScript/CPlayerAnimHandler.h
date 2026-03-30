@@ -1,6 +1,7 @@
 ﻿#pragma once
+#include "Source/Scripts/CharacterScript/CCharacterAnimHandler.h"
 
-class CPlayerAnimHandler : public CScript
+class CPlayerAnimHandler : public CCharacterAnimHandler
 {
 private:
 
@@ -43,7 +44,7 @@ private:
     /// 바라보는 방향과 움직이는 방향을 비교해서 뒤로 걷는 중인지 판단
     /// </summary>
     void UpdateWalkingBackward();
-    void UpdateAnimTransition();
+    virtual void UpdateAnimTransition() override;
 
 public:
     

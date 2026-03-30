@@ -6,7 +6,7 @@
 #include "Source/ScriptMgr.h"
 
 CEnemyAnimHandler::CEnemyAnimHandler()
-    : CScript(static_cast<int>(SCRIPT_TYPE::ENEMYANIMHANDLER))
+    : CCharacterAnimHandler(SCRIPT_TYPE::ENEMYANIMHANDLER)
 {
 }
 
@@ -25,32 +25,6 @@ void CEnemyAnimHandler::Begin()
     m_MainEnemyScript = GetOwner()->GetScriptComponent<CEnemyScript>().Get();
 }
 
-void CEnemyAnimHandler::Tick()
-{
-    UpdateAnimDirection();
-    UpdateAnimTransition();
-    
-    /*// Just for testing
-    if (KEY_TAP(KEY::NUM_1)) FlipbookRender()->Play(L"Die", 0, 8, 1);
-    if (KEY_TAP(KEY::NUM_2)) FlipbookRender()->Play(L"Die", 1, 8, 1);
-    if (KEY_TAP(KEY::NUM_3)) FlipbookRender()->Play(L"Die", 2, 8, 1);
-    if (KEY_TAP(KEY::NUM_4)) FlipbookRender()->Play(L"Die", 3, 8, 1);
-    if (KEY_TAP(KEY::NUM_5)) FlipbookRender()->Play(L"Die", 4, 8, 1);
-    if (KEY_TAP(KEY::NUM_6)) FlipbookRender()->Play(L"Die", 5, 8, 1);
-    if (KEY_TAP(KEY::NUM_7)) FlipbookRender()->Play(L"Die", 6, 8, 1);
-    if (KEY_TAP(KEY::NUM_8)) FlipbookRender()->Play(L"Die", 7, 8, 1);
-    if (KEY_TAP(KEY::NUM_9)) FlipbookRender()->Play(L"Die", 8, 8, 1);*/
-}
-
-void CEnemyAnimHandler::UpdateAnimDirection()
-{
-    // Update Current AnimDirection
-    EDIRECTION CurrentDirection = GetEightDirection(m_MainEnemyScript->GetVelocity());
-    
-    // 현재 Velocity 크기가 0이면, 이전 AnimDirection 유지 
-    m_AnimDirection = (CurrentDirection == EDIRECTION::END) ? m_PrevAnimDirection : CurrentDirection; 
-}
-
 void CEnemyAnimHandler::UpdateAnimTransition()
 {
     ENEMY_MAINSTATE CurrentMainState = m_MainEnemyScript->GetMainState();
@@ -59,7 +33,8 @@ void CEnemyAnimHandler::UpdateAnimTransition()
     const wstring& AnimCategory = mapEnemyMainStateAnimCategory.at(CurrentMainState);
     
     const Vec3 CurrentVelocity = m_MainEnemyScript->GetVelocity();
-    const int FlipBookIndexByDirection = static_cast<int>(m_AnimDirection);
+    const EDIRECTION CurrentDirection = m_MainEnemyScript->GetCurrentFacedDirection();
+    const int FlipBookIndexByDirection = static_cast<int>(CurrentDirection);
 
     if (CurrentVelocity.LengthSquared() == 0.f) // 이동하고 있지 않은 상태
     {
@@ -71,7 +46,7 @@ void CEnemyAnimHandler::UpdateAnimTransition()
     }
 
     // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
-    if (m_AnimDirection == m_PrevAnimDirection &&
+    if (CurrentDirection == m_PrevAnimDirection &&
         CurrentMainState == m_PrevMainState
         ) return;
 
@@ -79,7 +54,7 @@ void CEnemyAnimHandler::UpdateAnimTransition()
     FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, m_AnimFPSTemp, -1); // Walk
     // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 16, -1); // Attack 공격 속도 16
 
-    m_PrevAnimDirection     = m_AnimDirection;
+    m_PrevAnimDirection     = CurrentDirection;
     m_PrevMainState         = CurrentMainState;
 }
 
