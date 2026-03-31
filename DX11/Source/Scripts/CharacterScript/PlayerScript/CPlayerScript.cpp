@@ -3,6 +3,8 @@
 
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "GameEngine/05.GameObject/GameObject.h"
 #include "GameEngine/06.Component/01.Transform/CTransform.h"
 #include "GameEngine/06.Component/03.Collider2D/CColliderRect.h"
@@ -40,6 +42,8 @@ void CPlayerScript::Begin()
     
     //Ptr<ASound> pSound = LOAD_ASSET(ASound, L"Sound\\ParadiseOnE.wav");
     //pSound->Play(0, 0.5f, false);
+    Ptr<ASound> pSound = LOAD_ASSET(ASound, L"Sound\\PistolShot.wav"); 
+    pSound->Play(0, 0.5f, false);
     
     /*Collider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CBulletScript::BeginOverlap));
     Collider2D()->AddDynamicOverlap     (this, static_cast<COLLISION_EVENT>(&CBulletScript::Overlap));

@@ -2,17 +2,15 @@
 #include "CWeaponScript.h"
 
 /// <summary>
-/// Num 1 Default weapon
+/// Num 5 Weapon
 /// </summary>
-class CWeaponPistol : public CWeaponScript
+class CWeaponRocket : public CWeaponScript
 {
-    
 public:
     
-    CWeaponPistol();
-    virtual ~CWeaponPistol();
-    CLONE(CWeaponPistol)
-    
+    CWeaponRocket();
+    virtual ~CWeaponRocket() override;
+    CLONE(CWeaponRocket)    
 public:
     
     virtual bool Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection) override;

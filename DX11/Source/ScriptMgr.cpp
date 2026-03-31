@@ -14,8 +14,12 @@
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerWeaponHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\InvenScript\CEquipmentScript.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\InvenScript\CInvenScript.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponMinigun.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponPistol.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponRocket.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponScript.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponShotgun.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponUzi.h"
 #include "Source/Scripts/CMonsterScript.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/StatScript\CStatScript.h"
@@ -35,7 +39,11 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CPlayerWeaponHandler");
 	_vec.push_back(L"CEquipmentScript");
 	_vec.push_back(L"CInvenScript");
+	_vec.push_back(L"CWeaponMinigun");
 	_vec.push_back(L"CWeaponPistol");
+	_vec.push_back(L"CWeaponRocket");
+	_vec.push_back(L"CWeaponShotgun");
+	_vec.push_back(L"CWeaponUzi");
 	_vec.push_back(L"CMonsterScript");
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CStatScript");
@@ -71,10 +79,18 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CEquipmentScript;
 	if (L"CInvenScript" == _strScriptName)
 		return new CInvenScript;
+	if (L"CWeaponMinigun" == _strScriptName)
+		return new CWeaponMinigun;
 	if (L"CWeaponPistol" == _strScriptName)
 		return new CWeaponPistol;
+	if (L"CWeaponRocket" == _strScriptName)
+		return new CWeaponRocket;
 	if (L"CWeaponScript" == _strScriptName)
 		return nullptr;
+	if (L"CWeaponShotgun" == _strScriptName)
+		return new CWeaponShotgun;
+	if (L"CWeaponUzi" == _strScriptName)
+		return new CWeaponUzi;
 	if (L"CMonsterScript" == _strScriptName)
 		return new CMonsterScript;
 	if (L"CObstacle" == _strScriptName)
@@ -118,10 +134,18 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CEquipmentScript;
 	case (UINT)SCRIPT_TYPE::INVENSCRIPT:
 		return new CInvenScript;
+	case (UINT)SCRIPT_TYPE::WEAPONMINIGUN:
+		return new CWeaponMinigun;
 	case (UINT)SCRIPT_TYPE::WEAPONPISTOL:
 		return new CWeaponPistol;
+	case (UINT)SCRIPT_TYPE::WEAPONROCKET:
+		return new CWeaponRocket;
 	case (UINT)SCRIPT_TYPE::WEAPONSCRIPT:
 		return nullptr;
+	case (UINT)SCRIPT_TYPE::WEAPONSHOTGUN:
+		return new CWeaponShotgun;
+	case (UINT)SCRIPT_TYPE::WEAPONUZI:
+		return new CWeaponUzi;
 	case (UINT)SCRIPT_TYPE::MONSTERSCRIPT:
 		return new CMonsterScript;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
@@ -166,10 +190,18 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CEquipmentScript";
 	case SCRIPT_TYPE::INVENSCRIPT:
 		return L"CInvenScript";
+	case SCRIPT_TYPE::WEAPONMINIGUN:
+		return L"CWeaponMinigun";
 	case SCRIPT_TYPE::WEAPONPISTOL:
 		return L"CWeaponPistol";
+	case SCRIPT_TYPE::WEAPONROCKET:
+		return L"CWeaponRocket";
 	case SCRIPT_TYPE::WEAPONSCRIPT:
 		return L"CWeaponScript";
+	case SCRIPT_TYPE::WEAPONSHOTGUN:
+		return L"CWeaponShotgun";
+	case SCRIPT_TYPE::WEAPONUZI:
+		return L"CWeaponUzi";
 	case SCRIPT_TYPE::MONSTERSCRIPT:
 		return L"CMonsterScript";
 	case SCRIPT_TYPE::OBSTACLE:

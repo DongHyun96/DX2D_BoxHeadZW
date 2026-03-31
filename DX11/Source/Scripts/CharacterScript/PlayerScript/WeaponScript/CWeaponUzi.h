@@ -2,16 +2,15 @@
 #include "CWeaponScript.h"
 
 /// <summary>
-/// Num 1 Default weapon
+/// Num 2 Weapon
 /// </summary>
-class CWeaponPistol : public CWeaponScript
+class CWeaponUzi : public CWeaponScript
 {
-    
 public:
     
-    CWeaponPistol();
-    virtual ~CWeaponPistol();
-    CLONE(CWeaponPistol)
+    CWeaponUzi();
+    virtual ~CWeaponUzi();
+    CLONE(CWeaponUzi)
     
 public:
     

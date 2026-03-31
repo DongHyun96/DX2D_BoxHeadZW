@@ -17,7 +17,7 @@ public:
     
 public:
     // _iRoopCount : 0 (반복재생),  _fVolume : 0 ~ 1(Volume), _bOverlap : 같은 사운드를 중첩해서 켤 수 있는지
-    int Play(int _iRoopCount, float _fVolume, bool _bOverlap);
+    int Play(int _iLoopCount, float _fVolume, bool _bOverlap);
     void RemoveChannel(FMOD::Channel* _pTargetChannel);
     void Stop();
 

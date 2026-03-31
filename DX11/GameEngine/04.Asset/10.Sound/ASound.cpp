@@ -23,9 +23,9 @@ ASound::~ASound()
 	}
 }
 
-int ASound::Play(int _iRoopCount, float _fVolume, bool _bOverlap)
+int ASound::Play(int _iLoopCount, float _fVolume, bool _bOverlap)
 {
-	if (_iRoopCount <= -1)
+	if (_iLoopCount <= -1)
 	{
 		assert(nullptr);
 	}
@@ -36,7 +36,7 @@ int ASound::Play(int _iRoopCount, float _fVolume, bool _bOverlap)
 		return E_FAIL;
 	}
 
-	_iRoopCount -= 1;
+	_iLoopCount -= 1;
 
 	FMOD::Channel* pChannel = nullptr;
 	FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
@@ -51,7 +51,7 @@ int ASound::Play(int _iRoopCount, float _fVolume, bool _bOverlap)
 	pChannel->setUserData(this);
 
 	pChannel->setMode(FMOD_LOOP_NORMAL);
-	pChannel->setLoopCount(_iRoopCount);
+	pChannel->setLoopCount(_iLoopCount);
 
 	// 어떤 채널에서 Sound 가 재생중인지 기록
 	m_listChannel.push_back(pChannel);

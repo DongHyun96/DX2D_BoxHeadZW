@@ -1,24 +1,22 @@
 ﻿#include "pch.h"
-#include "CWeaponPistol.h"
+#include "CWeaponUzi.h"
 
-#include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
 #include "Source/ScriptMgr.h"
-#include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
-CWeaponPistol::CWeaponPistol()
-    : CWeaponScript(SCRIPT_TYPE::WEAPONPISTOL)
+CWeaponUzi::CWeaponUzi()
+    : CWeaponScript(SCRIPT_TYPE::WEAPONUZI)
 {
 }
 
-CWeaponPistol::~CWeaponPistol()
+CWeaponUzi::~CWeaponUzi()
 {
 }
 
-bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
+bool CWeaponUzi::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
 {
-    // 아직 발사간격 시간을 다 채우지 못했을 때
+    // 아직 발사간견 시간을 다 채우지 못했을 때
     if (GetTimeAfterLastFire() < GetFireIntervalTime()) return false;
     RewindTimeAfterLastFire();
     
@@ -52,4 +50,3 @@ bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
     
     return true;
 }
-

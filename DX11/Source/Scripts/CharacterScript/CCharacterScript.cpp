@@ -20,7 +20,7 @@ void CCharacterScript::Tick()
     UpdateCurrentFacedDirection();
 }
 
-bool CCharacterScript::MovePushedOut()
+void CCharacterScript::MovePushedOut()
 {
     m_PushedOutTime += DT;
 
@@ -46,7 +46,7 @@ bool CCharacterScript::MovePushedOut()
     Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
     Transform()->SetRelativePos(Pos);
     
-    if (m_PushedOutTime < m_PushedOutTotalTime) return false;
+    if (m_PushedOutTime < m_PushedOutTotalTime) return;
     
     // PushedOut End
     m_PushedOutTime = 0.f;
@@ -57,8 +57,6 @@ bool CCharacterScript::MovePushedOut()
     // 사망하였다면 Collider 꺼줌
     if (GetOwner()->GetScriptComponent<CStatScript>()->IsDead())
         GetCollider2D()->SetActive(false);
-    
-    return true; // 이후 Player, Enemy 각자의 MainState 세팅 처리 -> 여기 처리만 따로 빼서 하면 될듯?
 }
 
 void CCharacterScript::RewindPushedOut(const Vec2& _PushedOutDirection)

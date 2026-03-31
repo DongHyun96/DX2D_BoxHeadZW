@@ -41,8 +41,7 @@ protected:
     /// <summary>
     /// PushedOut Movement 처리
     /// </summary>
-    /// <returns> : 해당 처리가 모두 끝났다면(PushedOut Time이 모두 소진되었다면) return true </returns>
-    bool MovePushedOut();
+    void MovePushedOut();
     
 private:
     
