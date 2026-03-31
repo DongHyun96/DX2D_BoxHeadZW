@@ -53,7 +53,7 @@ bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
     }
     
     Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\PistolShot.wav"); 
-    pSound->Play(1, 0.5f, true);
+    pSound->PlayNonOverlapFromStart(1, 0.5f);
     
     return true;
 }

@@ -80,9 +80,9 @@ private: // TODO : 수치는 추후 조정할 것
         { 
             PLAYER_HANDSTATE::MINIGUN,
             {
-                WeaponMasteryBuff(75.f, 30.f),
-                WeaponMasteryBuff(100.f, 40.f),
-                WeaponMasteryBuff(150.f, 50.f)
+                WeaponMasteryBuff(1000.f, 30.f),
+                WeaponMasteryBuff(1200.f, 40.f),
+                WeaponMasteryBuff(1500.f, 50.f)
             }
         },  
         
@@ -117,6 +117,11 @@ private:
     
     class CPlayerScript* m_PlayerMainScript{};
     class CEquipmentScript* m_EquipmentScript{};
+    
+private:
+
+    // 이전 Tick에 쐈는지 체크
+    bool m_LastTickFired{};
     
 public:
     

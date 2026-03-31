@@ -9,6 +9,56 @@ FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCO
                              , FMOD_CHANNELCONTROL_CALLBACK_TYPE callbacktype
                              , void* commanddata1, void* commanddata2);
 
+namespace
+{
+    int ConvertToFmodLoopCount(int _iLoopCount)
+    {
+        if (_iLoopCount <= -1)
+        {
+            assert(nullptr);
+            return 0;
+        }
+
+        // 사용자 입력: 0(무한), 1(1회), 2(2회) ...
+        // FMOD 입력: -1(무한), 0(1회), 1(2회) ...
+        return _iLoopCount - 1;
+    }
+
+    void PruneStoppedChannels(list<FMOD::Channel*>& _ChannelList)
+    {
+        for (auto it = _ChannelList.begin(); it != _ChannelList.end();)
+        {
+            FMOD::Channel* channel = *it;
+            bool isPlaying = false;
+
+            if (channel == nullptr || FMOD_OK != channel->isPlaying(&isPlaying) || !isPlaying)
+            {
+                it = _ChannelList.erase(it);
+                continue;
+            }
+
+            ++it;
+        }
+    }
+
+    int SetupChannelAndGetIndex(FMOD::Channel* _Channel, ASound* _OwnerSound, int _FmodLoopCount, float _Volume)
+    {
+        if (_Channel == nullptr)
+            return E_FAIL;
+
+        _Channel->setMode(FMOD_LOOP_NORMAL);
+        _Channel->setLoopCount(_FmodLoopCount);
+        _Channel->setVolume(_Volume);
+
+        _Channel->setCallback(&CHANNEL_CALLBACK);
+        _Channel->setUserData(_OwnerSound);
+
+        int channelIdx = -1;
+        _Channel->getIndex(&channelIdx);
+        return channelIdx;
+    }
+}
+
 ASound::ASound(bool _EngineRes)
 	: Asset(ASSET_TYPE::SOUND)
 	, m_Sound(nullptr)
@@ -26,66 +76,68 @@ ASound::~ASound()
 
 int ASound::Play(int _iLoopCount, float _fVolume, bool _bOverlap)
 {
-	if (_iLoopCount <= -1)
-	{
-		assert(nullptr);
-	}
+    const int fmodLoopCount = ConvertToFmodLoopCount(_iLoopCount);
 
-	// 중첩재생 X + 이미 다른채널에서 재생중 ==> 처음부터 다시 재생
-	if (!_bOverlap && !m_listChannel.empty())
-	{
-		for (auto it = m_listChannel.begin(); it != m_listChannel.end(); )
-		{
-			FMOD::Channel* ch = *it;
-			bool isPlaying = false;
+    // 이미 끝난 채널 포인터 정리
+    PruneStoppedChannels(m_listChannel);
 
-			if (ch == nullptr || FMOD_OK != ch->isPlaying(&isPlaying))
-			{
-				it = m_listChannel.erase(it);
-				continue;
-			}
+    // 비중첩 모드 + 현재 재생 중이면 신규 요청 무시
+    if (!_bOverlap && !m_listChannel.empty())
+        return E_FAIL;
 
-			if (isPlaying)
-			{
-				ch->setMode(FMOD_LOOP_NORMAL);
-				ch->setLoopCount(_iLoopCount);
-				ch->setVolume(_fVolume);
-				ch->setPosition(0, FMOD_TIMEUNIT_MS); // 처음 위치로
-				ch->setPaused(false);
+    FMOD::Channel* pChannel = nullptr;
+    FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
 
-				int idx = -1;
-				ch->getIndex(&idx);
-				return idx;
-			}
+    const int channelIdx = SetupChannelAndGetIndex(pChannel, this, fmodLoopCount, _fVolume);
+    if (channelIdx == E_FAIL)
+        return E_FAIL;
 
-			it = m_listChannel.erase(it);
-		}
-	}
+    m_listChannel.push_back(pChannel);
+    return channelIdx;
+}
 
-	_iLoopCount -= 1;
+int ASound::PlayNonOverlapFromStart(int _iLoopCount, float _fVolume)
+{
+    const int fmodLoopCount = ConvertToFmodLoopCount(_iLoopCount);
 
-	FMOD::Channel* pChannel = nullptr;
-	FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
+    // 이미 끝난 채널 포인터 정리
+    PruneStoppedChannels(m_listChannel);
 
-	// 재생을 했는데, 재생중인 채널이 없다 --> 실패
-	if (nullptr == pChannel)
-		return E_FAIL;
+    // 이미 재생 중인 채널이 있으면 해당 채널을 처음부터 재생 (신규 채널 생성 안 함)
+    if (!m_listChannel.empty())
+    {
+        auto itPlaying = m_listChannel.begin();
+        FMOD::Channel* targetChannel = *itPlaying;
 
-	pChannel->setVolume(_fVolume);
+        vector<FMOD::Channel*> channelsToStop;
+        for (auto it = next(itPlaying); it != m_listChannel.end(); ++it)
+        {
+            if (*it != nullptr)
+                channelsToStop.push_back(*it);
+        }
+        m_listChannel.erase(next(itPlaying), m_listChannel.end());
 
-	pChannel->setCallback(&CHANNEL_CALLBACK);
-	pChannel->setUserData(this);
+        for (FMOD::Channel* ch : channelsToStop)
+            ch->stop();
 
-	pChannel->setMode(FMOD_LOOP_NORMAL);
-	pChannel->setLoopCount(_iLoopCount);
+        const int channelIdx = SetupChannelAndGetIndex(targetChannel, this, fmodLoopCount, _fVolume);
+        if (channelIdx == E_FAIL)
+            return E_FAIL;
 
-	// 어떤 채널에서 Sound 가 재생중인지 기록
-	m_listChannel.push_back(pChannel);
+        targetChannel->setPosition(0, FMOD_TIMEUNIT_MS);
+        targetChannel->setPaused(false);
+        return channelIdx;
+    }
 
-	int iIdx = -1;
-	pChannel->getIndex(&iIdx);
+    FMOD::Channel* pChannel = nullptr;
+    FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
 
-	return iIdx;
+    const int channelIdx = SetupChannelAndGetIndex(pChannel, this, fmodLoopCount, _fVolume);
+    if (channelIdx == E_FAIL)
+        return E_FAIL;
+
+    m_listChannel.push_back(pChannel);
+    return channelIdx;
 }
 
 void ASound::Stop()
@@ -184,9 +236,6 @@ HRESULT ASound::Save(const wstring& _FilePath)
 	return S_OK;
 }
 
-// =========
-// Call Back
-// =========
 FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCONTROL_TYPE controltype
 	, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbacktype
 	, void* commanddata1, void* commanddata2)
@@ -194,12 +243,17 @@ FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCO
 	FMOD::Channel* cppchannel = (FMOD::Channel*)channelcontrol;
 	ASound* pSound = nullptr;
 
-	if (controltype == FMOD_CHANNELCONTROL_CHANNEL &&
-	callbacktype == FMOD_CHANNELCONTROL_CALLBACK_END)
-	{
-		cppchannel->getUserData((void**)&pSound);
-		if (pSound) pSound->RemoveChannel(cppchannel);
-	}
+    if (controltype == FMOD_CHANNELCONTROL_CHANNEL &&
+        callbacktype == FMOD_CHANNELCONTROL_CALLBACK_END)
+    {
+        cppchannel->getUserData((void**)&pSound);
+        if (pSound)
+        {
+        	pSound->RemoveChannel(cppchannel);
+        	DebugUtil::AddDebugLog("Sound End", DEF_COLOR_WHITE, 10.f);
+        }
+            
+    }
 
 	return FMOD_OK;
 }

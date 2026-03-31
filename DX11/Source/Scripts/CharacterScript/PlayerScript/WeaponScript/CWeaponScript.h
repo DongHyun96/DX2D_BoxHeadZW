@@ -20,7 +20,7 @@ public:
     
 public: // 시점함수들 호출 안되는 것 유의 ( Non-Attachable Script )
 
-    virtual void Init() override final {};
+    virtual void Init() override final {}
     virtual void Begin() override final {};
     virtual void Tick() override final {}; 
     
@@ -43,6 +43,8 @@ public:
     /// <param name="_FireDirection"> : 사격 방향 </param>
     /// <returns> : 사격이 정상적으로 이루어졌다면 return true </returns>
     virtual bool Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection) = 0;
+    
+    virtual void OnFireReleased() {};
     
 protected:
 

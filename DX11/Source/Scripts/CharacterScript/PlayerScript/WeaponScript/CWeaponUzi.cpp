@@ -24,7 +24,10 @@ bool CWeaponUzi::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
     
     Ray2D Ray{};
     Ray.Origin      = _MuzzleWorldPos;
-    Ray.Direction   = ToVec3(_FireDirection.Normalized()); 
+    
+    // Direction의 경우, 살짝의 오차를 매번 준다
+    const float BiasAngle = ConvertToAngle(GetRandom(-3.5f, 3.5f));
+    Ray.Direction   = ToVec3(GetSpreadVector(_FireDirection.Normalized(), BiasAngle)); 
     Ray.MaxDistance = RESOL_DIAG_LENGTH;
     
     RayCastHit Hit{};
@@ -51,7 +54,7 @@ bool CWeaponUzi::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
     }
     
     Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\UziShot.wav"); 
-    pSound->Play(1, 0.5f, false);
+    pSound->PlayNonOverlapFromStart(1, 0.5f);
     
     return true;
 }

@@ -112,6 +112,22 @@ T PickRandom(const vector<T>& _Vec)
 static Vec2 ToVec2(const Vec3& _V) { return {_V.x, _V.y}; }
 static Vec3 ToVec3(const Vec2& _V) { return {_V.x, _V.y, 0.f}; } // z값 0으로 고정
 
+static float ConvertToAngle(float _Degree) { return _Degree * (XM_PI / 180.f); }
+
+/// <summary>
+/// 주어진 Vector와 Angle만큼 벌어진 Vector 구하기
+/// </summary>
+static Vec2 GetSpreadVector(const Vec2& _V, const float& _Angle)
+{
+    if (_Angle == 0.f) return _V;
+    
+    const float Cos = cosf(_Angle);
+    const float Sin = sinf(_Angle);
+    
+    return {_V.x * Cos - _V.y * Sin, _V.x * Sin + _V.y * Cos};
+}
+
+
 enum class EDIRECTION;
 
 /// <summary>

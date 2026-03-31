@@ -22,6 +22,12 @@ public:
 public:
     // _iRoopCount : 0 (반복재생),  _fVolume : 0 ~ 1(Volume), _bOverlap : 같은 사운드를 중첩해서 켤 수 있는지
     int Play(int _iLoopCount, float _fVolume, bool _bOverlap);
+
+    /// <summary>
+    /// Overlap 허용하지 않는 Sound이고, Play 시 이미 재생 중인 Sound를 Rewind해서 처음부터 재생 처리해야할 때 사용할 것 
+    /// </summary>
+    int PlayNonOverlapFromStart(int _iLoopCount, float _fVolume);
+    
     void RemoveChannel(FMOD::Channel* _pTargetChannel);
     void Stop();
 

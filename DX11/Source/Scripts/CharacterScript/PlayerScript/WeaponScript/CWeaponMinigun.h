@@ -15,4 +15,9 @@ public:
 public:
     
     bool Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection) override;
+    
+private:
+
+    virtual void OnFireReleased() override;
+    
 };

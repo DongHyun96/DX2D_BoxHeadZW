@@ -134,6 +134,16 @@ void CPlayerWeaponHandler::TickSwapWeapon()
 
 void CPlayerWeaponHandler::TickFireWeapon()
 {
+    if (KEY_RELEASED(KEY::MLB))
+    {
+        Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState());
+        if (m_LastTickFired && Weapon)
+        {
+            Weapon->OnFireReleased();
+        }
+        return;
+    }
+    
     if (!KEY_PRESSED(KEY::MLB)) return;
     
     const PLAYER_HANDSTATE CurrentHandState = m_PlayerMainScript->GetHandState();
@@ -145,6 +155,7 @@ void CPlayerWeaponHandler::TickFireWeapon()
     {
         const Vec2 MousePos = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
         Weapon->Fire(MuzzleWorldPos, MousePos - MuzzleWorldPos);
+        m_LastTickFired = true;
     }
 }
 
