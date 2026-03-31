@@ -1,7 +1,9 @@
 ﻿#include "pch.h"
 #include "CWeaponUzi.h"
 
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
+#include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
@@ -47,6 +49,9 @@ bool CWeaponUzi::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
         
         DrawDebugLine(RayOrigin, RayOrigin + RayDirectionVec3 * Ray.MaxDistance, DEF_COLOR_GREEN, 2.f);
     }
+    
+    Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\UziShot.wav"); 
+    pSound->Play(1, 0.5f, false);
     
     return true;
 }

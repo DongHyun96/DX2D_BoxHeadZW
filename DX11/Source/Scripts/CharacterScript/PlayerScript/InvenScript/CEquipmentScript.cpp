@@ -3,7 +3,11 @@
 
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/WeaponScript/CWeaponMinigun.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/WeaponScript/CWeaponPistol.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/WeaponScript/CWeaponRocket.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/WeaponScript/CWeaponShotgun.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/WeaponScript/CWeaponUzi.h"
 
 
 CEquipmentScript::CEquipmentScript()
@@ -42,13 +46,13 @@ void CEquipmentScript::EquipWeapon(PLAYER_HANDSTATE EquipSlot)
     {
     case PLAYER_HANDSTATE::PISTOL: m_mapEquippedWeapons[EquipSlot] = new CWeaponPistol; return;
         
-    case PLAYER_HANDSTATE::UZI:
+    case PLAYER_HANDSTATE::UZI: m_mapEquippedWeapons[EquipSlot] = new CWeaponUzi; return;
         break;
-    case PLAYER_HANDSTATE::SHOTGUN:
+    case PLAYER_HANDSTATE::SHOTGUN: m_mapEquippedWeapons[EquipSlot] = new CWeaponShotgun; return;
         break;
-    case PLAYER_HANDSTATE::MINIGUN:
+    case PLAYER_HANDSTATE::MINIGUN: m_mapEquippedWeapons[EquipSlot] = new CWeaponMinigun; return;
         break;
-    case PLAYER_HANDSTATE::ROCKET:
+    case PLAYER_HANDSTATE::ROCKET: m_mapEquippedWeapons[EquipSlot] = new CWeaponRocket; return;
         break;
     case PLAYER_HANDSTATE::UNARMED: case PLAYER_HANDSTATE::END: break; 
     }

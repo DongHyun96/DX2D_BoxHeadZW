@@ -12,11 +12,11 @@ CPlayerWeaponHandler::CPlayerWeaponHandler()
     // TODO : 추후 게임 불러오기 및 저장하기 까지 할꺼면 이 데이터 저장할 것
     m_mapCurrentMastery = 
     {
-        { PLAYER_HANDSTATE::PISTOL,     WeaponMasteryData() },    
-        { PLAYER_HANDSTATE::UZI,        WeaponMasteryData() },    
-        { PLAYER_HANDSTATE::SHOTGUN,    WeaponMasteryData() },    
-        { PLAYER_HANDSTATE::MINIGUN,    WeaponMasteryData() },    
-        { PLAYER_HANDSTATE::ROCKET,     WeaponMasteryData() },    
+        { PLAYER_HANDSTATE::PISTOL,     WeaponMasteryData(WEAPON_MASTERY::BEGINNER, 0.f) },    
+        { PLAYER_HANDSTATE::UZI,        WeaponMasteryData(WEAPON_MASTERY::BEGINNER, 0.f) },    
+        { PLAYER_HANDSTATE::SHOTGUN,    WeaponMasteryData(WEAPON_MASTERY::BEGINNER, 0.f) },    
+        { PLAYER_HANDSTATE::MINIGUN,    WeaponMasteryData(WEAPON_MASTERY::BEGINNER, 0.f) },    
+        { PLAYER_HANDSTATE::ROCKET,     WeaponMasteryData(WEAPON_MASTERY::BEGINNER, 0.f) },    
     };
 }
 
@@ -75,6 +75,25 @@ void CPlayerWeaponHandler::Tick()
 {
     TickSwapWeapon();
     TickFireWeapon();
+
+    // TODO : 여기 지우기 & 버프 처리 시, Weapon에 실질적으로 setting을 해주어야 함(지금 무기를 바꿀때만 처리가 되는 중)
+    if (KEY_TAP(KEY::MOUSE_X1))
+    {
+        if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
+        {
+            int StateIdx = static_cast<int>(m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState);
+            if (--StateIdx >= 0) m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
+        }
+    }
+    
+    if (KEY_TAP(KEY::MOUSE_X2))
+    {
+        if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
+        {
+            int StateIdx = static_cast<int>(m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState);
+            if (++StateIdx <= 2) m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
+        }
+    }
     
     // TODO : 여기 지우기 (Muzzle 위치 디버깅)   
     const PLAYER_HANDSTATE CurrentHandState = m_PlayerMainScript->GetHandState();
@@ -123,7 +142,10 @@ void CPlayerWeaponHandler::TickFireWeapon()
     const Vec2 MuzzleWorldPos = ToVec2(Transform()->GetWorldPos()) + m_mapEachMuzzleOffsets[CurrentHandState][DirectionIndex];
     
     if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
-        Weapon->Fire(MuzzleWorldPos, m_PlayerMainScript->GetPlayerToMousePos());
+    {
+        const Vec2 MousePos = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
+        Weapon->Fire(MuzzleWorldPos, MousePos - MuzzleWorldPos);
+    }
 }
 
 void CPlayerWeaponHandler::SaveToLevelFile(FILE* _File)

@@ -42,8 +42,6 @@ void CPlayerScript::Begin()
     
     //Ptr<ASound> pSound = LOAD_ASSET(ASound, L"Sound\\ParadiseOnE.wav");
     //pSound->Play(0, 0.5f, false);
-    Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\PistolShot.wav"); 
-    pSound->Play(0, 0.5f, false);
     
     /*Collider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CBulletScript::BeginOverlap));
     Collider2D()->AddDynamicOverlap     (this, static_cast<COLLISION_EVENT>(&CBulletScript::Overlap));

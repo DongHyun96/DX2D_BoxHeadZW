@@ -41,6 +41,8 @@ HRESULT Engine::Progress()
     // 렌더타겟에 그려진 그림을, 윈도우 비트맵으로 복사
     Device::GetInst()->Present();
     
+    if (m_FMODSystem) m_FMODSystem->update();
+    
     // 다음 프레임에 적용될 작업 처리
     TaskMgr::GetInst()->Progress();
     

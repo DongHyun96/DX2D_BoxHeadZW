@@ -31,10 +31,35 @@ int ASound::Play(int _iLoopCount, float _fVolume, bool _bOverlap)
 		assert(nullptr);
 	}
 
-	// 중첩재생 X + 이미 다른채널에서 재생중 ==> 재생 불가
+	// 중첩재생 X + 이미 다른채널에서 재생중 ==> 처음부터 다시 재생
 	if (!_bOverlap && !m_listChannel.empty())
 	{
-		return E_FAIL;
+		for (auto it = m_listChannel.begin(); it != m_listChannel.end(); )
+		{
+			FMOD::Channel* ch = *it;
+			bool isPlaying = false;
+
+			if (ch == nullptr || FMOD_OK != ch->isPlaying(&isPlaying))
+			{
+				it = m_listChannel.erase(it);
+				continue;
+			}
+
+			if (isPlaying)
+			{
+				ch->setMode(FMOD_LOOP_NORMAL);
+				ch->setLoopCount(_iLoopCount);
+				ch->setVolume(_fVolume);
+				ch->setPosition(0, FMOD_TIMEUNIT_MS); // 처음 위치로
+				ch->setPaused(false);
+
+				int idx = -1;
+				ch->getIndex(&idx);
+				return idx;
+			}
+
+			it = m_listChannel.erase(it);
+		}
 	}
 
 	_iLoopCount -= 1;
@@ -169,15 +194,11 @@ FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCO
 	FMOD::Channel* cppchannel = (FMOD::Channel*)channelcontrol;
 	ASound* pSound = nullptr;
 
-	switch (controltype)
-	{
-	// 사운즈 재생 종료시 발생하는 이벤트
-	case FMOD_CHANNELCONTROL_CALLBACK_END:
+	if (controltype == FMOD_CHANNELCONTROL_CHANNEL &&
+	callbacktype == FMOD_CHANNELCONTROL_CALLBACK_END)
 	{
 		cppchannel->getUserData((void**)&pSound);
-		pSound->RemoveChannel(cppchannel);
-	}
-	break;
+		if (pSound) pSound->RemoveChannel(cppchannel);
 	}
 
 	return FMOD_OK;
