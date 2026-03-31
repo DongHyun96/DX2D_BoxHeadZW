@@ -12,6 +12,9 @@ private:
 
     map<wstring, vector<Ptr<AFlipbook>>> m_mapCategoryFlipbooks{}; // 카테고리 이름, Flipbook 벡터 형식의 자료구조로 Flipbook 저장
 
+    // 해당 플립북의 재생이 끝났을 때에 Callback처리할 EndEvent를 걸 수 있다
+    map<AFlipbook*, function<void()>> m_EndEvents{};
+
 private:
     
     wstring                 m_CurSelectedCategory{};             // null 문자열일 경우, 선택된 카테고리가 존재하지 않음
@@ -50,6 +53,18 @@ public:
 private:
     
     bool CheckFinish();
+
+public:
+    
+    /// <summary>
+    /// 특정 카테고리의 특정 인덱스 플립북이 끝날 때 호출받을 함수 
+    /// 만약 기존에 EndEvent가 걸려있었다면, 해당 EndEvent는 대체 처리한다 -> functional 라이브러리의 function<void()> 특성상, 특정한 함수객체를 찝어서 없앨 수 없음
+    /// </summary>
+    /// <param name="_Category"></param>
+    /// <param name="_FlipbookIdx"></param>
+    /// <param name="_EndEvent"></param>
+    /// <returns> 해당하는 Flipbook을 찾지 못했다면 return false </returns>
+    bool AddNotifyFlipbookEndEvent(const wstring& _Category, UINT _FlipbookIdx, function<void()> _EndEvent);
     
 public:
     

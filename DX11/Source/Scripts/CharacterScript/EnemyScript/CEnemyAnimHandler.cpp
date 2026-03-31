@@ -67,10 +67,13 @@ void CEnemyAnimHandler::UpdateAnimTransition()
         
         // 이전 PushedOut 방향에 따라 Die Flipbook 고르기
         const UINT BaseIdx = GetDieFlipbookIdxBase();
-        
         vector<UINT> TempVec = {0, 3, 6}; const UINT IdxOffset = PickRandom(TempVec);
+        const UINT PickedIdx = BaseIdx + IdxOffset;
         
-        FlipbookRender()->Play(L"Die", BaseIdx + IdxOffset, 10.f, 1); // TODO : Die Motion 끝난 이후, Enemy는 FadeOut 처리하기
+        FlipbookRender()->Play(L"Die", PickedIdx, 10.f, 1); 
+        
+        // Die Flipbook 재생 모두 끝난 후, FadeOut -> Pool로 다시 돌아가는 처리
+        FlipbookRender()->AddNotifyFlipbookEndEvent(L"Die", PickedIdx, bind(&CEnemyScript::OnDieFlipbookEndNotify, m_MainEnemyScript));
     }
         break;
     case ENEMY_MAINSTATE::END:

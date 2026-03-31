@@ -128,11 +128,19 @@ bool CFlipbookRender::CheckFinish()
 {
     if (m_bStopped)              return true;   // Stopped된 상황
     if (!m_bCurCycleFinished)    return false;  // 아직 현재 사이클이 진행중
+    
+    const Ptr<AFlipbook> CurrentFlipbook = (*m_vecCurSelectedCategoryFlipbooks)[m_CurSelectedFlipbookIdx];
+    
     if (m_RepeatCount == 0)
     {
         // 반복재생(-1)이 아닌 때에 현재 사이클이 종료되었고, RepeatCount 마저도 모두 소진한 상태 (이제 막 Animation이 모두 재생되어 Stopped 처리된 상황)
         m_bStopped = true;
-        return true;   
+        
+        // EndEvent Callback이 걸려있다면 Callback 처리를 해준다.
+        if (m_EndEvents.contains(CurrentFlipbook.Get()) && m_EndEvents[CurrentFlipbook.Get()])
+            m_EndEvents[CurrentFlipbook.Get()](); // Callback 처리    
+        
+        return true;
     }
     
     // 현재 사이클이 종료됨
@@ -144,12 +152,19 @@ bool CFlipbookRender::CheckFinish()
         --m_RepeatCount;
     }
 
-    Ptr<AFlipbook> TargetFlipbook = (*m_vecCurSelectedCategoryFlipbooks)[m_CurSelectedFlipbookIdx];
-    
-    m_CurAnimatingSpriteIdx = !m_bPlayReverse ? 0 : TargetFlipbook->GetSpriteCount() - 1;
+    m_CurAnimatingSpriteIdx = !m_bPlayReverse ? 0 : CurrentFlipbook->GetSpriteCount() - 1;
     m_bCurCycleFinished     = false;
     
     return false;
+}
+
+bool CFlipbookRender::AddNotifyFlipbookEndEvent(const wstring& _Category, UINT _FlipbookIdx, function<void()> _EndEvent)
+{
+    if (!m_mapCategoryFlipbooks.contains(_Category)) return false;
+    if (_FlipbookIdx >= m_mapCategoryFlipbooks[_Category].size()) return false;
+    
+    m_EndEvents[ m_mapCategoryFlipbooks[_Category][_FlipbookIdx].Get() ] = _EndEvent;
+    return true;
 }
 
 bool CFlipbookRender::SetCurrentCategory(const wstring& _CategoryKey, int _FlipbookToSelect, int _SpriteToSelect)

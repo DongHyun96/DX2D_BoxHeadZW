@@ -45,7 +45,7 @@ float Lerp(float _Src, float _Dst, float _Alpha);
 template<typename T>
 T MappingToNewRange(const T& _Num, const T& _SrcMin, const T& _SrcMax, const T& _DstMin, const T& _DstMax)
 {
-    if (_SrcMin > _SrcMax)
+    /*if (_SrcMin > _SrcMax)
     {
         DebugUtil::AddDebugLog(L"[MappingToNewRange] : wrong Src range received.");
         return T();
@@ -55,7 +55,7 @@ T MappingToNewRange(const T& _Num, const T& _SrcMin, const T& _SrcMax, const T& 
     {
         DebugUtil::AddDebugLog(L"[MappingToNewRange] : wrong Dst range received.");
         return T();
-    }
+    }*/
     
     if (_SrcMin == _SrcMax)
         return static_cast<T>((_Num - _SrcMin) * (_DstMax - _DstMin) + _DstMin);

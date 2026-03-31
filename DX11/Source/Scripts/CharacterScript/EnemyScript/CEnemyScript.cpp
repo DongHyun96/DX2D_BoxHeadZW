@@ -15,6 +15,12 @@ CEnemyScript::~CEnemyScript()
 {
 }
 
+void CEnemyScript::Tick()
+{
+    CCharacterScript::Tick();
+    HandleFadeOut();
+}
+
 void CEnemyScript::Move()
 {
     Transform()->SetPrevRelativePos(Transform()->GetRelativePos()); // 이동 처리 직전에 이전 PrevPos 저장(blocking 처리용)
@@ -82,4 +88,35 @@ void CEnemyScript::AfterPushedOutFin()
     ENEMY_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
                                          ? ENEMY_MAINSTATE::DIE : ENEMY_MAINSTATE::WALK;
     SetMainState(NextState);
+}
+
+void CEnemyScript::HandleFadeOut()
+{
+    if (!m_HasFadeOutStart) return;
+    
+    m_FadeInOutTime += DT;
+
+    // Tint Color를 수정함으로써, FadeOut 처리 해준다
+    const float ColorAlpha = MappingToNewRange(m_FadeInOutTime, 0.f, m_FadeInOutTotalTime, 1.f, 0.f);
+    Vec4 TintColor = DEF_COLOR_WHITE;
+    TintColor.w = ColorAlpha;
+    
+    Ptr<AMaterial> DynamicMtrl = GetOwner()->GetRenderCom()->CreateDynamicMaterial();
+    DynamicMtrl->SetScalar(VEC4_0, TintColor);
+    
+    if (m_FadeInOutTime < m_FadeInOutTotalTime) return; // 아직 시간이 남음
+    
+    m_HasFadeOutStart = false;
+    m_FadeInOutTime = 0.f;
+    
+    // Pool 에 돌아가는 처리
+    // Owner GameObject가 Pool에서 생성된 GameObject라면, IsActive 해제시, 자동적으로 들어간다
+    GetOwner()->SetActive(false);
+}
+
+void CEnemyScript::OnDieFlipbookEndNotify()
+{
+    m_HasFadeInStart    = false;
+    m_HasFadeOutStart   = true;    
+    m_FadeInOutTime     = 0.f;
 }
