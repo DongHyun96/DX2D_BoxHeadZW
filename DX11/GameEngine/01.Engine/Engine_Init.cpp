@@ -77,6 +77,15 @@ HRESULT Engine::Init(HINSTANCE _hInst, UINT _Width, UINT _Height, bool _EditorMo
     TimeMgr::GetInst()->Init(); // 1프레임 동작하는데 걸리는 시간(DT) 계산
     KeyMgr::GetInst()->Init();  // 각각의 키의 상태를 계산 
 
+    // FMOD 초기화
+    {
+        FMOD::System_Create(&m_FMODSystem);
+        assert(m_FMODSystem);
+
+        // 32개 채널 생성
+        FMOD_RESULT result = m_FMODSystem->init(32, FMOD_DEFAULT, nullptr);
+    }
+    
     // 엔진 기본 에셋들 생성
     AssetMgr::GetInst()->Init();
     
@@ -91,15 +100,6 @@ HRESULT Engine::Init(HINSTANCE _hInst, UINT _Width, UINT _Height, bool _EditorMo
     RenderMgr::GetInst()->Init();
     
     DebugUtil::AddDebugLog(L"[Engine Init] : RenderMgr INIT finished\n");
-
-    // FMOD 초기화
-    {
-        FMOD::System_Create(&m_FMODSystem);
-        assert(m_FMODSystem);
-
-        // 32개 채널 생성
-        FMOD_RESULT result = m_FMODSystem->init(32, FMOD_DEFAULT, nullptr);
-    }
 
     FontMgr::GetInst()->Init();
 

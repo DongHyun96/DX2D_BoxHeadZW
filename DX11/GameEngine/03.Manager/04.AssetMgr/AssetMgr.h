@@ -16,6 +16,7 @@ private:
     
     map<wstring, Ptr<Asset>>    m_mapAsset[static_cast<UINT>(ASSET_TYPE::END)]{};   // Asset type별 map 배열
     map<uint64_t, GUID>         m_mapTexMetaData{};                                 // 텍스쳐 메타데이터 저장 (파일해시값, Asset GUID)
+    map<uint64_t, GUID>         m_mapSoundMetaData{};                               // 사운드 메타데이터 저장
     bool                        m_Changed{};
     
 private:
@@ -29,7 +30,7 @@ private:
         {ASSET_TYPE::TILEMAP,           {L".tilemap"}},
         {ASSET_TYPE::PREFAB,            {L".pref"}},
         {ASSET_TYPE::LEVEL,             {L".lv"}},
-        {ASSET_TYPE::SOUND,             {L"mp3", L"wav"}}, // TODO : Sound 파일 확장자들 추가할 것
+        {ASSET_TYPE::SOUND,             {L".mp3", L".wav"}}, // TODO : Sound 파일 확장자들 추가할 것
     };
     
 public:
@@ -81,6 +82,9 @@ private:
     /// </summary>
     void RemoveAnyDeletedTexturesMetaData();
     
+    void LoadAllSoundMetaData();
+    void RemoveAnyDeletedSoundMetaData();
+    
 public:
     /// <summary>
     /// 해당 ASSET_TYPE과 wstring key에 해당하는 Ptr<Asset> 반환
@@ -109,6 +113,8 @@ public:
     /// <param name="_OutGuid"></param>
     /// <returns> : 만약에 해당 FileHash에 대응되는 Guid가 없다면 return false </returns>
     bool GetTextureAssetGuidByFileHash(const uint64_t& _FileHash, OUT GUID& _OutGuid) const;
+
+    bool GetSoundAssetGuidByFileHash(const uint64_t& _FileHash, OUT GUID& _OutGuid) const;
     
 public:
     

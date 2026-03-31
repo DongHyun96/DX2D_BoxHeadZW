@@ -4,6 +4,10 @@ class ASound : public Asset
 {
     
     friend class CAssetMgr;
+
+private:
+    
+    uint64_t m_FileHash{}; // 파일 해시값
     
 private:
     FMOD::Sound*            m_Sound{};        // Sound 객체
@@ -26,7 +30,7 @@ public:
 
 public:
     virtual HRESULT Load(const wstring& _FilePath) override;
-    virtual HRESULT Save(const wstring& _FilePath) override { return S_OK; }
+    virtual HRESULT Save(const wstring& _FilePath) override;
 
 
 };

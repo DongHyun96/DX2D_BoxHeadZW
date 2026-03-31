@@ -125,6 +125,79 @@ void AssetMgr::RemoveAnyDeletedTexturesMetaData()
     }
 }
 
+void AssetMgr::LoadAllSoundMetaData()
+{
+    const wstring SoundMetaDataFolderPath = CONTENT_PATH + L"\\_Meta\\_SoundMeta";
+    
+    for (const auto& entry : fs::directory_iterator(SoundMetaDataFolderPath))
+    {
+        fs::path filePath = entry.path();
+        wstring extension = filePath.extension().wstring();
+
+        // 확장자를 소문자로 일괄 변환
+        transform(extension.begin(), extension.end(), extension.begin(), towlower);
+
+        if (extension != L".soundmeta") continue;
+
+        FILE* pFile{};
+        
+        if (_wfopen_s(&pFile, filePath.c_str(), L"rb") != 0 || !pFile)
+        {
+            DebugUtil::AddDebugLog(L"[AssetMgr::LoadAllSoundMetaData] : Open File failed!");
+            continue;
+        }
+
+        GUID Guid{}; uint64_t FileHash{};
+        
+        fread(&FileHash,    sizeof(uint64_t),   1, pFile);
+        fread(&Guid,        sizeof(GUID),       1, pFile);
+        fclose(pFile);
+
+        m_mapSoundMetaData.insert(make_pair(FileHash, Guid));
+    }
+}
+
+void AssetMgr::RemoveAnyDeletedSoundMetaData()
+{
+    // 불러온 모든 메타데이터 정보와 Texture Asset들 비교하기
+    const auto& soundMap = m_mapAsset[static_cast<UINT>(ASSET_TYPE::SOUND)];
+    set<uint64_t> liveHashes{};
+
+    for (const pair<const wstring, Ptr<Asset>>& Pair : soundMap)
+    {
+        const Ptr<Asset>& AssetPtr = Pair.second;
+        if (!AssetPtr) continue;
+
+        const wstring FullPath  = CONTENT_PATH + AssetPtr->GetRelativePath();
+        const uint64_t FileHash = CalculateFileHash64(FullPath);
+
+        if (FileHash == 0)
+        {
+            DebugUtil::AddDebugLog(L"[AssetMgr::RemoveAnyDeletedSoundsMetaData] File hash failed: " + FullPath);
+            continue;
+        }
+
+        liveHashes.insert(FileHash);
+    }
+
+    const wstring MetaFolderPath = CONTENT_PATH + L"\\_Meta\\_SoundMeta\\";
+
+    for (auto iter = m_mapSoundMetaData.begin(); iter != m_mapSoundMetaData.end();)
+    {
+        const uint64_t MetaFileHash = iter->first;
+
+        if (liveHashes.find(MetaFileHash) == liveHashes.end())
+        {
+            const wstring TargetMetaFilePath = MetaFolderPath + to_wstring(MetaFileHash) + L".soundmeta";
+            RemoveWindowFile(TargetMetaFilePath);
+            iter = m_mapSoundMetaData.erase(iter);
+            continue;
+        }
+
+        ++iter;
+    }
+}
+
 
 void AssetMgr::GetAssetKeys(ASSET_TYPE _Type, vector<wstring>& _Vec)
 {
@@ -141,12 +214,28 @@ bool AssetMgr::GetTextureAssetGuidByFileHash(const uint64_t& _FileHash, GUID& _O
     if (iter == m_mapTexMetaData.end())
     {
         // 여기에 들어오면 안됨
-        DebugUtil::AddDebugLog(L"[AssetMgr::GetTextureAssetGuidByFilePath] Invalid FileHash received!");
+        DebugUtil::AddDebugLog(L"[AssetMgr::GetTextureAssetGuidByFilePath] Invalid FileHash received!", DEF_COLOR_WHITE, 10.f);
         _OutGuid = GUID_NULL;
         return false;
     }
     
     _OutGuid = m_mapTexMetaData.at(_FileHash);
+    return true;
+}
+
+bool AssetMgr::GetSoundAssetGuidByFileHash(const uint64_t& _FileHash, GUID& _OutGuid) const
+{
+    auto iter = m_mapSoundMetaData.find(_FileHash);
+
+    // if (iter == m_mapAsset[static_cast<UINT>(Type)].end())
+    if (iter == m_mapSoundMetaData.end())
+    {
+        DebugUtil::AddDebugLog(L"[AssetMgr::GetSoundAssetGuidByFileHash] Invalid FileHash received!", DEF_COLOR_WHITE, 10.f);
+        _OutGuid = GUID_NULL;
+        return false;
+    }
+    
+    _OutGuid = m_mapSoundMetaData.at(_FileHash);
     return true;
 }
 

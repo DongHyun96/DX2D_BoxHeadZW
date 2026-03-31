@@ -10,10 +10,12 @@
 void AssetMgr::Init()
 {
     LoadAllTexMetaData();                   // Texture MetaData map 내용 불러오기
+    LoadAllSoundMetaData();
     
     CreateEngineMesh();                     // Mesh - 코드 상에서 제작해야 하는 Asset
     CreateEngineShader();                   // Shader - fx shader 소스파일을 불러와 코드 상에서 제작해야 하는 Asset
-    
+
+    LoadAssetsFromAssetFolderRecursively<ASound>();
     LoadAssetsFromAssetFolderRecursively<ATexture>();
     LoadAssetsFromAssetFolderRecursively<AMaterial>();
     LoadAssetsFromAssetFolderRecursively<ASprite>();
@@ -26,6 +28,7 @@ void AssetMgr::Init()
     LoadAssetsFromAssetFolderRecursively<ALevel>();     // 나머지 Asset들을 불러온 뒤, Level을 불러오는 순으로 하는게 좋음
     
     RemoveAnyDeletedTexturesMetaData();                 // 모든 Asset들을 불러온 뒤, 최종으로 Texture 메타데이터 정리할 부분이 있다면 처리함
+    RemoveAnyDeletedSoundMetaData();
 
 }
 

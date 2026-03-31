@@ -354,6 +354,7 @@ string AssetTypeToString(ASSET_TYPE _Type)
     case ASSET_TYPE::TILEMAP:           return "TileMap";
     case ASSET_TYPE::GRAPHICS_SHADER:   return "Graphic Shader";
     case ASSET_TYPE::LEVEL:             return "Level";
+    case ASSET_TYPE::SOUND:             return "Sound";
     default :                           return "Invalid";
     }
 }
@@ -370,6 +371,7 @@ wstring GetAssetTypeFolderWString(ASSET_TYPE _Type)
     case ASSET_TYPE::GRAPHICS_SHADER:   return L"Shader\\";
     case ASSET_TYPE::PREFAB:            return L"Prefab\\";
     case ASSET_TYPE::LEVEL:             return L"Level\\";
+    case ASSET_TYPE::SOUND:             return L"Sound\\";
     default :                           return L"";         // Invalid
     }
 }

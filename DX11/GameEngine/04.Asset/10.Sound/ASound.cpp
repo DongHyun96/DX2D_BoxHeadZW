@@ -2,11 +2,12 @@
 #include "ASound.h"
 
 #include "GameEngine/01.Engine/Engine.h"
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 
 
 FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCONTROL_TYPE controltype
-	, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbacktype
-	, void* commanddata1, void* commanddata2);
+                             , FMOD_CHANNELCONTROL_CALLBACK_TYPE callbacktype
+                             , void* commanddata1, void* commanddata2);
 
 ASound::ASound(bool _EngineRes)
 	: Asset(ASSET_TYPE::SOUND)
@@ -104,14 +105,57 @@ void ASound::RemoveChannel(FMOD::Channel* _pTargetChannel)
 
 HRESULT ASound::Load(const wstring& _FilePath)
 {
-	string path(_FilePath.begin(), _FilePath.end());
 
+	// MetaData에서 Asset GUID 및 파일해시값 찾기
+	m_FileHash = CalculateFileHash64(_FilePath); 
+	
+	GUID Guid{};
+	if (!AssetMgr::GetInst()->GetSoundAssetGuidByFileHash(m_FileHash, Guid))
+	{
+		// 해당 FileHash값에 대응하는 메타 데이터가 없었던 상황 (새로 추가된 Sound)
+		// 새로운 Guid 할당해서 메타데이터 파일 새로 저장
+		GetGuid();
+		this->Save(_FilePath);
+	}
+	else SetGuid(Guid);
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	string path(_FilePath.begin(), _FilePath.end());
 	FMOD_RESULT result = FMOD_SYSTEM->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &m_Sound);
 	if (FMOD_OK != result)
 	{
 		assert(nullptr);
 	}
 
+	return S_OK;
+}
+
+HRESULT ASound::Save(const wstring& _FilePath)
+{
+	// Sound 용 MetaData 먼저 저장
+    
+	// FileHash 값이 초기화 되지 않은 Asset -> 파일해시값 계산해서 넣어주기
+	if (m_FileHash == 0) m_FileHash = CalculateFileHash64(_FilePath);
+    
+	FILE* pFile{}; // 파일스트림 커널
+	// 추후 Sound 파일명을 바꿨을 때, 기존의 metadata가 남아서 쌓일 수 있기 때문에 고유의 파일해시값으로 파일명을 잡아줌
+	const wstring MetaFilePath = CONTENT_PATH + L"\\_Meta\\_SoundMeta\\" + to_wstring(m_FileHash) + L".soundmeta";
+    
+	// Sound 메타파일 저장
+    
+	if (_wfopen_s(&pFile, MetaFilePath.c_str(), L"wb") != 0 || !pFile)
+	{
+		DebugUtil::AddDebugLog(L"[ASound::Save] : Open MetaFile failed!");
+		return E_FAIL;
+	}
+
+	fwrite(&m_FileHash,     sizeof(uint64_t),   1, pFile);    // 파일해시값 저장
+	fwrite(&GetGuidRef(),   sizeof(GUID),       1, pFile);      // Asset Guid 저장
+    
+	fclose(pFile);
+    
 	return S_OK;
 }
 
