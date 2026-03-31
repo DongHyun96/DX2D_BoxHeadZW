@@ -81,6 +81,7 @@ bool CCollider2D::IsCollision(const Ptr<CCollider2D>& _Other)
 {
     if (!this->GetOwner()->GetActive() || !_Other->GetOwner()->GetActive()) return false;                // Active가 꺼진 오브젝트
     if (this->GetOwner()->IsObjectDestroyed() || _Other->GetOwner()->IsObjectDestroyed()) return false;  // 곧 삭제 처리될 오브젝트
+    if (!this->GetActive() || !_Other->GetActive()) return false; // Collision Component가 꺼진 상태
     
     if (CColliderRect* ColliderRect = dynamic_cast<CColliderRect*>(_Other.Get()))
         return IsCollision(ColliderRect);

@@ -131,7 +131,6 @@ public:
 	bool GetActive() const { return m_IsActive; }
 	void SetActive(bool _Active);
 
-	void ConsumeObjectMarkedDeactivated() { m_ObjectMarkedDeactivated = false; }
 	bool GetObjectMarkedDeactivated() const { return m_ObjectMarkedDeactivated; }
 	
 	bool GetIsVisible() const { return m_IsVisible; }

@@ -89,7 +89,7 @@ void Layer::FinalTick()
         if (gameObject->GetActive() || gameObject->GetObjectMarkedDeactivated())
         {
             gameObject->FinalTick();
-            gameObject->ConsumeObjectMarkedDeactivated(); // FinalTick 호출 이후, 해당 마킹 지워버리기
+            gameObject->m_ObjectMarkedDeactivated = false; // FinalTick 호출 이후, 해당 마킹 지워버리기
         }
         
         if (gameObject->IsObjectDestroyed()) iter = m_vecParents.erase(iter);

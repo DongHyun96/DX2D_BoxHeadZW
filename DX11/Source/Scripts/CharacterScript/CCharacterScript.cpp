@@ -54,6 +54,10 @@ bool CCharacterScript::MovePushedOut()
     // 각자의 MainState enum이 달라서 -> 각자의 다음 MainState 처리는 순수가상함수로 호출처리함
     AfterPushedOutFin();
     
+    // 사망하였다면 Collider 꺼줌
+    if (GetOwner()->GetScriptComponent<CStatScript>()->IsDead())
+        GetCollider2D()->SetActive(false);
+    
     return true; // 이후 Player, Enemy 각자의 MainState 세팅 처리 -> 여기 처리만 따로 빼서 하면 될듯?
 }
 

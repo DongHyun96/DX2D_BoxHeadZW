@@ -39,3 +39,10 @@ CCollider2D* Component::GetCollider2D() const
 {
 	return m_Owner->GetCollider2D().Get();
 }
+
+CRenderComponent* Component::GetRenderCom() const
+{
+	return m_Owner->GetRenderCom().Get();	
+}
+
+

@@ -90,8 +90,13 @@ void CollisionMgr::RayCastFindBestHit
             for (const Ptr<GameObject>& child : Object->GetChildren())
                 q.push(child);
             
-            if (!Object->GetCollider2D())                            continue;
-            if (!Object->GetActive() || Object->IsObjectDestroyed()) continue;
+            if 
+            (
+                !Object->GetActive() ||
+                !Object->GetCollider2D() ||
+                !Object->GetCollider2D()->GetActive() ||
+                Object->IsObjectDestroyed()
+            ) continue;
 
             Ptr<CCollider2D> pCollider = Object->GetCollider2D();
             if (pCollider.Get() == _Ignore)                                        continue;

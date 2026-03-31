@@ -56,6 +56,7 @@ public:
 	
 	
 	class CCollider2D* GetCollider2D() const;
+	class CRenderComponent* GetRenderCom() const;
 
 	
 public:

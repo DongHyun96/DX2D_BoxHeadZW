@@ -100,8 +100,8 @@ void CEnemyScript::HandleFadeOut()
     const float ColorAlpha = MappingToNewRange(m_FadeInOutTime, 0.f, m_FadeInOutTotalTime, 1.f, 0.f);
     Vec4 TintColor = DEF_COLOR_WHITE;
     TintColor.w = ColorAlpha;
-    
-    Ptr<AMaterial> DynamicMtrl = GetOwner()->GetRenderCom()->CreateDynamicMaterial();
+
+    Ptr<AMaterial> DynamicMtrl = GetRenderCom()->CreateDynamicMaterial();
     DynamicMtrl->SetScalar(VEC4_0, TintColor);
     
     if (m_FadeInOutTime < m_FadeInOutTotalTime) return; // 아직 시간이 남음

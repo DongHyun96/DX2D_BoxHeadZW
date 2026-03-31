@@ -17,6 +17,10 @@ class CCollider2D : public Component
 {
     
     friend class CollisionMgr;
+
+private:
+    
+    bool m_bIsActive = true;
     
 private:
     
@@ -39,6 +43,11 @@ public:
     
     virtual ~CCollider2D() override;
 
+public:
+    
+    void SetActive(bool _Active) { m_bIsActive = _Active; }
+    bool GetActive() const { return m_bIsActive; }
+    
 public:
     
     void AddDynamicBeginOverlap(CScript* _Inst, COLLISION_EVENT _MemFunc);
