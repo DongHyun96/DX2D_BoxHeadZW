@@ -56,5 +56,8 @@ bool CWeaponUzi::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
     Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\UziShot.wav"); 
     pSound->PlayNonOverlapFromStart(1, 0.5f);
     
+    // Muzzle Flash 및 Smoke Spawn
+    SpawnMuzzleEffects(_MuzzleWorldPos);
+    
     return true;
 }

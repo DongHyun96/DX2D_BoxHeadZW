@@ -7,6 +7,7 @@
 #include "GameEngine/07.EditorUI/11.CollisionMatrixUI/CollisionMatrixUI.h"
 #include "GameEngine/07.EditorUI/12.DebugLogUI/DebugLogUI.h"
 #include "Header/components.h"
+#include "Source/Manager/GameManager.h"
 
 LevelMgr::LevelMgr()
     : m_LevelState(LEVEL_STATE::STOP)
@@ -49,7 +50,7 @@ void LevelMgr::Progress()
         CollisionMgr::GetInst()->Progress(m_CurLevel);
 }
 
-void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
+void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
 {
     if (m_LevelState == _NextState) return; // 이미 해당 State
     
@@ -75,6 +76,8 @@ void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
         
         // 모든 재생중이었던 Sound들 멈추기
         AssetMgr::GetInst()->StopAllSounds();
+        
+        GM->OnLevelPlayToStop();
     }
 
     
@@ -91,10 +94,17 @@ void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
 
 void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLevelStateToStop)
 {
-    m_CurLevel = m_SharedLevel = _NextLevel;
+    GM->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
     
+    m_CurLevel = m_SharedLevel = _NextLevel;
+
     if (_ChangeNextLevelStateToStop) // Editor에서 ChangeLevel 처리는 기본적으로 다음 LevelState를 Stop으로 처리 -> User Client의 Level 바꾸는건 이전 State를 계속해서 사용(Play)
-        m_LevelState = LEVEL_STATE::STOP; 
+        m_LevelState = LEVEL_STATE::STOP;
+    else
+    {
+        ChangeLevelState(LEVEL_STATE::STOP);
+        ChangeLevelState(LEVEL_STATE::PLAY);
+    }
     
     EditorUI* pUI = EditorMgr::GetInst()->GetEditorUI("CollisionMatrixUI").Get();
     if (CollisionMatrixUI* MatUI = dynamic_cast<CollisionMatrixUI*>(pUI))

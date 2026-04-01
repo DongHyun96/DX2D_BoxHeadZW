@@ -14,7 +14,6 @@
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerWeaponHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\InvenScript\CEquipmentScript.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\InvenScript\CInvenScript.h"
-#include "Source/Scripts/CharacterScript\PlayerScript\MuzzleRelativePosHandler\CMuzzleRelativePosHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponMinigun.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponPistol.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponRocket.h"
@@ -42,7 +41,6 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CPlayerWeaponHandler");
 	_vec.push_back(L"CEquipmentScript");
 	_vec.push_back(L"CInvenScript");
-	_vec.push_back(L"CMuzzleRelativePosHandler");
 	_vec.push_back(L"CWeaponMinigun");
 	_vec.push_back(L"CWeaponPistol");
 	_vec.push_back(L"CWeaponRocket");
@@ -85,8 +83,6 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CEquipmentScript;
 	if (L"CInvenScript" == _strScriptName)
 		return new CInvenScript;
-	if (L"CMuzzleRelativePosHandler" == _strScriptName)
-		return new CMuzzleRelativePosHandler;
 	if (L"CWeaponMinigun" == _strScriptName)
 		return new CWeaponMinigun;
 	if (L"CWeaponPistol" == _strScriptName)
@@ -146,8 +142,6 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CEquipmentScript;
 	case (UINT)SCRIPT_TYPE::INVENSCRIPT:
 		return new CInvenScript;
-	case (UINT)SCRIPT_TYPE::MUZZLERELATIVEPOSHANDLER:
-		return new CMuzzleRelativePosHandler;
 	case (UINT)SCRIPT_TYPE::WEAPONMINIGUN:
 		return new CWeaponMinigun;
 	case (UINT)SCRIPT_TYPE::WEAPONPISTOL:
@@ -208,8 +202,6 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CEquipmentScript";
 	case SCRIPT_TYPE::INVENSCRIPT:
 		return L"CInvenScript";
-	case SCRIPT_TYPE::MUZZLERELATIVEPOSHANDLER:
-		return L"CMuzzleRelativePosHandler";
 	case SCRIPT_TYPE::WEAPONMINIGUN:
 		return L"CWeaponMinigun";
 	case SCRIPT_TYPE::WEAPONPISTOL:

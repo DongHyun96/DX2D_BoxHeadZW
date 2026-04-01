@@ -70,7 +70,7 @@ void TaskMgr::Progress()
         case TASK_TYPE::CHANGE_LEVEL_STATE:
         {
             LEVEL_STATE NextState = static_cast<LEVEL_STATE>(task.Param_0);
-            LevelMgr::GetInst()->ChangeLevelState(NextState);
+            LevelMgr::GetInst()->ChangeCurLevelState(NextState);
             
         }
             break;

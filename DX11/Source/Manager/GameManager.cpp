@@ -13,6 +13,22 @@ void GameManager::OnLevelBegin()
 {
 }
 
+void GameManager::OnLevelPlayToStop()
+{
+    // m_PlayerObject = nullptr;
+    m_MainPlayerScript = nullptr;
+    
+    m_ZombiePoolManager = nullptr;
+    
+    m_mapEnemyPoolers.clear();
+    m_mapEffectPoolers.clear();
+}
+
+void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
+{
+    // TODO : 특정 Level에서 다른 Level 로 넘어갈 때 처리할 것 처리하기
+}
+
 CPoolComponent* GameManager::GetEffectPooler(EFFECT_POOLER_TYPE _PoolerType) const
 {
     if (!m_mapEffectPoolers.contains(_PoolerType)) return nullptr;

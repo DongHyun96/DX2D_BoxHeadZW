@@ -18,7 +18,10 @@ public:
 
 private:
     
-    void OnFlashAnimationEnd() const { GetOwner()->SetActive(false); }
+    void OnFlashAnimationEnd() const
+    {
+        GetOwner()->SetActive(false);
+    }
     
 public:
     

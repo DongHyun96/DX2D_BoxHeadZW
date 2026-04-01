@@ -27,6 +27,8 @@ private:
 public:
     
     void OnLevelBegin();
+    void OnLevelPlayToStop();
+    void OnLevelChanged(class ALevel* _PrevLevel, ALevel* _NextLevel);
     
 public:
     

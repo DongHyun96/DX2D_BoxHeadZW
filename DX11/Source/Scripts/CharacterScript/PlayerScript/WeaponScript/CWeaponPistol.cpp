@@ -59,18 +59,7 @@ bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
     pSound->PlayNonOverlapFromStart(1, 0.5f);
     
     // Muzzle Flash 및 Smoke Spawn
-    GameObject* SpawnedFlashEffect = GM->GetEffectPooler(EFFECT_POOLER_TYPE::MUZZLE_FLASH_POOLER)->SpawnObject(ToVec3(_MuzzleWorldPos));
-    
-    if (SpawnedFlashEffect)
-    {
-        const EDIRECTION PlayerDirection = GM->GetMainPlayerScript()->GetCurrentFacedDirection();
-        const float Angle = GetEightDirectionToAngle(PlayerDirection);
-        
-        SpawnedFlashEffect->Transform()->SetRelativeRotZ(Angle);
-
-        // Player Character를 따라가도록 처리를 해야한다
-        GM->GetPlayerObject()->AddChild(SpawnedFlashEffect);
-    }
+    SpawnMuzzleEffects(_MuzzleWorldPos);
     
     return true;
 }

@@ -100,17 +100,7 @@ private: // TODO : 수치는 추후 조정할 것
 private:
 
     using MuzzleOffsets = array<Vec2, static_cast<int>(EDIRECTION::END)>;
-    map<PLAYER_HANDSTATE, MuzzleOffsets> m_mapEachMuzzleOffsets =  // 각 무기별, Muzzle Offset 값들
-    {
-        {PLAYER_HANDSTATE::PISTOL,  {}},
-        {PLAYER_HANDSTATE::UZI,     {}},
-        {PLAYER_HANDSTATE::SHOTGUN, {}},
-        {PLAYER_HANDSTATE::MINIGUN, {}},
-        {PLAYER_HANDSTATE::ROCKET,  {}}
-    };
-    
-    using arrMuzzleRelativePosToPlayer = array<Vec3, static_cast<int>(EDIRECTION::END)>;
-    map<PLAYER_HANDSTATE, MuzzleOffsets> m_mapEachMuzzleRelativePos =  // 각 무기별, Player GameObject에서의 상대적인 Muzzle 위치값 저장
+    map<PLAYER_HANDSTATE, MuzzleOffsets> m_mapEachMuzzleOffsets =  // 각 무기별, Muzzle Offset 값들 (WorldPos 기준 좌표에서의 Offset)
     {
         {PLAYER_HANDSTATE::PISTOL,  {}},
         {PLAYER_HANDSTATE::UZI,     {}},
@@ -150,6 +140,14 @@ private:
     
     void TickSwapWeapon();
     void TickFireWeapon();
+    
+public:
+    
+    /// <summary>
+    /// Player의 HandState와 현재 바라보는 Direction에 따른 MuzzleOffset값 반환
+    /// </summary>
+    /// <returns></returns>
+    const Vec2& GetCurrentMuzzleOffset();
     
 public:
     

@@ -55,6 +55,18 @@ protected:
     float GetDamageAmountPerRound() const { return m_DamageAmountPerRound; }
     
     const vector<UINT>& GetHitScanLayers() const { return m_HitScanLayer; }
+
+protected:
+    
+    /// <summary>
+    /// MuzzleFlash와 MuzzleSmoke 둘 다 한 번에 동일한 위치에 Spawn 처리할 때 해당 함수 사용 
+    /// </summary>
+    void SpawnMuzzleEffects(const Vec2& _MuzzleWorldPos);
+
+    
+    void SpawnMuzzleFlash(const Vec2& _MuzzleWorldPos);
+    void SpawnMuzzleSmoke(const Vec2& _MuzzleWorldPos, float _RotAngle);
+    
     
 public:
     

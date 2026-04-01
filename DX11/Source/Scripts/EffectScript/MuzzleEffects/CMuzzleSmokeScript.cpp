@@ -16,9 +16,10 @@ CMuzzleSmokeScript::~CMuzzleSmokeScript()
 void CMuzzleSmokeScript::Begin()
 {
     Ptr<AMaterial> DynamicMaterial = GetRenderCom()->CreateDynamicMaterial();
-    DynamicMaterial->SetScalar(SCALAR_PARAM::VEC4_0, Vec4(1.f, 1.f, 1.f, 0.45f)); // 연기여서 알파를 좀 옅게 줌
+    DynamicMaterial->SetScalar(SCALAR_PARAM::VEC4_0, Vec4(1.f, 1.f, 1.f, 0.35f)); // 연기여서 알파를 좀 옅게 줌
     
     FlipbookRender()->AddNotifyFlipbookEndEvent(L"Smoke", 0, bind(&CMuzzleSmokeScript::OnSmokeAnimationEnd, this));
+    FlipbookRender()->SetCurrentCategory(L"Smoke");
 }
 
 void CMuzzleSmokeScript::AfterLevelBegin()

@@ -3,6 +3,7 @@
 
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerWeaponHandler.h"
 
 CMuzzleFlashScript::CMuzzleFlashScript()
     : CScript(SCRIPT_TYPE::MUZZLEFLASHSCRIPT)
@@ -18,7 +19,8 @@ void CMuzzleFlashScript::Begin()
     /*Ptr<AMaterial> DynamicMaterial = GetRenderCom()->CreateDynamicMaterial();
     DynamicMaterial->SetScalar(SCALAR_PARAM::VEC4_0, Vec4(1.f, 1.f, 1.f, 0.45f)); // 연기여서 알파를 좀 옅게 줌*/
     
-    FlipbookRender()->AddNotifyFlipbookEndEvent(L"MuzzleFlash", 0, bind(&CMuzzleFlashScript::OnFlashAnimationEnd, this));
+    FlipbookRender()->SetCurrentCategory(L"Flash");
+    FlipbookRender()->AddNotifyFlipbookEndEvent(L"Flash", 0, bind(&CMuzzleFlashScript::OnFlashAnimationEnd, this));
 }
 
 void CMuzzleFlashScript::AfterLevelBegin()
@@ -36,4 +38,13 @@ void CMuzzleFlashScript::AfterLevelBegin()
 
 void CMuzzleFlashScript::Tick()
 {
+    // 자기 자신의 Relative 위치를 Player의 Anim 회전과 동일한 방향으로 업데이트 처리해주어야 한다.
+    Ptr<CPlayerWeaponHandler> WeaponHandler = GM->GetPlayerObject()->GetScriptComponent<CPlayerWeaponHandler>().Get();    
+    
+    if (WeaponHandler)
+    {
+        const Vec2& CurrentOffset = WeaponHandler->GetCurrentMuzzleOffset();
+        Transform()->SetRelativePosX(CurrentOffset.x);
+        Transform()->SetRelativePosY(CurrentOffset.y);
+    }
 }

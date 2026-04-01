@@ -55,11 +55,14 @@ bool CWeaponMinigun::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirectio
     
     Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\MinigunShotStart.wav");
     pSound->Play(0, 0.5f, false);
+
+    // Muzzle Flash 및 Smoke Spawn
+    SpawnMuzzleEffects(_MuzzleWorldPos);
     
     return true;
 }
 
-void CWeaponMinigun::OnFireReleased()
+void CWeaponMinigun::OnFireReleased() // TODO : 이거 마우스 누른상태에서 무기 바꾸면 호출 안되어서 미니건 소리 계속 나는 중
 {
     Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\MinigunShotStart.wav");
     pSound->Stop();

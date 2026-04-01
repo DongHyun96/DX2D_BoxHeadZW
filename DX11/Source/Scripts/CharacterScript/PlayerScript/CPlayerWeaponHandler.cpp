@@ -104,6 +104,9 @@ void CPlayerWeaponHandler::Tick()
 
 void CPlayerWeaponHandler::TickSwapWeapon()
 {
+    // 사격 중이라면 무기 교환 불가
+    if (m_LastTickFired) return;
+    
     if (KEY_TAP(KEY::TILDE))
     {
         m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::UNARMED);
@@ -141,6 +144,7 @@ void CPlayerWeaponHandler::TickFireWeapon()
         {
             Weapon->OnFireReleased();
         }
+        m_LastTickFired = false;
         return;
     }
     
@@ -157,6 +161,12 @@ void CPlayerWeaponHandler::TickFireWeapon()
         Weapon->Fire(MuzzleWorldPos, MousePos - MuzzleWorldPos);
         m_LastTickFired = true;
     }
+}
+
+const Vec2& CPlayerWeaponHandler::GetCurrentMuzzleOffset()
+{
+    const MuzzleOffsets& CurrentMuzzleOffsets = m_mapEachMuzzleOffsets[m_PlayerMainScript->GetHandState()];
+    return CurrentMuzzleOffsets.at(static_cast<int>(m_PlayerMainScript->GetCurrentFacedDirection()));
 }
 
 void CPlayerWeaponHandler::SaveToLevelFile(FILE* _File)

@@ -5,6 +5,8 @@
 #include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 CWeaponShotgun::CWeaponShotgun()
@@ -64,6 +66,18 @@ bool CWeaponShotgun::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirectio
     
     Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\ShotGunShot.wav"); 
     pSound->PlayNonOverlapFromStart(1, 0.5f);
+    
+    // Muzzle Flash 및 Smoke Spawn
+    SpawnMuzzleFlash(_MuzzleWorldPos);
+
+    const EDIRECTION PlayerDirection = GM->GetMainPlayerScript()->GetCurrentFacedDirection();
+    const float AngleBase = GetEightDirectionToAngle(PlayerDirection);
+    
+    for (int i = -1; i <= 1; i++)
+    {
+        const float Angle = AngleBase + i * m_FireSpreadAngle * 2.f; 
+        SpawnMuzzleSmoke(_MuzzleWorldPos, Angle);
+    }
     
     return true;
 }
