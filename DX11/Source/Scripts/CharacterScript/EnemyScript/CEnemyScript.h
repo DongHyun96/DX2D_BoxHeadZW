@@ -8,7 +8,7 @@ class CEnemyScript : public CCharacterScript
 {
 protected:
 
-    ENEMY_TYPE m_EnemyType{};
+    ENEMY_TYPE m_EnemyType{}; // TODO : 각 Enemy Script에서 제대로 초기화 해줄 것
     ENEMY_MAINSTATE m_MainState{};
     
 private: // FadeIn Out 관련
@@ -26,7 +26,8 @@ public:
     CLONE(CEnemyScript)
 
 private:
-    
+
+    virtual void AfterLevelBegin() override;
     virtual void Tick() override;
     
 private:

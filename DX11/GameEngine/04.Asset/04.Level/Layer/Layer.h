@@ -50,5 +50,6 @@ public:
     void Tick();
     void FinalTick();
     void Begin();
+    void AfterLevelBegin();
     void Render();
 };

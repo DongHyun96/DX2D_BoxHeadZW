@@ -61,6 +61,12 @@ void GameObject::Begin()
 		child->Begin();
 }
 
+void GameObject::AfterLevelBegin()
+{
+	for (const Ptr<CScript>& script : m_vecScripts)
+		script->AfterLevelBegin();
+}
+
 void GameObject::Tick()
 {
 	for (const Ptr<CScript>& script : m_vecScripts)

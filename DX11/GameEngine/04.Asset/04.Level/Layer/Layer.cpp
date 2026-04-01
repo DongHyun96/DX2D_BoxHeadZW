@@ -103,6 +103,12 @@ void Layer::Begin()
         gameObject->Begin();
 }
 
+void Layer::AfterLevelBegin()
+{
+    for (const Ptr<GameObject>& gameObject : m_vecParents)
+        gameObject->AfterLevelBegin();
+}
+
 void Layer::Render()
 {
     for (const Ptr<GameObject>& gameObject : m_vecParents)

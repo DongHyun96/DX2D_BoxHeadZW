@@ -43,6 +43,11 @@ public:
     /// Level 처음 시작 시 호출 
     /// </summary>
     void Begin();
+
+    /// <summary>
+    /// Level 시작 처리 이후 호출 
+    /// </summary>
+    void AfterLevelBegin();
     
     void Tick();
     void FinalTick();
@@ -95,4 +100,5 @@ public:
     /// 레벨에 변경사항이 있다면(ex 오브젝트 추가, 삭제, Hierarchy의 변화 등) 변화 여부 true로 기록 처리
     /// </summary>
     void SetChanged() { m_Changed = true; }
+    
 };

@@ -46,6 +46,10 @@ private:
 	bool					m_bInLayer{}; // 레이어에 현재 속해 있는지 체크
 	
 	bool					m_ObjectDestroyed{}; // 곧 사라질 GameObject
+
+private:
+	
+	CPoolComponent*			m_OwnerPoolComponent{}; // ObjectPooling 처리로 생성된 GameObject들의 Pool
 	
 public:
 
@@ -61,6 +65,7 @@ public:
 public:
 	
 	void Begin();
+	void AfterLevelBegin();
 	void Tick();
 
 	/// <summary> 매 프레임마다 Tick 이후에 뒷 수습작업 수행 </summary>
@@ -158,7 +163,7 @@ public:
 	GET_COMPONENT(TileRender,		TILE_RENDER)
 	GET_COMPONENT(Light2D,			LIGHT2D)
 	GET_COMPONENT(PoolComponent,    POOL)
-
+	
 public:
 	
 	Ptr<CCollider2D> GetCollider2D() const { return m_Collider2D; }
@@ -180,6 +185,11 @@ public:
 	void RegisterLayer();
 	
 	void Destroy();
+	
+public:
+	
+	void SetOwnerPoolComponent(CPoolComponent* _OwnerPoolComponent) { this->m_OwnerPoolComponent = _OwnerPoolComponent; }
+	CPoolComponent* GetOwnerPoolComponent() const { return m_OwnerPoolComponent; }
 	
 };
 

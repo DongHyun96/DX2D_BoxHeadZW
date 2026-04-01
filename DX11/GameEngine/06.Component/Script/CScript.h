@@ -45,6 +45,11 @@ public:
     
 public:
     
+    /// <summary>
+    /// Level 시작 시 Begin 처리가 모두 끝난 뒤 처리할 내용이 있다면 해당함수 override
+    /// </summary>
+    virtual void AfterLevelBegin() {}
+    
     virtual void Tick() = 0;
     
     // final - 최종구현이며 자식 클래스에서 더 이상 구현할 수 없다

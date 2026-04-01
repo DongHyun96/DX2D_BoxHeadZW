@@ -63,6 +63,7 @@ void LevelMgr::ChangeLevelState(LEVEL_STATE _NextState)
         m_CurLevel = m_SharedLevel->Clone();
         m_CurLevel->SetChanged();
         m_CurLevel->Begin();
+        m_CurLevel->AfterLevelBegin();
     }
 
     // Play, Pause -> Stop

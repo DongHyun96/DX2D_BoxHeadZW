@@ -4,6 +4,7 @@
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 CEnemyScript::CEnemyScript()
@@ -13,6 +14,15 @@ CEnemyScript::CEnemyScript()
 
 CEnemyScript::~CEnemyScript()
 {
+}
+
+void CEnemyScript::AfterLevelBegin()
+{
+    if (!GM->GetEnemyPooler(m_EnemyType))
+    {
+        if (GetOwner()->GetOwnerPoolComponent())
+            GM->AddEnemyPooler(m_EnemyType, GetOwner()->GetOwnerPoolComponent());
+    }
 }
 
 void CEnemyScript::Tick()

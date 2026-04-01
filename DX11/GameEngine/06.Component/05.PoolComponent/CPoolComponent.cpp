@@ -60,6 +60,9 @@ void CPoolComponent::Begin()
         // TODO : 여기서 Level에 추가를 하면, 음... 괜찮나? -> PLAY시에만 처리를 하니까 괜찮으려나
         const wstring Name = CreatedObject->GetName() + L"(PooledObject" + to_wstring(i) + L")";
         CreatedObject->SetName(Name);
+
+        // Owner PoolComponent 등록
+        CreatedObject->SetOwnerPoolComponent(this);
         
         LevelMgr::GetInst()->GetCurLevel()->AddObject(CreatedObject->GetLayerIdx(), CreatedObject);
         CreatedObject->SetActive(false);
@@ -68,9 +71,6 @@ void CPoolComponent::Begin()
         CreatedObject->AddDeactivateDelegate(bind(&CPoolComponent::OnDeactivateActiveObject, this, placeholders::_1));
         m_SpawningPool.push(CreatedObject);
     }
-    
-    // TODO : 이 라인 지우기 (For testing)
-    GM->SetZombiePoolManager(this);
 }
 
 void CPoolComponent::FinalTick()

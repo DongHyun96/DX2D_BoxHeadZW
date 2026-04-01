@@ -43,6 +43,12 @@ void ALevel::Begin()
         layer.Begin();
 }
 
+void ALevel::AfterLevelBegin()
+{
+    for (Layer& layer : m_arrLayer)
+        layer.AfterLevelBegin();
+}
+
 void ALevel::Tick()
 {
     for (Layer& layer : m_arrLayer)
