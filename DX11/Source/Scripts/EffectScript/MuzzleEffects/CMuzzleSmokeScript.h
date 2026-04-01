@@ -1,6 +1,7 @@
 ﻿#pragma once
+#include "Source/Scripts/EffectScript/CFlipbookEffectScript.h"
 
-class CMuzzleSmokeScript : public CScript
+class CMuzzleSmokeScript : public CFlipbookEffectScript
 {
 private:
     
@@ -13,16 +14,5 @@ public:
 public:
 
     virtual void Begin() override;
-    virtual void AfterLevelBegin() override;
-    virtual void Tick() override;
-
-private:
-    
-    void OnSmokeAnimationEnd() const { GetOwner()->SetActive(false); }
-    
-public:
-    
-    void SaveToLevelFile(FILE* _File) override {}
-    void LoadFromLevelFile(FILE* _File) override {}
     
 };

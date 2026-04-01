@@ -6,6 +6,50 @@
 #include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
 
+namespace
+{
+	string WStringToUtf8(const wstring& src)
+	{
+		if (src.empty()) return {};
+		const int size = WideCharToMultiByte(CP_UTF8, 0, src.c_str(), src.size(), nullptr, 0, nullptr, nullptr);
+		if (size <= 0) return {};
+		string out(size, '\0');
+		WideCharToMultiByte(CP_UTF8, 0, src.c_str(), src.size(), out.data(), size, nullptr, nullptr);
+		return out;
+	}
+
+	wstring Utf8ToWString(const string& src)
+	{
+		if (src.empty()) return {};
+		const int size = MultiByteToWideChar(CP_UTF8, 0, src.c_str(), src.size(), nullptr, 0);
+		if (size <= 0) return {};
+		wstring out(size, L'\0');
+		MultiByteToWideChar(CP_UTF8, 0, src.c_str(), src.size(), out.data(), size);
+		return out;
+	}
+
+	int ResizeInputBuffer(ImGuiInputTextCallbackData* data)
+	{
+		if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
+		{
+			auto* buffer = static_cast<vector<char>*>(data->UserData);
+			IM_ASSERT(buffer && data->Buf == buffer->data());
+			buffer->resize(data->BufSize);
+			data->Buf = buffer->data();
+		}
+		return 0;
+	}
+
+	bool InputTextDynamic(const char* label, vector<char>& buffer, ImGuiInputTextFlags flags = 0)
+	{
+		if (buffer.empty()) buffer.resize(1, '\0');
+		return ImGui::InputText(label, buffer.data(), buffer.size(),
+			flags | ImGuiInputTextFlags_CallbackResize, ResizeInputBuffer, &buffer);
+	}
+}
+
+
+
 ScriptUI::ScriptUI()
 	: ComponentUI(COMPONENT_TYPE::SCRIPT, "ScriptUI")
 	, m_ItemHeight(0)
@@ -32,6 +76,7 @@ void ScriptUI::SetScript(CScript* _Script)
 
 	SetActive(m_TargetScript != nullptr);
 	SetTargetObject(m_TargetScript ? m_TargetScript->GetOwner() : nullptr);
+	m_WStringInputBuffer.clear();
 }
 
 void ScriptUI::Tick_UI()
@@ -144,6 +189,42 @@ void ScriptUI::TickScriptParams()
 		case SCRIPT_PARAM::VEC4:
 		{
 			
+		}
+			break;
+		case SCRIPT_PARAM::WSTRING:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			// ImGui::SameLine(120);
+
+			wstring* target = static_cast<wstring*>(vecParam[i].Data);
+			if (!target)
+			{
+				AddItemHeight();
+				break;
+			}
+
+			string key = "##WString";
+			key += ID;
+
+			vector<char>& buffer = m_WStringInputBuffer[vecParam[i].Data];
+			const string sourceUtf8 = WStringToUtf8(*target);
+
+			if (buffer.empty() || string(buffer.data()) != sourceUtf8)
+			{
+				buffer.assign(sourceUtf8.begin(), sourceUtf8.end());
+				buffer.push_back('\0');
+				if (buffer.size() < 64) buffer.resize(64, '\0');
+			}
+
+			ImGuiInputTextFlags flags = 0;
+			if (!vecParam[i].IsInput) flags |= ImGuiInputTextFlags_ReadOnly;
+
+			if (InputTextDynamic(key.c_str(), buffer, flags))
+			{
+				*target = Utf8ToWString(string(buffer.data())); // 원본 wstring 즉시 반영
+			}
+
+			AddItemHeight();	
 		}
 			break;
 		case SCRIPT_PARAM::MATRIX:

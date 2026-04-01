@@ -10,9 +10,9 @@ enum class SCRIPT_PARAM
     VEC3,
     VEC4,
     MATRIX,
-
+    WSTRING,
     TEXTURE,
-    MATERIAL,
+    MATERIAL
 };
 
 struct tScriptParam

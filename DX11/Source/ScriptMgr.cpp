@@ -24,7 +24,6 @@
 #include "Source/Scripts/EffectScript\CFlipbookEffectScript.h"
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleFlashScript.h"
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleSmokeScript.h"
-#include "Source/Scripts/EffectScript\RocketSmoke\CRocketSmoke.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/ProjectileScript\CRocketProjectile.h"
 #include "Source/Scripts/StatScript\CStatScript.h"
@@ -53,7 +52,6 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CFlipbookEffectScript");
 	_vec.push_back(L"CMuzzleFlashScript");
 	_vec.push_back(L"CMuzzleSmokeScript");
-	_vec.push_back(L"CRocketSmoke");
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CRocketProjectile");
 	_vec.push_back(L"CStatScript");
@@ -109,8 +107,6 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CMuzzleFlashScript;
 	if (L"CMuzzleSmokeScript" == _strScriptName)
 		return new CMuzzleSmokeScript;
-	if (L"CRocketSmoke" == _strScriptName)
-		return new CRocketSmoke;
 	if (L"CObstacle" == _strScriptName)
 		return new CObstacle;
 	if (L"CRocketProjectile" == _strScriptName)
@@ -174,8 +170,6 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CMuzzleFlashScript;
 	case (UINT)SCRIPT_TYPE::MUZZLESMOKESCRIPT:
 		return new CMuzzleSmokeScript;
-	case (UINT)SCRIPT_TYPE::ROCKETSMOKE:
-		return new CRocketSmoke;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
 		return new CObstacle;
 	case (UINT)SCRIPT_TYPE::ROCKETPROJECTILE:
@@ -240,8 +234,6 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CMuzzleFlashScript";
 	case SCRIPT_TYPE::MUZZLESMOKESCRIPT:
 		return L"CMuzzleSmokeScript";
-	case SCRIPT_TYPE::ROCKETSMOKE:
-		return L"CRocketSmoke";
 	case SCRIPT_TYPE::OBSTACLE:
 		return L"CObstacle";
 	case SCRIPT_TYPE::ROCKETPROJECTILE:

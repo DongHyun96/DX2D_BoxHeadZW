@@ -34,7 +34,7 @@ void CWeaponScript::SpawnMuzzleEffects(const Vec2& _MuzzleWorldPos)
 
 void CWeaponScript::SpawnMuzzleFlash(const Vec2& _MuzzleWorldPos)
 {
-    GameObject* SpawnedFlashEffect = GM->GetEffectPooler(EFFECT_POOLER_TYPE::MUZZLE_FLASH_POOLER)->SpawnObject(ToVec3(_MuzzleWorldPos)); // 두 번째 Play 시, 
+    GameObject* SpawnedFlashEffect = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::MUZZLE_FLASH_POOLER)->SpawnObject(ToVec3(_MuzzleWorldPos)); // 두 번째 Play 시, 
     if (SpawnedFlashEffect)
     {
         const EDIRECTION PlayerDirection = GM->GetMainPlayerScript()->GetCurrentFacedDirection();
@@ -51,7 +51,7 @@ void CWeaponScript::SpawnMuzzleFlash(const Vec2& _MuzzleWorldPos)
 
 void CWeaponScript::SpawnMuzzleSmoke(const Vec2& _MuzzleWorldPos, float _RotAngle)
 {
-    GameObject* SpawnedFlashSmoke = GM->GetEffectPooler(EFFECT_POOLER_TYPE::MUZZLE_SMOKE_POOLER)->SpawnObject(ToVec3(_MuzzleWorldPos));
+    GameObject* SpawnedFlashSmoke = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::MUZZLE_SMOKE_POOLER)->SpawnObject(ToVec3(_MuzzleWorldPos));
     if (SpawnedFlashSmoke)
     {
         SpawnedFlashSmoke->Transform()->SetRelativeRotZ(_RotAngle);

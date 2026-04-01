@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-enum class EFFECT_POOLER_TYPE
+enum class FLIPBOOK_EFFECT_POOLER_TYPE
 {
     MUZZLE_SMOKE_POOLER,
     MUZZLE_FLASH_POOLER,
@@ -21,7 +21,7 @@ private:
     class CPlayerScript* m_MainPlayerScript{};
     
     map<ENEMY_TYPE, CPoolComponent*> m_mapEnemyPoolers{};
-    map<EFFECT_POOLER_TYPE, CPoolComponent*> m_mapEffectPoolers{};
+    map<FLIPBOOK_EFFECT_POOLER_TYPE, CPoolComponent*> m_mapFlipbookEffectPoolers{};
     
     CPoolComponent* m_RocketProjectilePooler{};
 
@@ -39,8 +39,8 @@ public:
     CPlayerScript* GetMainPlayerScript() const { return m_MainPlayerScript; }
     void SetMainPlayerScript(CPlayerScript* _Script) { m_MainPlayerScript = _Script; }
     
-    void AddEffectPooler(EFFECT_POOLER_TYPE _PoolerType, CPoolComponent* _PoolComponent) { m_mapEffectPoolers[_PoolerType] = _PoolComponent; }
-    CPoolComponent* GetEffectPooler(EFFECT_POOLER_TYPE _PoolerType) const;
+    void AddFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE _PoolerType, CPoolComponent* _PoolComponent) { m_mapFlipbookEffectPoolers[_PoolerType] = _PoolComponent; }
+    CPoolComponent* GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE _PoolerType) const;
     
     void AddEnemyPooler(ENEMY_TYPE _EnemyType, CPoolComponent* _EnemyPooler) { m_mapEnemyPoolers[_EnemyType] = _EnemyPooler; }
     CPoolComponent* GetEnemyPooler(ENEMY_TYPE _EnemyType) const;

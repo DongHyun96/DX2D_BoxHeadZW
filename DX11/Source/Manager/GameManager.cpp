@@ -19,7 +19,7 @@ void GameManager::OnLevelPlayToStop()
     m_MainPlayerScript = nullptr;
     
     m_mapEnemyPoolers.clear();
-    m_mapEffectPoolers.clear();
+    m_mapFlipbookEffectPoolers.clear();
     
     m_RocketProjectilePooler = nullptr;
 }
@@ -29,10 +29,10 @@ void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
     // TODO : 특정 Level에서 다른 Level 로 넘어갈 때 처리할 것 처리하기
 }
 
-CPoolComponent* GameManager::GetEffectPooler(EFFECT_POOLER_TYPE _PoolerType) const
+CPoolComponent* GameManager::GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE _PoolerType) const
 {
-    if (!m_mapEffectPoolers.contains(_PoolerType)) return nullptr;
-    return m_mapEffectPoolers.at(_PoolerType);
+    if (!m_mapFlipbookEffectPoolers.contains(_PoolerType)) return nullptr;
+    return m_mapFlipbookEffectPoolers.at(_PoolerType);
 }
 
 CPoolComponent* GameManager::GetEnemyPooler(ENEMY_TYPE _EnemyType) const

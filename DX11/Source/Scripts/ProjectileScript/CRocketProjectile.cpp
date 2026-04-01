@@ -62,7 +62,7 @@ void CRocketProjectile::Tick()
     if (m_SmokeSpawnTime >= s_SMOKE_SPAWN_INTERVAL)
     {
         m_SmokeSpawnTime -= s_SMOKE_SPAWN_INTERVAL;
-        GameObject* Object = GM->GetEffectPooler(EFFECT_POOLER_TYPE::ROCKET_SMOKE_POOLER)->SpawnObject();
+        GameObject* Object = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::ROCKET_SMOKE_POOLER)->SpawnObject();
         if (Object)
         {
             Object->Transform()->SetRelativePosX(Transform()->GetRelativePosX());

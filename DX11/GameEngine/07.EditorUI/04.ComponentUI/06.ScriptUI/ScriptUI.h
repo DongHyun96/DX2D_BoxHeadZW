@@ -5,6 +5,10 @@ class ScriptUI : public ComponentUI
 {
 private:
     
+    unordered_map<void*, vector<char>> m_WStringInputBuffer{};
+    
+private:
+    
     Ptr<CScript>    m_TargetScript;
     UINT            m_ItemHeight;
 

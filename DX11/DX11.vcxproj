@@ -304,7 +304,6 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\EffectScript\CFlipbookEffectScript.h" />
     <ClInclude Include="Source\Scripts\EffectScript\MuzzleEffects\CMuzzleFlashScript.h" />
     <ClInclude Include="Source\Scripts\EffectScript\MuzzleEffects\CMuzzleSmokeScript.h" />
-    <ClInclude Include="Source\Scripts\EffectScript\RocketSmoke\CRocketSmoke.h" />
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CRocketProjectile.h" />
     <ClInclude Include="Source\Scripts\StatScript\CStatScript.h" />
@@ -1210,7 +1209,6 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="Source\Scripts\EffectScript\RocketSmoke\CRocketSmoke.cpp" />
     <ClCompile Include="Source\Scripts\Obstacle\CObstacle.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CRocketProjectile.cpp" />
     <ClCompile Include="Source\Scripts\StatScript\CStatScript.cpp">
