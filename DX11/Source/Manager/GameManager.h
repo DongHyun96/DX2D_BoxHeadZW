@@ -4,6 +4,7 @@ enum class EFFECT_POOLER_TYPE
 {
     MUZZLE_SMOKE_POOLER,
     MUZZLE_FLASH_POOLER,
+    ROCKET_SMOKE_POOLER,
     END
 };
 
@@ -19,10 +20,10 @@ private:
     Ptr<GameObject> m_PlayerObject{}; // Init 시점에서 PlayerObject 추가중임...
     class CPlayerScript* m_MainPlayerScript{};
     
-    CPoolComponent* m_ZombiePoolManager{};
-
     map<ENEMY_TYPE, CPoolComponent*> m_mapEnemyPoolers{};
     map<EFFECT_POOLER_TYPE, CPoolComponent*> m_mapEffectPoolers{};
+    
+    CPoolComponent* m_RocketProjectilePooler{};
 
 public:
     
@@ -38,13 +39,13 @@ public:
     CPlayerScript* GetMainPlayerScript() const { return m_MainPlayerScript; }
     void SetMainPlayerScript(CPlayerScript* _Script) { m_MainPlayerScript = _Script; }
     
-    CPoolComponent* GetZombiePoolManager() const { return m_ZombiePoolManager; }
-    void SetZombiePoolManager(CPoolComponent* _ZombiePoolManager) { m_ZombiePoolManager = _ZombiePoolManager; }
-
     void AddEffectPooler(EFFECT_POOLER_TYPE _PoolerType, CPoolComponent* _PoolComponent) { m_mapEffectPoolers[_PoolerType] = _PoolComponent; }
     CPoolComponent* GetEffectPooler(EFFECT_POOLER_TYPE _PoolerType) const;
     
     void AddEnemyPooler(ENEMY_TYPE _EnemyType, CPoolComponent* _EnemyPooler) { m_mapEnemyPoolers[_EnemyType] = _EnemyPooler; }
     CPoolComponent* GetEnemyPooler(ENEMY_TYPE _EnemyType) const;
+    
+    void SetRocketProjectilePooler(CPoolComponent* _PoolComponent) { m_RocketProjectilePooler = _PoolComponent; }
+    CPoolComponent* GetRocketProjectilePooler() const { return m_RocketProjectilePooler; }
     
 };

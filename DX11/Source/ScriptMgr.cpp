@@ -21,9 +21,12 @@
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponShotgun.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponUzi.h"
 #include "Source/Scripts/CMonsterScript.h"
+#include "Source/Scripts/EffectScript\CFlipbookEffectScript.h"
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleFlashScript.h"
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleSmokeScript.h"
+#include "Source/Scripts/EffectScript\RocketSmoke\CRocketSmoke.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
+#include "Source/Scripts/ProjectileScript\CRocketProjectile.h"
 #include "Source/Scripts/StatScript\CStatScript.h"
 #include "Source/Scripts/StatScript\EnemyStat\CEnemyStat.h"
 #include "Source/Scripts/StatScript\PlayerStat\CPlayerStat.h"
@@ -47,9 +50,12 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CWeaponShotgun");
 	_vec.push_back(L"CWeaponUzi");
 	_vec.push_back(L"CMonsterScript");
+	_vec.push_back(L"CFlipbookEffectScript");
 	_vec.push_back(L"CMuzzleFlashScript");
 	_vec.push_back(L"CMuzzleSmokeScript");
+	_vec.push_back(L"CRocketSmoke");
 	_vec.push_back(L"CObstacle");
+	_vec.push_back(L"CRocketProjectile");
 	_vec.push_back(L"CStatScript");
 	_vec.push_back(L"CEnemyStat");
 	_vec.push_back(L"CPlayerStat");
@@ -97,12 +103,18 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CWeaponUzi;
 	if (L"CMonsterScript" == _strScriptName)
 		return new CMonsterScript;
+	if (L"CFlipbookEffectScript" == _strScriptName)
+		return new CFlipbookEffectScript;
 	if (L"CMuzzleFlashScript" == _strScriptName)
 		return new CMuzzleFlashScript;
 	if (L"CMuzzleSmokeScript" == _strScriptName)
 		return new CMuzzleSmokeScript;
+	if (L"CRocketSmoke" == _strScriptName)
+		return new CRocketSmoke;
 	if (L"CObstacle" == _strScriptName)
 		return new CObstacle;
+	if (L"CRocketProjectile" == _strScriptName)
+		return new CRocketProjectile;
 	if (L"CStatScript" == _strScriptName)
 		return new CStatScript;
 	if (L"CEnemyStat" == _strScriptName)
@@ -156,12 +168,18 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CWeaponUzi;
 	case (UINT)SCRIPT_TYPE::MONSTERSCRIPT:
 		return new CMonsterScript;
+	case (UINT)SCRIPT_TYPE::FLIPBOOKEFFECTSCRIPT:
+		return new CFlipbookEffectScript;
 	case (UINT)SCRIPT_TYPE::MUZZLEFLASHSCRIPT:
 		return new CMuzzleFlashScript;
 	case (UINT)SCRIPT_TYPE::MUZZLESMOKESCRIPT:
 		return new CMuzzleSmokeScript;
+	case (UINT)SCRIPT_TYPE::ROCKETSMOKE:
+		return new CRocketSmoke;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
 		return new CObstacle;
+	case (UINT)SCRIPT_TYPE::ROCKETPROJECTILE:
+		return new CRocketProjectile;
 	case (UINT)SCRIPT_TYPE::STATSCRIPT:
 		return new CStatScript;
 	case (UINT)SCRIPT_TYPE::ENEMYSTAT:
@@ -216,12 +234,18 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CWeaponUzi";
 	case SCRIPT_TYPE::MONSTERSCRIPT:
 		return L"CMonsterScript";
+	case SCRIPT_TYPE::FLIPBOOKEFFECTSCRIPT:
+		return L"CFlipbookEffectScript";
 	case SCRIPT_TYPE::MUZZLEFLASHSCRIPT:
 		return L"CMuzzleFlashScript";
 	case SCRIPT_TYPE::MUZZLESMOKESCRIPT:
 		return L"CMuzzleSmokeScript";
+	case SCRIPT_TYPE::ROCKETSMOKE:
+		return L"CRocketSmoke";
 	case SCRIPT_TYPE::OBSTACLE:
 		return L"CObstacle";
+	case SCRIPT_TYPE::ROCKETPROJECTILE:
+		return L"CRocketProjectile";
 	case SCRIPT_TYPE::STATSCRIPT:
 		return L"CStatScript";
 	case SCRIPT_TYPE::ENEMYSTAT:

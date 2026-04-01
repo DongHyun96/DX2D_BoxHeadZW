@@ -18,10 +18,10 @@ void GameManager::OnLevelPlayToStop()
     // m_PlayerObject = nullptr;
     m_MainPlayerScript = nullptr;
     
-    m_ZombiePoolManager = nullptr;
-    
     m_mapEnemyPoolers.clear();
     m_mapEffectPoolers.clear();
+    
+    m_RocketProjectilePooler = nullptr;
 }
 
 void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)

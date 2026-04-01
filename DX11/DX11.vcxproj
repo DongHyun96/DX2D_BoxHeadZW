@@ -301,9 +301,12 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponShotgun.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponUzi.h" />
     <ClInclude Include="Source\Scripts\CMonsterScript.h" />
+    <ClInclude Include="Source\Scripts\EffectScript\CFlipbookEffectScript.h" />
     <ClInclude Include="Source\Scripts\EffectScript\MuzzleEffects\CMuzzleFlashScript.h" />
     <ClInclude Include="Source\Scripts\EffectScript\MuzzleEffects\CMuzzleSmokeScript.h" />
+    <ClInclude Include="Source\Scripts\EffectScript\RocketSmoke\CRocketSmoke.h" />
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
+    <ClInclude Include="Source\Scripts\ProjectileScript\CRocketProjectile.h" />
     <ClInclude Include="Source\Scripts\StatScript\CStatScript.h" />
     <ClInclude Include="Source\Scripts\StatScript\EnemyStat\CEnemyStat.h" />
     <ClInclude Include="Source\Scripts\StatScript\PlayerStat\CPlayerStat.h" />
@@ -1128,6 +1131,7 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Source\Scripts\EffectScript\CFlipbookEffectScript.cpp" />
     <ClCompile Include="Source\Scripts\EffectScript\MuzzleEffects\CMuzzleFlashScript.cpp" />
     <ClCompile Include="Source\Scripts\EffectScript\MuzzleEffects\CMuzzleSmokeScript.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
@@ -1206,7 +1210,9 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Source\Scripts\EffectScript\RocketSmoke\CRocketSmoke.cpp" />
     <ClCompile Include="Source\Scripts\Obstacle\CObstacle.cpp" />
+    <ClCompile Include="Source\Scripts\ProjectileScript\CRocketProjectile.cpp" />
     <ClCompile Include="Source\Scripts\StatScript\CStatScript.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
