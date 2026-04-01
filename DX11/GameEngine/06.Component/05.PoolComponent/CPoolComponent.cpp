@@ -93,6 +93,8 @@ GameObject* CPoolComponent::SpawnObject()
     info.Type       = TASK_TYPE::SPAWN_POOLED_OBJECT;
     info.Param_0    = reinterpret_cast<DWORD_PTR>(gObject.Get());
     TaskMgr::GetInst()->AddTask(info);
+    
+    return gObject.Get();
 }
 
 GameObject* CPoolComponent::SpawnObject(const Vec3& _SpawnPosition)
@@ -111,6 +113,8 @@ GameObject* CPoolComponent::SpawnObject(const Vec3& _SpawnPosition)
     info.Type       = TASK_TYPE::SPAWN_POOLED_OBJECT;
     info.Param_0    = reinterpret_cast<DWORD_PTR>(gObject.Get());
     TaskMgr::GetInst()->AddTask(info);
+    
+    return gObject.Get();
 }
 
 void CPoolComponent::SaveToLevelFile(FILE* _File)

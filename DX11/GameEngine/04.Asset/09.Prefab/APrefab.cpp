@@ -19,7 +19,8 @@ bool APrefab::SetProtoObj(const Ptr<GameObject>& _Object)
     if (!_Object) return false;
     
     m_ProtoObj = _Object->Clone();
-    m_setPrefabObjects.insert(m_ProtoObj.Get());        
+    m_setPrefabObjects.insert(m_ProtoObj.Get());    
+    return true;
 }
 
 GameObject* APrefab::Instantiate()

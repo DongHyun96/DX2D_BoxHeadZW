@@ -194,6 +194,7 @@ bool CFlipbookRender::SetCurrentCategory(const wstring& _CategoryKey, int _Flipb
         SetRenderOffset(TargetFlipbook->GetRenderOffset());
         SetRenderScale(TargetFlipbook->GetRenderScale());
     }
+    return true;
 }
 
 bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool _bPlayReverse)

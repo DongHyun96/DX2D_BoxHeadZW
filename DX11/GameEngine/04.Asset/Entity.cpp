@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Entity.h"
 
 UINT Entity::g_NextID{};

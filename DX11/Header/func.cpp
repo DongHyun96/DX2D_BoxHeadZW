@@ -438,6 +438,7 @@ bool GenerateNewAssetKeyBasedOnAssetName(ASSET_TYPE _AssetType, const wstring& _
     if (AssetMgr::GetInst()->Find(_AssetType, AssetKey, false)) return false; // 겹치는 키가 존재하지 않음
     
     _OutGeneratedKey = AssetKey;
+    return true;
 }
 
 bool IsValid(Ptr<GameObject>& _Object)
