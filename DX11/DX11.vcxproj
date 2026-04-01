@@ -294,6 +294,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CEquipmentScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CInvenScript.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\MuzzleRelativePosHandler\CMuzzleRelativePosHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponMinigun.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponPistol.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponRocket.h" />
@@ -1045,6 +1046,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CEquipmentScript.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CInvenScript.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\MuzzleRelativePosHandler\CMuzzleRelativePosHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponMinigun.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponPistol.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponRocket.cpp" />

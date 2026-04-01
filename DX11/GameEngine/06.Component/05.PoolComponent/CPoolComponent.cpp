@@ -33,7 +33,7 @@ void CPoolComponent::Begin()
     if (!m_PrefabToPool)
     {
         const wstring& OwnerName = GetOwner()->GetName();
-        DebugUtil::AddDebugLog(L"[CPoolComponent::Init] : " + OwnerName + L" Pooling failed!, Set Prefab to this PoolingComponent");
+        DebugUtil::AddDebugLog(L"[CPoolComponent::Begin] : " + OwnerName + L" Pooling failed!, Set Prefab to this PoolingComponent");
         return;
     }
     
@@ -46,14 +46,13 @@ void CPoolComponent::Begin()
         
         if (!CreatedObject)
         {
-            
-            DebugUtil::AddDebugLog(L"[CPoolComponent::Init] : " + OwnerName + L" Pooling failed!, ProtoObject not set to Prefab!");
+            DebugUtil::AddDebugLog(L"[CPoolComponent::Begin] : " + OwnerName + L" Pooling failed!, ProtoObject not set to Prefab!");
             return;
         }
         
         if (!CreatedObject->Transform())
         {
-            DebugUtil::AddDebugLog(L"[CPoolComponent::Init] : " + OwnerName + L" Pooling failed!, ProtoObject must have Transform component!");
+            DebugUtil::AddDebugLog(L"[CPoolComponent::Begin] : " + OwnerName + L" Pooling failed!, ProtoObject must have Transform component!");
             return;                        
         }
         
@@ -63,7 +62,8 @@ void CPoolComponent::Begin()
 
         // Owner PoolComponent 등록
         CreatedObject->SetOwnerPoolComponent(this);
-        
+
+        // 여기서 Layer의 모든 GameObject를 순회할 때, 동일한 Layer에 집어넣는 경우라면 문제가 될 수 있음 -> iterator 순회하는 벡터에 새로운 요소를 추가해서 UB로 빠지는 중
         LevelMgr::GetInst()->GetCurLevel()->AddObject(CreatedObject->GetLayerIdx(), CreatedObject);
         CreatedObject->SetActive(false);
         

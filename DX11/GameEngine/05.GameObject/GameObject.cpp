@@ -22,9 +22,6 @@ GameObject::GameObject()
 
 GameObject::GameObject(const GameObject& _Origin)
 	: Entity(_Origin)
-	, m_Components{}
-	, m_Parent(nullptr)
-	, m_ObjectDestroyed(false)
 	, m_LayerIdx(_Origin.m_LayerIdx) // 원본의 LayerIdx를 따르도록 처리
 	, m_IsActive(_Origin.m_IsActive)
 	, m_IsVisible(_Origin.m_IsVisible)
@@ -212,6 +209,8 @@ bool GameObject::AddComponent(const Ptr<Component>& _Com)
 
 void GameObject::AddChild(const Ptr<GameObject>& _Child)
 {
+	if (_Child->GetParent() == this) return; // 이미 Child로 들어가져있는 오브젝트인 상황
+	
 	// 부모 오브젝트가 있는지 확인
 	if (_Child->GetParent())
 	{
@@ -245,7 +244,8 @@ void GameObject::AddChild(const Ptr<GameObject>& _Child)
 	if (m_bInLayer)
 	{
 		// 현재 레벨에 변경이 발생했음을 알림
-		LevelMgr::GetInst()->GetCurLevel()->SetChanged();
+		if (LevelMgr::GetInst()->GetCurLevel())
+			LevelMgr::GetInst()->GetCurLevel()->SetChanged();
 	}
 }
 

@@ -40,6 +40,8 @@ void CPlayerScript::Begin()
     if (GetOwner()->FlipbookRender())
         GetOwner()->FlipbookRender()->Stop(L"UnArmed", 6, 0);
     
+    GM->SetMainPlayerScript(this);
+    
     //Ptr<ASound> pSound = LOAD_ASSET(ASound, L"Sound\\ParadiseOnE.wav");
     //pSound->Play(0, 0.5f, false);
     

@@ -79,6 +79,12 @@ EDIRECTION GetEightDirection(const Vec2& _Vector)
     return static_cast<EDIRECTION>(DirIndex);
 }
 
+float GetEightDirectionToAngle(EDIRECTION _Direction)
+{
+    int DirectionToInt = static_cast<int>(_Direction);
+    return DirectionToInt * XM_PIDIV4;    
+}
+
 SIXTEEN_DIRECTION GetSixteenDirection(const Vec3& _Vector)
 {
     return GetSixteenDirection(ToVec2(_Vector));

@@ -109,6 +109,16 @@ private:
         {PLAYER_HANDSTATE::ROCKET,  {}}
     };
     
+    using arrMuzzleRelativePosToPlayer = array<Vec3, static_cast<int>(EDIRECTION::END)>;
+    map<PLAYER_HANDSTATE, MuzzleOffsets> m_mapEachMuzzleRelativePos =  // 각 무기별, Player GameObject에서의 상대적인 Muzzle 위치값 저장
+    {
+        {PLAYER_HANDSTATE::PISTOL,  {}},
+        {PLAYER_HANDSTATE::UZI,     {}},
+        {PLAYER_HANDSTATE::SHOTGUN, {}},
+        {PLAYER_HANDSTATE::MINIGUN, {}},
+        {PLAYER_HANDSTATE::ROCKET,  {}}
+    };
+    
 private:
     
     map<PLAYER_HANDSTATE, WeaponMasteryData> m_mapCurrentMastery{};

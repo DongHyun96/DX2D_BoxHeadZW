@@ -20,9 +20,10 @@ public:
     
 public: // 시점함수들 호출 안되는 것 유의 ( Non-Attachable Script )
 
-    virtual void Init() override final {}
-    virtual void Begin() override final {};
-    virtual void Tick() override final {}; 
+    virtual void Init()             override final {}
+    virtual void Begin()            override final {}
+    virtual void AfterLevelBegin()  override final {}
+    virtual void Tick()             override final {}
     
 public:
     

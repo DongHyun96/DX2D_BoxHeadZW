@@ -16,7 +16,9 @@ class GameManager : public Singleton<GameManager>
     
 private:
     
-    Ptr<GameObject> m_PlayerObject{};
+    Ptr<GameObject> m_PlayerObject{}; // Init 시점에서 PlayerObject 추가중임...
+    class CPlayerScript* m_MainPlayerScript{};
+    
     CPoolComponent* m_ZombiePoolManager{};
 
     map<ENEMY_TYPE, CPoolComponent*> m_mapEnemyPoolers{};
@@ -31,13 +33,16 @@ public:
     Ptr<GameObject>	GetPlayerObject() const { return m_PlayerObject; }
     void SetPlayerObject(const Ptr<GameObject>& _PlayerObject) { m_PlayerObject = _PlayerObject; }
     
+    CPlayerScript* GetMainPlayerScript() const { return m_MainPlayerScript; }
+    void SetMainPlayerScript(CPlayerScript* _Script) { m_MainPlayerScript = _Script; }
+    
     CPoolComponent* GetZombiePoolManager() const { return m_ZombiePoolManager; }
     void SetZombiePoolManager(CPoolComponent* _ZombiePoolManager) { m_ZombiePoolManager = _ZombiePoolManager; }
 
     void AddEffectPooler(EFFECT_POOLER_TYPE _PoolerType, CPoolComponent* _PoolComponent) { m_mapEffectPoolers[_PoolerType] = _PoolComponent; }
-    CPoolComponent* GetEffectPooler(EFFECT_POOLER_TYPE _PoolerType) const { return m_mapEffectPoolers.at(_PoolerType); }
+    CPoolComponent* GetEffectPooler(EFFECT_POOLER_TYPE _PoolerType) const;
     
     void AddEnemyPooler(ENEMY_TYPE _EnemyType, CPoolComponent* _EnemyPooler) { m_mapEnemyPoolers[_EnemyType] = _EnemyPooler; }
-    CPoolComponent* GetEnemyPooler(ENEMY_TYPE _EnemyType) const { return m_mapEnemyPoolers.at(_EnemyType); }
+    CPoolComponent* GetEnemyPooler(ENEMY_TYPE _EnemyType) const;
     
 };

@@ -118,3 +118,43 @@ void CTransform::LoadFromLevelFile(FILE* _File)
 	fread(&m_Pivot				, sizeof(Vec3), 1, _File);
 	fread(&m_IndependentScale	, sizeof(bool), 1, _File);
 }
+
+void CTransform::SetRelativePosFromWorldPos(const Vec3& _DesiredWorldPos)
+{
+	m_RelativePos = CalculateRelativePosFromWorldPos(_DesiredWorldPos);
+}
+
+Vec3 CTransform::CalculateRelativePosFromWorldPos(const Vec3& _DesiredWorldPos)
+{
+	if (!m_Parent) return _DesiredWorldPos;
+		
+	Matrix ParentEffect = m_Parent->GetWorldMatrix();
+	
+	if (m_IndependentScale)
+	{
+		Vec3 ParentScale = m_Parent->GetWorldScale();
+		Matrix invParentScale = XMMatrixScaling
+		(
+		   (fabsf(ParentScale.x) > FLT_EPSILON) ? 1.f / ParentScale.x : 0.f,
+		   (fabsf(ParentScale.y) > FLT_EPSILON) ? 1.f / ParentScale.y : 0.f,
+		   (fabsf(ParentScale.z) > FLT_EPSILON) ? 1.f / ParentScale.z : 0.f
+		);
+		ParentEffect = invParentScale * ParentEffect;
+	}
+	
+	// 목표 월드좌표 -> 부모공간 좌표
+	Matrix invParent = XMMatrixInverse(nullptr, ParentEffect);
+	Vec3 TargetInParent = Vec3::Transform(_DesiredWorldPos, invParent);
+	
+	// local에서 translation만 제외한 오프셋 계산 : invPivot * S * R * pivot
+
+	Matrix MatPivot    = XMMatrixTranslation(m_Pivot.x, m_Pivot.y, m_Pivot.z);
+	Matrix MatInvPivot = XMMatrixInverse(nullptr, MatPivot);
+	Matrix NoTrans     = MatInvPivot
+					   * XMMatrixScaling(m_RelativeScale.x, m_RelativeScale.y, m_RelativeScale.z)
+					   * XMMatrixRotationRollPitchYaw(m_RelativeRot.x, m_RelativeRot.y, m_RelativeRot.z)
+					   * MatPivot;
+
+	Vec3 OriginOffsetInParent = Vec3::Transform(Vec3::Zero, NoTrans);
+	return TargetInParent - OriginOffsetInParent;
+}

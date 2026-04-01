@@ -51,6 +51,16 @@ public:
     
     void SetRelativePos(const Vec3& pos) { m_RelativePos = pos; }
     void SetRelativePos(float x, float y, float z) { m_RelativePos = Vec3(x, y, z); }
+
+    /// <summary>
+    /// 특정 WorldPos의 위치로 나의 상대위치값 계산해서 넣기
+    /// </summary>
+    void SetRelativePosFromWorldPos(const Vec3& _DesiredWorldPos);
+
+    /// <summary>
+    /// 특정 WorldPos의 위치로 나의 상대위치값이 얼만지 계산
+    /// </summary>
+    Vec3 CalculateRelativePosFromWorldPos(const Vec3& _DesiredWorldPos);
     
     void SetRelativeScale(const Vec3& scale) { m_RelativeScale = scale; }
     void SetRelativeScale(float x, float y, float z) { m_RelativeScale = Vec3(x, y, z); }
@@ -96,6 +106,7 @@ public:
     bool GetUpdateZDepthToYCoordOnEveryTick() const { return m_bUpdateZDepthToYCoordOnEveryTick; }
     void SetUpdateZDepthToYCoordOnEveryTick(bool _UpdateTrue) { m_bUpdateZDepthToYCoordOnEveryTick = _UpdateTrue; } 
     
+    
 public:
     
     /// <summary>
@@ -113,9 +124,12 @@ public:
     
     CTransform& operator=(const CTransform& _Other)
     {
-        m_RelativePos       = _Other.m_RelativePos;
-        m_RelativeScale     = _Other.m_RelativeScale;
-        m_RelativeRot       = _Other.m_RelativeRot;
+        m_bUpdateZDepthToYCoordOnEveryTick  = _Other.m_bUpdateZDepthToYCoordOnEveryTick;
+        m_RelativePos                       = _Other.m_RelativePos;
+        m_RelativeScale                     = _Other.m_RelativeScale;
+        m_RelativeRot                       = _Other.m_RelativeRot;
+        m_Pivot                             = _Other.m_Pivot;
+        m_IndependentScale                  = _Other.m_IndependentScale;
         return *this;
     }
     

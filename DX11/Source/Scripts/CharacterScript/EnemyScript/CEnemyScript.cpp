@@ -20,7 +20,7 @@ void CEnemyScript::AfterLevelBegin()
 {
     if (!GM->GetEnemyPooler(m_EnemyType))
     {
-        if (GetOwner()->GetOwnerPoolComponent())
+        if (GetOwner()->GetOwnerPoolComponent()) // 나 자신이 PoolComponent에서 생성된 GameObject라면 GM에 등록 처리
             GM->AddEnemyPooler(m_EnemyType, GetOwner()->GetOwnerPoolComponent());
     }
 }

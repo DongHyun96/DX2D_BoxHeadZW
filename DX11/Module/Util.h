@@ -137,6 +137,12 @@ enum class EDIRECTION;
 EDIRECTION GetEightDirection(const Vec3& _Vector);
 EDIRECTION GetEightDirection(const Vec2& _Vector);
 
+
+/// <summary>
+/// 해당 Eight Direction에 대응되는 Angle값 구하기 
+/// </summary>
+float GetEightDirectionToAngle(EDIRECTION _Direction);
+
 /// <summary>
 /// 해당 Vector 방향에 대응되는 SIXTEEN_DIRECTION 구하기
 /// </summary>
