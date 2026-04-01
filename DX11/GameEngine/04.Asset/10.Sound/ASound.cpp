@@ -250,7 +250,7 @@ FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCO
         if (pSound)
         {
         	pSound->RemoveChannel(cppchannel);
-        	DebugUtil::AddDebugLog("Sound End", DEF_COLOR_WHITE, 10.f);
+        	// DebugUtil::AddDebugLog("Sound End", DEF_COLOR_WHITE, 10.f);
         }
             
     }

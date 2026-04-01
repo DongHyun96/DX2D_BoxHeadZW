@@ -53,7 +53,7 @@ bool CWeaponUzi::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
         DrawDebugLine(RayOrigin, RayOrigin + RayDirectionVec3 * Ray.MaxDistance, DEF_COLOR_GREEN, 2.f);
     }
     
-    Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\UziShot.wav"); 
+    Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\UziShot.mp3"); 
     pSound->PlayNonOverlapFromStart(1, 0.5f);
     
     // Muzzle Flash 및 Smoke Spawn

@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "CWeaponRocket.h"
 
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/ProjectileScript/CRocketProjectile.h"
@@ -28,9 +30,14 @@ bool CWeaponRocket::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
         
         Ptr<CRocketProjectile> ProjectileScript = SpawnedRocketObj->GetScriptComponent<CRocketProjectile>();
         ProjectileScript->SetDirection(_FireDirection.Normalized());
+        ProjectileScript->SetDamage(GetDamageAmountPerRound());
         
         SpawnedRocketObj->FlipbookRender()->Play(0, 15.f, -1);
     }
+    
+    // Sound play
+    Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\RocketShot.mp3");
+    Sound->Play(1, 0.5f, true);
     
     return true;
 }

@@ -2,8 +2,12 @@
 #include "CRocketProjectile.h"
 
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/CharacterScript/CCharacterScript.h"
+#include "Source/Scripts/StatScript/CStatScript.h"
 
 const float CRocketProjectile::s_MAX_LIFETIME = 5.f;
 // const float CRocketProjectile::s_SMOKE_SPAWN_INTERVAL = 0.5f;
@@ -78,6 +82,24 @@ void CRocketProjectile::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _
     // TODO : LifeTime 제외시키기
     m_LifeTime = 0.f;
     GetOwner()->SetActive(false);
+    
+    Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\Explosion1.mp3");
+    Sound->Play(1, 0.5f, true);
+    
+    // Effect Spawn 처리하기
+    CPoolComponent* PoolComponent = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::EXPLOSION_DOME_EFFECT_POOLER);
+    if (PoolComponent)
+    {
+        GameObject* Spawned = PoolComponent->SpawnObject(Transform()->GetWorldPos());
+        if (Spawned)
+        {
+            Spawned->Transform()->SetRelativePosZ(-3000.f); // Effect라 무조건 위에 나오게 처리
+            Spawned->FlipbookRender()->Play(0, 50.f, 1);
+        }
+    }
+    
+    if (Ptr<CStatScript> Stat = _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>())
+        Stat->TakeDamage(m_Damage, ToVec2(Transform()->GetWorldPos()));
 }
 
 void CRocketProjectile::SaveToLevelFile(FILE* _File)

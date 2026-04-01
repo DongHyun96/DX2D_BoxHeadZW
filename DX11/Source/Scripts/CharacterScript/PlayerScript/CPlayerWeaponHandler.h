@@ -90,8 +90,8 @@ private: // TODO : 수치는 추후 조정할 것
             PLAYER_HANDSTATE::ROCKET,
             {
                 WeaponMasteryBuff(75.f, 30.f),
-                WeaponMasteryBuff(100.f, 40.f),
-                WeaponMasteryBuff(150.f, 50.f)
+                WeaponMasteryBuff(120.f, 40.f),
+                WeaponMasteryBuff(300.f, 50.f)
             }
         },  
     };

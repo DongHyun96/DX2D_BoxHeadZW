@@ -12,6 +12,8 @@ private: // Life Time 관련 TODO : 이거 쓰지 말고, 실질적인 MapBounda
     static const float s_MAX_LIFETIME; 
     float m_LifeTime{}; // 
     
+    float m_Damage{};
+    
 private:
     
     static const float s_SMOKE_SPAWN_INTERVAL;
@@ -33,6 +35,7 @@ public:
 public:
     
     void SetDirection(const Vec2& _Direction) { m_Direction = ToVec3(_Direction); }
+    void SetDamage(float _Damage) { m_Damage = _Damage; }
     
 private:
     
