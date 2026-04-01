@@ -60,6 +60,8 @@ void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
     // Stop -> Play
     if (PrevState == LEVEL_STATE::STOP && _NextState == LEVEL_STATE::PLAY)
     {
+        CollisionMgr::GetInst()->OnLevelStopToPlay();
+        
         // 원본 Asset 레벨의 복제본 레벨을 만들어서 현재 레벨로 가리킨다.
         m_CurLevel = m_SharedLevel->Clone();
         m_CurLevel->SetChanged();
@@ -78,6 +80,7 @@ void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
         AssetMgr::GetInst()->StopAllSounds();
         
         GM->OnLevelPlayToStop();
+        CollisionMgr::GetInst()->OnLevelPlayToStop();
     }
 
     
@@ -95,6 +98,7 @@ void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
 void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLevelStateToStop)
 {
     GM->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
+    CollisionMgr::GetInst()->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
     
     m_CurLevel = m_SharedLevel = _NextLevel;
 

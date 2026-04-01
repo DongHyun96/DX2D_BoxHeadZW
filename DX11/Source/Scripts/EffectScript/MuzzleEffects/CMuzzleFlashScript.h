@@ -3,6 +3,10 @@
 class CMuzzleFlashScript : public CScript
 {
 private:
+
+    static const float s_OffsetFactorFromMuzzle;
+    
+private:
     
 public:
     

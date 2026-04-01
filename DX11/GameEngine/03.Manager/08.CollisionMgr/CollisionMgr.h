@@ -40,6 +40,10 @@ private:
 public:
     void Progress(const Ptr<ALevel>& _Level);
     
+    void OnLevelPlayToStop() { m_mapColID.clear(); }
+    void OnLevelStopToPlay() { m_mapColID.clear(); }
+    void OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel) { m_mapColID.clear(); }
+    
 private:
     
     void CollisionBtwLayer(Layer* _Left, Layer* _Right);
