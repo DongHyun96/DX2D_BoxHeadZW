@@ -24,7 +24,7 @@ void TaskMgr::Progress()
     {
         switch (task.Type)
         {
-        case TASK_TYPE::CREATE_OBJECT:
+        case TASK_TYPE::CREATE_OBJECT: // 주의 Level Begin중 처리 제대로 안됨
         {
             
             Ptr<GameObject> gObject = reinterpret_cast<GameObject*>(task.Param_0);
@@ -71,12 +71,9 @@ void TaskMgr::Progress()
         {
             LEVEL_STATE NextState = static_cast<LEVEL_STATE>(task.Param_0);
             LevelMgr::GetInst()->ChangeCurLevelState(NextState);
-            
         }
             break;
         }   
-        
     }
-    
     m_vecTask.clear();
 }

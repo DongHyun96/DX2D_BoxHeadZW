@@ -65,7 +65,7 @@ public:
     float GetWorldSize() const { return m_WorldSize; }
     float GetWorldSizeHalf() const { return m_WorldHalfSize; }
 
-private:
+public:
     /// <summary>
     /// CellCoord에 대응되는 WorldPos 반환
     /// </summary>

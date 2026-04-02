@@ -110,12 +110,13 @@ private:
     };
     
 private:
-    
+
+    PLAYER_HANDSTATE m_HandState{};
     map<PLAYER_HANDSTATE, WeaponMasteryData> m_mapCurrentMastery{};
 
 private:
     
-    class CPlayerScript* m_PlayerMainScript{};
+    class CPlayerScript*    m_PlayerMainScript{};
     class CEquipmentScript* m_EquipmentScript{};
     
 private:
@@ -142,6 +143,9 @@ private:
     void TickFireWeapon();
     
 public:
+
+    void SetHandState(PLAYER_HANDSTATE _HandState);
+    PLAYER_HANDSTATE GetHandState() const { return m_HandState; }
     
     /// <summary>
     /// Player의 HandState와 현재 바라보는 Direction에 따른 MuzzleOffset값 반환

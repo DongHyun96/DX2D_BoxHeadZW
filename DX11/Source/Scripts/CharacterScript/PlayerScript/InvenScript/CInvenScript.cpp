@@ -30,6 +30,13 @@ void CInvenScript::Tick()
 {
 }
 
+bool CInvenScript::HasAnyStructure() const
+{
+    for (const pair<const PLAYER_STRUCTURE_TYPE, int>& Pair : m_mapStructureCount)
+        if (Pair.second != 0) return true;
+    return false;
+}
+
 int CInvenScript::ReduceCurrentStructureCount(PLAYER_STRUCTURE_TYPE _StructureType, int _ReduceAmount)
 {
     m_mapStructureCount[_StructureType] -= _ReduceAmount;

@@ -77,7 +77,7 @@ void CPlayerWeaponHandler::Tick()
     TickFireWeapon();
 
     // TODO : 여기 지우기 & 버프 처리 시, Weapon에 실질적으로 setting을 해주어야 함(지금 무기를 바꿀때만 처리가 되는 중)
-    if (KEY_TAP(KEY::MOUSE_X1))
+    /*if (KEY_TAP(KEY::MOUSE_X1))
     {
         if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
         {
@@ -93,7 +93,7 @@ void CPlayerWeaponHandler::Tick()
             int StateIdx = static_cast<int>(m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState);
             if (++StateIdx <= 2) m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
         }
-    }
+    }*/
     
     // TODO : 여기 지우기 (Muzzle 위치 디버깅)   
     const PLAYER_HANDSTATE CurrentHandState = m_PlayerMainScript->GetHandState();
@@ -107,32 +107,16 @@ void CPlayerWeaponHandler::TickSwapWeapon()
     // 사격 중이라면 무기 교환 불가
     if (m_LastTickFired) return;
     
-    if (KEY_TAP(KEY::TILDE))
-    {
-        m_PlayerMainScript->SetHandState(PLAYER_HANDSTATE::UNARMED);
-        return;
-    }
-    
-    PLAYER_HANDSTATE NextHandState = KEY_TAP(KEY::NUM_1) ? PLAYER_HANDSTATE::PISTOL :
-                                     KEY_TAP(KEY::NUM_2) ? PLAYER_HANDSTATE::UZI :
-                                     KEY_TAP(KEY::NUM_3) ? PLAYER_HANDSTATE::SHOTGUN :
-                                     KEY_TAP(KEY::NUM_4) ? PLAYER_HANDSTATE::MINIGUN :
-                                     KEY_TAP(KEY::NUM_5) ? PLAYER_HANDSTATE::ROCKET : PLAYER_HANDSTATE::END;
+    PLAYER_HANDSTATE NextHandState =    KEY_TAP(KEY::TILDE) ? PLAYER_HANDSTATE::UNARMED :
+                                        KEY_TAP(KEY::NUM_1) ? PLAYER_HANDSTATE::PISTOL : 
+                                        KEY_TAP(KEY::NUM_2) ? PLAYER_HANDSTATE::UZI :
+                                        KEY_TAP(KEY::NUM_3) ? PLAYER_HANDSTATE::SHOTGUN :
+                                        KEY_TAP(KEY::NUM_4) ? PLAYER_HANDSTATE::MINIGUN :
+                                        KEY_TAP(KEY::NUM_5) ? PLAYER_HANDSTATE::ROCKET : PLAYER_HANDSTATE::END;
     
     if (NextHandState == PLAYER_HANDSTATE::END) return; // 아무 무기 Swap 시도도 이루어지지 않음
-
-    // 해당 Slot에 무기가 존재한다면
-    if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(NextHandState))
-    {
-        m_PlayerMainScript->SetHandState(NextHandState);
-
-        WEAPON_MASTERY NextWeaponMasteryState = m_mapCurrentMastery[NextHandState].CurrentMasteryState;
-        const WeaponMasteryBuff& BuffData = EACH_WEAPON_MASTERY_BUFF.at(NextHandState).at(static_cast<int>(NextWeaponMasteryState));
-        
-        const float FireInterval = 60.f / BuffData.FireRPM;
-        Weapon->SetFireIntervalTime(FireInterval);
-        Weapon->SetDamageAmountPerRound(BuffData.DamageAmountPerRound);
-    }
+    
+    SetHandState(NextHandState);
 }
 
 void CPlayerWeaponHandler::TickFireWeapon()
@@ -160,6 +144,22 @@ void CPlayerWeaponHandler::TickFireWeapon()
         const Vec2 MousePos = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
         Weapon->Fire(MuzzleWorldPos, MousePos - MuzzleWorldPos);
         m_LastTickFired = true;
+    }
+}
+
+void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
+{
+    m_HandState = _HandState;
+    
+    // 해당 Slot에 무기가 존재한다면
+    if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_HandState))
+    {
+        WEAPON_MASTERY NextWeaponMasteryState = m_mapCurrentMastery[m_HandState].CurrentMasteryState;
+        const WeaponMasteryBuff& BuffData = EACH_WEAPON_MASTERY_BUFF.at(m_HandState).at(static_cast<int>(NextWeaponMasteryState));
+        
+        const float FireInterval = 60.f / BuffData.FireRPM;
+        Weapon->SetFireIntervalTime(FireInterval);
+        Weapon->SetDamageAmountPerRound(BuffData.DamageAmountPerRound);
     }
 }
 

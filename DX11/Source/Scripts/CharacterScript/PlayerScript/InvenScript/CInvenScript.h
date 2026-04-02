@@ -39,6 +39,12 @@ public:
     /// <returns></returns>
     bool HasStructure(PLAYER_STRUCTURE_TYPE _StructureType) const { return m_mapStructureCount.at(_StructureType) > 0; }
 
+    /// <summary>
+    /// Structure가 한개라도 있는지 조사
+    /// </summary>
+    /// <returns></returns>
+    bool HasAnyStructure() const;
+
     int GetCurrentStructureCount(PLAYER_STRUCTURE_TYPE _StructureType) const { return m_mapStructureCount.at(_StructureType); }
 
     /// <summary>

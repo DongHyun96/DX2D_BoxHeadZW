@@ -30,17 +30,19 @@ void CBackgroundTile::Tick()
 
 Vec2 CBackgroundTile::GetCellCoordToWorldPos(const CellCoord& _CellCoord) const
 {
-    const Vec2 StartPos = { -m_WorldSize + m_TileHalfSize, -m_WorldSize + m_TileHalfSize };
+    const Vec2 StartPos = { -m_WorldHalfSize + m_TileHalfSize, -m_WorldHalfSize + m_TileHalfSize };
     return { StartPos.x + m_TileSize * _CellCoord.x, StartPos.y + m_TileSize * _CellCoord.y };    
 }
 
 CellCoord CBackgroundTile::GetWorldPosToCellCoord(const Vec2& _WorldPos) const
 {
-    // -0.5 ~ 75.5
-    float TileXCoordFloat = MappingToNewRange(_WorldPos.x, -m_WorldHalfSize, m_WorldHalfSize, -0.5f, 75.5f);
-    float TileYCoordFloat = MappingToNewRange(_WorldPos.y, -m_WorldHalfSize, m_WorldHalfSize, -0.5f, 75.5f);
-    
-    return CellCoord(round(TileXCoordFloat), round(TileYCoordFloat));
+    const float startX = -m_WorldHalfSize + m_TileHalfSize;
+    const float startY = -m_WorldHalfSize + m_TileHalfSize;
+
+    const int x = static_cast<int>(lround((_WorldPos.x - startX) / m_TileSize));
+    const int y = static_cast<int>(lround((_WorldPos.y - startY) / m_TileSize));
+
+    return {x, y};
 }
 
 Vec2 CBackgroundTile::GetWorldPosToCellWorldPos(const Vec2& _WorldPos) const

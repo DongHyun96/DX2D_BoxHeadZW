@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CPlayerScript.h"
 
+#include "CPlayerWeaponHandler.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
@@ -8,6 +9,7 @@
 #include "GameEngine/05.GameObject/GameObject.h"
 #include "GameEngine/06.Component/01.Transform/CTransform.h"
 #include "GameEngine/06.Component/03.Collider2D/CColliderRect.h"
+#include "InvenScript/CEquipmentScript.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
@@ -37,19 +39,22 @@ void CPlayerScript::Init()
 
 void CPlayerScript::Begin()
 {
-    if (GetOwner()->FlipbookRender())
-        GetOwner()->FlipbookRender()->Stop(L"UnArmed", 6, 0);
+    /*if (GetOwner()->FlipbookRender())
+        GetOwner()->FlipbookRender()->Stop(L"UnArmed", 6, 0);*/
     
     GM->SetMainPlayerScript(this);
-    
-    
-    
     //Ptr<ASound> pSound = LOAD_ASSET(ASound, L"Sound\\ParadiseOnE.wav");
     //pSound->Play(0, 0.5f, false);
     
     /*Collider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CBulletScript::BeginOverlap));
     Collider2D()->AddDynamicOverlap     (this, static_cast<COLLISION_EVENT>(&CBulletScript::Overlap));
     Collider2D()->AddDynamicEndOverlap  (this, static_cast<COLLISION_EVENT>(&CBulletScript::EndOverlap));*/
+}
+
+void CPlayerScript::AfterLevelBegin()
+{
+    CCharacterScript::AfterLevelBegin();
+    GetOwner()->GetScriptComponent<CPlayerWeaponHandler>()->SetHandState(PLAYER_HANDSTATE::PISTOL);    
 }
 
 void CPlayerScript::Tick()
@@ -125,6 +130,11 @@ void CPlayerScript::AfterPushedOutFin()
     PLAYER_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
                                          ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::IDLE;
     SetMainState(NextState);    
+}
+
+PLAYER_HANDSTATE CPlayerScript::GetHandState() const
+{
+    return GetOwner()->GetScriptComponent<CPlayerWeaponHandler>()->GetHandState();
 }
 
 void CPlayerScript::SaveToLevelFile(FILE* _File)
