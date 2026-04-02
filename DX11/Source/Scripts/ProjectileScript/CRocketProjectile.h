@@ -6,13 +6,7 @@ private:
 
     float   m_Speed{}; // ScriptParam Edited
     Vec3    m_Direction{};
-    
-private: // Life Time 관련 TODO : 이거 쓰지 말고, 실질적인 MapBoundary 잡히면 해당 Boundary 넘어갔을 때 Active false 처리 해줄 것 
-
-    static const float s_MAX_LIFETIME; 
-    float m_LifeTime{}; // 
-    
-    float m_Damage{};
+    float   m_Damage{};
     
 private:
     

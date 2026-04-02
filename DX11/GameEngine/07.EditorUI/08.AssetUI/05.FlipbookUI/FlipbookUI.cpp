@@ -456,13 +456,13 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
                 );
             }
             
-            int offPixel[2] =
+            float offPixel[2] =
             {
-                static_cast<int>(offUV.x * pAtlas->GetWidth()),
-                static_cast<int>(offUV.y * pAtlas->GetHeight())
+                (offUV.x * pAtlas->GetWidth()),
+                (offUV.y * pAtlas->GetHeight())
             };
 
-            ImGui::DragInt2("Offset (px)", offPixel, 1.0f);
+            ImGui::DragFloat2("Offset (px)", offPixel, 1.0f);
             
             // Shortcut
             if (ShortCut(ImGuiKey_LeftArrow)) --offPixel[0];

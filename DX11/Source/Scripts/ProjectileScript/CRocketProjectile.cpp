@@ -6,10 +6,10 @@
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/CharacterScript/CCharacterScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
-const float CRocketProjectile::s_MAX_LIFETIME = 5.f;
 // const float CRocketProjectile::s_SMOKE_SPAWN_INTERVAL = 0.5f;
 const float CRocketProjectile::s_SMOKE_SPAWN_INTERVAL = 0.1f;
 
@@ -51,12 +51,14 @@ void CRocketProjectile::Tick()
     Pos += m_Direction * m_Speed * DT;
     Transform()->SetRelativePos(Pos);
     
-    // Handle Boundary -> 실질적인 Map Boundary 잡히면 잡아줄 것 (일단은 LifeTime으로 처리할 것)
-    m_LifeTime += DT;
-    
-    if (m_LifeTime > s_MAX_LIFETIME) // End of life
+    // Handle Boundary -> 넘어가면 사라지게끔 처리
+    CBackgroundTile* BackgroundCellManager = GM->GetBackgroundCellManager();
+    if (Pos.x + Transform()->GetRelativeScaleX() < -BackgroundCellManager->GetWorldSizeHalf() ||
+        Pos.x - Transform()->GetRelativeScaleX()> BackgroundCellManager->GetWorldSizeHalf() ||
+        Pos.y + Transform()->GetRelativeScaleY() < -BackgroundCellManager->GetWorldSizeHalf() ||
+        Pos.y - Transform()->GetRelativeScaleY() > BackgroundCellManager->GetWorldSizeHalf())
     {
-        m_LifeTime = 0.f;
+        DebugUtil::AddDebugLog("OutOfBound");
         GetOwner()->SetActive(false);
         return;
     }
@@ -79,8 +81,6 @@ void CRocketProjectile::Tick()
 
 void CRocketProjectile::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
-    // TODO : LifeTime 제외시키기
-    m_LifeTime = 0.f;
     GetOwner()->SetActive(false);
     
     Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\Explosion1.mp3");

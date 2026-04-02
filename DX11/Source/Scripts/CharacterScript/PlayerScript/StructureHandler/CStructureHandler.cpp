@@ -19,11 +19,10 @@ CStructureHandler::~CStructureHandler()
 
 void CStructureHandler::Begin()
 {
-    // Init Prefabs & Preview Objects
-    
-    
     m_MainPlayerScript  = GetOwner()->GetScriptComponent<CPlayerScript>().Get();
     m_InvenScript       = GetOwner()->GetScriptComponent<CInvenScript>().Get();
+    
+    // Init Prefabs & Preview Objects
 }
 
 void CStructureHandler::Tick()
