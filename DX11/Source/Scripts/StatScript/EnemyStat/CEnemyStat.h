@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "Source/Scripts/StatScript/CStatScript.h"
+#include "Source/Scripts/StatScript/CCharacterStat.h"
 
-class CEnemyStat : public CStatScript
+class CEnemyStat : public CCharacterStat
 {
 public:
     

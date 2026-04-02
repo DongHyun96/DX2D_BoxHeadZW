@@ -27,8 +27,10 @@ CEquipmentScript::~CEquipmentScript()
 
 void CEquipmentScript::Begin()
 {
-    CWeaponScript::AddHitScanLayer(LevelMgr::GetInst()->GetCurLevel()->GetLayerIndexByLayerName(L"Enemy"));
-    CWeaponScript::AddHitScanLayer(LevelMgr::GetInst()->GetCurLevel()->GetLayerIndexByLayerName(L"MapObstacle"));
+    CWeaponScript::AddHitScanLayer(LevelMgr::GetInst()->GetCurLevel()->GetLayerIndexByLayerName(L"MapObstacle")); // 2
+    CWeaponScript::AddHitScanLayer(LevelMgr::GetInst()->GetCurLevel()->GetLayerIndexByLayerName(L"Enemy")); // 4
+    CWeaponScript::AddHitScanLayer(LevelMgr::GetInst()->GetCurLevel()->GetLayerIndexByLayerName(L"Barrel")); // 8
+    
 }
 
 void CEquipmentScript::Tick()

@@ -16,6 +16,13 @@ CEnemyScript::~CEnemyScript()
 {
 }
 
+void CEnemyScript::Init()
+{
+    CCharacterScript::Init();
+    AddScriptParam(SCRIPT_PARAM::INT, &m_EnemyType, L"Enemy Type");
+    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_AttackDamage, L"Attack Damage");
+}
+
 void CEnemyScript::AfterLevelBegin()
 {
     if (!GM->GetEnemyPooler(m_EnemyType))
@@ -129,4 +136,25 @@ void CEnemyScript::OnDieFlipbookEndNotify()
     m_HasFadeInStart    = false;
     m_HasFadeOutStart   = true;    
     m_FadeInOutTime     = 0.f;
+}
+
+void CEnemyScript::SaveToLevelFile(FILE* _File)
+{
+    CCharacterScript::SaveToLevelFile(_File);
+
+    UINT EnemyTypeToUINT = static_cast<UINT>(m_EnemyType);
+    fwrite(&EnemyTypeToUINT, sizeof(UINT), 1, _File);
+    
+    fwrite(&m_AttackDamage, sizeof(float), 1, _File);
+}
+
+void CEnemyScript::LoadFromLevelFile(FILE* _File)
+{
+    CCharacterScript::LoadFromLevelFile(_File);
+    
+    UINT EnemyTypeToUINT{};
+    fread(&EnemyTypeToUINT, sizeof(UINT), 1, _File);
+    m_EnemyType = static_cast<ENEMY_TYPE>(EnemyTypeToUINT);
+    
+    fread(&m_AttackDamage, sizeof(float), 1, _File);    
 }

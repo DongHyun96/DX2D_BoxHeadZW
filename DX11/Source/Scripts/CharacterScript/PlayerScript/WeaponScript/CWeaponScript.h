@@ -31,7 +31,10 @@ public:
 
 public:
     
-    static void AddHitScanLayer(UINT _Layer) { m_HitScanLayer.push_back(_Layer); }
+    /// <summary>
+    /// Player 총기 HitScan 판정할 Layer 번호 추가 / Layer 번호가 Invalid 하다면 return false
+    /// </summary>
+    static bool AddHitScanLayer(int _Layer);
     
 public:
 

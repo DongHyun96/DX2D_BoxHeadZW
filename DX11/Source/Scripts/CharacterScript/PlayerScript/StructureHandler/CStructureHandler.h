@@ -39,11 +39,20 @@ private:
     /// </summary>
     void UpdateCurrentStructureHolding();
 
+    
     /// <summary>
     /// 다음 StructureType으로 전환 시도
     /// </summary>
     /// <returns> : 자기자신 Type으로 돌아오거나, </returns>
     void UpdateToNextStructureTypeHolding();
+    void UpdateToPrevStructureTypeHolding();
+    
+private:
+
+    /// <summary>
+    /// 현재 StructureHoldingType 실제로 Spawn 처리 시도
+    /// </summary>
+    void UpdateSpawnStructure(const Vec2& _PreviewPos, bool _Available);
 
     /// <summary>
     /// Preview 실물 오브젝트가 없다면, 오브젝트들 생성처리

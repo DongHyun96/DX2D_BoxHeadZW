@@ -23,6 +23,13 @@ void CWeaponScript::WeaponTick()
     m_TimeAfterLastFire = min(m_TimeAfterLastFire + DT, m_FireIntervalTime + 1.f);
 }
 
+bool CWeaponScript::AddHitScanLayer(int _Layer)
+{
+    if (_Layer < 0) return false;
+    m_HitScanLayer.push_back(_Layer);
+    return true;
+}
+
 void CWeaponScript::SpawnMuzzleEffects(const Vec2& _MuzzleWorldPos)
 {
     SpawnMuzzleFlash(_MuzzleWorldPos);

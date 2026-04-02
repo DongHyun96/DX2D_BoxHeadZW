@@ -8,6 +8,7 @@
 #include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/InvenScript/CInvenScript.h"
+#include "Source/Scripts/Structure/CStructure.h"
 
 CStructureHandler::CStructureHandler()
     : CScript(SCRIPT_TYPE::STRUCTUREHANDLER)
@@ -76,11 +77,14 @@ void CStructureHandler::Tick()
     const Vec2 MousePosToCellWorldPos   = BackgroundCellManager->GetCellCoordToWorldPos(cellCoord);
     const bool CellAvailable            = BackgroundCellManager->IsCellAvailable(cellCoord);
     
-    const bool PreviewObjectOverlapping = m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->GetCollider2D()->IsCurrentlyOverlapping(); 
+    const bool PreviewObjectOverlapping = m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->GetCollider2D()->IsCurrentlyOverlapping();
+    const bool StructureAvailable = CellAvailable && !PreviewObjectOverlapping;
     
     // 두 가지를 체크해야 함 -> Cell 위치가 Available한 Cell인지 & Preview Object와 Ovelapped 중인 물체가 있는지
     
-    UpdatePreviewStructureObject(MousePosToCellWorldPos, CellAvailable && !PreviewObjectOverlapping);
+    UpdatePreviewStructureObject(MousePosToCellWorldPos, StructureAvailable);
+    UpdateSpawnStructure(MousePosToCellWorldPos, StructureAvailable);
+    
 }
 
 void CStructureHandler::UpdateCurrentStructureHolding()
@@ -88,6 +92,13 @@ void CStructureHandler::UpdateCurrentStructureHolding()
     // E키를 눌러 다음 Structure Type으로 넘어가거나, 현재 들고있는 StructureHolding의 개수가 모두 소진되었을 때에, 바로 다음 StructureType으로 넘어간다
     if (KEY_TAP(KEY::E) || !m_InvenScript->HasStructure(m_CurrentStructureHolding))
         UpdateToNextStructureTypeHolding();
+    
+    // Wheel 로 조정
+    if (KeyMgr::GetInst()->GetMouseWheel() == 1)
+        UpdateToNextStructureTypeHolding();
+    else if (KeyMgr::GetInst()->GetMouseWheel() == -1)
+        UpdateToPrevStructureTypeHolding();
+
 }
 
 void CStructureHandler::UpdateToNextStructureTypeHolding()
@@ -113,6 +124,41 @@ void CStructureHandler::UpdateToNextStructureTypeHolding()
     }
 }
 
+void CStructureHandler::UpdateToPrevStructureTypeHolding()
+{
+    // 이전 Type Active 끄기
+    m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->SetActive(false);
+    
+    int CurrentType = static_cast<int>(m_CurrentStructureHolding);
+
+    // 최소 하나 이상의 Valid한 Structure 보장(위의 Tick 시작 전 해당 사항을 걸렀음)
+    while (true)
+    {
+        if (--CurrentType < 0) CurrentType = static_cast<int>(PLAYER_STRUCTURE_TYPE::END) - 1;
+
+        // 첫 Valid한 Structure Type 도달
+        if (m_InvenScript->HasStructure(static_cast<PLAYER_STRUCTURE_TYPE>(CurrentType)))
+        {
+            m_CurrentStructureHolding = static_cast<PLAYER_STRUCTURE_TYPE>(CurrentType);
+            return;
+        }
+    }
+}
+
+void CStructureHandler::UpdateSpawnStructure(const Vec2& _PreviewPos, bool _Available)
+{
+    // 설치를 할 수 없는 상황
+    if (!_Available) return;
+    
+    if (KEY_TAP(KEY::MLB))
+    {
+        GameObject* SpawnedStructure = m_mapStructureTypePrefabs[m_CurrentStructureHolding]->InstantiateAndSpawnToCurLevel();
+        SpawnedStructure->Transform()->SetRelativePos(ToVec3(_PreviewPos)); // UpdateZ to Y 설정 처리되어있어서 Z값은 신경 안써도 됨
+        
+        m_InvenScript->ReduceCurrentStructureCount(m_CurrentStructureHolding); // 갯수를 하나 줄인다
+    }
+}
+
 void CStructureHandler::CreateStructureHoldingPreviewIfNecessary()
 {
     if (!m_mapStructureTypePreviewObjects.empty()) return;
@@ -120,10 +166,11 @@ void CStructureHandler::CreateStructureHoldingPreviewIfNecessary()
     // 마우스위 설치 위치를 보여줄 Preview Object 생성해서 Level에 집어넣기 (기본 상태는 Active false)
     for (const pair<const PLAYER_STRUCTURE_TYPE, APrefab*>& Pair : m_mapStructureTypePrefabs)
     {
-        GameObject* NewStructureObject = Pair.second->Instantiate();
-
-        CreateObject(NewStructureObject, NewStructureObject->GetLayerIdx());
+        GameObject* NewStructureObject = Pair.second->InstantiateAndSpawnToCurLevel();
+        
         NewStructureObject->SetActive(false);
+        NewStructureObject->GetScriptComponent<CStructure>()->SetIsPreviewObject(true);
+        
         Ptr<AMaterial> DynamicMtrl = NewStructureObject->GetRenderCom()->CreateDynamicMaterial();
         DynamicMtrl->SetScalar(SCALAR_PARAM::VEC4_0, Vec4(1.f, 1.f, 1.f, PREVIEW_ALPHA)); // 알파값을 조정처리했음 (프리뷰 오브젝트라)
         

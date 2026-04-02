@@ -69,6 +69,12 @@ private:
     /// </summary>
     bool IsCollisionDeprecated(const Ptr<CCollider2D>& _LeftCol, const Ptr<CCollider2D>& _RightCol);
 
+    
+    
+    
+    
+    /* Collision 관련 Utility 기능 */
+    
 public:
     
     /// <summary>

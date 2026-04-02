@@ -8,8 +8,12 @@ class CEnemyScript : public CCharacterScript
 {
 protected:
 
-    ENEMY_TYPE m_EnemyType{}; // TODO : 각 Enemy Script에서 제대로 초기화 해줄 것
+    ENEMY_TYPE      m_EnemyType{};
     ENEMY_MAINSTATE m_MainState{};
+
+private:
+    
+    float m_AttackDamage{}; // 공격 Damage량 (Devil의 경우, 불쏘시개 하나 당 damage)
     
 private: // FadeIn Out 관련
 
@@ -27,6 +31,7 @@ public:
 
 private:
 
+    virtual void Init() override;
     virtual void AfterLevelBegin() override;
     virtual void Tick() override;
     
@@ -49,5 +54,10 @@ public:
     
     void SetMainState(ENEMY_MAINSTATE _MainState) { m_MainState = _MainState; }
     ENEMY_MAINSTATE GetMainState() const { return m_MainState; }
+
+public:
+    
+    virtual void SaveToLevelFile(FILE* _File) override;
+    virtual void LoadFromLevelFile(FILE* _File) override;
     
 };

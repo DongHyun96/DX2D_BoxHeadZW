@@ -120,7 +120,7 @@ private:
 	
 public:
 	
-	int GetMouseWheel() const { return m_Wheel; }
+	int GetMouseWheel() const { return m_Wheel; } // 1(WheelUp), 0, -1(WheelDown)
 	void SetMouseWheel(int _Wheel)
 	{
 		m_WheelChanged = true;
