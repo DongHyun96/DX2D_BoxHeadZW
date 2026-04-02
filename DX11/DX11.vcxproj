@@ -284,6 +284,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBackgroundScript.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.h" />
     <ClInclude Include="Source\Scripts\AirplaneShootingScript\CBulletScript.h" />
+    <ClInclude Include="Source\Scripts\BackgroundTile\CBackgroundTile.h" />
     <ClInclude Include="Source\Scripts\CCamMoveScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\CCharacterAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\CCharacterScript.h" />
@@ -294,6 +295,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CEquipmentScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CInvenScript.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\StructureHandler\CStructureHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponMinigun.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponPistol.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponRocket.h" />
@@ -961,6 +963,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBackgroundScript.cpp" />
     <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBulletMgrScript.cpp" />
     <ClCompile Include="Source\Scripts\AirplaneShootingScript\CBulletScript.cpp" />
+    <ClCompile Include="Source\Scripts\BackgroundTile\CBackgroundTile.cpp" />
     <ClCompile Include="Source\Scripts\CCamMoveScript.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -1047,6 +1050,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CEquipmentScript.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CInvenScript.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\StructureHandler\CStructureHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponMinigun.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponPistol.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\WeaponScript\CWeaponRocket.cpp" />

@@ -58,8 +58,8 @@ Ptr<T> LoadAssetRef(FILE* _File);
 /// <summary>
 /// TaskMgr를 통한 레벨 전환 처리 / 클라이언트 단에서 이 함수를 사용할 것
 /// </summary>
-/// <param name="_NextLevelName"> : 다음 Level Key wstring </param>
-void ChangeLevel(const wstring& _NextLevelName, bool _NextLevelStateToStop = false);
+/// <param name="_NextLevelKey"> : 다음 Level Key wstring </param>
+void ChangeLevel(const wstring& _NextLevelKey, bool _NextLevelStateToStop = false);
 
 void ChangeLevelState(LEVEL_STATE _NextState);
 

@@ -42,6 +42,8 @@ void CPlayerScript::Begin()
     
     GM->SetMainPlayerScript(this);
     
+    
+    
     //Ptr<ASound> pSound = LOAD_ASSET(ASound, L"Sound\\ParadiseOnE.wav");
     //pSound->Play(0, 0.5f, false);
     

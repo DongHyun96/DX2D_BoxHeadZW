@@ -86,7 +86,7 @@ void KeyMgr::Tick()
         }
     }
     
-    // 마우스 좌표 계산
+    // 마우스 좌표 계산 (RenderResolution 내의 마우스 2D 좌표)
     POINT pt{};
     GetCursorPos(&pt); // 화면 기준 마우스 좌표
     ScreenToClient(Engine::GetInst()->GetMainWndHwnd(), &pt); // 우리 윈도우 기준으로 마우스좌표 변경
@@ -101,34 +101,9 @@ void KeyMgr::Tick()
     
     if (m_WheelChanged) m_WheelChanged = false;
     else m_Wheel = 0;
-}
-
-Vec3 KeyMgr::GetMouseWorldPos() const
-{
-    const Ptr<CCamera> pPOVCam = RenderMgr::GetInst()->GetPOVCam();
-    if (!pPOVCam) return Vec3::Zero;
-
-    // 현재 프로젝트는 2D Orthographic 기준으로 마우스 월드 좌표를 사용한다.
-    // if (pPOVCam->GetType() == PROJ_TYPE::ORTHOGRAPHIC) return Vec3::Zero;
-            
-
-    const Vec2 vRenderRes = Device::GetInst()->GetRenderResolution();
-    if (vRenderRes.x <= 0.f || vRenderRes.y <= 0.f)
-        return Vec3::Zero;
-
-    // Client(0~해상도) -> NDC(-1~1)
-    const float ndcX = (m_MousePos.x / vRenderRes.x) * 2.f - 1.f;
-    const float ndcY = 1.f - (m_MousePos.y / vRenderRes.y) * 2.f;
-
-    const float worldW = pPOVCam->GetWidth() * pPOVCam->GetOrthoScale();
-    const float worldH = (pPOVCam->GetWidth() / pPOVCam->GetAspectRatio()) * pPOVCam->GetOrthoScale();
-
-    Vec3 vWorld = pPOVCam->Transform()->GetWorldPos();
-    vWorld += pPOVCam->Transform()->GetDir(DIR::RIGHT) * (ndcX * worldW * 0.5f);
-    vWorld += pPOVCam->Transform()->GetDir(DIR::UP) * (ndcY * worldH * 0.5f);
-    vWorld.z = 0.f;
-
-    return vWorld;
+    
+    // 마우스 월드좌표 계산 (World 상의 2D좌표)
+    CalculateMouseWorldPos();
 }
 
 Vec3 KeyMgr::GetMouseWorldPosByViewport(const Vec2& _LocalPos, const Vec2& _ViewportSize) const
@@ -151,4 +126,39 @@ Vec3 KeyMgr::GetMouseWorldPosByViewport(const Vec2& _LocalPos, const Vec2& _View
     vWorld.z = 0.f;
 
     return vWorld;
+}
+
+void KeyMgr::CalculateMouseWorldPos()
+{
+    const Ptr<CCamera> pPOVCam = RenderMgr::GetInst()->GetPOVCam();
+    if (!pPOVCam)
+    {
+        m_MouseWorldPos =  Vec3::Zero;
+        return;
+    }
+
+    // 현재 프로젝트는 2D Orthographic 기준으로 마우스 월드 좌표를 사용한다.
+    // if (pPOVCam->GetType() == PROJ_TYPE::ORTHOGRAPHIC) return Vec3::Zero;
+            
+
+    const Vec2 vRenderRes = Device::GetInst()->GetRenderResolution();
+    if (vRenderRes.x <= 0.f || vRenderRes.y <= 0.f)
+    {
+        m_MouseWorldPos =  Vec3::Zero;
+        return;        
+    }
+
+    // Client(0~해상도) -> NDC(-1~1)
+    const float ndcX = (m_MousePos.x / vRenderRes.x) * 2.f - 1.f;
+    const float ndcY = 1.f - (m_MousePos.y / vRenderRes.y) * 2.f;
+
+    const float worldW = pPOVCam->GetWidth() * pPOVCam->GetOrthoScale();
+    const float worldH = (pPOVCam->GetWidth() / pPOVCam->GetAspectRatio()) * pPOVCam->GetOrthoScale();
+
+    Vec3 vWorld = pPOVCam->Transform()->GetWorldPos();
+    vWorld += pPOVCam->Transform()->GetDir(DIR::RIGHT) * (ndcX * worldW * 0.5f);
+    vWorld += pPOVCam->Transform()->GetDir(DIR::UP) * (ndcY * worldH * 0.5f);
+    vWorld.z = 0.f;
+
+    m_MouseWorldPos = vWorld;
 }

@@ -52,7 +52,7 @@ enum class SIXTEEN_DIRECTION
 /// </summary>
 enum class PLAYER_HANDSTATE
 {
-    UNARMED,
+    UNARMED, // 설치물 설치 가능한 State
     PISTOL,
     UZI,
     SHOTGUN,
@@ -66,6 +66,19 @@ enum class PLAYER_MAINSTATE
     IDLE,
     PUSHED_OUT,
     DIE,
+    END
+};
+
+/// <summary>
+/// 설치물 Type
+/// </summary>
+enum class PLAYER_STRUCTURE_TYPE
+{
+    BARRICADE,
+    BARREL,
+    TURRET_MACHINE_GUN,
+    TURRET_MORTAR,
+    TURRET_ROCKET,
     END
 };
 

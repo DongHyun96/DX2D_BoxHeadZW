@@ -74,6 +74,8 @@ private:
 	Vec2 m_MousePos{};		// 이번 프레임 마우스 좌표 (창 기준 좌표)
 	Vec2 m_MousePrevPos{};	// 이전 프레임 마우스 좌표
 	Vec2 m_MouseDir{};		// 이번 프레임 마우스 이동 방향
+	
+	Vec3 m_MouseWorldPos{};
 
 	bool m_WheelChanged{};
 	int m_Wheel{}; // 1(WheelUp), 0, -1(WheelDown)
@@ -101,8 +103,8 @@ public:
 	/// <summary>
 	/// 현재 마우스 Client 좌표를 인게임 월드 좌표(2D Orthographic)로 변환
 	/// </summary>
-	Vec3 GetMouseWorldPos() const;
-	Vec2 GetMouseWorldPos2D() const { return ToVec2(GetMouseWorldPos()); }
+	Vec3 GetMouseWorldPos() const { return m_MouseWorldPos; }
+	Vec2 GetMouseWorldPos2D() const { return ToVec2(m_MouseWorldPos); }
 
 	/// <summary>
 	/// 지정한 뷰포트 사각형(로컬좌표 기준)으로 마우스 월드좌표 계산
@@ -111,6 +113,10 @@ public:
 	/// <param name="_ViewportSize"> : 뷰포트 크기 </param>
 	/// <returns> : </returns>
 	Vec3 GetMouseWorldPosByViewport(const Vec2& _LocalPos, const Vec2& _ViewportSize) const;
+	
+private:
+	
+	void CalculateMouseWorldPos();
 	
 public:
 	

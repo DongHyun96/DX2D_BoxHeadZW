@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+/// <summary>
+/// 주의 : 새로운 EffectPoolerType은 맨 마지막으로 추가할 것 (APrefab에 idx 순서로 잡아둔 데이터 때문에 전부 다 고쳐야 함)
+/// </summary>
 enum class FLIPBOOK_EFFECT_POOLER_TYPE
 {
     MUZZLE_SMOKE_POOLER,
@@ -20,11 +23,17 @@ private:
     
     Ptr<GameObject> m_PlayerObject{}; // Init 시점에서 PlayerObject 추가중임...
     class CPlayerScript* m_MainPlayerScript{};
+
+private: // Poolers
     
     map<ENEMY_TYPE, CPoolComponent*> m_mapEnemyPoolers{};
     map<FLIPBOOK_EFFECT_POOLER_TYPE, CPoolComponent*> m_mapFlipbookEffectPoolers{};
     
     CPoolComponent* m_RocketProjectilePooler{};
+    
+private: // BackgroundTile & Cell Manager
+
+    class CBackgroundTile* m_BackgroundCellManager{};
 
 public:
     
@@ -48,5 +57,8 @@ public:
     
     void SetRocketProjectilePooler(CPoolComponent* _PoolComponent) { m_RocketProjectilePooler = _PoolComponent; }
     CPoolComponent* GetRocketProjectilePooler() const { return m_RocketProjectilePooler; }
+    
+    void SetBackgroundCellManager(CBackgroundTile* _BackgroundCellManager) { m_BackgroundCellManager = _BackgroundCellManager; }
+    CBackgroundTile* GetBackgroundCellManager() const { return m_BackgroundCellManager; }
     
 };

@@ -73,6 +73,8 @@ void MainWindowDropDetectorUI::Tick_UI()
             {
                 const DWORD_PTR* data   = static_cast<const DWORD_PTR*>(payload->Data);
                 const int count         = payload->DataSize / sizeof(DWORD_PTR);
+                
+                
             }
             else // Single Item Drop 시
             {

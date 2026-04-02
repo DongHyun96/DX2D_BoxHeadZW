@@ -48,7 +48,8 @@ int APIENTRY wWinMain
     if (FAILED(Engine::GetInst()->Init(hInstance, RESOL_X, RESOL_Y, true)))
         return 0;
 
-    LevelMgr::GetInst()->LoadTestLevel();
+    // LevelMgr::GetInst()->LoadTestLevel();
+    ChangeLevel(L"Level\\NightSceneLevel.lv", true);
     // CreateTestLevel();
     
     // 단축키 테이블 정보 핸들 받음

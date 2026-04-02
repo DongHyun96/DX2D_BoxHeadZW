@@ -101,6 +101,11 @@ void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLev
     CollisionMgr::GetInst()->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
     
     m_CurLevel = m_SharedLevel = _NextLevel;
+    
+    const wstring& FileName = GetFileNameWithoutExtension(m_CurLevel->GetKey());
+    const string LevelNameStr = string(FileName.begin(), FileName.end());
+    
+    DebugUtil::SetPermanentDebugLog("CurrentLevel", "CURRENT LEVEL : " + LevelNameStr, Vec4(1.f, 0.f, 0.f, 1.f));
 
     if (_ChangeNextLevelStateToStop) // Editor에서 ChangeLevel 처리는 기본적으로 다음 LevelState를 Stop으로 처리 -> User Client의 Level 바꾸는건 이전 State를 계속해서 사용(Play)
         m_LevelState = LEVEL_STATE::STOP;

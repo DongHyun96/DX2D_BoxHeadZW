@@ -16,9 +16,6 @@ private:
     Vec3        m_RelativeRot{};
                 
     Vec3        m_Pivot{};
-    
-    CTransform* m_Parent{};
-    
     bool        m_IndependentScale{}; // 부모 오브젝트의 크기는 무시, 주의 : 상위 부모의 Scale z값 0이 되지 않도록 주의할 것
     
 private:

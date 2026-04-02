@@ -200,11 +200,11 @@ void SaveAssetRef(FILE* _File, Asset* _Asset)
 
 wchar_t Buff[255] = {};
 
-void ChangeLevel(const wstring& _NextLevelName, bool _NextLevelStateToStop)
+void ChangeLevel(const wstring& _NextLevelKey, bool _NextLevelStateToStop)
 {
     TaskInfo info{};
     
-    wcscpy_s(Buff, 255, _NextLevelName.c_str());
+    wcscpy_s(Buff, 255, _NextLevelKey.c_str());
     
     info.Type = TASK_TYPE::CHANGE_LEVEL;
     info.Param_0 = reinterpret_cast<DWORD_PTR>(Buff);

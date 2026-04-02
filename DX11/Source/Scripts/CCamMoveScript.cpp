@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CCamMoveScript.h"
 
+#include "BackgroundTile/CBackgroundTile.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
@@ -25,7 +26,21 @@ void CCamMoveScript::Tick()
     
     // 일단은 Player를 무조건 따라가도록 처리
     const Vec3 PlayerPos = GM->GetPlayerObject()->Transform()->GetRelativePos();
-    const Vec3 CamPos = {PlayerPos.x, PlayerPos.y, CAMERA2D_POS_Z}; 
+    Vec3 CamPos = {PlayerPos.x, PlayerPos.y, CAMERA2D_POS_Z};
+
+    CBackgroundTile* BackgroundCellMgr = GM->GetBackgroundCellManager();
+    
+    // Boundary 넘어가지 않도록 조정
+    if (CamPos.x - RESOL_HALF_X < -BackgroundCellMgr->GetWorldSizeHalf())
+        CamPos.x = -BackgroundCellMgr->GetWorldSizeHalf() + RESOL_HALF_X;
+    else if (CamPos.x + RESOL_HALF_X > BackgroundCellMgr->GetWorldSizeHalf())
+        CamPos.x = BackgroundCellMgr->GetWorldSizeHalf() - RESOL_HALF_X;
+    
+    if (CamPos.y - RESOL_HALF_Y < -BackgroundCellMgr->GetWorldSizeHalf())
+        CamPos.y = -BackgroundCellMgr->GetWorldSizeHalf() + RESOL_HALF_Y;
+    else if (CamPos.y + RESOL_HALF_Y > BackgroundCellMgr->GetWorldSizeHalf())
+        CamPos.y = BackgroundCellMgr->GetWorldSizeHalf() - RESOL_HALF_Y;
+        
     Transform()->SetRelativePos(CamPos);
 }
 

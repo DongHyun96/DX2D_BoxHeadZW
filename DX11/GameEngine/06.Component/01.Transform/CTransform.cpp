@@ -28,7 +28,7 @@ Vec3 CTransform::GetWorldScale() const
 	
 	Ptr<GameObject> pParent = GetOwner()->GetParent();
 	
-	while (pParent)
+	while (pParent && pParent->Transform())
 	{
 		vWorldScale *= pParent->Transform()->GetRelativeScale();
 		
@@ -64,8 +64,9 @@ void CTransform::FinalTick()
 	
 	m_MatWorld = matInvPivot * matScale * matRot * matTrans * matPivot;
 
-	// 부모 오브젝트가 있었다면
-	if (GetOwner()->GetParent())
+	// 부모 오브젝트가 있었고, 부모 오브젝트의 TransformComponent가 있다면
+	// 주의 (Transform GrandParent -> Non Transform Parent -> Transform Child (InValid)
+	if (GetOwner()->GetParent() && GetOwner()->GetParent()->Transform())
 	{
 		// 부모 오브젝트 크기의 영향을 받지 않겠다.
 		if (m_IndependentScale)
@@ -126,13 +127,15 @@ void CTransform::SetRelativePosFromWorldPos(const Vec3& _DesiredWorldPos)
 
 Vec3 CTransform::CalculateRelativePosFromWorldPos(const Vec3& _DesiredWorldPos)
 {
-	if (!m_Parent) return _DesiredWorldPos;
-		
-	Matrix ParentEffect = m_Parent->GetWorldMatrix();
+	if (!GetOwner()->GetParent() || GetOwner()->GetParent()->Transform()) return _DesiredWorldPos;
+
+	CTransform* ParentTransform = GetOwner()->GetParent()->Transform().Get();
+	
+	Matrix ParentEffect = ParentTransform->GetWorldMatrix();
 	
 	if (m_IndependentScale)
 	{
-		Vec3 ParentScale = m_Parent->GetWorldScale();
+		Vec3 ParentScale = ParentTransform->GetWorldScale();
 		Matrix invParentScale = XMMatrixScaling
 		(
 		   (fabsf(ParentScale.x) > FLT_EPSILON) ? 1.f / ParentScale.x : 0.f,

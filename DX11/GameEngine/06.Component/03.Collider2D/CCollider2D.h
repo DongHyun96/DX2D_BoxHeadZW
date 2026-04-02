@@ -65,6 +65,11 @@ public:
     GET_SET(Vec4, Color)
     Vec3 GetWorldPos() const { return m_matWorld.Translation(); }
 
+    /// <summary>
+    /// 현재 특정 물체와 Overlapping 중인지 
+    /// </summary>
+    bool IsCurrentlyOverlapping() const { return m_OverlapCount > 0; }
+
 public:
 
     virtual void FinalTick() override;

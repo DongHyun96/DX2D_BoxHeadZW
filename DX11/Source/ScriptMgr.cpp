@@ -4,6 +4,7 @@
 #include "Source/Scripts/AirplaneShootingScript\CBackgroundScript.h"
 #include "Source/Scripts/AirplaneShootingScript\CBulletMgrScript.h"
 #include "Source/Scripts/AirplaneShootingScript\CBulletScript.h"
+#include "Source/Scripts/BackgroundTile\CBackgroundTile.h"
 #include "Source/Scripts/CCamMoveScript.h"
 #include "Source/Scripts/CharacterScript\CCharacterAnimHandler.h"
 #include "Source/Scripts/CharacterScript\CCharacterScript.h"
@@ -14,6 +15,7 @@
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerWeaponHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\InvenScript\CEquipmentScript.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\InvenScript\CInvenScript.h"
+#include "Source/Scripts/CharacterScript\PlayerScript\StructureHandler\CStructureHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponMinigun.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponPistol.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\WeaponScript\CWeaponRocket.h"
@@ -35,6 +37,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBackgroundScript");
 	_vec.push_back(L"CBulletMgrScript");
 	_vec.push_back(L"CBulletScript");
+	_vec.push_back(L"CBackgroundTile");
 	_vec.push_back(L"CCamMoveScript");
 	_vec.push_back(L"CEnemyAnimHandler");
 	_vec.push_back(L"CEnemyScript");
@@ -43,6 +46,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CPlayerWeaponHandler");
 	_vec.push_back(L"CEquipmentScript");
 	_vec.push_back(L"CInvenScript");
+	_vec.push_back(L"CStructureHandler");
 	_vec.push_back(L"CWeaponMinigun");
 	_vec.push_back(L"CWeaponPistol");
 	_vec.push_back(L"CWeaponRocket");
@@ -67,6 +71,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CBulletMgrScript;
 	if (L"CBulletScript" == _strScriptName)
 		return new CBulletScript;
+	if (L"CBackgroundTile" == _strScriptName)
+		return new CBackgroundTile;
 	if (L"CCamMoveScript" == _strScriptName)
 		return new CCamMoveScript;
 	if (L"CCharacterAnimHandler" == _strScriptName)
@@ -87,6 +93,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CEquipmentScript;
 	if (L"CInvenScript" == _strScriptName)
 		return new CInvenScript;
+	if (L"CStructureHandler" == _strScriptName)
+		return new CStructureHandler;
 	if (L"CWeaponMinigun" == _strScriptName)
 		return new CWeaponMinigun;
 	if (L"CWeaponPistol" == _strScriptName)
@@ -130,6 +138,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CBulletMgrScript;
 	case (UINT)SCRIPT_TYPE::BULLETSCRIPT:
 		return new CBulletScript;
+	case (UINT)SCRIPT_TYPE::BACKGROUNDTILE:
+		return new CBackgroundTile;
 	case (UINT)SCRIPT_TYPE::CAMMOVESCRIPT:
 		return new CCamMoveScript;
 	case (UINT)SCRIPT_TYPE::CHARACTERANIMHANDLER:
@@ -150,6 +160,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CEquipmentScript;
 	case (UINT)SCRIPT_TYPE::INVENSCRIPT:
 		return new CInvenScript;
+	case (UINT)SCRIPT_TYPE::STRUCTUREHANDLER:
+		return new CStructureHandler;
 	case (UINT)SCRIPT_TYPE::WEAPONMINIGUN:
 		return new CWeaponMinigun;
 	case (UINT)SCRIPT_TYPE::WEAPONPISTOL:
@@ -194,6 +206,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CBulletMgrScript";
 	case SCRIPT_TYPE::BULLETSCRIPT:
 		return L"CBulletScript";
+	case SCRIPT_TYPE::BACKGROUNDTILE:
+		return L"CBackgroundTile";
 	case SCRIPT_TYPE::CAMMOVESCRIPT:
 		return L"CCamMoveScript";
 	case SCRIPT_TYPE::CHARACTERANIMHANDLER:
@@ -214,6 +228,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CEquipmentScript";
 	case SCRIPT_TYPE::INVENSCRIPT:
 		return L"CInvenScript";
+	case SCRIPT_TYPE::STRUCTUREHANDLER:
+		return L"CStructureHandler";
 	case SCRIPT_TYPE::WEAPONMINIGUN:
 		return L"CWeaponMinigun";
 	case SCRIPT_TYPE::WEAPONPISTOL:

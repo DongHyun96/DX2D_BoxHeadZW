@@ -22,6 +22,7 @@ void GameManager::OnLevelPlayToStop()
     m_mapFlipbookEffectPoolers.clear();
     
     m_RocketProjectilePooler = nullptr;
+    m_BackgroundCellManager = nullptr;
 }
 
 void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
