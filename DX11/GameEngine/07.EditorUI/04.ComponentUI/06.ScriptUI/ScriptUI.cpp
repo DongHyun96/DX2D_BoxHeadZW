@@ -83,6 +83,8 @@ void ScriptUI::Tick_UI()
 {
 	if (m_TargetScript->GetScriptType() <= -1) return;
 	
+	ImGui::PushID(GetUIKey().c_str());
+	
 	m_ItemHeight = 0;
 
 	// 스크립트 이름 출력
@@ -111,6 +113,7 @@ void ScriptUI::Tick_UI()
 	SetSizeAsChild(Vec2(0.f, static_cast<float>(m_ItemHeight)));
 	
 	ComponentUI::Tick_UI();
+	ImGui::PopID();
 }
 
 void ScriptUI::TickScriptParams()
@@ -132,7 +135,7 @@ void ScriptUI::TickScriptParams()
 			ImGui::SameLine(120);
 
 			string Key = "##Int";
-			Key += ID;
+			Key += ID + GetUIKey();
 			
 			
 			if (vecParam[i].IsInput) ImGui::InputInt(Key.c_str(), static_cast<int*>(vecParam[i].Data), vecParam[i].Step);
@@ -146,7 +149,7 @@ void ScriptUI::TickScriptParams()
 			ImGui::SameLine(120);
 
 			string Key = "##Float";
-			Key += ID;
+			Key += ID + GetUIKey();
 			
 			if (vecParam[i].IsInput) ImGui::InputFloat(Key.c_str(), static_cast<float*>(vecParam[i].Data), vecParam[i].Step);
 			else					 ImGui::DragFloat(Key.c_str(), static_cast<float*>(vecParam[i].Data), vecParam[i].Step);
@@ -160,7 +163,7 @@ void ScriptUI::TickScriptParams()
 			ImGui::SameLine(120);
 
 			string Key = "##Vec2";
-			Key += ID;
+			Key += ID + GetUIKey();
 
 			Vec2* ReceivedVecAddress = static_cast<Vec2*>(vecParam[i].Data);
 			
@@ -176,7 +179,7 @@ void ScriptUI::TickScriptParams()
 			ImGui::SameLine(120);
 
 			string Key = "##Vec3";
-			Key += ID;
+			Key += ID + GetUIKey();
 
 			Vec3* ReceivedVecAddress = static_cast<Vec3*>(vecParam[i].Data);
 			
@@ -204,7 +207,7 @@ void ScriptUI::TickScriptParams()
 			}
 
 			string key = "##WString";
-			key += ID;
+			key += ID + GetUIKey();
 
 			vector<char>& buffer = m_WStringInputBuffer[vecParam[i].Data];
 			const string sourceUtf8 = WStringToUtf8(*target);
@@ -233,7 +236,7 @@ void ScriptUI::TickScriptParams()
 		{
 			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
 			string Key = "##Texture";
-			Key += ID;
+			Key += ID + GetUIKey();
 
 			Ptr<ATexture> pTex = *static_cast<Ptr<ATexture>*>(vecParam[i].Data);
 			
