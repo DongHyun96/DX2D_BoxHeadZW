@@ -17,11 +17,11 @@ void CInvenScript::Begin()
     // For testing (나중에는 파밍해서 처리할 것)
     m_mapStructureCount = 
     {
-        {PLAYER_STRUCTURE_TYPE::BARRICADE,          10},    
-        {PLAYER_STRUCTURE_TYPE::BARREL,             10},    
-        {PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN, 10},    
-        {PLAYER_STRUCTURE_TYPE::TURRET_MORTAR,      10},    
-        {PLAYER_STRUCTURE_TYPE::TURRET_ROCKET,      10},    
+        {PLAYER_STRUCTURE_TYPE::BARRICADE,          50},    
+        {PLAYER_STRUCTURE_TYPE::BARREL,             50},    
+        {PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN, 50},    
+        {PLAYER_STRUCTURE_TYPE::TURRET_MORTAR,      50},    
+        {PLAYER_STRUCTURE_TYPE::TURRET_ROCKET,      50},    
     };
     
 }

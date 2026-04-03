@@ -62,7 +62,8 @@ public:
     CBackgroundTile* GetBackgroundCellManager() const { return m_BackgroundCellManager; }
     
 public:
-    
+
+    void SpawnRocketSmoke(Vec3 _SpawnPos);
     void SpawnExplosionDome(Vec3 _SpawnPos, float _FPS = 20.f, float _DamageAmount = 50.f);
     
 };

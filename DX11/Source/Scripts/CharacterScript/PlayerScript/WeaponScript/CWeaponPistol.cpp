@@ -56,7 +56,7 @@ bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
 
     // Sound 재생
     Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\PistolShot.mp3"); 
-    pSound->PlayNonOverlapFromStart(1, 0.5f);
+    pSound->Play(1, 0.5f, true);
     
     // Muzzle Flash 및 Smoke Spawn
     SpawnMuzzleEffects(_MuzzleWorldPos);

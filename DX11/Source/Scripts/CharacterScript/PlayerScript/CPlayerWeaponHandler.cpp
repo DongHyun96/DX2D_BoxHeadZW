@@ -77,7 +77,7 @@ void CPlayerWeaponHandler::Tick()
     TickFireWeapon();
 
     // TODO : 여기 지우기 & 버프 처리 시, Weapon에 실질적으로 setting을 해주어야 함(지금 무기를 바꿀때만 처리가 되는 중)
-    /*if (KEY_TAP(KEY::MOUSE_X1))
+    if (KEY_TAP(KEY::MOUSE_X1))
     {
         if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
         {
@@ -93,7 +93,7 @@ void CPlayerWeaponHandler::Tick()
             int StateIdx = static_cast<int>(m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState);
             if (++StateIdx <= 2) m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
         }
-    }*/
+    }
     
     // TODO : 여기 지우기 (Muzzle 위치 디버깅)   
     const PLAYER_HANDSTATE CurrentHandState = m_PlayerMainScript->GetHandState();

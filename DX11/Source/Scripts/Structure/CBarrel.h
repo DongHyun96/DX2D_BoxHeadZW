@@ -33,6 +33,10 @@ public:
 private:
     
     void UpdateLateExplosion();
+
+public:
+    
+    bool IsMarkedLateExplosion() const { return m_MarkedLateExplosion; }
     
 public:
     

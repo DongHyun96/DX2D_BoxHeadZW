@@ -8,7 +8,7 @@
 
 map<CBarrel*, CellCoord> CBarrel::m_mapSpawnedBarrel{};
 
-const float CBarrel::m_LateExplodeWaitTime = 0.15f;
+const float CBarrel::m_LateExplodeWaitTime = 0.2f;
 
 CBarrel::CBarrel()
     : CStructure(SCRIPT_TYPE::BARREL)
@@ -25,6 +25,7 @@ void CBarrel::Begin()
     // TODO : 이미 맵에 깔려있는 애들은 BackgroundCellManager가 Begin시점에 nullptr일수도 있음
     if (CBackgroundTile* BackgroundCellManager = GM->GetBackgroundCellManager())
     {
+        if (GetIsPreviewObject()) return;
         m_CellCoord = BackgroundCellManager->GetWorldPosToCellCoord(ToVec2(Transform()->GetRelativePos()));
         m_mapSpawnedBarrel[this] = m_CellCoord; 
     }

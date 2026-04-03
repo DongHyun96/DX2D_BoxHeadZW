@@ -5,9 +5,9 @@
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 
 
-FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCONTROL_TYPE controltype
+/*FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCONTROL_TYPE controltype
                              , FMOD_CHANNELCONTROL_CALLBACK_TYPE callbacktype
-                             , void* commanddata1, void* commanddata2);
+                             , void* commanddata1, void* commanddata2);*/
 
 namespace
 {
@@ -29,6 +29,7 @@ namespace
         for (auto it = _ChannelList.begin(); it != _ChannelList.end();)
         {
             FMOD::Channel* channel = *it;
+        	
             bool isPlaying = false;
 
             if (channel == nullptr || FMOD_OK != channel->isPlaying(&isPlaying) || !isPlaying)
@@ -50,7 +51,7 @@ namespace
         _Channel->setLoopCount(_FmodLoopCount);
         _Channel->setVolume(_Volume);
 
-        _Channel->setCallback(&CHANNEL_CALLBACK);
+        // _Channel->setCallback(&CHANNEL_CALLBACK);
         _Channel->setUserData(_OwnerSound);
 
         int channelIdx = -1;
@@ -85,6 +86,8 @@ int ASound::Play(int _iLoopCount, float _fVolume, bool _bOverlap)
     if (!_bOverlap && !m_listChannel.empty())
         return E_FAIL;
 
+	DebugUtil::AddDebugLog("Channel size before : " + to_string(m_listChannel.size()), DEF_COLOR_CYAN, 5.f);
+	
     FMOD::Channel* pChannel = nullptr;
     FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
 
@@ -93,6 +96,9 @@ int ASound::Play(int _iLoopCount, float _fVolume, bool _bOverlap)
         return E_FAIL;
 
     m_listChannel.push_back(pChannel);
+	
+	DebugUtil::AddDebugLog("Channel size After : " + to_string(m_listChannel.size()), DEF_COLOR_CYAN, 5.f);
+	DebugUtil::AddDebugLog("", DEF_COLOR_CYAN, 5.f);
     return channelIdx;
 }
 
@@ -142,12 +148,13 @@ int ASound::PlayNonOverlapFromStart(int _iLoopCount, float _fVolume)
 
 void ASound::Stop()
 {
-	list<FMOD::Channel*>::iterator iter{};
+	
+	auto tempChannelList = m_listChannel;
+	m_listChannel.clear();
 
-	while (!m_listChannel.empty())
+	for (FMOD::Channel* pChannel : tempChannelList)
 	{
-		iter = m_listChannel.begin();
-		(*iter)->stop();
+		pChannel->stop();
 	}
 }
 
@@ -198,15 +205,43 @@ HRESULT ASound::Load(const wstring& _FilePath)
 	
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	string path(_FilePath.begin(), _FilePath.end());
+	// 기존 Sound Load 처리
+	/*string path(_FilePath.begin(), _FilePath.end());
 	FMOD_RESULT result = FMOD_SYSTEM->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &m_Sound);
 	if (FMOD_OK != result)
 	{
 		assert(nullptr);
 	}
 
+	return S_OK;*/
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////
+	string path = string(_FilePath.begin(), _FilePath.end()); 
+    
+	// 확장자를 검사하여 BGM(스트리밍)과 SFX(메모리)를 구분
+	size_t extPos = path.find_last_of('.');
+	string ext = (extPos != string::npos) ? path.substr(extPos + 1) : "";
+    
+	// MP3나 OGG는 스트리밍으로, 나머지는 메모리 사운드로 생성
+	FMOD_RESULT result;
+	if (ext == "mp3" || ext == "ogg")
+	{
+		result = FMOD_SYSTEM->createStream(path.c_str(), FMOD_DEFAULT, nullptr, &m_Sound);
+	}
+	else
+	{
+		result = FMOD_SYSTEM->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &m_Sound);
+	}
+
+	if (FMOD_OK != result)
+	{
+		assert(false); // 로딩 실패 처리
+		return E_FAIL;
+	}
+
 	return S_OK;
+	
 }
 
 HRESULT ASound::Save(const wstring& _FilePath)
@@ -236,6 +271,7 @@ HRESULT ASound::Save(const wstring& _FilePath)
 	return S_OK;
 }
 
+/*
 FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCONTROL_TYPE controltype
 	, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbacktype
 	, void* commanddata1, void* commanddata2)
@@ -257,3 +293,4 @@ FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCO
 
 	return FMOD_OK;
 }
+*/
