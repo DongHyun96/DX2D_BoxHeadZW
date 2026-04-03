@@ -156,6 +156,9 @@ void CStructureHandler::UpdateSpawnStructure(const Vec2& _PreviewPos, bool _Avai
         SpawnedStructure->Transform()->SetRelativePos(ToVec3(_PreviewPos)); // UpdateZ to Y 설정 처리되어있어서 Z값은 신경 안써도 됨
         
         m_InvenScript->ReduceCurrentStructureCount(m_CurrentStructureHolding); // 갯수를 하나 줄인다
+        
+        // Taken Cell 기록
+        GM->GetBackgroundCellManager()->SetCellTaken(_PreviewPos, true);
     }
 }
 
@@ -177,7 +180,7 @@ void CStructureHandler::CreateStructureHoldingPreviewIfNecessary()
         switch (Pair.first)
         {
         case PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN: case PLAYER_STRUCTURE_TYPE::TURRET_MORTAR: case PLAYER_STRUCTURE_TYPE::TURRET_ROCKET:
-            NewStructureObject->FlipbookRender()->Stop(L"Turret", 0, 0); // Flipbook Structure의 경우, 멈춘 상태로 PreviewObject를 보여준다            
+            NewStructureObject->FlipbookRender()->Stop(L"Turret", 0, 0); // Flipbook Structure의 경우, 멈춘 상태로 PreviewObject를 보여준다  
             break;            
         }
         

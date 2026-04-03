@@ -2,6 +2,8 @@
 #include "CStructure.h"
 
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/CharacterScript/CCharacterScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 

@@ -100,7 +100,26 @@ public:
     /// 해당 Cell 위치가 설치물 또는, Enemy가 이동하기 가능한 위치인지
     /// </summary>
     bool IsCellAvailable(const CellCoord& _CellCoord) const;
+
+    /// <summary>
+    /// 해당 Cell 좌표의 Taken 처리 
+    /// </summary>
+    /// <returns></returns>
+    bool SetCellTaken(const CellCoord& _CellCoord, bool _Taken);
+
+    bool SetCellTaken(const Vec2& _WorldPos2D, bool _Taken);
     
+    /// <summary>
+    /// 해당 WorldPos에 해당하는 CellCoord 좌표 Taken 처리 
+    /// </summary>
+    bool SetCellTaken(const Vec3& _WorldPos, bool _Taken) { return SetCellTaken(ToVec2(_WorldPos), _Taken); }
+    
+    /// <summary>
+    /// 해당 WorldPos가 바운더리를 넘어가는지 체크
+    /// </summary>
+    bool IsWorldPosOutOfBounds(const Vec2& _WorldPos) const;
+    
+    bool IsCellCoordOutOfBounds(const CellCoord& _CellCoord) const;
     
 public:
     

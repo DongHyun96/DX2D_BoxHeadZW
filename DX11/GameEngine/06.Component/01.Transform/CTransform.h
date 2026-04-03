@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <GameEngine/06.Component/Component.h>
 #include "Header/enum.h"
+#include "Module/Util.h"
 
 class CTransform : public Component
 {
@@ -90,6 +91,7 @@ public:
     void SetRelativeRotZ(float z) { m_RelativeRot.z = z; }
 
     Vec3 GetWorldPos() const { return m_MatWorld.Translation(); }
+    Vec2 GetWorldPos2D() const { return ToVec2(m_MatWorld.Translation()); }
     Vec3 GetWorldScale() const;
 
     Vec3 GetPivot() const { return m_Pivot; }

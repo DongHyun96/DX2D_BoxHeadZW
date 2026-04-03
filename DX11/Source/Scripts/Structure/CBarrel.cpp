@@ -21,6 +21,8 @@ CBarrel::~CBarrel()
 
 void CBarrel::Begin()
 {
+    CStructure::Begin();
+    
     // CreateObject 처리가 되면서 Begin이 호출되면서 자연스럽게 SpawnedBarrel에 집어넣을 수 있음
     // TODO : 이미 맵에 깔려있는 애들은 BackgroundCellManager가 Begin시점에 nullptr일수도 있음
     if (CBackgroundTile* BackgroundCellManager = GM->GetBackgroundCellManager())
@@ -45,6 +47,10 @@ void CBarrel::UpdateLateExplosion()
     if (m_LateExplodeTimer < m_LateExplodeWaitTime) return;
     
     Destroy(); // Self Destroy 처리
+    
+    // 여기서 자기자신의 Taken 기록을 지워야 한다
+    GM->GetBackgroundCellManager()->SetCellTaken(Transform()->GetWorldPos2D(), false);
+    
     GM->SpawnExplosionDome(Transform()->GetRelativePos(), 40.f);
     TryExplodeAdjacentCells(); // 연쇄 폭파 처리 continue
 }
