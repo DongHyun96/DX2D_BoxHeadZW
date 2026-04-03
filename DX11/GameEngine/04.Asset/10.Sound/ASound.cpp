@@ -3,6 +3,9 @@
 
 #include "GameEngine/01.Engine/Engine.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include <FMOD/fmod_errors.h>
+#include <algorithm>
+#include <cctype>
 
 
 /*FMOD_RESULT CHANNEL_CALLBACK(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCONTROL_TYPE controltype
@@ -89,7 +92,12 @@ int ASound::Play(int _iLoopCount, float _fVolume, bool _bOverlap)
 	DebugUtil::AddDebugLog("Channel size before : " + to_string(m_listChannel.size()), DEF_COLOR_CYAN, 5.f);
 	
     FMOD::Channel* pChannel = nullptr;
-    FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
+    const FMOD_RESULT playResult = FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
+    if (FMOD_OK != playResult)
+    {
+        DebugUtil::AddDebugLog(string("[ASound::Play] playSound failed : ") + FMOD_ErrorString(playResult), DEF_COLOR_RED, 5.f);
+        return E_FAIL;
+    }
 
     const int channelIdx = SetupChannelAndGetIndex(pChannel, this, fmodLoopCount, _fVolume);
     if (channelIdx == E_FAIL)
@@ -136,7 +144,12 @@ int ASound::PlayNonOverlapFromStart(int _iLoopCount, float _fVolume)
     }
 
     FMOD::Channel* pChannel = nullptr;
-    FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
+    const FMOD_RESULT playResult = FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
+    if (FMOD_OK != playResult)
+    {
+        DebugUtil::AddDebugLog(string("[ASound::PlayNonOverlapFromStart] playSound failed : ") + FMOD_ErrorString(playResult), DEF_COLOR_RED, 5.f);
+        return E_FAIL;
+    }
 
     const int channelIdx = SetupChannelAndGetIndex(pChannel, this, fmodLoopCount, _fVolume);
     if (channelIdx == E_FAIL)
@@ -219,23 +232,22 @@ HRESULT ASound::Load(const wstring& _FilePath)
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	string path = string(_FilePath.begin(), _FilePath.end()); 
     
-	// 확장자를 검사하여 BGM(스트리밍)과 SFX(메모리)를 구분
+	// 확장자 검사
 	size_t extPos = path.find_last_of('.');
 	string ext = (extPos != string::npos) ? path.substr(extPos + 1) : "";
+    transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(tolower(c)); });
     
-	// MP3나 OGG는 스트리밍으로, 나머지는 메모리 사운드로 생성
-	FMOD_RESULT result;
+	// MP3 / OGG SFX 는 압축샘플로 로드해서 Overlap 재생이 가능하도록 처리
+	// (Stream은 동일 Sound 동시 재생 시 제약이 있어 Overlap 체감이 사라짐)
+	FMOD_MODE mode = FMOD_DEFAULT;
 	if (ext == "mp3" || ext == "ogg")
-	{
-		result = FMOD_SYSTEM->createStream(path.c_str(), FMOD_DEFAULT, nullptr, &m_Sound);
-	}
-	else
-	{
-		result = FMOD_SYSTEM->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &m_Sound);
-	}
+		mode |= FMOD_CREATECOMPRESSEDSAMPLE;
+
+	FMOD_RESULT result = FMOD_SYSTEM->createSound(path.c_str(), mode, nullptr, &m_Sound);
 
 	if (FMOD_OK != result)
 	{
+        DebugUtil::AddDebugLog(string("[ASound::Load] createSound failed : ") + FMOD_ErrorString(result), DEF_COLOR_RED, 10.f);
 		assert(false); // 로딩 실패 처리
 		return E_FAIL;
 	}
