@@ -64,6 +64,8 @@ public:
     
     float GetWorldSize() const { return m_WorldSize; }
     float GetWorldSizeHalf() const { return m_WorldHalfSize; }
+    float GetTileSize() const { return m_TileSize; }
+    UINT GetTileRowCount() const { return m_TileRowCount; }
 
 public:
     /// <summary>
@@ -100,6 +102,7 @@ public:
     /// 해당 Cell 위치가 설치물 또는, Enemy가 이동하기 가능한 위치인지
     /// </summary>
     bool IsCellAvailable(const CellCoord& _CellCoord) const;
+    bool IsCellTaken(const CellCoord& _CellCoord) const;
 
     /// <summary>
     /// 해당 Cell 좌표의 Taken 처리 

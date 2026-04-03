@@ -7,6 +7,7 @@
 CBackgroundTile::CBackgroundTile()
     : CScript(SCRIPT_TYPE::BACKGROUNDTILE)
 {
+    m_CellTaken.assign(m_TileRowCount, vector<bool>(m_TileRowCount, false));
 }
 
 CBackgroundTile::~CBackgroundTile()
@@ -26,9 +27,6 @@ void CBackgroundTile::Begin()
 
 void CBackgroundTile::Tick()
 {
-    for (int i = 0; i < m_TileRowCount; i++)
-        for  (int j = 0; j < m_TileRowCount; j++)
-            if (m_CellTaken[i][j]) DebugUtil::AddDebugLog("Cell Taken : " + to_string(j) + "_" + to_string(i), DEF_COLOR_WHITE, 0.f);
 }
 
 Vec2 CBackgroundTile::GetCellCoordToWorldPos(const CellCoord& _CellCoord) const
@@ -59,6 +57,16 @@ bool CBackgroundTile::IsCellAvailable(const CellCoord& _CellCoord) const
     // Invalid Boundary
     if (IsCellCoordOutOfBounds(_CellCoord)) return false;
     return !m_CellTaken[_CellCoord.y][_CellCoord.x];    
+}
+
+bool CBackgroundTile::IsCellTaken(const CellCoord& _CellCoord) const
+{
+    if (IsCellCoordOutOfBounds(_CellCoord)) return false;
+
+    if (m_CellTaken.size() <= _CellCoord.y) return false;
+    if (m_CellTaken[_CellCoord.y].size() <= _CellCoord.x) return false;
+
+    return m_CellTaken[_CellCoord.y][_CellCoord.x];
 }
 
 bool CBackgroundTile::SetCellTaken(const CellCoord& _CellCoord, bool _Taken)

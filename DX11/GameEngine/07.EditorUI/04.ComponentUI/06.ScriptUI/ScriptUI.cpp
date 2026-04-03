@@ -2,6 +2,7 @@
 #include "ScriptUI.h"
 
 #include <Source/ScriptMgr.h>
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 
 #include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
@@ -48,6 +49,9 @@ namespace
 	}
 }
 
+bool ScriptUI::s_BackgroundTileCellEditingEnabled = false;
+CBackgroundTile* ScriptUI::s_BackgroundTileEditingTarget = nullptr;
+bool ScriptUI::s_BackgroundTileBrushTakenValue = true;
 
 
 ScriptUI::ScriptUI()
@@ -72,7 +76,13 @@ ScriptUI::~ScriptUI()
 
 void ScriptUI::SetScript(CScript* _Script)
 {
+	CScript* prevScript = m_TargetScript.Get();
+	if (prevScript && prevScript == s_BackgroundTileEditingTarget)
+		s_BackgroundTileEditingTarget = nullptr;
+
 	m_TargetScript = _Script;
+	if (m_TargetScript && m_TargetScript->GetScriptType() == SCRIPT_TYPE::BACKGROUNDTILE)
+		s_BackgroundTileEditingTarget = static_cast<CBackgroundTile*>(m_TargetScript.Get());
 
 	SetActive(m_TargetScript != nullptr);
 	SetTargetObject(m_TargetScript ? m_TargetScript->GetOwner() : nullptr);
@@ -108,7 +118,10 @@ void ScriptUI::Tick_UI()
 	
 	const string CollapsingHeaderKey = "Serialized Params##" + GetUIKey();
 	if (ImGui::CollapsingHeader(CollapsingHeaderKey.c_str(), ImGuiTreeNodeFlags_None))
+	{
 		TickScriptParams();
+		TickBackgroundTileEditingUI();
+	}
 
 	SetSizeAsChild(Vec2(0.f, static_cast<float>(m_ItemHeight)));
 	
@@ -279,6 +292,34 @@ void ScriptUI::TickScriptParams()
 		}
 		ImGui::EndDisabled();
 	}
+}
+
+void ScriptUI::TickBackgroundTileEditingUI()
+{
+	if (m_TargetScript->GetScriptType() != SCRIPT_TYPE::BACKGROUNDTILE) return;
+
+	s_BackgroundTileEditingTarget = static_cast<CBackgroundTile*>(m_TargetScript.Get());
+
+	ImGui::SeparatorText("CBackgroundTile Editing");
+	AddItemHeight();
+
+	bool enabled = s_BackgroundTileCellEditingEnabled;
+	if (ImGui::Checkbox("Enable m_CellTaken editing in Main View", &enabled))
+		s_BackgroundTileCellEditingEnabled = enabled;
+	AddItemHeight();
+
+	bool paintTaken = s_BackgroundTileBrushTakenValue;
+	if (ImGui::RadioButton("Brush: Paint Taken (true)", paintTaken))
+		s_BackgroundTileBrushTakenValue = true;
+	AddItemHeight();
+	if (ImGui::RadioButton("Brush: Paint Empty (false)", !paintTaken))
+		s_BackgroundTileBrushTakenValue = false;
+	AddItemHeight();
+
+	ImGui::Text("LMB Click / Drag: paint with selected brush value");
+	AddItemHeight();
+	ImGui::Text("Grid uses Render_Debug path (F9: debug render on/off)");
+	AddItemHeight();
 }
 
 void ScriptUI::AddItemHeight()
