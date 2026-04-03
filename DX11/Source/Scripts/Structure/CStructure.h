@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+/// <summary>
+/// TODO : Turret 종류의 클래스도 만들어서, 대신 Attack 부분만 전략패턴 써서 구현하면 좋지 않을까?
+/// </summary>
 class CStructure : public CScript
 {
 private:
@@ -11,6 +14,10 @@ public:
     CStructure();
     virtual ~CStructure() override;
     CLONE(CStructure)
+    
+protected:
+    
+    CStructure(SCRIPT_TYPE _ScriptType);
     
 public:
 

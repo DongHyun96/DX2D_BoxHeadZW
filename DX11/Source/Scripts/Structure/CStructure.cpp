@@ -14,6 +14,11 @@ CStructure::~CStructure()
 {
 }
 
+CStructure::CStructure(SCRIPT_TYPE _ScriptType)
+    : CScript(_ScriptType)
+{
+}
+
 void CStructure::Begin()
 {
     ADD_DYNAMIC_BEGIN_OVERLAP(CStructure::BeginOverlap);

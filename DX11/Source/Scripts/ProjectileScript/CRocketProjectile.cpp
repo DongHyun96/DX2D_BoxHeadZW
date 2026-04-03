@@ -68,13 +68,7 @@ void CRocketProjectile::Tick()
     if (m_SmokeSpawnTime >= s_SMOKE_SPAWN_INTERVAL)
     {
         m_SmokeSpawnTime -= s_SMOKE_SPAWN_INTERVAL;
-        GameObject* Object = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::ROCKET_SMOKE_POOLER)->SpawnObject();
-        if (Object)
-        {
-            Object->Transform()->SetRelativePosX(Transform()->GetRelativePosX());
-            Object->Transform()->SetRelativePosY(Transform()->GetRelativePosY());
-            Object->FlipbookRender()->Play(0, 20.f, 1);
-        }
+        GM->SpawnExplosionDome(Transform()->GetRelativePos());
     }
     
 }
@@ -99,7 +93,10 @@ void CRocketProjectile::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _
     }
     
     if (Ptr<CStatScript> Stat = _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>())
+    {
+        // 여기서 Damage를 주면 안되는 안타까운 사실 -> TODO : Explosion Dome의 경우에는 Dome 자체에서 Damage를 주는 방식으로 수정해야 함
         Stat->TakeDamage(m_Damage, ToVec2(Transform()->GetWorldPos()));
+    }
 }
 
 void CRocketProjectile::SaveToLevelFile(FILE* _File)

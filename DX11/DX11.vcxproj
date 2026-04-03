@@ -306,6 +306,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\EffectScript\CFlipbookEffectScript.h" />
     <ClInclude Include="Source\Scripts\EffectScript\MuzzleEffects\CMuzzleFlashScript.h" />
     <ClInclude Include="Source\Scripts\EffectScript\MuzzleEffects\CMuzzleSmokeScript.h" />
+    <ClInclude Include="Source\Scripts\ExplosionDome\CExplosionDome.h" />
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CRocketProjectile.h" />
     <ClInclude Include="Source\Scripts\StatScript\CCharacterStat.h" />
@@ -313,6 +314,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\StatScript\CStructureStat.h" />
     <ClInclude Include="Source\Scripts\StatScript\EnemyStat\CEnemyStat.h" />
     <ClInclude Include="Source\Scripts\StatScript\PlayerStat\CPlayerStat.h" />
+    <ClInclude Include="Source\Scripts\Structure\CBarrel.h" />
     <ClInclude Include="Source\Scripts\Structure\CStructure.h" />
     <ClInclude Include="Source\UserHeader\userDefine.h" />
     <ClInclude Include="Source\UserHeader\userEnum.h" />
@@ -1216,6 +1218,7 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Source\Scripts\ExplosionDome\CExplosionDome.cpp" />
     <ClCompile Include="Source\Scripts\Obstacle\CObstacle.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CRocketProjectile.cpp" />
     <ClCompile Include="Source\Scripts\StatScript\CCharacterStat.cpp" />
@@ -1299,6 +1302,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\StatScript\CStructureStat.cpp" />
     <ClCompile Include="Source\Scripts\StatScript\EnemyStat\CEnemyStat.cpp" />
     <ClCompile Include="Source\Scripts\StatScript\PlayerStat\CPlayerStat.cpp" />
+    <ClCompile Include="Source\Scripts\Structure\CBarrel.cpp" />
     <ClCompile Include="Source\Scripts\Structure\CStructure.cpp" />
   </ItemGroup>
   <ItemGroup>

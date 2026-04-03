@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "GameManager.h"
 
+#include "Source/Scripts/ExplosionDome/CExplosionDome.h"
+
 GameManager::GameManager()
 {
 }
@@ -40,4 +42,23 @@ CPoolComponent* GameManager::GetEnemyPooler(ENEMY_TYPE _EnemyType) const
 {
     if (!m_mapEnemyPoolers.contains(_EnemyType)) return nullptr;
     return m_mapEnemyPoolers.at(_EnemyType);
+}
+
+void GameManager::SpawnExplosionDome(Vec3 _SpawnPos, float _FPS, float _DamageAmount)
+{
+    GameObject* Object = m_mapFlipbookEffectPoolers[FLIPBOOK_EFFECT_POOLER_TYPE::EXPLOSION_DOME_EFFECT_POOLER]->SpawnObject();
+    if (Object)
+    {
+        Object->Transform()->SetRelativePosX(_SpawnPos.x);
+        Object->Transform()->SetRelativePosY(_SpawnPos.y);
+        Object->FlipbookRender()->Play(0, _FPS, 1);
+        
+        if (Ptr<CExplosionDome> ExplosionDome = Object->GetScriptComponent<CExplosionDome>())
+        {
+            ExplosionDome->ClearAlreadyDamaged();
+            ExplosionDome->SetDamage(_DamageAmount);
+            
+        }
+        
+    }
 }

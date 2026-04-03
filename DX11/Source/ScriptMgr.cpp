@@ -26,6 +26,7 @@
 #include "Source/Scripts/EffectScript\CFlipbookEffectScript.h"
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleFlashScript.h"
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleSmokeScript.h"
+#include "Source/Scripts/ExplosionDome\CExplosionDome.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/ProjectileScript\CRocketProjectile.h"
 #include "Source/Scripts/StatScript\CCharacterStat.h"
@@ -33,6 +34,7 @@
 #include "Source/Scripts/StatScript\CStructureStat.h"
 #include "Source/Scripts/StatScript\EnemyStat\CEnemyStat.h"
 #include "Source/Scripts/StatScript\PlayerStat\CPlayerStat.h"
+#include "Source/Scripts/Structure\CBarrel.h"
 #include "Source/Scripts/Structure\CStructure.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
@@ -59,6 +61,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CFlipbookEffectScript");
 	_vec.push_back(L"CMuzzleFlashScript");
 	_vec.push_back(L"CMuzzleSmokeScript");
+	_vec.push_back(L"CExplosionDome");
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CRocketProjectile");
 	_vec.push_back(L"CCharacterStat");
@@ -66,6 +69,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CStructureStat");
 	_vec.push_back(L"CEnemyStat");
 	_vec.push_back(L"CPlayerStat");
+	_vec.push_back(L"CBarrel");
 	_vec.push_back(L"CStructure");
 }
 
@@ -121,6 +125,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CMuzzleFlashScript;
 	if (L"CMuzzleSmokeScript" == _strScriptName)
 		return new CMuzzleSmokeScript;
+	if (L"CExplosionDome" == _strScriptName)
+		return new CExplosionDome;
 	if (L"CObstacle" == _strScriptName)
 		return new CObstacle;
 	if (L"CRocketProjectile" == _strScriptName)
@@ -135,6 +141,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CEnemyStat;
 	if (L"CPlayerStat" == _strScriptName)
 		return new CPlayerStat;
+	if (L"CBarrel" == _strScriptName)
+		return new CBarrel;
 	if (L"CStructure" == _strScriptName)
 		return new CStructure;
 	return nullptr;
@@ -194,6 +202,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CMuzzleFlashScript;
 	case (UINT)SCRIPT_TYPE::MUZZLESMOKESCRIPT:
 		return new CMuzzleSmokeScript;
+	case (UINT)SCRIPT_TYPE::EXPLOSIONDOME:
+		return new CExplosionDome;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
 		return new CObstacle;
 	case (UINT)SCRIPT_TYPE::ROCKETPROJECTILE:
@@ -208,6 +218,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CEnemyStat;
 	case (UINT)SCRIPT_TYPE::PLAYERSTAT:
 		return new CPlayerStat;
+	case (UINT)SCRIPT_TYPE::BARREL:
+		return new CBarrel;
 	case (UINT)SCRIPT_TYPE::STRUCTURE:
 		return new CStructure;
 	}
@@ -268,6 +280,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CMuzzleFlashScript";
 	case SCRIPT_TYPE::MUZZLESMOKESCRIPT:
 		return L"CMuzzleSmokeScript";
+	case SCRIPT_TYPE::EXPLOSIONDOME:
+		return L"CExplosionDome";
 	case SCRIPT_TYPE::OBSTACLE:
 		return L"CObstacle";
 	case SCRIPT_TYPE::ROCKETPROJECTILE:
@@ -282,6 +296,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CEnemyStat";
 	case SCRIPT_TYPE::PLAYERSTAT:
 		return L"CPlayerStat";
+	case SCRIPT_TYPE::BARREL:
+		return L"CBarrel";
 	case SCRIPT_TYPE::STRUCTURE:
 		return L"CStructure";
 	}
