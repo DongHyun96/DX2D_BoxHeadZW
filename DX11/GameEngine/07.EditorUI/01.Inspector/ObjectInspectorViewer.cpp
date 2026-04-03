@@ -85,6 +85,8 @@ void ObjectInspectorViewer::TickHeaderUI()
     string ScriptList{};
     for (const Ptr<CScript>& Script : m_TargetObject->GetScripts())
     {
+        if (Script->GetScriptType() < 0) continue; // Engine 제공 Script
+        
         const wstring& ScriptName = ScriptMgr::GetScriptName(Script.Get());
         const string ScriptNameStr = string(ScriptName.begin(), ScriptName.end());
         ScriptList.append("* " + ScriptNameStr + "\n");
