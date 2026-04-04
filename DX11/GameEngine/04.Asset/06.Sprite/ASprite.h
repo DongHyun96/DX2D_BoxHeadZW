@@ -17,6 +17,10 @@ private:
     Vec2            m_SliceUV{};
     Vec2            m_BackgroundUV{};   // 공통된 UV Background Size
     Vec2            m_OffsetUV{};       // Offset size 
+
+private:
+    
+    Vec2            m_PinPoint{}; // 특정 위치를 (-1, -1) ~ (1, 1) Default 크기 좌표 기준으로 찝는 역할 (ex. Muzzle 위치)
     
 public:
     
@@ -32,6 +36,7 @@ public:
     GET_SET(Vec2, SliceUV)
     GET_SET(Vec2, BackgroundUV)
     GET_SET(Vec2, OffsetUV)
+    GET_SET(Vec2, PinPoint)
 
     /// <summary>
     /// Atlas가 Setting되었을 때, 프레임 좌표 기준으로 Sprite 세팅 (LeftTopUV, SliceUV 세팅) 

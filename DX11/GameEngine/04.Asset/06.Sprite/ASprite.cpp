@@ -48,6 +48,7 @@ HRESULT ASprite::Save(const wstring& _FilePath)
     fwrite(&m_SliceUV,      sizeof(Vec2), 1, pFile);
     fwrite(&m_BackgroundUV, sizeof(Vec2), 1, pFile);
     fwrite(&m_OffsetUV,     sizeof(Vec2), 1, pFile);
+    fwrite(&m_PinPoint,     sizeof(Vec2), 1, pFile);
 
     fclose(pFile);
     
@@ -71,7 +72,7 @@ HRESULT ASprite::Load(const wstring& _FilePath)
     fread(&m_SliceUV,       sizeof(Vec2), 1, pFile);
     fread(&m_BackgroundUV,  sizeof(Vec2), 1, pFile);
     fread(&m_OffsetUV,      sizeof(Vec2), 1, pFile);
-
+    fread(&m_PinPoint,      sizeof(Vec2), 1, pFile);
     fclose(pFile);
     
     return S_OK;
