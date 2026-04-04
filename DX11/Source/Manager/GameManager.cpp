@@ -57,7 +57,7 @@ void GameManager::SpawnRocketSmoke(Vec3 _SpawnPos)
     }
 }
 
-void GameManager::SpawnExplosionDome(Vec3 _SpawnPos, float _FPS, float _DamageAmount)
+void GameManager::SpawnExplosionDome(Vec3 _SpawnPos, float _ExplosionSizeFactor, float _FPS, float _DamageAmount)
 {
     GameObject* Object = m_mapFlipbookEffectPoolers[FLIPBOOK_EFFECT_POOLER_TYPE::EXPLOSION_DOME_EFFECT_POOLER]->SpawnObject();
     if (Object)
@@ -70,7 +70,7 @@ void GameManager::SpawnExplosionDome(Vec3 _SpawnPos, float _FPS, float _DamageAm
         {
             ExplosionDome->ClearAlreadyDamaged();
             ExplosionDome->SetDamage(_DamageAmount);
-            
+            ExplosionDome->SetExplosionSize(_ExplosionSizeFactor);            
         }
         
         Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\Explosion1.mp3");

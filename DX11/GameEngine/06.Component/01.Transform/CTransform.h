@@ -73,6 +73,8 @@ public:
     void SetRelativePosX(float x) { m_RelativePos.x = x; }
     void SetRelativePosY(float y) { m_RelativePos.y = y; }
     void SetRelativePosZ(float z) { m_RelativePos.z = z; }
+    void SetRelativePosXY(float x, float y) { m_RelativePos.x = x; m_RelativePos.y = y; }
+    void SetRelativePosXY(const Vec2& _V) { m_RelativePos.x = _V.x; m_RelativePos.y = _V.y; }
     
     float GetRelativeScaleX() const { return m_RelativeScale.x; }
     float GetRelativeScaleY() const { return m_RelativeScale.y; }
@@ -81,6 +83,8 @@ public:
     void SetRelativeScaleX(float x) { m_RelativeScale.x = x; }
     void SetRelativeScaleY(float y) { m_RelativeScale.y = y; }
     void SetRelativeScaleZ(float z) { m_RelativeScale.z = z; }
+    void SetRelativeScaleXY(float x, float y) { m_RelativeScale.x = x; m_RelativeScale.y = y; }
+    void SetRelativeScaleXY(const Vec2& _V) { m_RelativeScale.x = _V.x; m_RelativeScale.y = _V.y; }
     
     float GetRelativeRotX() const { return m_RelativeRot.x; }
     float GetRelativeRotY() const { return m_RelativeRot.y; }

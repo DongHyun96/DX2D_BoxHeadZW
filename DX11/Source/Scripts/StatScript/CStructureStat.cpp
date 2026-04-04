@@ -29,7 +29,7 @@ bool CStructureStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePo
         // Barrel 종류인 경우, 연쇄 폭파 작동 처리
         if (Ptr<CBarrel> Barrel = GetOwner()->GetScriptComponent<CBarrel>())
         {
-            GM->SpawnExplosionDome(Transform()->GetRelativePos(), 40.f);
+            GM->SpawnExplosionDome(Transform()->GetRelativePos(), GetRandom(1.2f, 1.5f));
 
             // 자기자신 CellCoord map 에서 제거
             CBarrel::RemoveSpawnedBarrelFromStaticMap(Barrel.Get());

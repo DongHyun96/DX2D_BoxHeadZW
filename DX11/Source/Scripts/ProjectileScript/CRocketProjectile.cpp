@@ -79,7 +79,7 @@ void CRocketProjectile::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _
     GetOwner()->SetActive(false);
     
     // Effect Spawn 처리하기
-    GM->SpawnExplosionDome(Transform()->GetWorldPos(), 50.f);
+    GM->SpawnExplosionDome(Transform()->GetWorldPos(), GetRandom(1.f, 1.2f));
     
     if (Ptr<CStatScript> Stat = _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>())
     {

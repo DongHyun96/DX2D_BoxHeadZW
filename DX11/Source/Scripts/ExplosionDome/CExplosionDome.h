@@ -11,6 +11,10 @@ private:
     
     // 이미 Damage를 입힌 CCollider의 경우, 넘어가야 함
     set<CCollider2D*> m_setAlreadyDamaged{};
+
+private: // 크기 관련
+    
+    static const Vec2 s_ScaleSizeBase;
     
 public:
 
@@ -27,6 +31,12 @@ public:
     
     void ClearAlreadyDamaged() { m_setAlreadyDamaged.clear(); }
     void SetDamage(float _DamageAmount) { m_DamageAmount = _DamageAmount; }
+
+    /// <summary>
+    /// Scale의 Factor로 곱해질 Size 값 설정
+    /// </summary>
+    /// <param name="_Factor"></param>
+    void SetExplosionSize(float _Factor);
 
 private:
     

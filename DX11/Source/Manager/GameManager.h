@@ -64,6 +64,6 @@ public:
 public:
 
     void SpawnRocketSmoke(Vec3 _SpawnPos);
-    void SpawnExplosionDome(Vec3 _SpawnPos, float _FPS = 20.f, float _DamageAmount = 50.f);
+    void SpawnExplosionDome(Vec3 _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f);
     
 };

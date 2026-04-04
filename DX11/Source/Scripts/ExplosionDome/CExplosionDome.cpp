@@ -7,6 +7,8 @@
 #include "Source/Scripts/StatScript/CStatScript.h"
 #include "Source/Scripts/Structure/CBarrel.h"
 
+const Vec2 CExplosionDome::s_ScaleSizeBase = { 150.f, 100.f }; 
+
 CExplosionDome::CExplosionDome()
     : CScript(SCRIPT_TYPE::EXPLOSIONDOME)
 {
@@ -23,6 +25,12 @@ void CExplosionDome::Begin()
 
 void CExplosionDome::Tick()
 {
+}
+
+void CExplosionDome::SetExplosionSize(float _Factor)
+{
+    const Vec2 NewScale = s_ScaleSizeBase * _Factor;
+    Transform()->SetRelativeScaleXY(NewScale);
 }
 
 void CExplosionDome::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)

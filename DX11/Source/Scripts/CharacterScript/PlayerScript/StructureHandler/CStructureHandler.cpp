@@ -153,7 +153,7 @@ void CStructureHandler::UpdateSpawnStructure(const Vec2& _PreviewPos, bool _Avai
     if (KEY_TAP(KEY::MLB))
     {
         GameObject* SpawnedStructure = m_mapStructureTypePrefabs[m_CurrentStructureHolding]->InstantiateAndSpawnToCurLevel();
-        SpawnedStructure->Transform()->SetRelativePos(ToVec3(_PreviewPos)); // UpdateZ to Y 설정 처리되어있어서 Z값은 신경 안써도 됨
+        SpawnedStructure->Transform()->SetRelativePos(ToVec3(_PreviewPos, _PreviewPos.y)); 
         
         m_InvenScript->ReduceCurrentStructureCount(m_CurrentStructureHolding); // 갯수를 하나 줄인다
         

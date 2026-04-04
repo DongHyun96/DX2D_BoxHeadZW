@@ -8,7 +8,7 @@
 
 map<CBarrel*, CellCoord> CBarrel::m_mapSpawnedBarrel{};
 
-const float CBarrel::m_LateExplodeWaitTime = 0.2f;
+const float CBarrel::m_LateExplodeWaitTime = 0.1f;
 
 CBarrel::CBarrel()
     : CStructure(SCRIPT_TYPE::BARREL)
@@ -51,7 +51,7 @@ void CBarrel::UpdateLateExplosion()
     // 여기서 자기자신의 Taken 기록을 지워야 한다
     GM->GetBackgroundCellManager()->SetCellTaken(Transform()->GetWorldPos2D(), false);
     
-    GM->SpawnExplosionDome(Transform()->GetRelativePos(), 40.f);
+    GM->SpawnExplosionDome(Transform()->GetRelativePos(), GetRandom(1.2f, 1.5f));
     TryExplodeAdjacentCells(); // 연쇄 폭파 처리 continue
 }
 
