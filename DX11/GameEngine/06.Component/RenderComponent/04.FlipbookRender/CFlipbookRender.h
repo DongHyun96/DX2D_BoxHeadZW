@@ -131,6 +131,8 @@ public: // 재생 관련
     /// <returns></returns>
     bool Stop(int _SpriteIdx);
     
+    int GetCurAnimatingSpriteIdx() const { return m_CurAnimatingSpriteIdx; }
+    
 public:
 
     bool SetFlipbook(const wstring& _Category, int _Idx, const Ptr<AFlipbook>& _Flipbook);

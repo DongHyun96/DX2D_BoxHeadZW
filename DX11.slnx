@@ -3,5 +3,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="CodeGen/CodeGen.vcxproj" Id="fd69567e-8fbb-45f0-aa9e-71872590afdd" />
   <Project Path="DX11/DX11.vcxproj" Id="be48757e-c2d0-4700-9dd2-8a1c3b96f1db" />
 </Solution>

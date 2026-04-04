@@ -1,9 +1,7 @@
 ﻿#pragma once
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
 
-/// <summary>
-/// TODO : Turret 종류의 클래스도 만들어서, 대신 Attack 부분만 전략패턴 써서 구현하면 좋지 않을까?
-/// </summary>
+
 class CStructure : public CScript
 {
 private:
@@ -15,6 +13,7 @@ private:
 public:
     
     CStructure();
+    CStructure(const CStructure& _Origin);
     virtual ~CStructure() override;
     CLONE(CStructure)
     
@@ -42,11 +41,14 @@ public:
     
 public:
     
-    void PlayInstallSound() const { if (m_InstallSound) m_InstallSound->Play(1, 0.5f, true); }
+    void PlayInstallSound() const
+    {
+        if (m_InstallSound) m_InstallSound->Play(1, 0.5f, true);
+    }
     
 public:
     
-    void SaveToLevelFile(FILE* _File) override {}
-    void LoadFromLevelFile(FILE* _File) override {}
+    void SaveToLevelFile(FILE* _File) override;
+    void LoadFromLevelFile(FILE* _File) override;
     
 };

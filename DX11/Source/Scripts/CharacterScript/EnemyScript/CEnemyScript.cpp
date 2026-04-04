@@ -47,6 +47,9 @@ void CEnemyScript::Move()
     case ENEMY_MAINSTATE::ATTACK: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
     case ENEMY_MAINSTATE::WALK:
     {
+        // TODO : 실질적인 Walk 처리 구현할 것
+        if (GetOwner()->GetName() != L"Devil") return;
+        
         m_Velocity = Vec3(); // Velocity 초기화
         Vec3 Direction{};
     

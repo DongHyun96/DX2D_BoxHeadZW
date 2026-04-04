@@ -2,13 +2,18 @@
 #include "CStructure.h"
 
 #include "Source/ScriptMgr.h"
-#include "Source/Manager/GameManager.h"
-#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/CharacterScript/CCharacterScript.h"
-#include "Source/Scripts/StatScript/CStatScript.h"
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 
 CStructure::CStructure()
     : CScript(SCRIPT_TYPE::STRUCTURE)
+{
+}
+
+CStructure::CStructure(const CStructure& _Origin)
+    : CScript(_Origin)
+    , m_InstallSound(_Origin.m_InstallSound)
+    , m_IsPreviewObject(_Origin.m_IsPreviewObject)
 {
 }
 
@@ -59,5 +64,15 @@ bool CStructure::BlockCharacterCollider(CCollider2D* _OtherCollider)
 
     _OtherCollider->Transform()->UpdateTransformToPrevRelativePos();
     return true;
+}
+
+void CStructure::SaveToLevelFile(FILE* _File)
+{
+    SaveAssetRef(_File, m_InstallSound.Get());
+}
+
+void CStructure::LoadFromLevelFile(FILE* _File)
+{
+    m_InstallSound = LoadAssetRef<ASound>(_File).Get();
 }
 
