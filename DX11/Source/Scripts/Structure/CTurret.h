@@ -38,15 +38,15 @@ private:
     float m_RotateSpriteInterval = 0.2f;
     float m_RotateSpriteTimeChecker{};
     
-private:
-    
+private: // Attack 관련
+
     float m_AttackIntervalTotalTime = 0.5f;
     float m_AttackIntervalTimeChecker{};
 
 private:
     
     static const map<TURRET_TYPE, Ptr<TurretAttackStrategy>> m_mapAttackStrategies;
-    TurretAttackStrategy* m_AttackStrategy{};
+    Ptr<TurretAttackStrategy> m_AttackStrategy{};
     
 public:
     CTurret();
@@ -81,9 +81,10 @@ private:
 private:
     
     /// <summary>
-    /// TargetCharacter와의   
+    /// TargetCharacter와의 방향 맞추기 처리   
     /// </summary>
-    void HandleRotateToTarget();
+    /// <returns> 해당 방향으로 맞추어 졌다면 return true </returns>
+    bool HandleRotateToTarget();
     
 public:
     

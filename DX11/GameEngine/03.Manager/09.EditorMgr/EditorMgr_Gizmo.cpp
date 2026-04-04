@@ -4,7 +4,7 @@
 
 namespace
 {
-    enum class GizmoMode { None, Translate, Rotate, Scale };
+    enum class GizmoMode { None, Translate, Rotate, Scale, Pivot };
     enum class GizmoAxis { None, X, Y, Both };
 
     struct GizmoTargetStart
@@ -13,6 +13,8 @@ namespace
         Vec3 startPos = Vec3::Zero;
         Vec3 startScale = Vec3::One;
         float startRotZ = 0.f;
+        Vec3 startPivot = Vec3::Zero;
+        Matrix parentEffectInv = XMMatrixIdentity();
     };
 
     struct GizmoState
@@ -57,6 +59,34 @@ namespace
         return true;
     }
 
+    Matrix CalcPivotDeltaWorldToLocalMatrix(const Ptr<GameObject>& _Target)
+    {
+        if (!_Target || !_Target->Transform()) return XMMatrixIdentity();
+
+        Matrix parentEffect = XMMatrixIdentity();
+        Ptr<GameObject> parent = _Target->GetParent();
+
+        if (parent && parent->Transform())
+        {
+            parentEffect = parent->Transform()->GetWorldMatrix();
+
+            if (_Target->Transform()->GetIndependentScale())
+            {
+                Vec3 parentScale = parent->Transform()->GetWorldScale();
+                if (fabsf(parentScale.x) > FLT_EPSILON
+                    && fabsf(parentScale.y) > FLT_EPSILON
+                    && fabsf(parentScale.z) > FLT_EPSILON)
+                {
+                    Matrix matParentScale = XMMatrixScaling(parentScale.x, parentScale.y, parentScale.z);
+                    Matrix matParentScaleInv = XMMatrixInverse(nullptr, matParentScale);
+                    parentEffect = matParentScaleInv * parentEffect;
+                }
+            }
+        }
+
+        return XMMatrixInverse(nullptr, parentEffect);
+    }
+
     void ToggleGizmoMode(GizmoMode mode)
     {
         g_Gizmo.dragging = false;
@@ -77,6 +107,7 @@ void EditorMgr::GizmoToggleTick(const ImGuiIO& _io)
         if (ImGui::Shortcut(ImGuiKey_W, flags)) ToggleGizmoMode(GizmoMode::Translate);
         if (ImGui::Shortcut(ImGuiKey_E, flags)) ToggleGizmoMode(GizmoMode::Rotate);
         if (ImGui::Shortcut(ImGuiKey_R, flags)) ToggleGizmoMode(GizmoMode::Scale);
+        if (ImGui::Shortcut(ImGuiKey_Q, flags)) ToggleGizmoMode(GizmoMode::Pivot);
     }
 }
 
@@ -135,18 +166,25 @@ void EditorMgr::UpdateGizmo()
     Vec3 mouseWorld = m_MainWindowDropDetectorUI->GetMouseWorldPosInSceneRect();
 
     Vec3 worldPos = Vec3::Zero;
+    vector<Vec3> pivotWorldPoints{};
+    pivotWorldPoints.reserve(validTargets.size());
     for (const Ptr<GameObject>& target : validTargets)
+    {
         worldPos += target->Transform()->GetWorldPos();
+        const Vec3 pivotWorld = Vec3::Transform(target->Transform()->GetPivot(), target->Transform()->GetWorldMatrix());
+        pivotWorldPoints.push_back(pivotWorld);
+    }
     const float targetCountInv = 1.f / static_cast<float>(validTargets.size());
     worldPos.x *= targetCountInv;
     worldPos.y *= targetCountInv;
     worldPos.z *= targetCountInv;
-
     const float EditorCamOrthoScale = RenderMgr::GetInst()->GetEditorCam()->Camera()->GetOrthoScale();
     const float axisLen     = 100.f * EditorCamOrthoScale;
     const float pickDist    = 16.f * EditorCamOrthoScale;
     const float rotRadius   = 60.f * EditorCamOrthoScale;
     const float scaleFactor = 0.5f * EditorCamOrthoScale;
+    const float pivotRadius = 5.f * EditorCamOrthoScale;
+    const float pivotPickDist = 12.f * EditorCamOrthoScale;
 
     // ====== Draw Gizmo ======
     if (g_Gizmo.mode == GizmoMode::Translate)
@@ -165,6 +203,11 @@ void EditorMgr::UpdateGizmo()
 
         DrawDebugRect(worldPos + Vec3(axisLen, 0, 0), Vec3(6.f, 6.f, 1.f), Vec3(0,0,0), Vec4(0,0.7f,1,1), 0.f);
         DrawDebugRect(worldPos + Vec3(0, axisLen, 0), Vec3(6.f, 6.f, 1.f), Vec3(0,0,0), Vec4(0,0.7f,1,1), 0.f);
+    }
+    else if (g_Gizmo.mode == GizmoMode::Pivot)
+    {
+        for (const Vec3& pivotWorld : pivotWorldPoints)
+            DrawDebugCircle(pivotWorld, pivotRadius, Vec4(1,1,0,1), 0.f);
     }
 
     ImGuiIO& io = ImGui::GetIO();
@@ -251,6 +294,43 @@ void EditorMgr::UpdateGizmo()
                     }
                 }
             }
+            else if (g_Gizmo.mode == GizmoMode::Pivot)
+            {
+                Vec2 mousePos(mouseWorld.x, mouseWorld.y);
+                int pickedIdx = -1;
+                float closestDist = pivotPickDist + 1.f;
+
+                for (size_t i = 0; i < pivotWorldPoints.size(); ++i)
+                {
+                    const Vec2 targetPivotPos(pivotWorldPoints[i].x, pivotWorldPoints[i].y);
+                    const float curDist = (mousePos - targetPivotPos).Length();
+                    if (curDist <= pivotPickDist && curDist < closestDist)
+                    {
+                        closestDist = curDist;
+                        pickedIdx = static_cast<int>(i);
+                    }
+                }
+
+                if (pickedIdx != -1)
+                {
+                    g_Gizmo.dragging = true;
+                    g_Gizmo.axis = GizmoAxis::Both;
+                    g_Gizmo.startMouseWorld = mouseWorld;
+                    g_Gizmo.startPivotWorld = pivotWorldPoints[pickedIdx];
+                    g_Gizmo.startTargets.clear();
+                    g_Gizmo.startTargets.reserve(1);
+
+                    const Ptr<GameObject>& target = validTargets[pickedIdx];
+                    GizmoTargetStart start{};
+                    start.object = target;
+                    start.startPos = target->Transform()->GetRelativePos();
+                    start.startScale = target->Transform()->GetRelativeScale();
+                    start.startRotZ = target->Transform()->GetRelativeRot().z;
+                    start.startPivot = target->Transform()->GetPivot();
+                    start.parentEffectInv = CalcPivotDeltaWorldToLocalMatrix(target);
+                    g_Gizmo.startTargets.push_back(start);
+                }
+            }
         }
     }
     else
@@ -307,6 +387,19 @@ void EditorMgr::UpdateGizmo()
                         scale.y = max(0.01f, start.startScale.y + delta.y * scaleFactor);
 
                     start.object->Transform()->SetRelativeScale(scale);
+                }
+            }
+            else if (g_Gizmo.mode == GizmoMode::Pivot)
+            {
+                for (const GizmoTargetStart& start : g_Gizmo.startTargets)
+                {
+                    if (!start.object || !start.object->Transform()) continue;
+
+                    Vec3 localDelta = Vec3::TransformNormal(delta, start.parentEffectInv);
+                    localDelta.z = 0.f;
+
+                    Vec3 pivot = start.startPivot + localDelta;
+                    start.object->Transform()->SetPivot(pivot);
                 }
             }
         }

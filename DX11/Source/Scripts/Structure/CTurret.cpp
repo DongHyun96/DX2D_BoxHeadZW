@@ -37,6 +37,8 @@ void CTurret::Init()
     AddScriptParam(SCRIPT_PARAM::INT, &m_TurretType, L"Turret Type");
     AddScriptParam(SCRIPT_PARAM::FLOAT, &m_RotateSpriteInterval, L"Rotate interval speed");
     AddScriptParam(SCRIPT_PARAM::FLOAT, &m_AttackIntervalTotalTime, L"Attack Interval");
+    
+    
 }
 
 void CTurret::Begin()
@@ -53,7 +55,7 @@ void CTurret::Begin()
     AttackCollider->AddDynamicEndOverlap(this, static_cast<COLLISION_EVENT>(&CTurret::AttackColliderEndOverlap));
     
     // Init Attack Strategy
-    m_AttackStrategy = m_mapAttackStrategies.at(m_TurretType).Get();
+    m_AttackStrategy = m_mapAttackStrategies.at(m_TurretType)->Clone();
     
     // Init Flipbook category
     FlipbookRender()->SetCurrentCategory(L"Turret");
@@ -93,7 +95,11 @@ void CTurret::Tick()
     {
         // Animation 계속해서 Stop 상태로 두어서 재생하는 것 처럼 따로 처리
         // 이 Turret 때문에 새로운 기능 프레임워크 추가가 너무 지엽적임
-        HandleRotateToTarget();
+        if (HandleRotateToTarget())
+        {
+            m_CurrentTurretState = TURRET_STATE::ATTACK;
+            m_AttackIntervalTimeChecker = m_AttackIntervalTotalTime; // 다 돌고 바로 첫 발은 사격 처리하기 위함
+        }
     }
         return;
     case TURRET_STATE::ATTACK:
@@ -105,15 +111,21 @@ void CTurret::Tick()
             return;
         }
         
-        // Target이 잡혔으면, 돌아가는 처리를 계속해서 해주어야 함
-        
+        // Target이 잡혔을 때, Rotation 처리는 계속해서 해주어야 함
+        HandleRotateToTarget();
         
         m_AttackIntervalTimeChecker += DT;
-        if (m_AttackIntervalTimeChecker < m_AttackIntervalTotalTime) break;
+        
+        // 아직 공격하는 시간이 다 채워지지 않았을 때에 Init 처리를 지속적으로 해준다
+        if (m_AttackIntervalTimeChecker < m_AttackIntervalTotalTime)
+        {
+            m_AttackStrategy->WaitAttack();
+            return;
+        }
 
         // Time to attack
-        m_AttackIntervalTimeChecker -= m_AttackIntervalTotalTime;
-        m_AttackStrategy->UseAttackStrategy(m_TargetEnemyObject);
+        if (m_AttackStrategy->UseAttackStrategy(m_TargetEnemyObject)) // 사격이 모두 완료되었으면 다시, 공격 대기 | 아니라면 다음 Tick에도 공격 처리
+            m_AttackIntervalTimeChecker = 0.f;
     }
         return;
     case TURRET_STATE::END: return;
@@ -159,11 +171,11 @@ void CTurret::OnRotateAnimEnd()
     m_CurrentTurretState = TURRET_STATE::ATTACK;
 }
 
-void CTurret::HandleRotateToTarget()
+bool CTurret::HandleRotateToTarget()
 {
     m_RotateSpriteTimeChecker += DT;
     
-    if (m_RotateSpriteTimeChecker < m_RotateSpriteInterval) return;
+    if (m_RotateSpriteTimeChecker < m_RotateSpriteInterval) return false;
     m_RotateSpriteTimeChecker -= m_RotateSpriteInterval;
     
     const Vec2 ToTarget   = m_TargetEnemyObject->Transform()->GetWorldPos2D() - Transform()->GetWorldPos2D();
@@ -177,7 +189,7 @@ void CTurret::HandleRotateToTarget()
     const int CurrentSpriteIdx = FlipbookRender()->GetCurAnimatingSpriteIdx();  
     
     // 이미 해당 방향을 바라보는 중
-    if (DestSpriteIdx == CurrentSpriteIdx) return;    
+    if (DestSpriteIdx == CurrentSpriteIdx) return true;    
     
     int Diff = DestSpriteIdx - CurrentSpriteIdx;
     
@@ -199,6 +211,7 @@ void CTurret::HandleRotateToTarget()
     }
 
     FlipbookRender()->Stop(NextSpriteIdx);
+    return DestSpriteIdx == CurrentSpriteIdx; 
 }
 
 void CTurret::SaveToLevelFile(FILE* _File)
