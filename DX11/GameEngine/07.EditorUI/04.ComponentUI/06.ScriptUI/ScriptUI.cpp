@@ -5,6 +5,7 @@
 #include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 
 #include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
+#include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
 
 namespace
@@ -248,8 +249,6 @@ void ScriptUI::TickScriptParams()
 		case SCRIPT_PARAM::TEXTURE:
 		{
 			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
-			string Key = "##Texture";
-			Key += ID + GetUIKey();
 
 			Ptr<ATexture> pTex = *static_cast<Ptr<ATexture>*>(vecParam[i].Data);
 			
@@ -286,6 +285,36 @@ void ScriptUI::TickScriptParams()
 		}
 			break;
 		case SCRIPT_PARAM::MATERIAL:
+			break;
+		case SCRIPT_PARAM::SOUND: // Sound 멤버변수 Init
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			string Key = "##Texture";
+			Key += ID + GetUIKey();
+
+			Ptr<ASound> pSound = *static_cast<Ptr<ASound>*>(vecParam[i].Data); 
+			wstring SoundKey = pSound ? pSound->GetKey() : L"None";
+			ImGui::InputText(Key.c_str(), string(SoundKey.begin(), SoundKey.end()).data(), SoundKey.length() + 1, ImGuiInputTextFlags_ReadOnly);
+			
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* PayLoad = ImGui::AcceptDragDropPayload("Content"))
+				{
+					if (!TreeUI::IsPayloadMultiData(PayLoad))
+					{
+						DWORD_PTR data = *static_cast<DWORD_PTR*>(PayLoad->Data);
+						Ptr<Asset> pAsset = reinterpret_cast<Asset*>(data);
+
+						if (ASSET_TYPE::SOUND == pAsset->GetType())
+						{
+							ASound* ReceivedSound = static_cast<ASound*>(pAsset.Get()); 
+							*static_cast<Ptr<ASound>*>(vecParam[i].Data) = ReceivedSound;
+						}
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+		}
 			break;
 		default:
 			break;

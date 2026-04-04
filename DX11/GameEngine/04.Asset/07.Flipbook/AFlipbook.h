@@ -26,8 +26,9 @@ private:
 public:
     
     void AddSprite(const Ptr<ASprite>& _Sprite)  { m_vecSprite.push_back(_Sprite); }
-
     void InsertSprite(int _Idx, const Ptr<ASprite>& _Sprite);
+    
+    void ReverseFlipbook() { ranges::reverse(m_vecSprite); }
     
     bool RemoveSprite(int _Idx);
     bool RemoveSprite(const Ptr<ASprite>& _Sprite);

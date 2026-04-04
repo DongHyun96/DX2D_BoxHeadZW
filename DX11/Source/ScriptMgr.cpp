@@ -36,6 +36,7 @@
 #include "Source/Scripts/StatScript\PlayerStat\CPlayerStat.h"
 #include "Source/Scripts/Structure\CBarrel.h"
 #include "Source/Scripts/Structure\CStructure.h"
+#include "Source/Scripts/Structure\CTurret.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
@@ -71,6 +72,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CPlayerStat");
 	_vec.push_back(L"CBarrel");
 	_vec.push_back(L"CStructure");
+	_vec.push_back(L"CTurret");
 }
 
 CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
@@ -145,6 +147,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CBarrel;
 	if (L"CStructure" == _strScriptName)
 		return new CStructure;
+	if (L"CTurret" == _strScriptName)
+		return new CTurret;
 	return nullptr;
 }
 
@@ -222,6 +226,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CBarrel;
 	case (UINT)SCRIPT_TYPE::STRUCTURE:
 		return new CStructure;
+	case (UINT)SCRIPT_TYPE::TURRET:
+		return new CTurret;
 	}
 	return nullptr;
 }
@@ -300,6 +306,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CBarrel";
 	case SCRIPT_TYPE::STRUCTURE:
 		return L"CStructure";
+	case SCRIPT_TYPE::TURRET:
+		return L"CTurret";
 	}
 	return nullptr;
 }

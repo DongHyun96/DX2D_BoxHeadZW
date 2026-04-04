@@ -24,16 +24,24 @@ void DebugLogUI::Tick_UI()
     }
     
     list<DebugLogUIData>::iterator iter = m_listDebugLogs.begin();
-    
+
+    // 삭제 정방향으로 (이게 안전함)
     while (iter != m_listDebugLogs.end())
     {
-        DebugLogUIData& Log = *(iter);
-        
-        ImGui::TextColored(Log.Color, Log.LogStr.c_str());
-        
+        DebugLogUIData& Log = *iter;
+
         Log.Age += E_DT;
-        
-        if (Log.Age > Log.TotalLifeTime) iter = m_listDebugLogs.erase(iter);
+
+        if (Log.Age > Log.TotalLifeTime)
+            iter = m_listDebugLogs.erase(iter);
         else ++iter;
     }
+    
+    // 출력 역방향 처리
+    for (list<DebugLogUIData>::reverse_iterator iter = m_listDebugLogs.rbegin(); iter != m_listDebugLogs.rend(); ++iter)
+    {
+        const DebugLogUIData& Log = *iter;
+        ImGui::TextColored(Log.Color, Log.LogStr.c_str());
+    }
+    
 }

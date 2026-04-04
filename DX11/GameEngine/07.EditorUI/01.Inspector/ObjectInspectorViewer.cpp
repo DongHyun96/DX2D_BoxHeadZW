@@ -64,8 +64,12 @@ void ObjectInspectorViewer::TickHeaderUI()
     ImGui::SeparatorText("");
     
     bool bIsActive = m_TargetObject->GetActive();
-    if (ImGui::Checkbox("IsActive", &bIsActive))
+    if (ImGui::Checkbox("IsActive(Hierarchy)", &bIsActive))
         m_TargetObject->SetActive(bIsActive);
+    
+    ImGui::SameLine();
+    if (ImGui::Checkbox("IsActive(Self)", &bIsActive))
+        m_TargetObject->SetActive(bIsActive, false);
     
     ImGui::SameLine();
     bool bIsVisible = m_TargetObject->GetIsVisible();

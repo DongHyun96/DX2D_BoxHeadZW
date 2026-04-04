@@ -35,6 +35,9 @@ void FlipbookUI::Tick_UI()
     ImGui::Text("%u", pFlipbook->GetSpriteCount());
 
     DrawPreviewSection(pFlipbook);
+
+    if (ImGui::Button("Reverse this flipbook"))
+        pFlipbook->ReverseFlipbook();
     
     TickNextSpriteShortCut(pFlipbook);
 

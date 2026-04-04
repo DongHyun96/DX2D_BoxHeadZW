@@ -153,7 +153,8 @@ void CStructureHandler::UpdateSpawnStructure(const Vec2& _PreviewPos, bool _Avai
     if (KEY_TAP(KEY::MLB))
     {
         GameObject* SpawnedStructure = m_mapStructureTypePrefabs[m_CurrentStructureHolding]->InstantiateAndSpawnToCurLevel();
-        SpawnedStructure->Transform()->SetRelativePos(ToVec3(_PreviewPos, _PreviewPos.y)); 
+        SpawnedStructure->Transform()->SetRelativePos(ToVec3(_PreviewPos, _PreviewPos.y));
+        SpawnedStructure->GetScriptComponent<CStructure>()->PlayInstallSound();
         
         m_InvenScript->ReduceCurrentStructureCount(m_CurrentStructureHolding); // 갯수를 하나 줄인다
         

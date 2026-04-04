@@ -283,7 +283,7 @@ void GameObject::RegisterAsParent()
 	LevelMgr::GetInst()->GetCurLevel()->GetLayer(m_LayerIdx)->AddObject(this);
 }
 
-void GameObject::SetActive(bool _Active)
+void GameObject::SetActive(bool _Active, bool _SetActiveHierarchy)
 {
 	m_IsActive = _Active;
 	
@@ -296,6 +296,13 @@ void GameObject::SetActive(bool _Active)
 		// PoolingObject의 OnDeactivate 대리자 호출
 		for (const function<void(const Ptr<GameObject>&)>& OnDeactivate : m_vecDelegateOnDeactivate)
 			OnDeactivate(this);
+	}
+
+	// 자식까지도 Active 상태 업데이트 처리
+	if (_SetActiveHierarchy)
+	{
+		for (const Ptr<GameObject>& Child : m_vecChild)
+			Child->SetActive(_Active, _SetActiveHierarchy);
 	}
 }
 

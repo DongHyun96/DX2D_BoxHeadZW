@@ -134,11 +134,19 @@ public:
 	bool IsObjectDestroyed() const { return m_ObjectDestroyed; }
 	
 	bool GetActive() const { return m_IsActive; }
-	void SetActive(bool _Active);
+	
+	/// <summary>
+	/// Active 상태 전환 
+	/// </summary>
+	/// <param name="_Active"></param>
+	/// <param name="_SetActiveHierarchy"> : 포함된 자식 오브젝트 까지도 Active 상태를 수정할건지 (false면 자기자신만 수정) </param>
+	void SetActive(bool _Active, bool _SetActiveHierarchy = true);
 
 	bool GetObjectMarkedDeactivated() const { return m_ObjectMarkedDeactivated; }
-	
+
 	bool GetIsVisible() const { return m_IsVisible; }
+	
+	
 	void SetIsVisible(bool _Visible) { m_IsVisible = _Visible; }
 	
 public:

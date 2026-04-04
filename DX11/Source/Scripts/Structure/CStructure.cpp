@@ -21,28 +21,30 @@ CStructure::CStructure(SCRIPT_TYPE _ScriptType)
 {
 }
 
+void CStructure::Init()
+{
+    AddScriptParam(SCRIPT_PARAM::SOUND, &m_InstallSound, L"InstallSound");
+}
+
 void CStructure::Begin()
 {
-    ADD_DYNAMIC_BEGIN_OVERLAP(CStructure::BeginOverlap);
-    ADD_DYNAMIC_OVERLAP(CStructure::Overlap);
+    ADD_DYNAMIC_BEGIN_OVERLAP(CStructure::BodyColliderBeginOverlap);
+    ADD_DYNAMIC_OVERLAP(CStructure::BodyColliderOverlap);
 }
 
 void CStructure::Tick()
 {
 }
 
-void CStructure::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
+void CStructure::BodyColliderBeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
     // Character Movement로 해당 Collider에 부딪힌 경우
     if (BlockCharacterCollider(_OtherCollider)) return;
     
     // 나머지는 Enemy Attack Area -> TakeDamage 처리는 각자의 Projectile 및 AttackArea Overlap에서 처리할 것
-    // Barrel의 경우, 예외적으로 PlayerProjectile으로도 Damage를 입어야 한다.
-    // 근데 Damage 량을 알아야 함
-    // GetOwner()->GetScriptComponent<CStatScript>()->TakeDamage()
 }
 
-void CStructure::Overlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
+void CStructure::BodyColliderOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
     if (BlockCharacterCollider(_OtherCollider)) return;
 }

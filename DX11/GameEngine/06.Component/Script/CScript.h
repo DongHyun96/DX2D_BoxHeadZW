@@ -12,7 +12,8 @@ enum class SCRIPT_PARAM
     MATRIX,
     WSTRING,
     TEXTURE,
-    MATERIAL
+    MATERIAL,
+    SOUND
 };
 
 struct tScriptParam
