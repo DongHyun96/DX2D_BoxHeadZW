@@ -24,6 +24,7 @@ void CGrenade::Begin()
 {
     ADD_DYNAMIC_BEGIN_OVERLAP(CGrenade::HandleOverlap);
     ADD_DYNAMIC_OVERLAP(CGrenade::HandleOverlap);
+    m_ScaleBase = Transform()->GetRelativeScale();
 }
 
 void CGrenade::AfterLevelBegin()
@@ -66,8 +67,18 @@ void CGrenade::Tick()
             // 튕김 종료: 수류탄 정지
             m_Velocity = Vec3::Zero;
             
-            GM->SpawnExplosionDome(Transform()->GetWorldPos(), 1.5f);
+            GM->SpawnExplosionDome(Transform()->GetWorldPos(), 1.5f, 50.f, 50.f, this);
             GetOwner()->SetActive(false);
+
+            // SubGrenade 추가로 Spawn처리할 경우
+            if (m_SpawnSubGrenade)
+            {
+                for (int i = 0; i < 4; ++i)
+                {
+                    const Vec2 Direction = GetSpreadVector(Vec2::UnitX, XM_PIDIV4 + i * XM_PIDIV2);
+                    GM->SpawnGrenade(Transform()->GetWorldPos(), Direction, m_DamageAmount * 0.5f, 0, 150.f, 250.f, false, true);
+                }
+            }
         }
     }
 
@@ -80,6 +91,16 @@ void CGrenade::Tick()
 
     // Transform 갱신 (Z-Order 정렬 기준값이 꼬이지 않도록 주의해야 합니다)
     Transform()->SetRelativePos(renderPos);
+}
+
+void CGrenade::SetSubGrenadeScale() const
+{
+    Transform()->SetRelativeScale(m_ScaleBase * 0.6f);
+}
+
+void CGrenade::SetMainGrenadeScale() const
+{
+    Transform()->SetRelativeScale(m_ScaleBase);
 }
 
 void CGrenade::HandleOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)

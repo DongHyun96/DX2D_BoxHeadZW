@@ -154,7 +154,8 @@ void CPlayerWeaponHandler::TickFireGrenade()
 {
     if (KEY_TAP(KEY::F))
     {
-        if (GameObject* SpawnedGrenade = GM->GetGrenaderPooler()->SpawnObject(Transform()->GetWorldPos()))
+        GM->SpawnGrenade(Transform()->GetWorldPos(), m_PlayerMainScript->GetPlayerToMousePos().Normalized(), 75.f, 3, 400.f, 300.f, true);
+        /*if (GameObject* SpawnedGrenade = GM->GetGrenaderPooler()->SpawnObject(Transform()->GetWorldPos()))
         {
             /*const Vec2 PlayerToMousePos = m_PlayerMainScript->GetPlayerToMousePos();
             const Vec3 FireDirection = ToVec3(PlayerToMousePos, 1.f);
@@ -163,13 +164,13 @@ void CPlayerWeaponHandler::TickFireGrenade()
             Grenade->Transform()->SetRelativePos(Transform()->GetWorldPos());
             Grenade->SetLogicalPos(ToVec3(Transform()->GetWorldPos2D(), 15.f));
             Grenade->SetDamageAmount(75.f);
-            Grenade->SetFireVelocity(FireDirection.Normalized() * 550.f);*/
+            Grenade->SetFireVelocity(FireDirection.Normalized() * 550.f);#1#
+            
             
             Ptr<CGrenade> Grenade = SpawnedGrenade->GetScriptComponent<CGrenade>();
             
             // 논리적 시작 위치 (렌더링 시작점)
             // z값은 0으로 시작 x -> Bounce Count 하나 까고 시작해버림
-            Grenade->Transform()->SetRelativePos(Transform()->GetWorldPos());
             Grenade->SetLogicalPos(ToVec3(Transform()->GetWorldPos2D(), 1.f));
 
             // 투척 파워 분리 설정
@@ -189,7 +190,7 @@ void CPlayerWeaponHandler::TickFireGrenade()
             Grenade->SetDamageAmount(75.f);
             Grenade->SetFireVelocity(FireVelocity);
             Grenade->SetBounceTotalCount(3);
-        }
+        }*/
     }
 }
 

@@ -11,6 +11,8 @@ private:
     
     // 이미 Damage를 입힌 CCollider의 경우, 넘어가야 함
     set<CCollider2D*> m_setAlreadyDamaged{};
+    
+    CScript* m_SpawnedBy{};
 
 private: // 크기 관련
     
@@ -37,6 +39,8 @@ public:
     /// </summary>
     /// <param name="_Factor"></param>
     void SetExplosionSize(float _Factor);
+    
+    void SetSpawnedBy(CScript* _SpawnedBy) { m_SpawnedBy = _SpawnedBy; }
 
 private:
     

@@ -68,7 +68,7 @@ public:
 public: // Effect Spawn 관련
 
     void SpawnRocketSmoke(const Vec3& _SpawnPos);
-    void SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f);
+    void SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f, CScript* _SpawnedBy = nullptr);
     
 public: // Projectile Spawn 관련
 
@@ -76,6 +76,30 @@ public: // Projectile Spawn 관련
     /// Rocket Projectile 스폰시키기
     /// </summary>
     /// <returns> 제대로 Spawn처리되지 않았다면 return false </returns>
-    bool SpawnRocketProjectile(const Vec3& _SpawnPos, const Vec2& _Direction, float _Damage); 
+    bool SpawnRocketProjectile(const Vec3& _SpawnPos, const Vec2& _Direction, float _Damage);
+
+    /// <summary>
+    /// 수류탄 spawn
+    /// </summary>
+    /// <param name="_SpawnPos">        : 스폰 위치 </param>
+    /// <param name="_Direction">       : 던지는 방향 (Vec2) </param>
+    /// <param name="_Damage">          : 데미지 량 </param>
+    /// <param name="_BounceCount">     : 지면이나 물체에 튕길 수 있는 량 </param>
+    /// <param name="_ThrowSpeedXY">    : 앞으로 던지는 Speed </param>
+    /// <param name="_UpwardSpeed">     : 위로 던지는 Speed </param>
+    /// <param name="_SpawnSubGrenade"> : SubGrenade 추가로 Spawn 시킬건지 </param>
+    /// <param name="_IsSubGrenade"> : SubGrenade인지 (SubGrenade이라면, Scale을 좀 더 작게 준다) </param>
+    /// <returns> : 제대로 Spawn되지 않았다면 return false </returns>
+    bool SpawnGrenade
+    (
+        const Vec3&     _SpawnPos,
+        const Vec2&     _Direction,
+        float           _Damage,
+        int             _BounceCount        = 3,
+        float           _ThrowSpeedXY       = 400.f,
+        float           _UpwardSpeed        = 300.f,
+        bool            _SpawnSubGrenade    = false,
+        bool            _IsSubGrenade       = false
+    );
     
 };

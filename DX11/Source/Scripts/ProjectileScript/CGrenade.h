@@ -7,6 +7,11 @@ private:
     static const float s_Gravity;
     static const float s_BounceDamping; // 바닥에 튕길 때, 잃는 에너지 ( 0 ~ 1)
     static const float s_GroundFriction; // 바닥에 튕길 때 x, y 축으로 감속되는 비율
+
+private:
+    
+    bool m_SpawnSubGrenade{};
+    Vec3 m_ScaleBase{};
     
 private:
 
@@ -48,6 +53,10 @@ public:
     /// 지면이나 벽면에 몇번 튀기고 터질지 체크
     /// </summary>
     void SetBounceTotalCount(UINT _Count) { m_BounceCount = _Count; }
+
+    void SetSpawnSubGrenade(bool _SpawnSubGrenade) { m_SpawnSubGrenade = _SpawnSubGrenade; }
+    void SetSubGrenadeScale() const;
+    void SetMainGrenadeScale() const;
     
 private:
     
