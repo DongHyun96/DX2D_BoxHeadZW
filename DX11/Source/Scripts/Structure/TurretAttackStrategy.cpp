@@ -31,7 +31,7 @@ bool Turret_MGAttackStrategy::UseAttackStrategy(GameObject* _Target)
     
     // Target을 향하는 방향으로 Ray Casting
     Ray2D Ray{};
-    //Ray.Origin      = _MuzzleWorldPos; // TODO : 총구 위치도 알긴 알아야 함 ㅅㅂ
+    //Ray.Origin      = _MuzzleWorldPos;
     //Ray.Direction   = ToVec3(_FireDirection.Normalized()); 
     Ray.MaxDistance = RESOL_DIAG_LENGTH;
     

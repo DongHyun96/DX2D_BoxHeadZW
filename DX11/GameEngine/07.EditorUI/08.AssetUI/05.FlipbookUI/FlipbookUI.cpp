@@ -122,33 +122,105 @@ float FlipbookUI::DrawSpritePreview
     }
     else ImageSize = ImVec2(PreviewW * Scale, PreviewH * Scale);
     
-    ImGui::ImageWithBg
+    float viewMinX = -1.f;
+    float viewMaxX = 1.f;
+    float viewMinY = -1.f;
+    float viewMaxY = 1.f;
+    if (_DrawReferencePoint && m_ShowEditPinPoint)
+    {
+        const Vec2 pinPoint = _Sprite->GetPinPoint();
+        viewMinX = min(viewMinX, pinPoint.x);
+        viewMaxX = max(viewMaxX, pinPoint.x);
+        viewMinY = min(viewMinY, pinPoint.y);
+        viewMaxY = max(viewMaxY, pinPoint.y);
+    }
+
+    const float viewSpanX = max(0.001f, viewMaxX - viewMinX);
+    const float viewSpanY = max(0.001f, viewMaxY - viewMinY);
+    const float canvasScaleX = viewSpanX * 0.5f;
+    const float canvasScaleY = viewSpanY * 0.5f;
+    const ImVec2 CanvasSize = ImVec2(max(1.f, ImageSize.x * canvasScaleX), max(1.f, ImageSize.y * canvasScaleY));
+
+    ImGui::InvisibleButton("##PreviewCanvas", CanvasSize);
+
+    const ImVec2 rectMin = ImGui::GetItemRectMin();
+    const ImVec2 rectMax = ImGui::GetItemRectMax();
+    const ImVec2 rectSize = ImVec2(rectMax.x - rectMin.x, rectMax.y - rectMin.y);
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    if (_DrawReferencePoint && m_ShowEditPinPoint)
+    {
+        ImGui::SetItemKeyOwner(ImGuiKey_LeftArrow);
+        ImGui::SetItemKeyOwner(ImGuiKey_RightArrow);
+        ImGui::SetItemKeyOwner(ImGuiKey_UpArrow);
+        ImGui::SetItemKeyOwner(ImGuiKey_DownArrow);
+    }
+
+    drawList->AddRectFilled(rectMin, rectMax, IM_COL32(0, 0, 0, 255));
+
+    const float spriteU0 = (-1.f - viewMinX) / viewSpanX;
+    const float spriteU1 = ( 1.f - viewMinX) / viewSpanX;
+    const float spriteV0 = (viewMaxY - 1.f) / viewSpanY;
+    const float spriteV1 = (viewMaxY + 1.f) / viewSpanY;
+
+    const ImVec2 spriteMin = ImVec2(rectMin.x + rectSize.x * spriteU0, rectMin.y + rectSize.y * spriteV0);
+    const ImVec2 spriteMax = ImVec2(rectMin.x + rectSize.x * spriteU1, rectMin.y + rectSize.y * spriteV1);
+
+    drawList->AddImage
     (
         pAtlas->GetSRV().Get(),
-        ImageSize,
-        Vec2(UV0.x, UV0.y),
-        Vec2(UV1.x, UV1.y),
-        ImVec4(0.0f, 0.0f, 0.0f, 1.0f)
+        spriteMin,
+        spriteMax,
+        ImVec2(UV0.x, UV0.y),
+        ImVec2(UV1.x, UV1.y)
     );
 
-    if (_DrawReferencePoint && m_ShowEditReferencePoint)
+    if (_DrawReferencePoint)
     {
-        const float refU = std::clamp(m_EditReferencePointUV.x, 0.f, 1.f);
-        const float refV = std::clamp(m_EditReferencePointUV.y, 0.f, 1.f);
-
-        const ImVec2 rectMin = ImGui::GetItemRectMin();
-        const ImVec2 rectMax = ImGui::GetItemRectMax();
-        const ImVec2 rectSize = ImVec2(rectMax.x - rectMin.x, rectMax.y - rectMin.y);
-        const ImVec2 refPos = ImVec2(rectMin.x + rectSize.x * refU, rectMin.y + rectSize.y * refV);
-
-        ImDrawList* drawList = ImGui::GetWindowDrawList();
         const ImU32 lineCol = IM_COL32(255, 70, 70, 255);
         const ImU32 centerCol = IM_COL32(255, 255, 255, 255);
         const float lineLen = 7.f;
 
-        drawList->AddLine(ImVec2(refPos.x - lineLen, refPos.y), ImVec2(refPos.x + lineLen, refPos.y), lineCol, 1.5f);
-        drawList->AddLine(ImVec2(refPos.x, refPos.y - lineLen), ImVec2(refPos.x, refPos.y + lineLen), lineCol, 1.5f);
-        drawList->AddCircleFilled(refPos, 2.f, centerCol);
+        if (m_ShowEditReferencePoint)
+        {
+            const float refU = std::clamp(m_EditReferencePointUV.x, 0.f, 1.f);
+            const float refV = std::clamp(m_EditReferencePointUV.y, 0.f, 1.f);
+            const ImVec2 refPos = ImVec2
+            (
+                spriteMin.x + (spriteMax.x - spriteMin.x) * refU,
+                spriteMin.y + (spriteMax.y - spriteMin.y) * refV
+            );
+
+            drawList->AddLine(ImVec2(refPos.x - lineLen, refPos.y), ImVec2(refPos.x + lineLen, refPos.y), lineCol, 1.5f);
+            drawList->AddLine(ImVec2(refPos.x, refPos.y - lineLen), ImVec2(refPos.x, refPos.y + lineLen), lineCol, 1.5f);
+            drawList->AddCircleFilled(refPos, 2.f, centerCol);
+        }
+        else if (m_ShowEditPinPoint)
+        {
+            const Vec2 pinPoint = _Sprite->GetPinPoint();
+            // PinPoint: (-1, -1) 좌하단, (1, 1) 우상단
+            const float pinU = (pinPoint.x - viewMinX) / viewSpanX;
+            const float pinV = (viewMaxY - pinPoint.y) / viewSpanY;
+            const ImVec2 pinPos = ImVec2(rectMin.x + rectSize.x * pinU, rectMin.y + rectSize.y * pinV);
+
+            const ImU32 pinLineCol = IM_COL32(80, 220, 255, 255);
+            drawList->AddLine(ImVec2(pinPos.x - lineLen, pinPos.y), ImVec2(pinPos.x + lineLen, pinPos.y), pinLineCol, 1.5f);
+            drawList->AddLine(ImVec2(pinPos.x, pinPos.y - lineLen), ImVec2(pinPos.x, pinPos.y + lineLen), pinLineCol, 1.5f);
+            drawList->AddCircleFilled(pinPos, 2.f, centerCol);
+
+            if (ImGui::IsItemHovered()
+                && (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseDragging(ImGuiMouseButton_Left)))
+            {
+                ImVec2 mousePos = ImGui::GetIO().MousePos;
+                const float u = std::clamp((mousePos.x - rectMin.x) / max(1.f, rectSize.x), 0.f, 1.f);
+                const float v = std::clamp((mousePos.y - rectMin.y) / max(1.f, rectSize.y), 0.f, 1.f);
+
+                Vec2 nextPin{};
+                nextPin.x = viewMinX + u * viewSpanX;
+                nextPin.y = viewMaxY - v * viewSpanY;
+                _Sprite->SetPinPoint(nextPin);
+            }
+        }
     }
     
     return _CurrentZoomFactor;
@@ -423,7 +495,27 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
     ZoomFactor = DrawSpritePreview(pEditSprite, 200.f, true, ZoomFactor, true);
     ImGui::PopID();
 
-    ImGui::Checkbox("Show Ref Point", &m_ShowEditReferencePoint);
+    bool showRefPoint = m_ShowEditReferencePoint;
+    if (ImGui::Checkbox("Show Ref Point", &showRefPoint))
+    {
+        m_ShowEditReferencePoint = showRefPoint;
+        if (showRefPoint) m_ShowEditPinPoint = false;
+    }
+
+    ImGui::SameLine();
+    bool showPinPoint = m_ShowEditPinPoint;
+    if (ImGui::Checkbox("Show Pin Point", &showPinPoint))
+    {
+        m_ShowEditPinPoint = showPinPoint;
+        if (showPinPoint) m_ShowEditReferencePoint = false;
+    }
+
+    if (m_ShowEditPinPoint)
+    {
+        ImGui::SetNextFrameWantCaptureKeyboard(true);
+        ImGui::PushItemFlag(ImGuiItemFlags_NoNav, true);
+    }
+
     ImGui::BeginDisabled(!m_ShowEditReferencePoint);
     {
         float refUV[2] = { m_EditReferencePointUV.x, m_EditReferencePointUV.y };
@@ -432,6 +524,20 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
             m_EditReferencePointUV.x = std::clamp(refUV[0], 0.f, 1.f);
             m_EditReferencePointUV.y = std::clamp(refUV[1], 0.f, 1.f);
         }
+    }
+    ImGui::EndDisabled();
+
+    ImGui::BeginDisabled(!m_ShowEditPinPoint);
+    {
+        Vec2 pinPoint = pEditSprite->GetPinPoint();
+        float pin[2] = { pinPoint.x, pinPoint.y };
+        if (ImGui::DragFloat2("Pin Point", pin, 0.01f, 0.f, 0.f, "%.3f"))
+        {
+            pEditSprite->SetPinPoint(Vec2(pin[0], pin[1]));
+        }
+
+        if (m_ShowEditPinPoint)
+            ImGui::Text("Pin Point can be placed by clicking/dragging on preview.");
     }
     ImGui::EndDisabled();
 
@@ -468,10 +574,35 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
             ImGui::DragFloat2("Offset (px)", offPixel, 1.0f);
             
             // Shortcut
-            if (ShortCut(ImGuiKey_LeftArrow)) --offPixel[0];
-            if (ShortCut(ImGuiKey_RightArrow)) ++offPixel[0];
-            if (ShortCut(ImGuiKey_UpArrow)) --offPixel[1];
-            if (ShortCut(ImGuiKey_DownArrow)) ++offPixel[1];
+            if (m_ShowEditReferencePoint)
+            {
+                if (ShortCut(ImGuiKey_LeftArrow)) --offPixel[0];
+                if (ShortCut(ImGuiKey_RightArrow)) ++offPixel[0];
+                if (ShortCut(ImGuiKey_UpArrow)) --offPixel[1];
+                if (ShortCut(ImGuiKey_DownArrow)) ++offPixel[1];
+            }
+            else if (m_ShowEditPinPoint)
+            {
+                // PinPoint 편집(제한 없음)
+                Vec2 pin = pEditSprite->GetPinPoint();
+
+                Vec2 Direction{};
+                const ImGuiInputFlags repeatFlags = ImGuiInputFlags_RouteFocused | ImGuiInputFlags_Repeat;
+                if (ShortCut(ImGuiKey_LeftArrow, repeatFlags))  Direction.x -= 1.f;
+                if (ShortCut(ImGuiKey_RightArrow, repeatFlags)) Direction.x += 1.f;
+                if (ShortCut(ImGuiKey_DownArrow, repeatFlags))  Direction.y -= 1.f;
+                if (ShortCut(ImGuiKey_UpArrow, repeatFlags))    Direction.y += 1.f;
+                Direction.Normalize();
+                
+                pin += Direction * E_DT * 5.f;
+
+                /*pin.x -= pinStepX;
+                pin.x += pinStepX;
+                pin.y += pinStepY; // 위로 갈수록 +Y
+                pin.y -= pinStepY;*/
+                    
+                pEditSprite->SetPinPoint(pin);
+            }
             
             pEditSprite->SetOffsetUV
             (
@@ -487,6 +618,9 @@ void FlipbookUI::DrawUVEditor(const Ptr<AFlipbook>& _Flipbook)
         }
     }
     ImGui::EndDisabled();
+
+    if (m_ShowEditPinPoint)
+        ImGui::PopItemFlag();
 
     ImGui::Text("Save Sprite : spacebar");
     if (ImGui::Button("Save Sprite") || ShortCut(ImGuiKey_Space))

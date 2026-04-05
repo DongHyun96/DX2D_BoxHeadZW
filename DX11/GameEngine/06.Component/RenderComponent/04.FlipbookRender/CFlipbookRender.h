@@ -132,6 +132,11 @@ public: // 재생 관련
     bool Stop(int _SpriteIdx);
     
     int GetCurAnimatingSpriteIdx() const { return m_CurAnimatingSpriteIdx; }
+
+    /// <summary>
+    /// 현재 재생중인 Sprite의 PinPoint 위치의 World 좌표 반환 (현재 재생중인 Sprite가 없다면 default값 return)
+    /// </summary>
+    Vec3 GetCurrentSpritePinPointToWorldPos() const;
     
 public:
 

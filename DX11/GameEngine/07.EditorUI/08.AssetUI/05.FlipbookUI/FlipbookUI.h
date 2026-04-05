@@ -13,6 +13,7 @@ private:
     AFlipbook*  m_PreviewTarget{};
 
     bool        m_ShowEditReferencePoint = true;
+    bool        m_ShowEditPinPoint = false;
     Vec2        m_EditReferencePointUV = Vec2(0.5f, 0.5f);
     
 public:

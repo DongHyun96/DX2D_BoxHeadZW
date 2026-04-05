@@ -225,14 +225,64 @@ void SpriteUI::DrawSpritePreview(const Ptr<ASprite>& _Sprite, float& _PreviewZoo
 		finalScale = max(0.01f, finalScale); // 안전장치
 		
 		ImGui::Text("Sprite Preview");
-		ImGui::ImageWithBg
+		const Vec2 pinPoint = _Sprite->GetPinPoint();
+
+		float viewMinX = -1.f;
+		float viewMaxX = 1.f;
+		float viewMinY = -1.f;
+		float viewMaxY = 1.f;
+
+		viewMinX = min(viewMinX, pinPoint.x);
+		viewMaxX = max(viewMaxX, pinPoint.x);
+		viewMinY = min(viewMinY, pinPoint.y);
+		viewMaxY = max(viewMaxY, pinPoint.y);
+
+		const float viewSpanX = max(0.001f, viewMaxX - viewMinX);
+		const float viewSpanY = max(0.001f, viewMaxY - viewMinY);
+		const float canvasScaleX = viewSpanX * 0.5f;
+		const float canvasScaleY = viewSpanY * 0.5f;
+
+		const ImVec2 imageSize = ImVec2(PreviewW * finalScale, PreviewH * finalScale);
+		const ImVec2 canvasSize = ImVec2(max(1.f, imageSize.x * canvasScaleX), max(1.f, imageSize.y * canvasScaleY));
+
+		ImGui::Dummy(canvasSize);
+
+		const ImVec2 rectMin = ImGui::GetItemRectMin();
+		const ImVec2 rectMax = ImGui::GetItemRectMax();
+		const ImVec2 rectSize = ImVec2(rectMax.x - rectMin.x, rectMax.y - rectMin.y);
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+		drawList->AddRectFilled(rectMin, rectMax, IM_COL32(0, 0, 0, 255));
+
+		const float spriteU0 = (-1.f - viewMinX) / viewSpanX;
+		const float spriteU1 = ( 1.f - viewMinX) / viewSpanX;
+		const float spriteV0 = (viewMaxY - 1.f) / viewSpanY;
+		const float spriteV1 = (viewMaxY + 1.f) / viewSpanY;
+
+		const ImVec2 spriteMin = ImVec2(rectMin.x + rectSize.x * spriteU0, rectMin.y + rectSize.y * spriteV0);
+		const ImVec2 spriteMax = ImVec2(rectMin.x + rectSize.x * spriteU1, rectMin.y + rectSize.y * spriteV1);
+
+		drawList->AddImage
 		(
 			_Sprite->GetAtlas()->GetSRV().Get(),
-			ImVec2(PreviewW * finalScale, PreviewH * finalScale),
-			Vec2(UV0.x, UV0.y),
-			Vec2(UV1.x, UV1.y),
-			ImVec4(0.0f, 0.0f, 0.0f, 1.0f)
+			spriteMin,
+			spriteMax,
+			ImVec2(UV0.x, UV0.y),
+			ImVec2(UV1.x, UV1.y)
 		);
+
+		// [-1, 1] 기준의 PinPoint를 Image Rect 좌표로 변환
+		// X: -1(좌) ~ 1(우), Y: -1(하) ~ 1(상)
+		const float pinU = (pinPoint.x - viewMinX) / viewSpanX;
+		const float pinV = (viewMaxY - pinPoint.y) / viewSpanY;
+		const ImVec2 pinPos = ImVec2(rectMin.x + rectSize.x * pinU, rectMin.y + rectSize.y * pinV);
+		const ImU32 lineCol = IM_COL32(255, 70, 70, 255);
+		const ImU32 centerCol = IM_COL32(255, 255, 255, 255);
+		const float lineLen = 7.f;
+
+		drawList->AddLine(ImVec2(pinPos.x - lineLen, pinPos.y), ImVec2(pinPos.x + lineLen, pinPos.y), lineCol, 1.5f);
+		drawList->AddLine(ImVec2(pinPos.x, pinPos.y - lineLen), ImVec2(pinPos.x, pinPos.y + lineLen), lineCol, 1.5f);
+		drawList->AddCircleFilled(pinPos, 2.f, centerCol);
 
 		ImGui::Spacing();
 	}

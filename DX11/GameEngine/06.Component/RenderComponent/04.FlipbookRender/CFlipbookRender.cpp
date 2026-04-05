@@ -325,6 +325,21 @@ bool CFlipbookRender::Stop(int _SpriteIdx)
     
 }
 
+Vec3 CFlipbookRender::GetCurrentSpritePinPointToWorldPos() const
+{
+    if (!m_vecCurSelectedCategoryFlipbooks) return Vec3::Zero;
+    if (m_CurSelectedFlipbookIdx >= m_vecCurSelectedCategoryFlipbooks->size()) return Vec3::Zero;
+    
+    Ptr<AFlipbook> TargetFlipbook = m_vecCurSelectedCategoryFlipbooks->at(m_CurSelectedFlipbookIdx);
+    Ptr<ASprite> Sprite = TargetFlipbook->GetSprite(m_CurAnimatingSpriteIdx);
+    
+    const Vec2 PinPoint = Sprite->GetPinPoint();
+    const Vec3 PinPointToRenderOffset = ToVec3(PinPoint * GetRenderScale() * 0.5f + GetRenderOffset());
+    
+    return XMVector3TransformCoord(PinPointToRenderOffset, Transform()->GetWorldMatrix());
+    
+}
+
 bool CFlipbookRender::SetFlipbook(const wstring& _Category, int _Idx, const Ptr<AFlipbook>& _Flipbook)
 {
     if (_Idx < 0) return false;

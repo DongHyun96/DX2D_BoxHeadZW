@@ -7,7 +7,7 @@ class CCharacterScript : public CScript
 {
 protected:
     
-    float m_MoveSpeedBase       = 300.f; // TODO : const 변수로 바꿀 것
+    float m_MoveSpeedBase       = 300.f;
     float m_MoveSpeedFactor     = 1.f;
     
     Vec3 m_Velocity{};

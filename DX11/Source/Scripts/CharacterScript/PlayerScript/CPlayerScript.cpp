@@ -60,10 +60,6 @@ void CPlayerScript::AfterLevelBegin()
 void CPlayerScript::Tick()
 {
     CCharacterScript::Tick();
-    
-    // HandleRayCast(); // TODO : Raycasting Test 라인 지우기
-    // MeshRender()->GetMaterial()->SetScalar(INT_0, KEY_PRESSED(KEY::X) ? 1 : 0);
-    
 }
 
 void CPlayerScript::Move()
