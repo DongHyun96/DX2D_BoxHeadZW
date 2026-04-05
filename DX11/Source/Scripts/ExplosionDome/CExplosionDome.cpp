@@ -19,6 +19,11 @@ CExplosionDome::~CExplosionDome()
 {
 }
 
+CExplosionDome::CExplosionDome(SCRIPT_TYPE _ScriptType)
+    : CScript(_ScriptType)
+{
+}
+
 void CExplosionDome::Begin()
 {
     ADD_DYNAMIC_BEGIN_OVERLAP(CExplosionDome::BeginOverlap);
@@ -30,8 +35,7 @@ void CExplosionDome::Tick()
 
 void CExplosionDome::SetExplosionSize(float _Factor)
 {
-    const Vec2 NewScale = s_ScaleSizeBase * _Factor;
-    Transform()->SetRelativeScaleXY(NewScale);
+    Transform()->SetRelativeScaleXY(s_ScaleSizeBase * _Factor);
 }
 
 void CExplosionDome::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)

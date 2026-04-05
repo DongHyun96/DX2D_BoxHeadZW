@@ -9,6 +9,7 @@ enum class FLIPBOOK_EFFECT_POOLER_TYPE
     MUZZLE_FLASH_POOLER,
     ROCKET_SMOKE_POOLER,
     EXPLOSION_DOME_EFFECT_POOLER,
+    EXPLOSION_EFFECT_POOLER,
     END
 };
 
@@ -69,6 +70,7 @@ public: // Effect Spawn 관련
 
     void SpawnRocketSmoke(const Vec3& _SpawnPos);
     void SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f, CScript* _SpawnedBy = nullptr);
+    void SpawnExplosion(const Vec3& _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 150.f, float _DamageAmount = 75.f, CScript* _SpawnedBy = nullptr);
     
 public: // Projectile Spawn 관련
 

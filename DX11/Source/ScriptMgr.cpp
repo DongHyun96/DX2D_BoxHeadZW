@@ -4,6 +4,7 @@
 #include "Source/Scripts/AirplaneShootingScript\CBackgroundScript.h"
 #include "Source/Scripts/AirplaneShootingScript\CBulletMgrScript.h"
 #include "Source/Scripts/AirplaneShootingScript\CBulletScript.h"
+#include "Source/Scripts/AirStrike\CAirStrike.h"
 #include "Source/Scripts/BackgroundTile\CBackgroundTile.h"
 #include "Source/Scripts/CCamMoveScript.h"
 #include "Source/Scripts/CharacterScript\CCharacterAnimHandler.h"
@@ -26,6 +27,7 @@
 #include "Source/Scripts/EffectScript\CFlipbookEffectScript.h"
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleFlashScript.h"
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleSmokeScript.h"
+#include "Source/Scripts/ExplosionDome\CExplosion.h"
 #include "Source/Scripts/ExplosionDome\CExplosionDome.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/ProjectileScript\CGrenade.h"
@@ -44,6 +46,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBackgroundScript");
 	_vec.push_back(L"CBulletMgrScript");
 	_vec.push_back(L"CBulletScript");
+	_vec.push_back(L"CAirStrike");
 	_vec.push_back(L"CBackgroundTile");
 	_vec.push_back(L"CCamMoveScript");
 	_vec.push_back(L"CEnemyAnimHandler");
@@ -63,6 +66,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CFlipbookEffectScript");
 	_vec.push_back(L"CMuzzleFlashScript");
 	_vec.push_back(L"CMuzzleSmokeScript");
+	_vec.push_back(L"CExplosion");
 	_vec.push_back(L"CExplosionDome");
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CGrenade");
@@ -85,6 +89,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CBulletMgrScript;
 	if (L"CBulletScript" == _strScriptName)
 		return new CBulletScript;
+	if (L"CAirStrike" == _strScriptName)
+		return new CAirStrike;
 	if (L"CBackgroundTile" == _strScriptName)
 		return new CBackgroundTile;
 	if (L"CCamMoveScript" == _strScriptName)
@@ -129,6 +135,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CMuzzleFlashScript;
 	if (L"CMuzzleSmokeScript" == _strScriptName)
 		return new CMuzzleSmokeScript;
+	if (L"CExplosion" == _strScriptName)
+		return new CExplosion;
 	if (L"CExplosionDome" == _strScriptName)
 		return new CExplosionDome;
 	if (L"CObstacle" == _strScriptName)
@@ -166,6 +174,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CBulletMgrScript;
 	case (UINT)SCRIPT_TYPE::BULLETSCRIPT:
 		return new CBulletScript;
+	case (UINT)SCRIPT_TYPE::AIRSTRIKE:
+		return new CAirStrike;
 	case (UINT)SCRIPT_TYPE::BACKGROUNDTILE:
 		return new CBackgroundTile;
 	case (UINT)SCRIPT_TYPE::CAMMOVESCRIPT:
@@ -210,6 +220,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CMuzzleFlashScript;
 	case (UINT)SCRIPT_TYPE::MUZZLESMOKESCRIPT:
 		return new CMuzzleSmokeScript;
+	case (UINT)SCRIPT_TYPE::EXPLOSION:
+		return new CExplosion;
 	case (UINT)SCRIPT_TYPE::EXPLOSIONDOME:
 		return new CExplosionDome;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
@@ -248,6 +260,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CBulletMgrScript";
 	case SCRIPT_TYPE::BULLETSCRIPT:
 		return L"CBulletScript";
+	case SCRIPT_TYPE::AIRSTRIKE:
+		return L"CAirStrike";
 	case SCRIPT_TYPE::BACKGROUNDTILE:
 		return L"CBackgroundTile";
 	case SCRIPT_TYPE::CAMMOVESCRIPT:
@@ -292,6 +306,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CMuzzleFlashScript";
 	case SCRIPT_TYPE::MUZZLESMOKESCRIPT:
 		return L"CMuzzleSmokeScript";
+	case SCRIPT_TYPE::EXPLOSION:
+		return L"CExplosion";
 	case SCRIPT_TYPE::EXPLOSIONDOME:
 		return L"CExplosionDome";
 	case SCRIPT_TYPE::OBSTACLE:

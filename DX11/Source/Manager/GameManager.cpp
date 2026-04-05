@@ -3,6 +3,7 @@
 
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
+#include "Source/Scripts/ExplosionDome/CExplosion.h"
 #include "Source/Scripts/ExplosionDome/CExplosionDome.h"
 #include "Source/Scripts/ProjectileScript/CGrenade.h"
 #include "Source/Scripts/ProjectileScript/CRocketProjectile.h"
@@ -75,6 +76,28 @@ void GameManager::SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSize
             ExplosionDome->SetDamage(_DamageAmount);
             ExplosionDome->SetExplosionSize(_ExplosionSizeFactor);
             ExplosionDome->SetSpawnedBy(_SpawnedBy);
+        }
+        
+        Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\Explosion1.mp3");
+        Sound->Play(1, 0.5f, true);
+    }
+}
+
+void GameManager::SpawnExplosion(const Vec3& _SpawnPos, float _ExplosionSizeFactor, float _FPS, float _DamageAmount, CScript* _SpawnedBy)
+{
+    GameObject* Object = m_mapFlipbookEffectPoolers[FLIPBOOK_EFFECT_POOLER_TYPE::EXPLOSION_EFFECT_POOLER]->SpawnObject();
+    if (Object)
+    {
+        Object->Transform()->SetRelativePosX(_SpawnPos.x);
+        Object->Transform()->SetRelativePosY(_SpawnPos.y);
+        Object->FlipbookRender()->Play(0, _FPS, 1);
+        
+        if (Ptr<CExplosion> Explosion = Object->GetScriptComponent<CExplosion>())
+        {
+            Explosion->ClearAlreadyDamaged();
+            Explosion->SetDamage(_DamageAmount);
+            Explosion->SetExplosionSize(_ExplosionSizeFactor);
+            Explosion->SetSpawnedBy(_SpawnedBy);
         }
         
         Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\Explosion1.mp3");

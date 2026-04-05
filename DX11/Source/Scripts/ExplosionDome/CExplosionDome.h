@@ -23,6 +23,10 @@ public:
     CExplosionDome();
     virtual ~CExplosionDome() override;
     CLONE(CExplosionDome)
+    
+protected:
+    
+    CExplosionDome(SCRIPT_TYPE _ScriptType);
         
 public:
 
@@ -38,7 +42,7 @@ public:
     /// Scale의 Factor로 곱해질 Size 값 설정
     /// </summary>
     /// <param name="_Factor"></param>
-    void SetExplosionSize(float _Factor);
+    virtual void SetExplosionSize(float _Factor);
     
     void SetSpawnedBy(CScript* _SpawnedBy) { m_SpawnedBy = _SpawnedBy; }
 
