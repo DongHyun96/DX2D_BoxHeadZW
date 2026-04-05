@@ -109,13 +109,16 @@ void CPlayerWeaponHandler::TickSwapWeapon()
 {
     // 사격 중이라면 무기 교환 불가
     if (m_LastTickFired) return;
-    
+
+    // Numbering으로 무기 전환
     PLAYER_HANDSTATE NextHandState =    KEY_TAP(KEY::TILDE) ? PLAYER_HANDSTATE::UNARMED :
                                         KEY_TAP(KEY::NUM_1) ? PLAYER_HANDSTATE::PISTOL : 
                                         KEY_TAP(KEY::NUM_2) ? PLAYER_HANDSTATE::UZI :
                                         KEY_TAP(KEY::NUM_3) ? PLAYER_HANDSTATE::SHOTGUN :
                                         KEY_TAP(KEY::NUM_4) ? PLAYER_HANDSTATE::MINIGUN :
                                         KEY_TAP(KEY::NUM_5) ? PLAYER_HANDSTATE::ROCKET : PLAYER_HANDSTATE::END;
+    
+    
     
     if (NextHandState == PLAYER_HANDSTATE::END) return; // 아무 무기 Swap 시도도 이루어지지 않음
     
@@ -153,45 +156,7 @@ void CPlayerWeaponHandler::TickFireWeapon()
 void CPlayerWeaponHandler::TickFireGrenade()
 {
     if (KEY_TAP(KEY::F))
-    {
         GM->SpawnGrenade(Transform()->GetWorldPos(), m_PlayerMainScript->GetPlayerToMousePos().Normalized(), 75.f, 3, 400.f, 300.f, true);
-        /*if (GameObject* SpawnedGrenade = GM->GetGrenaderPooler()->SpawnObject(Transform()->GetWorldPos()))
-        {
-            /*const Vec2 PlayerToMousePos = m_PlayerMainScript->GetPlayerToMousePos();
-            const Vec3 FireDirection = ToVec3(PlayerToMousePos, 1.f);
-            
-            Ptr<CGrenade> Grenade = SpawnedGrenade->GetScriptComponent<CGrenade>();
-            Grenade->Transform()->SetRelativePos(Transform()->GetWorldPos());
-            Grenade->SetLogicalPos(ToVec3(Transform()->GetWorldPos2D(), 15.f));
-            Grenade->SetDamageAmount(75.f);
-            Grenade->SetFireVelocity(FireDirection.Normalized() * 550.f);#1#
-            
-            
-            Ptr<CGrenade> Grenade = SpawnedGrenade->GetScriptComponent<CGrenade>();
-            
-            // 논리적 시작 위치 (렌더링 시작점)
-            // z값은 0으로 시작 x -> Bounce Count 하나 까고 시작해버림
-            Grenade->SetLogicalPos(ToVec3(Transform()->GetWorldPos2D(), 1.f));
-
-            // 투척 파워 분리 설정
-            const float throwSpeedXY = 400.f;
-            const float upwardSpeedZ = 300.f;
-            
-            // 평면(XY) 방향만 정규화
-            const Vec2 PlayerToMousePos = m_PlayerMainScript->GetPlayerToMousePos();
-            Vec2 XYDir = PlayerToMousePos.Normalized(); 
-            
-            // 최종 속도(Velocity) 조합
-            Vec3 FireVelocity;
-            FireVelocity.x = XYDir.x * throwSpeedXY;
-            FireVelocity.y = XYDir.y * throwSpeedXY;
-            FireVelocity.z = upwardSpeedZ;
-
-            Grenade->SetDamageAmount(75.f);
-            Grenade->SetFireVelocity(FireVelocity);
-            Grenade->SetBounceTotalCount(3);
-        }*/
-    }
 }
 
 void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
