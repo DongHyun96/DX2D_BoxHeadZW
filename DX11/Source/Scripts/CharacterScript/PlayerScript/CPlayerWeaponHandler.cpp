@@ -5,6 +5,8 @@
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "InvenScript/CEquipmentScript.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
+#include "Source/Scripts/ProjectileScript/CGrenade.h"
 
 CPlayerWeaponHandler::CPlayerWeaponHandler()
     : CScript(SCRIPT_TYPE::PLAYERWEAPONHANDLER)
@@ -75,6 +77,7 @@ void CPlayerWeaponHandler::Tick()
 {
     TickSwapWeapon();
     TickFireWeapon();
+    TickFireGrenade();
 
     // TODO : 여기 지우기 & 버프 처리 시, Weapon에 실질적으로 setting을 해주어야 함(지금 무기를 바꿀때만 처리가 되는 중)
     if (KEY_TAP(KEY::MOUSE_X1))
@@ -144,6 +147,49 @@ void CPlayerWeaponHandler::TickFireWeapon()
         const Vec2 MousePos = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
         Weapon->Fire(MuzzleWorldPos, MousePos - MuzzleWorldPos);
         m_LastTickFired = true;
+    }
+}
+
+void CPlayerWeaponHandler::TickFireGrenade()
+{
+    if (KEY_TAP(KEY::F))
+    {
+        if (GameObject* SpawnedGrenade = GM->GetGrenaderPooler()->SpawnObject(Transform()->GetWorldPos()))
+        {
+            /*const Vec2 PlayerToMousePos = m_PlayerMainScript->GetPlayerToMousePos();
+            const Vec3 FireDirection = ToVec3(PlayerToMousePos, 1.f);
+            
+            Ptr<CGrenade> Grenade = SpawnedGrenade->GetScriptComponent<CGrenade>();
+            Grenade->Transform()->SetRelativePos(Transform()->GetWorldPos());
+            Grenade->SetLogicalPos(ToVec3(Transform()->GetWorldPos2D(), 15.f));
+            Grenade->SetDamageAmount(75.f);
+            Grenade->SetFireVelocity(FireDirection.Normalized() * 550.f);*/
+            
+            Ptr<CGrenade> Grenade = SpawnedGrenade->GetScriptComponent<CGrenade>();
+            
+            // 논리적 시작 위치 (렌더링 시작점)
+            // z값은 0으로 시작 x -> Bounce Count 하나 까고 시작해버림
+            Grenade->Transform()->SetRelativePos(Transform()->GetWorldPos());
+            Grenade->SetLogicalPos(ToVec3(Transform()->GetWorldPos2D(), 1.f));
+
+            // 투척 파워 분리 설정
+            const float throwSpeedXY = 400.f;
+            const float upwardSpeedZ = 300.f;
+            
+            // 평면(XY) 방향만 정규화
+            const Vec2 PlayerToMousePos = m_PlayerMainScript->GetPlayerToMousePos();
+            Vec2 XYDir = PlayerToMousePos.Normalized(); 
+            
+            // 최종 속도(Velocity) 조합
+            Vec3 FireVelocity;
+            FireVelocity.x = XYDir.x * throwSpeedXY;
+            FireVelocity.y = XYDir.y * throwSpeedXY;
+            FireVelocity.z = upwardSpeedZ;
+
+            Grenade->SetDamageAmount(75.f);
+            Grenade->SetFireVelocity(FireVelocity);
+            Grenade->SetBounceTotalCount(3);
+        }
     }
 }
 

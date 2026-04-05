@@ -141,6 +141,7 @@ private:
     
     void TickSwapWeapon();
     void TickFireWeapon();
+    void TickFireGrenade();
     
 public:
 

@@ -77,7 +77,7 @@ bool CColliderRect::AABBCollision(CColliderCircle* _OtherCircle)
     // Rect vs Circle AABB
 
     const Vec3 CircleMid = _OtherCircle->GetWorldPos();
-    Vec3 ClosestPointToCircle{}; // 사각형 내부에서 원의 중점과 가장 가까운 점
+    
     
     Ptr<AMesh> pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
     const Vtx* pVtx = pRectMesh->GetVtxSysMem();
@@ -90,10 +90,10 @@ bool CColliderRect::AABBCollision(CColliderCircle* _OtherCircle)
     const float Top             = ThisLeftTop.y;
     const float Bottom          = ThisRightBottom.y;
     
-    ClosestPointToCircle.x = min(max(Left, CircleMid.x), Right);
-    ClosestPointToCircle.y = min(max(Bottom, CircleMid.y), Top);
+    m_CircleClosestPointContacted.x = min(max(Left, CircleMid.x), Right);
+    m_CircleClosestPointContacted.y = min(max(Bottom, CircleMid.y), Top);
     
-    return _OtherCircle->IsCollision(ClosestPointToCircle);
+    return _OtherCircle->IsCollision(m_CircleClosestPointContacted);
 }
 
 bool CColliderRect::AABBCollision(CColliderPoint* _OtherPoint)
@@ -176,8 +176,8 @@ bool CColliderRect::OBBCollision(CColliderCircle* _OtherCircle)
     
     Vec3 vDiff = _OtherCircle->GetWorldPos() - this->GetWorldPos();
     vDiff.z = 0.f;
-    Vec3 vClosestPoint = this->GetWorldPos();
-    vClosestPoint.z = 0.f;
+    m_CircleClosestPointContacted = this->GetWorldPos();
+    m_CircleClosestPointContacted.z = 0.f;
 
     for (int i = 0; i < 2; ++i)
     {
@@ -189,10 +189,10 @@ bool CColliderRect::OBBCollision(CColliderCircle* _OtherCircle)
         else if (fDist < -vHalfSize[i]) fDist = -vHalfSize[i];
 
         // 제한된 거리만큼 축 방향으로 이동하여 Closest Point 업데이트
-        vClosestPoint += vAxes[i] * fDist;
+        m_CircleClosestPointContacted += vAxes[i] * fDist;
     }
 
-    Vec3 vDistVec = _OtherCircle->GetWorldPos() - vClosestPoint;
+    Vec3 vDistVec = _OtherCircle->GetWorldPos() - m_CircleClosestPointContacted;
     vDistVec.z = 0.f;
     
     const float fDistSq = vDistVec.LengthSquared(); 

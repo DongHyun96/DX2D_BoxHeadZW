@@ -28,6 +28,7 @@
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleSmokeScript.h"
 #include "Source/Scripts/ExplosionDome\CExplosionDome.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
+#include "Source/Scripts/ProjectileScript\CGrenade.h"
 #include "Source/Scripts/ProjectileScript\CRocketProjectile.h"
 #include "Source/Scripts/StatScript\CCharacterStat.h"
 #include "Source/Scripts/StatScript\CStatScript.h"
@@ -64,6 +65,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CMuzzleSmokeScript");
 	_vec.push_back(L"CExplosionDome");
 	_vec.push_back(L"CObstacle");
+	_vec.push_back(L"CGrenade");
 	_vec.push_back(L"CRocketProjectile");
 	_vec.push_back(L"CCharacterStat");
 	_vec.push_back(L"CStatScript");
@@ -131,6 +133,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CExplosionDome;
 	if (L"CObstacle" == _strScriptName)
 		return new CObstacle;
+	if (L"CGrenade" == _strScriptName)
+		return new CGrenade;
 	if (L"CRocketProjectile" == _strScriptName)
 		return new CRocketProjectile;
 	if (L"CCharacterStat" == _strScriptName)
@@ -210,6 +214,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CExplosionDome;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
 		return new CObstacle;
+	case (UINT)SCRIPT_TYPE::GRENADE:
+		return new CGrenade;
 	case (UINT)SCRIPT_TYPE::ROCKETPROJECTILE:
 		return new CRocketProjectile;
 	case (UINT)SCRIPT_TYPE::CHARACTERSTAT:
@@ -290,6 +296,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CExplosionDome";
 	case SCRIPT_TYPE::OBSTACLE:
 		return L"CObstacle";
+	case SCRIPT_TYPE::GRENADE:
+		return L"CGrenade";
 	case SCRIPT_TYPE::ROCKETPROJECTILE:
 		return L"CRocketProjectile";
 	case SCRIPT_TYPE::CHARACTERSTAT:

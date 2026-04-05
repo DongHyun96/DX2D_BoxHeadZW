@@ -34,6 +34,7 @@ private: // Poolers
     map<FLIPBOOK_EFFECT_POOLER_TYPE, CPoolComponent*> m_mapFlipbookEffectPoolers{};
     
     CPoolComponent* m_RocketProjectilePooler{};
+    CPoolComponent* m_GrenadePooler{};
     
 public:
     
@@ -57,6 +58,9 @@ public:
     
     void SetRocketProjectilePooler(CPoolComponent* _PoolComponent) { m_RocketProjectilePooler = _PoolComponent; }
     CPoolComponent* GetRocketProjectilePooler() const { return m_RocketProjectilePooler; }
+    
+    void SetGrenadePooler(CPoolComponent* _PoolComponent) { m_GrenadePooler = _PoolComponent; }
+    CPoolComponent* GetGrenaderPooler() const { return m_GrenadePooler; }
     
     void SetBackgroundCellManager(CBackgroundTile* _BackgroundCellManager) { m_BackgroundCellManager = _BackgroundCellManager; }
     CBackgroundTile* GetBackgroundCellManager() const { return m_BackgroundCellManager; }

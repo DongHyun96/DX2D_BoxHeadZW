@@ -10,6 +10,9 @@ class CColliderRect : public CCollider2D
 private:
     
     Vec2 m_Scale = {1.f, 1.f};
+    
+    // Circle과 충돌 되었을 때 기록된, Circle과 가장 가까운 점
+    Vec3 m_CircleClosestPointContacted{};
 
 public:
     
@@ -45,5 +48,9 @@ public:
     
     virtual void SaveToLevelFile(FILE* _File) override;
     virtual void LoadFromLevelFile(FILE* _File) override;
+    
+public:
+    
+    Vec3 GetCircleClosestPointContacted() const { return m_CircleClosestPointContacted; }
     
 };
