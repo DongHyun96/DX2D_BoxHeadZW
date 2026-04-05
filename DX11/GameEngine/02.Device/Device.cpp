@@ -386,15 +386,15 @@ HRESULT Device::CreateDepthStencilState()
     HRESULT HR = DEVICE->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(DS_TYPE::LESS_EQUAL)].GetAddressOf());
     if (FAILED(HR)) return E_FAIL;
 
-    // LESS_NO_WRITE
+    // LESS_WRITE
     Desc = {};
     ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
     Desc.DepthEnable    = true;
     Desc.DepthFunc      = D3D11_COMPARISON_LESS;  // 작으면 통과
-    Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;  // 깊이 버퍼 갱신 x
+    Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;  // 깊이 버퍼 갱신
     Desc.StencilEnable  = false;
     
-    HR = DEVICE->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(DS_TYPE::LESS_NO_WRITE)].GetAddressOf());
+    HR = DEVICE->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(DS_TYPE::LESS_WRITE)].GetAddressOf());
     if (FAILED(HR)) return E_FAIL;
 
     // NO_TEST

@@ -40,6 +40,8 @@ void CExplosionDome::SetExplosionSize(float _Factor)
 
 void CExplosionDome::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
+    // TODO : Damage를 직접 입히는 ExplosionDome 종류가 아닐수도 있음(AirStrike)
+    
     // 이미 Damage를 준 Collider가 들어왔을 때
     if (m_setAlreadyDamaged.contains(_OtherCollider)) return;
 
