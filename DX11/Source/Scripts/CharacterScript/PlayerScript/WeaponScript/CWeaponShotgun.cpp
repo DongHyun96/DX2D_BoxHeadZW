@@ -24,11 +24,6 @@ bool CWeaponShotgun::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirectio
     // 아직 발사간견 시간을 다 채우지 못했을 때
     if (GetTimeAfterLastFire() < GetFireIntervalTime()) return false;
     RewindTimeAfterLastFire();
-    
-    Ray2D Ray{};
-    Ray.Origin      = _MuzzleWorldPos;
-    Ray.Direction   = ToVec3(_FireDirection.Normalized()); 
-    Ray.MaxDistance = RESOL_DIAG_LENGTH;
 
     const Vec2 NormalizedFireDirection = _FireDirection.Normalized(); 
     
@@ -37,7 +32,7 @@ bool CWeaponShotgun::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirectio
     {
         Ray2D Ray{};
         Ray.Origin = _MuzzleWorldPos;
-        Ray.Direction = ToVec3(GetSpreadVector(NormalizedFireDirection, Angle));
+        Ray.Direction = GetSpreadVector(NormalizedFireDirection, Angle);
         Ray.MaxDistance = RESOL_DIAG_LENGTH;
         
         RayCastHit Hit{};

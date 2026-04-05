@@ -6,7 +6,7 @@ private:
 
     float   m_Speed{}; // ScriptParam Edited
     Vec3    m_Direction{};
-    float   m_Damage{};
+    float   m_DamageAmount = 50.f;
     
 private:
     
@@ -29,7 +29,7 @@ public:
 public:
     
     void SetDirection(const Vec2& _Direction) { m_Direction = ToVec3(_Direction); }
-    void SetDamage(float _Damage) { m_Damage = _Damage; }
+    void SetDamage(float _Damage) { m_DamageAmount = _Damage; }
     
 private:
     

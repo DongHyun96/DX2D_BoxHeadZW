@@ -20,6 +20,10 @@ private:
 
     class CPlayerScript*    m_MainPlayerScript{};
     class CInvenScript*     m_InvenScript{};
+
+private:
+    
+    static set<UINT> s_setTurretHitScanLayers;
     
 public:
     
@@ -67,6 +71,10 @@ private:
     /// <param name="_PreviewPos"> : </param>
     /// <param name="_Available"></param>
     void UpdatePreviewStructureObject(const Vec2& _PreviewPos, bool _Available);
+    
+public:
+    
+    static const set<UINT>& GetTurretHitScanLayers() { return s_setTurretHitScanLayers; }
     
     
 public:

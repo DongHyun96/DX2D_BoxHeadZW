@@ -67,6 +67,36 @@ bool CollisionMgr::RayCast
     return bFoundHit;
 }
 
+bool CollisionMgr::RayCast
+(
+    const Ray2D&        _Ray,
+    const set<UINT>&    _setTargetLayerMask,
+    RayCastHit*         _OutHit,
+    const CCollider2D*  _Ignore
+)
+{
+    Ray2D Ray = _Ray;
+    
+    if (_OutHit) *_OutHit = {}; // OutHit 초기화
+
+    if (Ray.MaxDistance <= 0.f) Ray.MaxDistance = FLT_MAX;
+
+    if (Ray.Direction.LengthSquared() <= RAY_EPSILON * RAY_EPSILON)
+        return false;
+
+    Ray.Direction.Normalize();
+
+    bool bFoundHit{};
+    RayCastHit BestHit{}; BestHit.Distance = FLT_MAX;
+
+    for (UINT TargetLayerMask : _setTargetLayerMask)
+        RayCastFindBestHit(TargetLayerMask, Ray, bFoundHit, BestHit, _Ignore);
+    
+    if (bFoundHit && _OutHit) *_OutHit = BestHit;
+    
+    return bFoundHit;
+}
+
 void CollisionMgr::RayCastFindBestHit
 (
     UINT                _TargetLayerMask,

@@ -79,13 +79,13 @@ void CRocketProjectile::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _
     GetOwner()->SetActive(false);
     
     // Effect Spawn 처리하기
-    GM->SpawnExplosionDome(Transform()->GetWorldPos(), GetRandom(1.f, 1.2f));
+    GM->SpawnExplosionDome(Transform()->GetWorldPos(), GetRandom(1.f, 1.2f), m_DamageAmount);
     
     if (Ptr<CStatScript> Stat = _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>())
     {
-        // 여기서 Damage를 주면 안됨 / Barrel의 경우에만 연쇄폭발 첫 Barrel을 여기서 터트림
+        // 주의 : Barrel 빼고는 여기서 Damage를 주면 안됨 / Barrel의 경우에만 연쇄폭발 첫 Barrel을 여기서 터트림
         if (_OtherCollider->GetOwner()->GetScriptComponent<CBarrel>())
-            Stat->TakeDamage(m_Damage, ToVec2(Transform()->GetWorldPos()));
+            Stat->TakeDamage(m_DamageAmount, ToVec2(Transform()->GetWorldPos()));
     }
 }
 

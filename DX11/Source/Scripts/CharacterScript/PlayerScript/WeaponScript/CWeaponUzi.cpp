@@ -27,7 +27,7 @@ bool CWeaponUzi::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
     
     // Direction의 경우, 살짝의 오차를 매번 준다
     const float BiasAngle = ConvertToAngle(GetRandom(-3.5f, 3.5f));
-    Ray.Direction   = ToVec3(GetSpreadVector(_FireDirection.Normalized(), BiasAngle)); 
+    Ray.Direction   = GetSpreadVector(_FireDirection.Normalized(), BiasAngle); 
     Ray.MaxDistance = RESOL_DIAG_LENGTH;
     
     RayCastHit Hit{};

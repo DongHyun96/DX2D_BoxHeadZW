@@ -19,6 +19,11 @@ enum class TURRET_TYPE
 
 class CTurret : public CStructure
 {
+    
+    friend class Turret_MGAttackStrategy;
+    friend class Turret_MortarAttackStrategy;
+    friend class Turret_RocketAttackStrategy;
+    
 private:
 
     TURRET_TYPE m_TurretType{};
@@ -85,6 +90,13 @@ private:
     /// </summary>
     /// <returns> 해당 방향으로 맞추어 졌다면 return true </returns>
     bool HandleRotateToTarget();
+    
+public:
+    
+    /// <summary>
+    /// 현재 재생 중인 Sprite가 바라보는 Angle return 
+    /// </summary>
+    float GetCurrentFacedAngle();
     
 public:
     

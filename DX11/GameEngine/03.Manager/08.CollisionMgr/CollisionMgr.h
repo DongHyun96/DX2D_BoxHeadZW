@@ -110,6 +110,14 @@ public:
         const CCollider2D*  _Ignore = nullptr
     );
     
+    bool RayCast
+    (
+        const Ray2D&        _Ray,
+        const set<UINT>&    _setTargetLayerMask,
+        RayCastHit*         _OutHit  = nullptr,
+        const CCollider2D*  _Ignore = nullptr
+    );
+    
 private:
     /// <summary>
     /// TargetLayerMask에서의 Hit 했는지의 판정과, BestHit 찾기

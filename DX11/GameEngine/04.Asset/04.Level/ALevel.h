@@ -63,7 +63,7 @@ public:
     /// </summary>
     /// <param name="_LayerName"></param>
     /// <returns> : 만약 해당하는 이름이 없다면 return -1 </returns>
-    UINT GetLayerIndexByLayerName(const wstring& _LayerName) const;
+    int GetLayerIndexByLayerName(const wstring& _LayerName) const;
     
 public:
     

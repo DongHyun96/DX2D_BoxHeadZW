@@ -1,10 +1,15 @@
 ﻿#include "pch.h"
 #include "TurretAttackStrategy.h"
 
+#include "CTurret.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
+#include "Source/Manager/GameManager.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/StructureHandler/CStructureHandler.h"
+#include "Source/Scripts/EffectScript/MuzzleEffects/CMuzzleFlashScript.h"
+#include "Source/Scripts/StatScript/CStatScript.h"
 
 float Turret_MGAttackStrategy::s_BurstInterval = 0.1f;
 
@@ -15,7 +20,7 @@ void Turret_MGAttackStrategy::WaitAttack()
     m_FireCount = 0;
 }
 
-bool Turret_MGAttackStrategy::UseAttackStrategy(GameObject* _Target)
+bool Turret_MGAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _Target)
 {
     m_BurstFireTimer += DT;
     
@@ -28,27 +33,46 @@ bool Turret_MGAttackStrategy::UseAttackStrategy(GameObject* _Target)
     wstring SoundKey = L"Sound\\MGShot" + to_wstring(randomSuffix) + L".wav";
     Ptr<ASound> ShootingSound = FIND_ASSET(ASound, SoundKey);
     ShootingSound->Play(1, 0.75f, true);
+
+    // 현재 Muzzle Pos World 위치
+    const Vec2 MuzzlePos2D = ToVec2(_Turret->FlipbookRender()->GetCurrentSpritePinPointToWorldPos());
+    const Vec2 TurretToTarget = _Target->Transform()->GetWorldPos2D() - MuzzlePos2D;
     
     // Target을 향하는 방향으로 Ray Casting
     Ray2D Ray{};
-    //Ray.Origin      = _MuzzleWorldPos;
-    //Ray.Direction   = ToVec3(_FireDirection.Normalized()); 
-    Ray.MaxDistance = RESOL_DIAG_LENGTH;
+    Ray.Origin      = MuzzlePos2D;
+    Ray.Direction   = TurretToTarget.Normalized(); 
+    Ray.MaxDistance = TurretToTarget.Length();
     
+    RayCastHit Hit{};
+
+    // TODO : 피격 주석 풀기
+    /*if (CollisionMgr::GetInst()->RayCast(Ray, CStructureHandler::GetTurretHitScanLayers(), &Hit))
+    {
+        Ptr<CCollider2D> CollidedCollider = Hit.Collider;
+        if (Ptr<CStatScript> Stat = CollidedCollider->GetOwner()->GetScriptComponent<CStatScript>())
+            Stat->TakeDamage(GetRandom(20.f, 35.f), MuzzlePos2D);
+    }*/
     
-    // TODO : 총구 화염 및 effect 처리할 것
-    
+    GameObject* SpawnedFlashEffect = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::MUZZLE_FLASH_POOLER)->SpawnObject(ToVec3(MuzzlePos2D)); // 두 번째 Play 시, 
+    if (SpawnedFlashEffect)
+    {
+        _Turret->GetOwner()->AddChild(SpawnedFlashEffect);
+        SpawnedFlashEffect->GetScriptComponent<CMuzzleFlashScript>()->SetIsPlayerWeaponMuzzle(false); // 실질적인 MuzzleFlash의 위치나 회전은 본인의 Tick에서 실시간 처리를 함 (Turret 또한 계속 돌기 때문)
+        SpawnedFlashEffect->FlipbookRender()->Play(0, 15.f, 1);
+        
+    }
 
     // 3회 사격이 끝나면 이번 턴 공격 종료
     return ++m_FireCount >= 3;
 }
 
-bool Turret_MortarAttackStrategy::UseAttackStrategy(GameObject* _Target)
+bool Turret_MortarAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _Target)
 {
     return true;
 }
 
-bool Turret_RocketAttackStrategy::UseAttackStrategy(GameObject* _Target)
+bool Turret_RocketAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _Target)
 {
     return true;
 }

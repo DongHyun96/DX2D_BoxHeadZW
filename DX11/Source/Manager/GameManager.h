@@ -24,6 +24,10 @@ private:
     Ptr<GameObject> m_PlayerObject{}; // Init 시점에서 PlayerObject 추가중임...
     class CPlayerScript* m_MainPlayerScript{};
 
+private: // BackgroundTile & Cell Manager
+
+    class CBackgroundTile* m_BackgroundCellManager{};
+    
 private: // Poolers
     
     map<ENEMY_TYPE, CPoolComponent*> m_mapEnemyPoolers{};
@@ -31,10 +35,6 @@ private: // Poolers
     
     CPoolComponent* m_RocketProjectilePooler{};
     
-private: // BackgroundTile & Cell Manager
-
-    class CBackgroundTile* m_BackgroundCellManager{};
-
 public:
     
     void OnLevelBegin();
@@ -61,7 +61,7 @@ public:
     void SetBackgroundCellManager(CBackgroundTile* _BackgroundCellManager) { m_BackgroundCellManager = _BackgroundCellManager; }
     CBackgroundTile* GetBackgroundCellManager() const { return m_BackgroundCellManager; }
     
-public:
+public: // Effect Spawn 관련
 
     void SpawnRocketSmoke(Vec3 _SpawnPos);
     void SpawnExplosionDome(Vec3 _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f);

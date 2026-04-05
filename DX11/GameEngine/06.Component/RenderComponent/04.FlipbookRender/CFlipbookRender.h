@@ -137,6 +137,11 @@ public: // 재생 관련
     /// 현재 재생중인 Sprite의 PinPoint 위치의 World 좌표 반환 (현재 재생중인 Sprite가 없다면 default값 return)
     /// </summary>
     Vec3 GetCurrentSpritePinPointToWorldPos() const;
+
+    /// <summary>
+    /// 현재 재생중인 Sprite의 PinPoint 위치의 부모로부터의 Relative 좌표 반환 (현재 재생중인 Sprite가 없다면 default값 return)
+    /// </summary>
+    Vec3 GetCurrentSpritePinPointToRelativePos() const;
     
 public:
 

@@ -15,9 +15,10 @@ public:
     /// <summary>
     /// Target에게 Attack 시도 
     /// </summary>
-    /// <param name="_Target"></param>
+    /// <param name="_Turret"> : 공격시도하려는 Turret </param>
+    /// <param name="_Target"> : 공격 대상 Enemy </param>
     /// <returns> : 공격이 정상적으로 끝났으면 return true / 공격이 아직 끝나지 않았으면 return true(점사 처리) </returns>
-    virtual bool UseAttackStrategy(GameObject* _Target) = 0;
+    virtual bool UseAttackStrategy(class CTurret* _Turret, GameObject* _Target) = 0;
     
 };
 
@@ -43,7 +44,7 @@ private:
     /// <summary>
     /// 3발 점사로 사격을 진행함
     /// </summary>
-    virtual bool UseAttackStrategy(GameObject* _Target) override;
+    virtual bool UseAttackStrategy(CTurret* _Turret, GameObject* _Target) override;
     
 };
 
@@ -57,7 +58,7 @@ public:
     CLONE(Turret_MortarAttackStrategy)
 private:
     
-    virtual bool UseAttackStrategy(GameObject* _Target) override;
+    virtual bool UseAttackStrategy(CTurret* _Turret, GameObject* _Target) override;
 };
 
 class Turret_RocketAttackStrategy : public TurretAttackStrategy
@@ -71,7 +72,7 @@ public:
     
 private:
     
-    virtual bool UseAttackStrategy(GameObject* _Target) override;
+    virtual bool UseAttackStrategy(CTurret* __Turret, GameObject* _Target) override;
     
 };
 

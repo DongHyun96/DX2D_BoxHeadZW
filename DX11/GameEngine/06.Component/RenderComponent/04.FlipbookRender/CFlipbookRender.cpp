@@ -340,6 +340,18 @@ Vec3 CFlipbookRender::GetCurrentSpritePinPointToWorldPos() const
     
 }
 
+Vec3 CFlipbookRender::GetCurrentSpritePinPointToRelativePos() const
+{
+    if (!m_vecCurSelectedCategoryFlipbooks) return Vec3::Zero;
+    if (m_CurSelectedFlipbookIdx >= m_vecCurSelectedCategoryFlipbooks->size()) return Vec3::Zero;
+    
+    Ptr<AFlipbook> TargetFlipbook = m_vecCurSelectedCategoryFlipbooks->at(m_CurSelectedFlipbookIdx);
+    Ptr<ASprite> Sprite = TargetFlipbook->GetSprite(m_CurAnimatingSpriteIdx);
+    
+    const Vec2 PinPoint = Sprite->GetPinPoint();
+    return ToVec3(PinPoint * GetRenderScale() * 0.5f + GetRenderOffset());
+}
+
 bool CFlipbookRender::SetFlipbook(const wstring& _Category, int _Idx, const Ptr<AFlipbook>& _Flipbook)
 {
     if (_Idx < 0) return false;

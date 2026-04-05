@@ -28,7 +28,7 @@ bool CWeaponPistol::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
     
     Ray2D Ray{};
     Ray.Origin      = _MuzzleWorldPos;
-    Ray.Direction   = ToVec3(_FireDirection.Normalized()); 
+    Ray.Direction   = _FireDirection.Normalized(); 
     Ray.MaxDistance = RESOL_DIAG_LENGTH;
     
     RayCastHit Hit{};

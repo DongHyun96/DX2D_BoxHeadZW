@@ -89,8 +89,6 @@ int ASound::Play(int _iLoopCount, float _fVolume, bool _bOverlap)
     if (!_bOverlap && !m_listChannel.empty())
         return E_FAIL;
 
-	DebugUtil::AddDebugLog("Channel size before : " + to_string(m_listChannel.size()), DEF_COLOR_CYAN, 5.f);
-	
     FMOD::Channel* pChannel = nullptr;
     const FMOD_RESULT playResult = FMOD_SYSTEM->playSound(m_Sound, nullptr, false, &pChannel);
     if (FMOD_OK != playResult)
@@ -105,8 +103,6 @@ int ASound::Play(int _iLoopCount, float _fVolume, bool _bOverlap)
 
     m_listChannel.push_back(pChannel);
 	
-	DebugUtil::AddDebugLog("Channel size After : " + to_string(m_listChannel.size()), DEF_COLOR_CYAN, 5.f);
-	DebugUtil::AddDebugLog("", DEF_COLOR_CYAN, 5.f);
     return channelIdx;
 }
 

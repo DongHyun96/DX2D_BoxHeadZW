@@ -71,7 +71,7 @@ bool ALevel::IsLayerNameDuplicated(const wstring& _LayerName, int _SelfIdx)
     return false;
 }
 
-UINT ALevel::GetLayerIndexByLayerName(const wstring& _LayerName) const
+int ALevel::GetLayerIndexByLayerName(const wstring& _LayerName) const
 {
     if (!m_mapLayerNameIndex.contains(_LayerName)) return -1;
     return m_mapLayerNameIndex.at(_LayerName);

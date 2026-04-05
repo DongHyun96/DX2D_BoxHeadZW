@@ -127,7 +127,7 @@ void CTransform::SetRelativePosFromWorldPos(const Vec3& _DesiredWorldPos)
 
 Vec3 CTransform::CalculateRelativePosFromWorldPos(const Vec3& _DesiredWorldPos)
 {
-	if (!GetOwner()->GetParent() || GetOwner()->GetParent()->Transform()) return _DesiredWorldPos;
+	if (!GetOwner()->GetParent() || !GetOwner()->GetParent()->Transform()) return _DesiredWorldPos;
 
 	CTransform* ParentTransform = GetOwner()->GetParent()->Transform().Get();
 	

@@ -3,12 +3,15 @@
 
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/InvenScript/CInvenScript.h"
 #include "Source/Scripts/Structure/CStructure.h"
+
+set<UINT> CStructureHandler::s_setTurretHitScanLayers{};
 
 CStructureHandler::CStructureHandler()
     : CScript(SCRIPT_TYPE::STRUCTUREHANDLER)
@@ -50,6 +53,16 @@ void CStructureHandler::Begin()
     {
         m_mapStructureTypePrefabs[PLAYER_STRUCTURE_TYPE::TURRET_ROCKET] = pAsset.Get();
     } else DebugUtil::AddDebugLog("[CStructureHandler::Begin] : Failed to find Turret_Rocket prefab", DEF_COLOR_CYAN, 10.f);
+    
+    // Init TurretHitScanLayers
+    s_setTurretHitScanLayers.clear();
+    int idx = LevelMgr::GetInst()->GetCurLevel()->GetLayerIndexByLayerName(L"MapObstacle");
+    if (idx == -1) DebugUtil::AddDebugLog("[CStuctureHandler::Begin] : Invalid HitScanLayerName!", DEF_COLOR_CYAN, 10.f);
+    else s_setTurretHitScanLayers.insert(idx);
+    
+    idx = LevelMgr::GetInst()->GetCurLevel()->GetLayerIndexByLayerName(L"Enemy");
+    if (idx == -1) DebugUtil::AddDebugLog("[CStuctureHandler::Begin] : Invalid HitScanLayerName!", DEF_COLOR_CYAN, 10.f);
+    else s_setTurretHitScanLayers.insert(idx); 
 }
 
 void CStructureHandler::Tick()

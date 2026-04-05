@@ -124,7 +124,7 @@ void CTurret::Tick()
         }
 
         // Time to attack
-        if (m_AttackStrategy->UseAttackStrategy(m_TargetEnemyObject)) // 사격이 모두 완료되었으면 다시, 공격 대기 | 아니라면 다음 Tick에도 공격 처리
+        if (m_AttackStrategy->UseAttackStrategy(this, m_TargetEnemyObject)) // 사격이 모두 완료되었으면 다시, 공격 대기 | 아니라면 다음 Tick에도 공격 처리
             m_AttackIntervalTimeChecker = 0.f;
     }
         return;
@@ -212,6 +212,12 @@ bool CTurret::HandleRotateToTarget()
 
     FlipbookRender()->Stop(NextSpriteIdx);
     return DestSpriteIdx == CurrentSpriteIdx; 
+}
+
+float CTurret::GetCurrentFacedAngle()
+{
+    const float Angle = MappingToNewRange(static_cast<float>(FlipbookRender()->GetCurAnimatingSpriteIdx()), 0.f, 32.f, 0.f, XM_2PI);
+    return Angle;
 }
 
 void CTurret::SaveToLevelFile(FILE* _File)
