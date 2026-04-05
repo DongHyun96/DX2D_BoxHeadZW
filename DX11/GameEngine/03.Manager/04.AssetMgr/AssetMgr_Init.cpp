@@ -243,6 +243,24 @@ void AssetMgr::CreateEngineShader()
     
     shader->AddShaderParam(SHADER_PARAM::VEC4, 0, L"TintColor");
     AddAsset(shader->GetName(), shader.Get());
+
+    
+    // ==============
+    // FlipbookEffectShader
+    // ==============
+    shader = new AGraphicShader;
+    shader->SetName(L"FlipbookEffectShader");
+    shader->CreateVertexShader(L"Shader\\flipbook.fx","VS_Flipbook");
+    shader->CreatePixelShader(L"Shader\\flipbook.fx", "PS_Flipbook");
+    shader->SetBSType(BS_TYPE::ALPHA_BLEND);
+    shader->SetRSType(RS_TYPE::CULL_NONE);
+    shader->SetDSType(DS_TYPE::NO_TEST);
+    
+    shader->SetIsProvidedByEngine(true);
+    
+    shader->AddShaderParam(SHADER_PARAM::VEC4, 0, L"TintColor");
+    AddAsset(shader->GetName(), shader.Get());
+    
     // =============
     // TileShader
     // =============
@@ -319,4 +337,16 @@ void AssetMgr::CreateEngineMaterial()
     AddAsset(pMtrl->GetName(), pMtrl.Get());
 
     // Load<AMaterial>(L"Material\\Default Material_0.mtrl", L"Material\\Default Material_0.mtrl");
+    
+    /***********************
+    * FlipbookEffect Material
+    ***********************/
+    pMtrl = new AMaterial;
+    pMtrl->SetName(L"FlipbookEffectMtrl");
+    pMtrl->SetShader(Find<AGraphicShader>(L"FlipbookEffectShader"));
+    pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_TRANSPARENT);
+    pMtrl->SetScalar(VEC4_0, Vec4(1.f, 1.f, 1.f, 1.f)); // Tint Color
+    pMtrl->SetIsProvidedByEngine(true);
+    
+    AddAsset(pMtrl->GetName(), pMtrl.Get());
 }

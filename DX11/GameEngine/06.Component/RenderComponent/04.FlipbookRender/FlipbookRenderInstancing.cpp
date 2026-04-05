@@ -1,6 +1,7 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "FlipbookRenderInstancing.h"
 
+#include <map>
 #include <unordered_map>
 
 #include "GameEngine/02.Device/Device.h"
@@ -12,7 +13,7 @@
 namespace
 {
     constexpr UINT FLIPBOOK_INSTANCE_DATA_REGISTER = 21;
-    
+
     struct FlipbookInstanceData
     {
         Matrix  World{};
@@ -49,13 +50,22 @@ namespace
 
     struct FlipbookBatch
     {
-        AMesh*                      Mesh{};
-        AGraphicShader*             Shader{};
-        ATexture*                   Atlas{};
+        AMesh*                       Mesh{};
+        AGraphicShader*              Shader{};
+        ATexture*                    Atlas{};
         vector<FlipbookInstanceData> Instances{};
     };
 
-    unordered_map<FlipbookBatchKey, FlipbookBatch, FlipbookBatchKeyHasher> g_FlipbookBatches{};
+    using FlipbookBatchMap = unordered_map<FlipbookBatchKey, FlipbookBatch, FlipbookBatchKeyHasher>;
+
+    struct FlipbookDepthBucket
+    {
+        FlipbookBatchMap Batches{};
+    };
+
+    // Transparent는 Back-to-Front 순서(먼 쪽 -> 가까운 쪽)로 렌더링한다.
+    // 현재 2D 카메라 구성에서 World Z가 클수록 카메라에서 더 멀다고 보고 내림차순으로 순회한다.
+    map<float, FlipbookDepthBucket, greater<float>> g_FlipbookDepthBuckets{};
 
     Ptr<StructuredBuffer> g_FlipbookInstanceBuffer{};
     UINT g_FlipbookInstanceCapacity{};
@@ -74,7 +84,7 @@ namespace
 
 void FlipbookRenderInstancing::BeginFrame()
 {
-    g_FlipbookBatches.clear();
+    g_FlipbookDepthBuckets.clear();
 }
 
 void FlipbookRenderInstancing::Submit
@@ -90,7 +100,9 @@ void FlipbookRenderInstancing::Submit
 )
 {
     if (!_Mesh || !_Shader || !_Atlas) return;
-    
+
+    const float depthZ = _World._43;
+
     FlipbookInstanceData data{};
     data.World           = _World;
     data.RenderTransform = _RenderTransform;
@@ -102,49 +114,55 @@ void FlipbookRenderInstancing::Submit
     Key.Mesh      = _Mesh;
     Key.Shader    = _Shader;
     Key.Atlas     = _Atlas;
-    
-    auto [iter, inserted] = g_FlipbookBatches.try_emplace(Key);
+
+    FlipbookDepthBucket& depthBucket = g_FlipbookDepthBuckets[depthZ];
+    auto [iter, inserted] = depthBucket.Batches.try_emplace(Key);
     if (inserted)
     {
         iter->second.Mesh   = _Mesh;
         iter->second.Shader = _Shader;
         iter->second.Atlas  = _Atlas;
     }
-    
+
     iter->second.Instances.push_back(data);
 }
 
 void FlipbookRenderInstancing::Flush()
 {
-    if (g_FlipbookBatches.empty()) return;
+    if (g_FlipbookDepthBuckets.empty()) return;
 
     MtrlConst mtrlConst{};
     mtrlConst.IsTex[TEX_0] = true;
 
-    for (auto& Pair : g_FlipbookBatches)
+    for (auto& depthPair : g_FlipbookDepthBuckets)
     {
-        FlipbookBatch& Batch = Pair.second;
-        const UINT instanceCount = static_cast<UINT>(Batch.Instances.size());
-        if (0 == instanceCount) continue;
-        if (!Batch.Mesh || !Batch.Shader || !Batch.Atlas) continue;
+        FlipbookDepthBucket& depthBucket = depthPair.second;
 
-        EnsureFlipbookInstanceBuffer(instanceCount);
-        if (!g_FlipbookInstanceBuffer) continue;
+        for (auto& batchPair : depthBucket.Batches)
+        {
+            FlipbookBatch& Batch = batchPair.second;
+            const UINT instanceCount = static_cast<UINT>(Batch.Instances.size());
+            if (0 == instanceCount) continue;
+            if (!Batch.Mesh || !Batch.Shader || !Batch.Atlas) continue;
 
-        g_FlipbookInstanceBuffer->SetData(Batch.Instances.data(), sizeof(FlipbookInstanceData) * instanceCount);
-        g_FlipbookInstanceBuffer->Binding(FLIPBOOK_INSTANCE_DATA_REGISTER);
+            EnsureFlipbookInstanceBuffer(instanceCount);
+            if (!g_FlipbookInstanceBuffer) continue;
 
-        Batch.Shader->Binding();
-        Batch.Atlas->Binding(TEX_0);
+            g_FlipbookInstanceBuffer->SetData(Batch.Instances.data(), sizeof(FlipbookInstanceData) * instanceCount);
+            g_FlipbookInstanceBuffer->Binding(FLIPBOOK_INSTANCE_DATA_REGISTER);
 
-        Device::GetInst()->GetCB(CB_TYPE::MATERIAL)->SetData(&mtrlConst);
-        Device::GetInst()->GetCB(CB_TYPE::MATERIAL)->Binding();
+            Batch.Shader->Binding();
+            Batch.Atlas->Binding(TEX_0);
 
-        Batch.Mesh->RenderInstanced(instanceCount);
+            Device::GetInst()->GetCB(CB_TYPE::MATERIAL)->SetData(&mtrlConst);
+            Device::GetInst()->GetCB(CB_TYPE::MATERIAL)->Binding();
 
-        Batch.Atlas->Clear();
-        g_FlipbookInstanceBuffer->Clear();
+            Batch.Mesh->RenderInstanced(instanceCount);
+
+            Batch.Atlas->Clear();
+            g_FlipbookInstanceBuffer->Clear();
+        }
     }
 
-    g_FlipbookBatches.clear();
+    g_FlipbookDepthBuckets.clear();
 }

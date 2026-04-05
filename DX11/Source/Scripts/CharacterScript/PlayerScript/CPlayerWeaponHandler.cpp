@@ -156,7 +156,7 @@ void CPlayerWeaponHandler::TickFireWeapon()
 void CPlayerWeaponHandler::TickFireGrenade()
 {
     if (KEY_TAP(KEY::F))
-        GM->SpawnGrenade(Transform()->GetWorldPos(), m_PlayerMainScript->GetPlayerToMousePos().Normalized(), 75.f, 3, 400.f, 300.f, false);
+        GM->SpawnGrenade(Transform()->GetWorldPos(), m_PlayerMainScript->GetPlayerToMousePos().Normalized(), 75.f, 3, 400.f, 300.f, true);
 }
 
 void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)

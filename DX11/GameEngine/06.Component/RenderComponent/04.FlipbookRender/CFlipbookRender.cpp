@@ -34,7 +34,6 @@ void CFlipbookRender::CreateMaterial()
     // RectMesh 설정
     SetMesh(AssetMgr::GetInst()->Find<AMesh>(MeshName));
     
-    // 빌보드 전용 재질 생성
     Ptr<AMaterial> pMtrl = AssetMgr::GetInst()->Find<AMaterial>(MtrlName);
     
     // 찾는 재질이 없으면 생성한다

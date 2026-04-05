@@ -2,6 +2,7 @@
 #include "RenderUI.h"
 
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
+#include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
 
 RenderUI::RenderUI(COMPONENT_TYPE _Type, const string& _UIName)
     : ComponentUI(_Type, _UIName)
@@ -21,6 +22,34 @@ void RenderUI::Tick_UI()
 
     ImGui::Spacing();
     ImGui::Separator();
+    
+    // Material 지정
+    ImGui::Text("Material");
+    ImGui::SameLine(105);
+    wstring MtrlKey = GetTargetObject()->GetRenderCom()->GetMaterial() ? GetTargetObject()->GetRenderCom()->GetMaterial()->GetKey() : L"None";
+    ImGui::InputText("##MtrlKey", string(MtrlKey.begin(), MtrlKey.end()).data(), MtrlKey.length() + 1, ImGuiInputTextFlags_ReadOnly);
+    
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* PayLoad = ImGui::AcceptDragDropPayload("Content"))
+        {
+            if (!TreeUI::IsPayloadMultiData(PayLoad))
+            {
+                DWORD_PTR data = *static_cast<DWORD_PTR*>(PayLoad->Data);
+                Ptr<Asset> pAsset = reinterpret_cast<Asset*>(data);
+
+                if (ASSET_TYPE::MATERIAL == pAsset->GetType())
+                {
+                    AMaterial* ReceivedMaterial = static_cast<AMaterial*>(pAsset.Get());
+                    GetTargetObject()->GetRenderCom()->SetMaterial(ReceivedMaterial);
+                }
+            }
+        }
+
+        ImGui::EndDragDropTarget();
+    }
+
+    ImGui::Spacing();
     
     // Render Offset, Render Scale 조정
     Vec2 vRenderOffset  = GetTargetObject()->GetRenderCom()->GetRenderOffset();
