@@ -70,7 +70,15 @@ public: // Effect Spawn 관련
 
     void SpawnRocketSmoke(const Vec3& _SpawnPos);
     void SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f, CScript* _SpawnedBy = nullptr);
-    void SpawnExplosion(const Vec3& _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 600.f, float _DamageAmount = 75.f, CScript* _SpawnedBy = nullptr);
+    void SpawnExplosion
+    (
+        const Vec3& _SpawnPos,
+        float _ExplosionSizeFactor = 1.f,
+        float _FPS = 800.f,
+        float _DamageAmount = 75.f,
+        CScript* _SpawnedBy = nullptr,
+        bool _UseSpawnExplosionCollisionForDamaging = true
+    );
     
 public: // Projectile Spawn 관련
 

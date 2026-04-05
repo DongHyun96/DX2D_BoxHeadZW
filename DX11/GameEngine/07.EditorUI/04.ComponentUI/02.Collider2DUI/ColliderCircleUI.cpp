@@ -16,7 +16,12 @@ void ColliderCircleUI::Tick_UI()
     ComponentUI::Tick_UI();
     
     CColliderCircle* Collider = GetTargetObject()->ColliderCircle().Get();
-    
+
+    bool Active = Collider->GetActive();
+    if (ImGui::Checkbox("Active", &Active))
+        Collider->SetActive(Active);
+
+    ImGui::Spacing();
     
     ImGui::Text("Offset");
     ImGui::SameLine(100);

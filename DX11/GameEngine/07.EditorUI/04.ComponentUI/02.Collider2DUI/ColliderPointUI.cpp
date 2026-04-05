@@ -17,6 +17,10 @@ void ColliderPointUI::Tick_UI()
     
     CColliderPoint* Collider   = GetTargetObject()->ColliderPoint().Get();
 
+    bool Active = Collider->GetActive();
+    if (ImGui::Checkbox("Active", &Active))
+        Collider->SetActive(Active);
+    
     ImGui::Text("Offset");
     ImGui::SameLine(100);
     

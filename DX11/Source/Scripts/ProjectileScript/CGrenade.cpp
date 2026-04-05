@@ -68,7 +68,7 @@ void CGrenade::Tick()
             m_Velocity = Vec3::Zero;
             
             // GM->SpawnExplosionDome(Transform()->GetWorldPos(), 1.5f, 50.f, 50.f, this);
-            GM->SpawnExplosion(Transform()->GetWorldPos(), 1.f, 1000.f, 75.f, this);
+            GM->SpawnExplosion(Transform()->GetWorldPos(), 1.f, 1500.f, 75.f, this);
             GetOwner()->SetActive(false);
 
             // SubGrenade 추가로 Spawn처리할 경우
@@ -77,7 +77,7 @@ void CGrenade::Tick()
                 for (int i = 0; i < 4; ++i)
                 {
                     const Vec2 Direction = GetSpreadVector(Vec2::UnitX, XM_PIDIV4 + i * XM_PIDIV2);
-                    GM->SpawnGrenade(Transform()->GetWorldPos(), Direction, m_DamageAmount * 0.5f, 0, 150.f, 250.f, false, true);
+                    GM->SpawnGrenade(Transform()->GetWorldPos(), Direction, m_DamageAmount * 0.5f, 0, 150.f, 250.f, false);
                 }
             }
         }

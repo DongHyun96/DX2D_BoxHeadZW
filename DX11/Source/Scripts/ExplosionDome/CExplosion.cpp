@@ -40,10 +40,12 @@ void CExplosion::SetExplosionSize(float _Factor)
 
 void CExplosion::OnActivateOwnerObject(const Ptr<GameObject>& _OwnerObject)
 {
-    DebugUtil::AddDebugLog("CExplosion::OnActivateOwnerObject");
+    // DebugUtil::AddDebugLog("CExplosion::OnActivateOwnerObject");
     
     GetRenderCom()->SetRenderOffset({0.f, 0.f});
     GetRenderCom()->SetRenderScale({1.f, 1.f});
     
     m_UpwardSpeed = GetRandom(0.5f, 1.f);
+    
+    GetCollider2D()->SetActive(m_UseCollisionForDamaging);
 }
