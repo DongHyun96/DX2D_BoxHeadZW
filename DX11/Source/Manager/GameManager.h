@@ -21,7 +21,7 @@ class GameManager : public Singleton<GameManager>
     
 private:
     
-    Ptr<GameObject> m_PlayerObject{}; // Init 시점에서 PlayerObject 추가중임...
+    GameObject* m_PlayerObject{};
     class CPlayerScript* m_MainPlayerScript{};
 
 private: // BackgroundTile & Cell Manager
@@ -44,8 +44,8 @@ public:
     
 public:
     
-    Ptr<GameObject>	GetPlayerObject() const { return m_PlayerObject; }
-    void SetPlayerObject(const Ptr<GameObject>& _PlayerObject) { m_PlayerObject = _PlayerObject; }
+    GameObject*	GetPlayerObject() const { return m_PlayerObject; }
+    void SetPlayerObject(GameObject* _PlayerObject) { m_PlayerObject = _PlayerObject; }
     
     CPlayerScript* GetMainPlayerScript() const { return m_MainPlayerScript; }
     void SetMainPlayerScript(CPlayerScript* _Script) { m_MainPlayerScript = _Script; }

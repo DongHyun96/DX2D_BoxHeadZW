@@ -103,7 +103,7 @@ void CGrenade::SetMainGrenadeScale() const
     Transform()->SetRelativeScale(m_ScaleBase);
 }
 
-void CGrenade::HandleOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
+/*void CGrenade::HandleOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
     // 이전 위치로 위치 조정 처리
     m_LogicalPos = m_PrevLogicalPos;
@@ -147,4 +147,72 @@ void CGrenade::HandleOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCol
     m_Velocity.y *= s_GroundFriction;
     
     // 필요 시 벽 바운스 횟수를 차감하거나 사운드를 재생할 수 있습니다.
+}*/
+
+void CGrenade::HandleOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
+{
+    CTransform* pOwnerTrans = _OwnerCollider->Transform();
+    CTransform* pOtherTrans = _OtherCollider->Transform();
+
+    Vec3 ownerPos = pOwnerTrans->GetWorldPos();
+    Vec3 otherPos = pOtherTrans->GetWorldPos();
+
+    Vec2 normal{};
+    
+    // 1. OBB 사각형과의 충돌일 경우 완벽한 위치 보정 적용
+    if (CColliderRect* ColliderRect = dynamic_cast<CColliderRect*>(_OtherCollider))
+    {
+        const Vec3 ClosestPoint = ColliderRect->GetCircleClosestPointContacted();
+        
+        // ClosestPoint에서 수류탄 중심을 향하는 벡터 (이것이 밀어낼 방향이자 반사 Normal입니다)
+        Vec2 toCenter = ToVec2(ownerPos - ClosestPoint);
+        float distance = toCenter.Length();
+        
+        if (distance > 0.0001f) // 중심이 완전히 겹친 Zero Divide 방지
+        {
+            normal = toCenter / distance; // Normalize
+        }
+        else
+        {
+            // 중심이 완벽히 겹쳤을 때의 예외 처리 (임의로 위로 튕겨냄)
+            normal = Vec2(0.f, 1.f); 
+        }
+
+        // [중요] CColliderCircle 등에서 실제 수류탄의 콜라이더 반지름을 가져와야 합니다.
+        // float radius = dynamic_cast<CColliderCircle*>(_OwnerCollider)->GetRadius();
+        float radius = 15.f; // ★여기에 실제 수류탄 반지름 값을 대입하세요!
+        
+        // 파고든 깊이 계산
+        float penetration = radius - distance;
+        
+        // 벽 안으로 파고들었다면 밖으로 밀어냅니다.
+        if (penetration > 0.f)
+        {
+            m_LogicalPos.x += normal.x * penetration;
+            m_LogicalPos.y += normal.y * penetration;
+        }
+    }
+    else 
+    {
+        // 사각형이 아닌 다른 모양(원 vs 원 등)일 때는 안전하게 이전 위치 롤백 사용
+        m_LogicalPos = m_PrevLogicalPos;
+        
+        normal = ToVec2(ownerPos - otherPos);
+        normal.Normalize();
+    }
+
+    // 2. 반사 벡터 공식 적용: R = V - 2(V · N)N
+    const Vec2 currentVelXY = ToVec2(m_Velocity);
+    
+    float dotProduct = currentVelXY.Dot(normal);
+    
+    // 수류탄이 이미 다른 방향으로 밀려나고 있는 중첩 충돌(다중 충돌) 방지
+    if (dotProduct > 0.f) return;
+
+    m_Velocity.x = currentVelXY.x - (2.f * dotProduct * normal.x);
+    m_Velocity.y = currentVelXY.y - (2.f * dotProduct * normal.y);
+
+    // 벽에 부딪혔을 때 마찰력 감쇠
+    m_Velocity.x *= s_GroundFriction;
+    m_Velocity.y *= s_GroundFriction;
 }

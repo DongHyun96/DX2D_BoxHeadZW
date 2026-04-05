@@ -21,7 +21,7 @@ void GameManager::OnLevelBegin()
 
 void GameManager::OnLevelPlayToStop()
 {
-    // m_PlayerObject = nullptr;
+    m_PlayerObject = nullptr;
     m_MainPlayerScript = nullptr;
     
     m_mapEnemyPoolers.clear();

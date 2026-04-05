@@ -34,11 +34,13 @@ void CPlayerScript::Init()
     
     m_BulletPrefab = LOAD_ASSET(APrefab, L"Prefab\\Bullet.pref");*/
     // if (!APrefab::IsPrefabPrototypeObject(GetOwner()))
-    GM->SetPlayerObject(GetOwner());
+    
 }
 
 void CPlayerScript::Begin()
 {
+    GM->SetPlayerObject(GetOwner());
+    
     /*if (GetOwner()->FlipbookRender())
         GetOwner()->FlipbookRender()->Stop(L"UnArmed", 6, 0);*/
     
