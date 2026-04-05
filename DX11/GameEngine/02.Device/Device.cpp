@@ -322,6 +322,9 @@ HRESULT Device::CreateSampler()
     Desc.AddressU   = D3D11_TEXTURE_ADDRESS_WRAP;
     Desc.AddressV   = D3D11_TEXTURE_ADDRESS_WRAP;
     Desc.AddressW   = D3D11_TEXTURE_ADDRESS_WRAP; // 게임 Texture에서는 의미없는 축
+    Desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    Desc.MinLOD			= 0;								// LOD - level of detail
+    Desc.MaxLOD			= D3D11_FLOAT32_MAX;
     
     DEVICE->CreateSamplerState(&Desc, m_arrSampler[1].GetAddressOf());
     
@@ -383,8 +386,20 @@ HRESULT Device::CreateDepthStencilState()
     HRESULT HR = DEVICE->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(DS_TYPE::LESS_EQUAL)].GetAddressOf());
     if (FAILED(HR)) return E_FAIL;
 
+    // LESS_NO_WRITE
+    Desc = {};
+    ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+    Desc.DepthEnable    = true;
+    Desc.DepthFunc      = D3D11_COMPARISON_LESS;  // 작으면 통과
+    Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;  // 깊이 버퍼 갱신 x
+    Desc.StencilEnable  = false;
+    
+    HR = DEVICE->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(DS_TYPE::LESS_NO_WRITE)].GetAddressOf());
+    if (FAILED(HR)) return E_FAIL;
+
     // NO_TEST
     Desc = {};
+    ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
     Desc.DepthEnable    = true;
     Desc.DepthFunc      = D3D11_COMPARISON_ALWAYS;      // 깊이판정은 항상 통과
     Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;   // 자신의 깊이로 덮어 씀
@@ -395,6 +410,7 @@ HRESULT Device::CreateDepthStencilState()
 
     // NO_TEST_NO_WRITE
     Desc = {};
+    ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
     Desc.DepthEnable    = false;
     
     HR = DEVICE->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(DS_TYPE::NO_TEST_NO_WRITE)].GetAddressOf());

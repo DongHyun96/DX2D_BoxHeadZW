@@ -24,7 +24,8 @@ private:
 	bool m_IsActive = true;
 	bool m_IsVisible = true;
 
-	vector<function<void(const Ptr<GameObject>&)>> m_vecDelegateOnDeactivate; // SetActive false 처리될 때 CallBack 처리
+	vector<function<void(const Ptr<GameObject>&)>> m_vecDelegateOnActivate{}; // SetActive true 처리될 때 CallBack 처리
+	vector<function<void(const Ptr<GameObject>&)>> m_vecDelegateOnDeactivate{}; // SetActive false 처리될 때 CallBack 처리
 	
 private:
 
@@ -90,6 +91,7 @@ public:
 
 	void AddDeactivateDelegate(const function<void(const Ptr<GameObject>&)>& _Delegate) { m_vecDelegateOnDeactivate.push_back(_Delegate); }
 	// void RemoveDeactivateDelegate(const function<void()>& _Delegate) // 이건 functional 특성 상 wrapper이기 때문에 직접 비교가 불가능 -> 특정 요소를 찝어서 remove처리 불가능
+	void AddActivateDelegate(const function<void(const Ptr<GameObject>&)>& _Delegate) { m_vecDelegateOnActivate.push_back(_Delegate); }
 	
 public:
 	

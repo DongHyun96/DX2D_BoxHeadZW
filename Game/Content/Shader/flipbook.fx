@@ -58,7 +58,7 @@ float4 PS_Flipbook(VS_OUT _input) : SV_Target
     const float2 BackgroundUV 	= instanceData.UV1.xy;
     const float2 OffsetUV 		= instanceData.UV1.zw;
 
-    float4 vColor = float4(1.f, 0.f, 1.f, 1.f);
+    float4 vColor = float4(1.f, 1.f, 1.f, 1.f);
 
     if (g_btex_0)
     {

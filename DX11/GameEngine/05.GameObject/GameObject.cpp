@@ -297,6 +297,11 @@ void GameObject::SetActive(bool _Active, bool _SetActiveHierarchy)
 		for (const function<void(const Ptr<GameObject>&)>& OnDeactivate : m_vecDelegateOnDeactivate)
 			OnDeactivate(this);
 	}
+	else
+	{
+		for (const function<void(const Ptr<GameObject>&)>& OnActivate : m_vecDelegateOnActivate)
+			OnActivate(this);
+	}
 
 	// 자식까지도 Active 상태 업데이트 처리
 	if (_SetActiveHierarchy)

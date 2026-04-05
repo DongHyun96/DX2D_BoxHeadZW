@@ -34,6 +34,7 @@ enum class DS_TYPE
 {
     LESS,               // Default setting, 깊이판정 LESS(가까운게 판정 성공), 판정 성공 시 깊이 재기록
     LESS_EQUAL,         // 깊이판정 작거나 같은 경우까지 허용
+    LESS_NO_WRITE,      // 깊이판정은 하되, 깊이 쓰기 x (반투명용)
     NO_TEST,            // 깊이판정 x, 무조건 성공처리, 깊이쓰기 o
     NO_TEST_NO_WRITE,   // 깊이판정 x, 무조건 성공처리, 깊이쓰기 x,
     END

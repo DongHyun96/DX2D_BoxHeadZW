@@ -208,5 +208,5 @@ void AGraphicShader::Binding()
     
     // BlendState 세팅
     ComPtr<ID3D11BlendState> pBSState = Device::GetInst()->GetBSState(m_BSType);
-    CONTEXT->OMSetBlendState(pBSState.Get(), nullptr, 0xffffffff);
+    CONTEXT->OMSetBlendState(pBSState.Get(), nullptr, D3D11_DEFAULT_SAMPLE_MASK);
 }

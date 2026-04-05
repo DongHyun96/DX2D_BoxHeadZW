@@ -180,7 +180,8 @@ void AssetMgr::CreateEngineShader()
     shader->CreatePixelShader(L"Shader\\std2d.fx", "PS_Std2D");
     shader->SetBSType(BS_TYPE::ALPHA_BLEND);
     shader->SetRSType(RS_TYPE::CULL_NONE);
-
+    shader->SetDSType(DS_TYPE::LESS);
+    
     // 2개의 Parameter
     shader->AddShaderParam(SHADER_PARAM::VEC4, 0, L"TintColor");
     shader->AddShaderParam(SHADER_PARAM::TEX, 0, L"OutColor");
@@ -220,8 +221,10 @@ void AssetMgr::CreateEngineShader()
     shader->SetName(L"SpriteShader");
     shader->CreateVertexShader(L"Shader\\sprite.fx", "VS_Sprite");
     shader->CreatePixelShader(L"Shader\\sprite.fx", "PS_Sprite");
-    shader->SetBSType(BS_TYPE::DEFAULT);
+    shader->SetBSType(BS_TYPE::ALPHA_BLEND);
     shader->SetRSType(RS_TYPE::CULL_NONE);
+    shader->SetDSType(DS_TYPE::LESS);
+    
     shader->SetIsProvidedByEngine(true);
     AddAsset(shader->GetName(), shader.Get());
 
@@ -234,6 +237,8 @@ void AssetMgr::CreateEngineShader()
     shader->CreatePixelShader(L"Shader\\flipbook.fx", "PS_Flipbook");
     shader->SetBSType(BS_TYPE::ALPHA_BLEND);
     shader->SetRSType(RS_TYPE::CULL_NONE);
+    shader->SetDSType(DS_TYPE::LESS_NO_WRITE);
+    
     shader->SetIsProvidedByEngine(true);
     
     shader->AddShaderParam(SHADER_PARAM::VEC4, 0, L"TintColor");

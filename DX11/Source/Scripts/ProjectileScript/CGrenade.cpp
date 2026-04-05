@@ -68,7 +68,7 @@ void CGrenade::Tick()
             m_Velocity = Vec3::Zero;
             
             // GM->SpawnExplosionDome(Transform()->GetWorldPos(), 1.5f, 50.f, 50.f, this);
-            GM->SpawnExplosion(Transform()->GetWorldPos(), 1.f, 350.f, 50.f, this);
+            GM->SpawnExplosion(Transform()->GetWorldPos(), 1.f, 500.f, 50.f, this);
             GetOwner()->SetActive(false);
 
             // SubGrenade 추가로 Spawn처리할 경우
