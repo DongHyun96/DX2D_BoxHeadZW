@@ -51,6 +51,11 @@ public:
     /// </summary>
     void Render();
 
+    /// <summary>
+    /// Binding 및 Instanced DrawCall 처리
+    /// </summary>
+    void RenderInstanced(UINT _InstanceCount);
+
 public:
     
     AMesh();

@@ -100,6 +100,7 @@
     <ClInclude Include="GameEngine\04.Asset\08.TileMap\ATileMap.h" />
     <ClInclude Include="GameEngine\06.Component\04.Light2D\CLight2D.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
@@ -224,6 +225,7 @@
     <ClCompile Include="GameEngine\04.Asset\08.TileMap\ATileMap.cpp" />
     <ClCompile Include="GameEngine\06.Component\04.Light2D\CLight2D.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />

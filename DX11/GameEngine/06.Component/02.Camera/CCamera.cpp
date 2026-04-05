@@ -3,6 +3,7 @@
 
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/03.Manager/06.RenderMgr/RenderMgr.h"
+#include "GameEngine/06.Component/RenderComponent/04.FlipbookRender/CFlipbookRender.h"
 
 CCamera::CCamera()
     : Component(COMPONENT_TYPE::CAMERA)
@@ -146,8 +147,17 @@ void CCamera::Render()
     g_Trans.matView = m_matView;
     g_Trans.matProj = m_matProj;
 
+    CFlipbookRender::BeginInstancing();
+    
     // Domain 순서대로 렌더링 진행
     for (const auto& Pair : m_mapDomainGameObject)
+    {
         for (const Ptr<GameObject>& GameObject : Pair.second)
             GameObject->Render();
+        
+        if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
+            CFlipbookRender::FlushInstancing();
+    }
+    
+    CFlipbookRender::FlushInstancing();
 }

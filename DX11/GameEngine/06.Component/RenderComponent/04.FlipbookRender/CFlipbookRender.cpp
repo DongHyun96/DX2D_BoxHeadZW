@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CFlipbookRender.h"
 
+#include "FlipbookRenderInstancing.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
@@ -12,6 +13,16 @@ CFlipbookRender::CFlipbookRender()
  
 CFlipbookRender::~CFlipbookRender()
 {
+}
+
+void CFlipbookRender::BeginInstancing()
+{
+    FlipbookRenderInstancing::BeginFrame();
+}
+
+void CFlipbookRender::FlushInstancing()
+{
+    FlipbookRenderInstancing::Flush();
 }
 
 void CFlipbookRender::CreateMaterial()
@@ -107,21 +118,36 @@ void CFlipbookRender::Render()
     if (!pCurSprite) return;
     
     
-    GetMaterial()->SetTexture(TEX_0, pCurSprite->GetAtlas());
-    GetMaterial()->SetScalar(VEC2_0, pCurSprite->GetLeftTopUV());
-    GetMaterial()->SetScalar(VEC2_1, pCurSprite->GetSliceUV());
+    if (!pCurSprite->GetAtlas()) return;
 
-    // BackgroundUV가 제대로 설정되어있지 않다면, Background 처리 x
-    if (pCurSprite->GetBackgroundUV() == Vec2::Zero)
-        GetMaterial()->SetScalar(VEC2_2, pCurSprite->GetSliceUV());
-    else GetMaterial()->SetScalar(VEC2_2, pCurSprite->GetBackgroundUV());
-    
-    GetMaterial()->SetScalar(VEC2_3, pCurSprite->GetOffsetUV());
-    ApplyRenderTransformConst();
-    GetMaterial()->Binding();
-    GetMesh()->Render();
-    
-    GetMaterial()->Clear();
+    Ptr<AGraphicShader> pShader = GetMaterial()->GetShader();
+    if (!pShader) return;
+
+    const Vec2 backgroundUV = (pCurSprite->GetBackgroundUV() == Vec2::Zero) ? pCurSprite->GetSliceUV() : pCurSprite->GetBackgroundUV();
+
+    FlipbookRenderInstancing::Submit
+    (
+        GetMesh().Get(),
+        pShader.Get(),
+        pCurSprite->GetAtlas().Get(),
+        Transform()->GetWorldMatrix(),
+        Vec4(GetRenderOffset().x, GetRenderOffset().y, GetRenderScale().x, GetRenderScale().y),
+        Vec4
+        (
+            pCurSprite->GetLeftTopUV().x,
+            pCurSprite->GetLeftTopUV().y,
+            pCurSprite->GetSliceUV().x,
+            pCurSprite->GetSliceUV().y
+        ),
+        Vec4
+        (
+            backgroundUV.x,
+            backgroundUV.y,
+            pCurSprite->GetOffsetUV().x,
+            pCurSprite->GetOffsetUV().y
+        ),
+        GetMaterial()->GetScalar<Vec4>(VEC4_0)
+    );
 }
 
 bool CFlipbookRender::CheckFinish()

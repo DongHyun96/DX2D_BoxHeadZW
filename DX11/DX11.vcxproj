@@ -196,6 +196,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\CBillboardRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\CSpriteRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\CRenderComponent.h" />
     <ClInclude Include="GameEngine\06.Component\02.Camera\CCamera.h" />
@@ -507,6 +508,7 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\CBillboardRender.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\CSpriteRender.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\CRenderComponent.cpp" />
     <ClCompile Include="GameEngine\06.Component\02.Camera\CCamera.cpp" />
@@ -1340,12 +1342,6 @@ CodeGen.exe</Command>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
-    </FxCompile>
-    <FxCompile Include="HLSL\flipbook.fx">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Flipbook</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Flipbook</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
     </FxCompile>
     <FxCompile Include="HLSL\func.fx">

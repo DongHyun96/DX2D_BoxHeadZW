@@ -93,6 +93,10 @@ HRESULT AGraphicShader::CreateVertexShader(const wstring& _RelativeFilePath, con
         D3D11_SIGNATURE_PARAMETER_DESC paramDesc{};
         m_Reflection->GetInputParameterDesc(i, &paramDesc);
 
+        // SV_InstanceID 같은 시스템 값은 InputLayout으로 들어오지 않는다.
+        if (paramDesc.SystemValueType != D3D_NAME_UNDEFINED)
+            continue;
+
         D3D11_INPUT_ELEMENT_DESC elementDesc{};
         elementDesc.SemanticName            = paramDesc.SemanticName;
         elementDesc.SemanticIndex           = paramDesc.SemanticIndex;
@@ -132,6 +136,12 @@ HRESULT AGraphicShader::CreateVertexShader(const wstring& _RelativeFilePath, con
             elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 
         inputLayouts.push_back(elementDesc);
+    }
+
+    if (inputLayouts.empty())
+    {
+        m_Layout = nullptr;
+        return S_OK;
     }
     
     HR = DEVICE->CreateInputLayout

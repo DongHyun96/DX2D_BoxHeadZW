@@ -40,6 +40,11 @@ public:
     virtual ~CFlipbookRender() override;
 
     CLONE(CFlipbookRender)
+
+public:
+    
+    static void BeginInstancing();
+    static void FlushInstancing();
     
 public:
     
