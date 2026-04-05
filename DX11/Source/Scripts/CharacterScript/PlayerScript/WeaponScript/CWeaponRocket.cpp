@@ -22,22 +22,6 @@ bool CWeaponRocket::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection
     if (GetTimeAfterLastFire() < GetFireIntervalTime()) return false;
     RewindTimeAfterLastFire();
 
-    // 투사체 Spawn
-    if (CPoolComponent* Pooler = GM->GetRocketProjectilePooler())
-    {
-        GameObject* SpawnedRocketObj = Pooler->SpawnObject(ToVec3(_MuzzleWorldPos));
-        if (!SpawnedRocketObj) return false; // 제대로 Projectile 스폰 처리가 안되었음
-        
-        Ptr<CRocketProjectile> ProjectileScript = SpawnedRocketObj->GetScriptComponent<CRocketProjectile>();
-        ProjectileScript->SetDirection(_FireDirection.Normalized());
-        ProjectileScript->SetDamage(GetDamageAmountPerRound());
-        
-        SpawnedRocketObj->FlipbookRender()->Play(0, 15.f, -1);
-    }
-    
-    // Sound play
-    Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\RocketShot.mp3");
-    Sound->Play(1, 0.5f, true);
-    
-    return true;
+    // 투사체 Spawn 처리 (제대로 Spawn 되지 않으면 (pool 갯수 등의 이유로) false가 반환된다) 
+    return GM->SpawnRocketProjectile(ToVec3(_MuzzleWorldPos), _FireDirection, GetDamageAmountPerRound());
 }

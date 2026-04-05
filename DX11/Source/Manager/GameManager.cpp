@@ -4,6 +4,7 @@
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Source/Scripts/ExplosionDome/CExplosionDome.h"
+#include "Source/Scripts/ProjectileScript/CRocketProjectile.h"
 
 GameManager::GameManager()
 {
@@ -46,7 +47,7 @@ CPoolComponent* GameManager::GetEnemyPooler(ENEMY_TYPE _EnemyType) const
     return m_mapEnemyPoolers.at(_EnemyType);
 }
 
-void GameManager::SpawnRocketSmoke(Vec3 _SpawnPos)
+void GameManager::SpawnRocketSmoke(const Vec3& _SpawnPos)
 {
     GameObject* Object = m_mapFlipbookEffectPoolers[FLIPBOOK_EFFECT_POOLER_TYPE::ROCKET_SMOKE_POOLER]->SpawnObject();
     if (Object)
@@ -57,7 +58,7 @@ void GameManager::SpawnRocketSmoke(Vec3 _SpawnPos)
     }
 }
 
-void GameManager::SpawnExplosionDome(Vec3 _SpawnPos, float _ExplosionSizeFactor, float _FPS, float _DamageAmount)
+void GameManager::SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSizeFactor, float _FPS, float _DamageAmount)
 {
     GameObject* Object = m_mapFlipbookEffectPoolers[FLIPBOOK_EFFECT_POOLER_TYPE::EXPLOSION_DOME_EFFECT_POOLER]->SpawnObject();
     if (Object)
@@ -76,4 +77,24 @@ void GameManager::SpawnExplosionDome(Vec3 _SpawnPos, float _ExplosionSizeFactor,
         Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\Explosion1.mp3");
         Sound->Play(1, 0.5f, true);
     }
+}
+
+bool GameManager::SpawnRocketProjectile(const Vec3& _SpawnPos, const Vec2& _Direction, float _Damage)
+{
+    if (!m_RocketProjectilePooler) return false;
+    
+    GameObject* SpawnedRocketObj = m_RocketProjectilePooler->SpawnObject(_SpawnPos);
+    if (!SpawnedRocketObj) return false; // Pool Count 부족
+    
+    Ptr<CRocketProjectile> ProjectileScript = SpawnedRocketObj->GetScriptComponent<CRocketProjectile>();
+    ProjectileScript->SetDirection(_Direction.Normalized());
+    ProjectileScript->SetDamage(_Damage);
+    
+    SpawnedRocketObj->FlipbookRender()->Play(0, 15.f, -1);
+    
+    // Sound Play
+    Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\RocketShot.mp3");
+    Sound->Play(1, 0.5f, true);
+    
+    return true;
 }

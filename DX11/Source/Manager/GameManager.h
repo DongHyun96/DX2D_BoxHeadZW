@@ -63,7 +63,15 @@ public:
     
 public: // Effect Spawn 관련
 
-    void SpawnRocketSmoke(Vec3 _SpawnPos);
-    void SpawnExplosionDome(Vec3 _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f);
+    void SpawnRocketSmoke(const Vec3& _SpawnPos);
+    void SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f);
+    
+public: // Projectile Spawn 관련
+
+    /// <summary>
+    /// Rocket Projectile 스폰시키기
+    /// </summary>
+    /// <returns> 제대로 Spawn처리되지 않았다면 return false </returns>
+    bool SpawnRocketProjectile(const Vec3& _SpawnPos, const Vec2& _Direction, float _Damage); 
     
 };

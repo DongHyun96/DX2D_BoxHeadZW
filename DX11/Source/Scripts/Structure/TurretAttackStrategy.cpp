@@ -26,8 +26,10 @@ bool Turret_MGAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _T
     
     if (m_BurstFireTimer < s_BurstInterval) return false;
     m_BurstFireTimer = 0.f;
-    
+
     // 점사 대기 시간 끝, 사격 처리
+    
+    /////////// 사격 Sound 재생 ///////////
     // 사격 소리가 3가지가 있음
     const int randomSuffix = GetRandom(1, 3);
     wstring SoundKey = L"Sound\\MGShot" + to_wstring(randomSuffix) + L".wav";
@@ -37,7 +39,8 @@ bool Turret_MGAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _T
     // 현재 Muzzle Pos World 위치
     const Vec2 MuzzlePos2D = ToVec2(_Turret->FlipbookRender()->GetCurrentSpritePinPointToWorldPos());
     const Vec2 TurretToTarget = _Target->Transform()->GetWorldPos2D() - MuzzlePos2D;
-    
+
+    /////////// 피격 처리 ///////////
     // Target을 향하는 방향으로 Ray Casting
     Ray2D Ray{};
     Ray.Origin      = MuzzlePos2D;
@@ -46,13 +49,14 @@ bool Turret_MGAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _T
     
     RayCastHit Hit{};
 
-    // TODO : 피격 주석 풀기
-    /*if (CollisionMgr::GetInst()->RayCast(Ray, CStructureHandler::GetTurretHitScanLayers(), &Hit))
+    if (CollisionMgr::GetInst()->RayCast(Ray, CStructureHandler::GetTurretHitScanLayers(), &Hit))
     {
         Ptr<CCollider2D> CollidedCollider = Hit.Collider;
         if (Ptr<CStatScript> Stat = CollidedCollider->GetOwner()->GetScriptComponent<CStatScript>())
             Stat->TakeDamage(GetRandom(20.f, 35.f), MuzzlePos2D);
-    }*/
+    }
+    
+    /////////// Muzzle Effect ///////////
     
     GameObject* SpawnedFlashEffect = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::MUZZLE_FLASH_POOLER)->SpawnObject(ToVec3(MuzzlePos2D)); // 두 번째 Play 시, 
     if (SpawnedFlashEffect)
@@ -74,5 +78,11 @@ bool Turret_MortarAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject
 
 bool Turret_RocketAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _Target)
 {
+    // 현재 Muzzle Pos World 위치
+    const Vec3 MuzzlePinPointWorldPos = _Turret->FlipbookRender()->GetCurrentSpritePinPointToWorldPos(); 
+    const Vec2 MuzzlePos2D = ToVec2(MuzzlePinPointWorldPos);
+    const Vec2 TurretToTarget = _Target->Transform()->GetWorldPos2D() - MuzzlePos2D;
+    
+    GM->SpawnRocketProjectile(MuzzlePinPointWorldPos, TurretToTarget, GetRandom(75.f, 120.f));
     return true;
 }
