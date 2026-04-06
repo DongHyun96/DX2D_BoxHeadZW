@@ -73,8 +73,6 @@ void CAirStrike::Tick()
     Radius += DT * RAD_SPEED;
     ColliderCircle()->SetRadius(Radius);
     
-    DebugUtil::AddDebugLog(to_string(Radius), DEF_COLOR_CYAN, 0.f);
-
     m_EffectTimer += DT;
     if (m_EffectTimer > EFFECT_SPAWN_INTERVAL)
     {

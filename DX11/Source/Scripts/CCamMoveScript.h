@@ -11,7 +11,7 @@ class CCamMoveScript : public CScript
 {
 private:
 
-    const float m_CamLerpAlphaSpeed = 5.f;
+    const float m_CamLerpAlphaSpeed = 7.5f;
     Vec3 m_CamLerpDestPos{};
 
 private:
