@@ -30,6 +30,8 @@ void AssetMgr::Init()
     RemoveAnyDeletedTexturesMetaData();                 // 모든 Asset들을 불러온 뒤, 최종으로 Texture 메타데이터 정리할 부분이 있다면 처리함
     RemoveAnyDeletedSoundMetaData();
 
+    // Sound Pitch 영향 안받을 Sound 등록
+    RegisterGlobalPitchIgnoredSound(L"Sound\\AirStrike.mp3");
 }
 
 void AssetMgr::CreateEngineMesh()

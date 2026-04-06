@@ -8,6 +8,13 @@
 
 namespace fs = filesystem;
 
+namespace
+{
+    constexpr float SOUND_PITCH_DEFAULT = 1.f;
+
+    float ClampSoundPitch(float _Pitch) { return max(_Pitch, 0.01f); }
+}
+
 AssetMgr::AssetMgr()
 {
 }
@@ -262,6 +269,9 @@ bool AssetMgr::RemoveAsset(ASSET_TYPE _Type, const wstring& _TargetKey)
 
     // 해당 Asset map에서 삭제
     m_mapAsset[static_cast<UINT>(_Type)].erase(_TargetKey);
+
+    if (_Type == ASSET_TYPE::SOUND)
+        m_setGlobalPitchIgnoredSoundKeys.erase(_TargetKey);
     
     // 제거할 Asset이 Texture 타입이라면, TexMetaData에서도 해당 데이터를 지운다.
     for (auto it = m_mapTexMetaData.begin(); it != m_mapTexMetaData.end(); ++it)
@@ -384,6 +394,64 @@ void AssetMgr::StopAllSounds()
         ASound* Sound = dynamic_cast<ASound*>(assetPair.second.Get());
         Sound->Stop();
     }
+}
+
+void AssetMgr::ApplyGlobalSoundPitchToAllPlayingSounds()
+{
+    for (const pair<const wstring, Ptr<Asset>>& assetPair : m_mapAsset[static_cast<int>(ASSET_TYPE::SOUND)])
+    {
+        ASound* sound = dynamic_cast<ASound*>(assetPair.second.Get());
+        if (sound == nullptr)
+            continue;
+
+        const float pitch = IsGlobalPitchIgnoredSound(assetPair.first) ? SOUND_PITCH_DEFAULT : m_GlobalSoundPitch;
+        sound->SetPitchAllChannels(pitch);
+    }
+}
+
+void AssetMgr::SetGlobalSoundPitch(float _Pitch)
+{
+    m_GlobalSoundPitch = ClampSoundPitch(_Pitch);
+    ApplyGlobalSoundPitchToAllPlayingSounds();
+}
+
+void AssetMgr::RegisterGlobalPitchIgnoredSound(const wstring& _SoundKey)
+{
+    m_setGlobalPitchIgnoredSoundKeys.insert(_SoundKey);
+    ApplyGlobalSoundPitchToAllPlayingSounds();
+}
+
+void AssetMgr::RegisterGlobalPitchIgnoredSound(const ASound* _Sound)
+{
+    if (_Sound == nullptr)
+        return;
+
+    RegisterGlobalPitchIgnoredSound(_Sound->GetKey());
+}
+
+void AssetMgr::UnregisterGlobalPitchIgnoredSound(const wstring& _SoundKey)
+{
+    m_setGlobalPitchIgnoredSoundKeys.erase(_SoundKey);
+    ApplyGlobalSoundPitchToAllPlayingSounds();
+}
+
+void AssetMgr::UnregisterGlobalPitchIgnoredSound(const ASound* _Sound)
+{
+    if (_Sound == nullptr)
+        return;
+
+    UnregisterGlobalPitchIgnoredSound(_Sound->GetKey());
+}
+
+void AssetMgr::ClearGlobalPitchIgnoredSounds()
+{
+    m_setGlobalPitchIgnoredSoundKeys.clear();
+    ApplyGlobalSoundPitchToAllPlayingSounds();
+}
+
+bool AssetMgr::IsGlobalPitchIgnoredSound(const wstring& _SoundKey) const
+{
+    return m_setGlobalPitchIgnoredSoundKeys.contains(_SoundKey);
 }
 
 /*HRESULT AssetMgr::SaveAssetMetaData(const wstring& _Key, const GUID& _Guid)

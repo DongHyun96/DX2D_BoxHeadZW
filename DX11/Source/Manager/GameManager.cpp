@@ -31,6 +31,8 @@ void GameManager::OnLevelPlayToStop()
     m_RocketProjectilePooler = nullptr;
     m_GrenadePooler = nullptr;
     m_BackgroundCellManager = nullptr;
+    
+    AssetMgr::GetInst()->SetGlobalSoundPitch(1.f); // Global Pitch값 다시 되돌리기
 }
 
 void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)

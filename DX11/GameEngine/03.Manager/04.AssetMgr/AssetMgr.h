@@ -17,6 +17,8 @@ private:
     map<wstring, Ptr<Asset>>    m_mapAsset[static_cast<UINT>(ASSET_TYPE::END)]{};   // Asset type별 map 배열
     map<uint64_t, GUID>         m_mapTexMetaData{};                                 // 텍스쳐 메타데이터 저장 (파일해시값, Asset GUID)
     map<uint64_t, GUID>         m_mapSoundMetaData{};                               // 사운드 메타데이터 저장
+    float                       m_GlobalSoundPitch{1.f};                            // 전역 사운드 피치
+    set<wstring>                m_setGlobalPitchIgnoredSoundKeys{};                 // 전역 피치 영향을 받지 않는 사운드 키
     bool                        m_Changed{};
     
 private:
@@ -84,6 +86,7 @@ private:
     
     void LoadAllSoundMetaData();
     void RemoveAnyDeletedSoundMetaData();
+    void ApplyGlobalSoundPitchToAllPlayingSounds();
     
 public:
     /// <summary>
@@ -201,6 +204,22 @@ public:
     /// 현재 재생중인 모든 Sound 멈추기
     /// </summary>
     void StopAllSounds();
+
+    /// <summary>
+    /// 전역 사운드 피치 설정 (변경 즉시 현재 재생 중 사운드에 반영)
+    /// </summary>
+    void SetGlobalSoundPitch(float _Pitch);
+    float GetGlobalSoundPitch() const { return m_GlobalSoundPitch; }
+
+    /// <summary>
+    /// 전역 피치 예외 사운드 등록/해제
+    /// </summary>
+    void RegisterGlobalPitchIgnoredSound(const wstring& _SoundKey);
+    void RegisterGlobalPitchIgnoredSound(const ASound* _Sound);
+    void UnregisterGlobalPitchIgnoredSound(const wstring& _SoundKey);
+    void UnregisterGlobalPitchIgnoredSound(const ASound* _Sound);
+    void ClearGlobalPitchIgnoredSounds();
+    bool IsGlobalPitchIgnoredSound(const wstring& _SoundKey) const;
     
 };
 

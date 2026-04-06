@@ -60,11 +60,32 @@ void CAirStrike::Tick()
     // 한 3.5초 정도 기다린 뒤, Effect 스폰 및 Attack Collision 키우기
     m_Timer += DT;
     
+    TickWaitAirStrike();
+    
     if (m_Timer < 3.5f) return;
+    
+    Ptr<CCamMoveScript> CamMove = RenderMgr::GetInst()->GetPOVCam()->GetOwner()->GetScriptComponent<CCamMoveScript>();
+    TickAirStriking(CamMove);
+    
+    // if (m_Timer < 8.f) return;
+    if (m_Timer < 5.5f) return;
+    
+    // AirStrike 종료 지점
+    TickAirStrikeFinish(CamMove);
+}
+
+void CAirStrike::TickWaitAirStrike()
+{
+    // Time Slow + Sound pitch 하강
+    // Strike Sound는 예외처리 해둠
+    AssetMgr::GetInst()->SetGlobalSoundPitch(MappingToNewRange(m_Timer, 0.f, 3.5f, 1.f, 0.1f));
+}
+
+void CAirStrike::TickAirStriking(const Ptr<CCamMoveScript>& CamMove)
+{
     GetOwner()->SetVisible(false);
 
     // Attack 반경 점점 늘려가면서, 가장자리에 Explosion Effect 스폰 처리
-    Ptr<CCamMoveScript> CamMove = RenderMgr::GetInst()->GetPOVCam()->GetOwner()->GetScriptComponent<CCamMoveScript>();
     if (CamMove) CamMove->SetOrthoScaleLerpData(2.5f, 1.5f);
         
     static const float RAD_SPEED = 750.f;
@@ -94,18 +115,22 @@ void CAirStrike::Tick()
         Sound->Play(1, 0.5f, true);
     }
     
+    // Sound Pitch 설정
+    AssetMgr::GetInst()->SetGlobalSoundPitch(MappingToNewRange(m_Timer, 3.5f, 5.5f, 0.1f, 1.f));
+    
     // TODO : 카메라 Effect
-    
-    // if (m_Timer < 8.f) return;
-    if (m_Timer < 5.5f) return;
-    
-    // AirStrike 종료 지점
+}
+
+void CAirStrike::TickAirStrikeFinish(const Ptr<CCamMoveScript>& CamMove)
+{
     s_IsAirStrikeSpawned = false;
     if (CamMove)
     {
         CamMove->SetOrthoScaleLerpData(1.f, 5.f);
         CamMove->SetAirStriker(nullptr);
     }
+    AssetMgr::GetInst()->SetGlobalSoundPitch(1.f);
+    
     Destroy();
 }
 

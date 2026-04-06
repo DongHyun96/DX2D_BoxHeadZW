@@ -14,6 +14,8 @@
 
 namespace
 {
+    constexpr float SOUND_PITCH_DEFAULT = 1.f;
+
     int ConvertToFmodLoopCount(int _iLoopCount)
     {
         if (_iLoopCount <= -1)
@@ -50,9 +52,17 @@ namespace
         if (_Channel == nullptr)
             return E_FAIL;
 
+        float pitch = SOUND_PITCH_DEFAULT;
+        if (_OwnerSound != nullptr && AssetMgr::GetInst() != nullptr)
+        {
+            const bool bIgnoreGlobalPitch = AssetMgr::GetInst()->IsGlobalPitchIgnoredSound(_OwnerSound->GetKey());
+            pitch = bIgnoreGlobalPitch ? SOUND_PITCH_DEFAULT : AssetMgr::GetInst()->GetGlobalSoundPitch();
+        }
+
         _Channel->setMode(FMOD_LOOP_NORMAL);
         _Channel->setLoopCount(_FmodLoopCount);
         _Channel->setVolume(_Volume);
+        _Channel->setPitch(pitch);
 
         // _Channel->setCallback(&CHANNEL_CALLBACK);
         _Channel->setUserData(_OwnerSound);
@@ -181,6 +191,40 @@ void ASound::SetVolume(float _f, int _iChannelIdx)
 			return;
 		}
 	}
+}
+
+void ASound::SetPitch(float _f, int _iChannelIdx)
+{
+    const float pitch = max(_f, 0.01f);
+    PruneStoppedChannels(m_listChannel);
+
+    for (FMOD::Channel* channel : m_listChannel)
+    {
+        if (channel == nullptr)
+            continue;
+
+        int iIdx = -1;
+        channel->getIndex(&iIdx);
+        if (_iChannelIdx == iIdx)
+        {
+            channel->setPitch(pitch);
+            return;
+        }
+    }
+}
+
+void ASound::SetPitchAllChannels(float _f)
+{
+    const float pitch = max(_f, 0.01f);
+    PruneStoppedChannels(m_listChannel);
+
+    for (FMOD::Channel* channel : m_listChannel)
+    {
+        if (channel == nullptr)
+            continue;
+
+        channel->setPitch(pitch);
+    }
 }
 
 void ASound::RemoveChannel(FMOD::Channel* _pTargetChannel)

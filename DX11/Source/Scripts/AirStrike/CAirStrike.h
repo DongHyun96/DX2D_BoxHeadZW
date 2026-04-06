@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Source/Scripts/CCamMoveScript.h"
 
 class CAirStrike : public CScript
 {
@@ -25,6 +26,12 @@ public:
     virtual void Begin() override;
     virtual void Tick() override;
 
+private:
+    
+    void TickWaitAirStrike();
+    void TickAirStriking(const Ptr<CCamMoveScript>& CamMove);
+    void TickAirStrikeFinish(const Ptr<CCamMoveScript>& CamMove);
+    
 public:
     
     /// <summary>

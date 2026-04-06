@@ -33,6 +33,8 @@ public:
 
     // 0 ~ 1
     void SetVolume(float _f, int _iChannelIdx);
+    void SetPitch(float _f, int _iChannelIdx);
+    void SetPitchAllChannels(float _f);
 
 public:
     virtual HRESULT Load(const wstring& _FilePath) override;
