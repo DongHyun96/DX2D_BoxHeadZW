@@ -145,7 +145,7 @@ void CollisionMgr::CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx)
     if (vecLeftColliders.empty() || vecRightColliders.empty())
         return;
 
-    using CellBuckets = std::unordered_map<ULONGLONG, vector<UINT>>;
+    using CellBuckets = unordered_map<ULONGLONG, vector<UINT>>;
 
     auto BuildBuckets = [this](const vector<Ptr<CCollider2D>>& _vecColliders, CellBuckets& _OutBuckets)
     {
@@ -188,7 +188,7 @@ void CollisionMgr::CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx)
         bIterIsLeft = false;
     }
 
-    std::unordered_set<ULONGLONG> setCandidatePairs{};
+    unordered_set<ULONGLONG> setCandidatePairs{};
 
     for (const auto& [cellKey, vecA] : *pIterBuckets)
     {
@@ -225,7 +225,7 @@ void CollisionMgr::CollisionBtwSameLayer(UINT _LayerIdx)
     if (vecLayerColliders.size() < 2)
         return;
 
-    using CellBuckets = std::unordered_map<ULONGLONG, vector<UINT>>;
+    using CellBuckets = unordered_map<ULONGLONG, vector<UINT>>;
     CellBuckets buckets{};
     
     for (const Ptr<CCollider2D>& collider : vecLayerColliders)
@@ -247,7 +247,7 @@ void CollisionMgr::CollisionBtwSameLayer(UINT _LayerIdx)
         }
     }
 
-    std::unordered_set<ULONGLONG> setCandidatePairs{};
+    unordered_set<ULONGLONG> setCandidatePairs{};
     
     for (const auto& [cellKey, vecIDs] : buckets)
     {

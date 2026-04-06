@@ -44,9 +44,9 @@ private:
         UINT    RightID{};
     };
 
-    std::unordered_map<ULONGLONG, CollisionPairState> m_mapColState{};
-    std::array<vector<Ptr<CCollider2D>>, MAX_LAYER>   m_arrLayerColliders{};
-    std::unordered_map<UINT, Ptr<CCollider2D>>        m_mapColliderByID{};
+    unordered_map<ULONGLONG, CollisionPairState> m_mapColState{};
+    array<vector<Ptr<CCollider2D>>, MAX_LAYER>   m_arrLayerColliders{};
+    unordered_map<UINT, Ptr<CCollider2D>>        m_mapColliderByID{};
     UINT64                                             m_FrameCounter{};
     float                                              m_GridCellSize = 128.f;
     
