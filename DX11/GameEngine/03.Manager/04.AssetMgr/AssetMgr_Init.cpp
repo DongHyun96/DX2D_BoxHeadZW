@@ -34,6 +34,20 @@ void AssetMgr::Init()
     RegisterGlobalPitchIgnoredSound(L"Sound\\AirStrike.mp3");
 }
 
+void AssetMgr::OnLevelBegin()
+{
+}
+
+void AssetMgr::OnLevelPlayToStop()
+{
+    SetGlobalSoundPitch(1.f);
+}
+
+void AssetMgr::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
+{
+    SetGlobalSoundPitch(1.f);
+}
+
 void AssetMgr::CreateEngineMesh()
 {
 

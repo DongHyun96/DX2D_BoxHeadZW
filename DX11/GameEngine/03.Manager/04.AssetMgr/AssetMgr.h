@@ -51,6 +51,12 @@ public:
         m_Changed = false;
         return Changed;
     }
+
+public:
+    
+    void OnLevelBegin();
+    void OnLevelPlayToStop();
+    void OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel);
     
 private:
 

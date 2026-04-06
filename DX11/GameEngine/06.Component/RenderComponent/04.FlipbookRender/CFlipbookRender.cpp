@@ -75,7 +75,10 @@ void CFlipbookRender::FinalTick()
     // TODO : 다시 DT로 수정하기
     // m_FrameTimer += DT;
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) m_FrameTimer += E_DT;
-    else m_FrameTimer += DT;
+    else // Play 중 
+    {
+        m_FrameTimer += DT;
+    }
     
     if (m_FrameTimer > frameTimeLimit) // 한 프레임 보여주기 시간 끝
     {

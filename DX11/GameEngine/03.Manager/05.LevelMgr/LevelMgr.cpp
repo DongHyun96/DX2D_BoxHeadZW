@@ -80,6 +80,7 @@ void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
         AssetMgr::GetInst()->StopAllSounds();
         
         GM->OnLevelPlayToStop();
+        AssetMgr::GetInst()->OnLevelPlayToStop();
         CollisionMgr::GetInst()->OnLevelPlayToStop();
     }
 
@@ -98,6 +99,7 @@ void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
 void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLevelStateToStop)
 {
     GM->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
+    AssetMgr::GetInst()->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
     CollisionMgr::GetInst()->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
     
     m_CurLevel = m_SharedLevel = _NextLevel;
