@@ -21,6 +21,11 @@ CCamMoveScript::~CCamMoveScript()
 {
 }
 
+void CCamMoveScript::Begin()
+{
+    GetOwner()->SetIgnoreGlobalTimeScale(true); // 슬로모션 영향 x 
+}
+
 void CCamMoveScript::Tick()
 {
     // CheckTogglingTargetMode();

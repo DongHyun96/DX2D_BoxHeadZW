@@ -28,7 +28,7 @@ CAirStrike::~CAirStrike()
 
 void CAirStrike::Init()
 {
-    AddScriptParam(SCRIPT_PARAM::SOUND, &s_AirStrikeSound, L"AirStirkeSound");
+    AddScriptParam(SCRIPT_PARAM::SOUND, &s_AirStrikeSound, L"AirStrikeSound");
 }
 
 void CAirStrike::Begin()
@@ -53,6 +53,9 @@ void CAirStrike::Begin()
         CamMove->SetAirStriker(this);
         CamMove->SetOrthoScaleLerpData(0.35f, 5.f);
     }
+    
+    // TimeScale 영향 받지 않게끔 설정
+    GetOwner()->SetIgnoreGlobalTimeScale(true);
 }
 
 void CAirStrike::Tick()
@@ -78,11 +81,18 @@ void CAirStrike::TickWaitAirStrike()
 {
     // Time Slow + Sound pitch 하강
     // Strike Sound는 예외처리 해둠
-    AssetMgr::GetInst()->SetGlobalSoundPitch(MappingToNewRange(m_Timer, 0.f, 3.5f, 1.f, 0.1f));
+    const float TimeAndPitchScale = MappingToNewRange(m_Timer, 0.f, 3.5f, 1.f, 0.1f);
+    AssetMgr::GetInst()->SetGlobalSoundPitch(TimeAndPitchScale);
+    TimeMgr::GetInst()->SetTimeScale(TimeAndPitchScale);
 }
 
 void CAirStrike::TickAirStriking(const Ptr<CCamMoveScript>& CamMove)
 {
+    // Sound Pitch 및 TimeScale 설정
+    const float SoundPitchScale = MappingToNewRange(m_Timer, 3.5f, 5.5f, 0.1f, 1.f);
+    AssetMgr::GetInst()->SetGlobalSoundPitch(SoundPitchScale);
+    TimeMgr::GetInst()->SetTimeScale(SoundPitchScale);
+    
     GetOwner()->SetVisible(false);
 
     // Attack 반경 점점 늘려가면서, 가장자리에 Explosion Effect 스폰 처리
@@ -115,8 +125,6 @@ void CAirStrike::TickAirStriking(const Ptr<CCamMoveScript>& CamMove)
         Sound->Play(1, 0.5f, true);
     }
     
-    // Sound Pitch 설정
-    AssetMgr::GetInst()->SetGlobalSoundPitch(MappingToNewRange(m_Timer, 3.5f, 5.5f, 0.1f, 1.f));
     
     // TODO : 카메라 Effect
 }
@@ -130,6 +138,7 @@ void CAirStrike::TickAirStrikeFinish(const Ptr<CCamMoveScript>& CamMove)
         CamMove->SetAirStriker(nullptr);
     }
     AssetMgr::GetInst()->SetGlobalSoundPitch(1.f);
+    TimeMgr::GetInst()->SetTimeScale(1.f);
     
     Destroy();
 }

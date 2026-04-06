@@ -4,6 +4,7 @@
 #include "GameEngine/01.Engine/Engine.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/03.Manager/10.FontMgr/FontMgr.h"
+#include <algorithm>
 
 TimeMgr::TimeMgr()
     /*: m_Frequency{}
@@ -63,17 +64,51 @@ void TimeMgr::Tick()
     // Level 이 Pause 나 Stop 상태라면
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::PLAY)
     {
-        g_Global.DeltaTime  = m_DeltaTime = 0.f;
-        g_Global.Time       = 0.f;
+        m_GameUnscaledDeltaTime = 0.f;
+        m_GameScaledDeltaTime = 0.f;
+        m_CurrentGameDeltaTime = 0.f;
+
+        g_Global.DeltaTime = 0.f;
+        g_Global.Time = 0.f;
     }
     // Level 이 Play 상태
     else
     {
-        // Game Content 용 Time
-        g_Global.DeltaTime  = m_DeltaTime;
-        g_Global.Time      += m_DeltaTime;
+        m_GameUnscaledDeltaTime = m_DeltaTime;
+        m_GameScaledDeltaTime = m_GameUnscaledDeltaTime * m_TimeScale;
+        m_CurrentGameDeltaTime = m_GameScaledDeltaTime;
+
+        // Game Content 용 Time (TimeScale 적용)
+        g_Global.DeltaTime = m_CurrentGameDeltaTime;
+        g_Global.Time += m_CurrentGameDeltaTime;
     }
     
+}
+
+void TimeMgr::SetTimeScale(float _Scale)
+{
+    m_TimeScale = max(_Scale, 0.f);
+    m_GameScaledDeltaTime = m_GameUnscaledDeltaTime * m_TimeScale;
+
+    // 즉시 반영
+    // m_CurrentGameDeltaTime = m_GameScaledDeltaTime;
+    // g_Global.DeltaTime = m_CurrentGameDeltaTime;
+}
+
+float TimeMgr::PushGameDeltaTimeContext(bool _UseUnscaledDeltaTime)
+{
+    const float prevDeltaTime = m_CurrentGameDeltaTime;
+
+    m_CurrentGameDeltaTime = _UseUnscaledDeltaTime ? m_GameUnscaledDeltaTime : m_GameScaledDeltaTime;
+    g_Global.DeltaTime = m_CurrentGameDeltaTime;
+
+    return prevDeltaTime;
+}
+
+void TimeMgr::PopGameDeltaTimeContext(float _PrevDeltaTime)
+{
+    m_CurrentGameDeltaTime = _PrevDeltaTime;
+    g_Global.DeltaTime = m_CurrentGameDeltaTime;
 }
 
 void TimeMgr::Render()

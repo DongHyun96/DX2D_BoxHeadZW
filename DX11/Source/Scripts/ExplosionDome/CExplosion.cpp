@@ -19,6 +19,7 @@ void CExplosion::Begin()
 {
     CExplosionDome::Begin();
     GetOwner()->AddActivateDelegate(bind(&CExplosion::OnActivateOwnerObject, this, placeholders::_1));
+    GetOwner()->SetIgnoreGlobalTimeScale(true); // 슬로모션 또는 빨리감기 영향 x
 }
 
 void CExplosion::Tick()

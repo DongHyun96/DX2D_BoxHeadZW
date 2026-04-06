@@ -3,6 +3,7 @@
 
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/03.Manager/07.TaskMgr/TaskMgr.h"
+#include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/04.Asset/04.Level/ALevel.h"
 #include "GameEngine/04.Asset/09.Prefab/APrefab.h"
 #include "GameEngine/06.Component/01.Transform/CTransform.h"
@@ -10,6 +11,26 @@
 #include "GameEngine/06.Component/03.Collider2D/CColliderPoint.h"
 #include "GameEngine/06.Component/03.Collider2D/CColliderRect.h"
 #include "Source/ScriptMgr.h"
+
+namespace
+{
+	class ScopedObjectDeltaTimeContext
+	{
+	private:
+		float m_PrevDeltaTime{};
+
+	public:
+		explicit ScopedObjectDeltaTimeContext(bool _UseUnscaledDeltaTime)
+		{
+			m_PrevDeltaTime = TimeMgr::GetInst()->PushGameDeltaTimeContext(_UseUnscaledDeltaTime);
+		}
+
+		~ScopedObjectDeltaTimeContext()
+		{
+			TimeMgr::GetInst()->PopGameDeltaTimeContext(m_PrevDeltaTime);
+		}
+	};
+}
 
 
 GameObject::GameObject()
@@ -25,6 +46,7 @@ GameObject::GameObject(const GameObject& _Origin)
 	, m_LayerIdx(_Origin.m_LayerIdx) // 원본의 LayerIdx를 따르도록 처리
 	, m_IsActive(_Origin.m_IsActive)
 	, m_IsVisible(_Origin.m_IsVisible)
+	, m_IgnoreGlobalTimeScale(_Origin.m_IgnoreGlobalTimeScale)
 {
 	// 원본 오브젝트와 동일한 세팅의 컴포넌트를 복사해서 나한테 넣어준다.
 	for (UINT i = 0; i < static_cast<UINT>(COMPONENT_TYPE::END); ++i)
@@ -66,6 +88,8 @@ void GameObject::AfterLevelBegin()
 
 void GameObject::Tick()
 {
+	ScopedObjectDeltaTimeContext dtContext(m_IgnoreGlobalTimeScale);
+	
 	for (const Ptr<CScript>& script : m_vecScripts)
 		script->Tick();
 	
@@ -75,6 +99,8 @@ void GameObject::Tick()
 
 void GameObject::FinalTick()
 {
+	ScopedObjectDeltaTimeContext dtContext(m_IgnoreGlobalTimeScale);
+	
 	for (const Ptr<Component>& component : m_Components)
 		if (component) component->FinalTick();
 	
@@ -98,6 +124,8 @@ void GameObject::FinalTick()
 void GameObject::FinalTick_Editor()
 {
 	if (!m_IsActive) return;
+
+	ScopedObjectDeltaTimeContext dtContext(m_IgnoreGlobalTimeScale);
 	
 	for (const Ptr<Component>& component : m_Components)
 		if (component) component->FinalTick();
