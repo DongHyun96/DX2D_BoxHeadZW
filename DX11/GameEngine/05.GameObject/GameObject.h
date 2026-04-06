@@ -146,10 +146,10 @@ public:
 
 	bool GetObjectMarkedDeactivated() const { return m_ObjectMarkedDeactivated; }
 
-	bool GetIsVisible() const { return m_IsVisible; }
+	bool GetVisible() const { return m_IsVisible; }
 	
 	
-	void SetIsVisible(bool _Visible) { m_IsVisible = _Visible; }
+	void SetVisible(bool _Visible) { m_IsVisible = _Visible; }
 	
 public:
 	

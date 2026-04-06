@@ -42,6 +42,7 @@ SET(ValueType, MemName)
 //#define RESOL_Y 1440.f
 
 #define RESOL_DIAG_LENGTH RenderMgr::GetInst()->GetScreenResolDiagLength()
+#define RESOL_DIAG_HALF_LENGTH RenderMgr::GetInst()->GetScreenResolHalfDiagLength()
 
 
 // #define TEXTURE_LOADING_FLAG WIC_FLAGS_NONE

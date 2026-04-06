@@ -1,14 +1,33 @@
 ﻿#pragma once
 #include "GameEngine/06.Component/Script/CScript.h"
 
+/*enum class CAM_EFFECT_TYPE
+{
+    AIRSTRIKE,
+    END
+};*/
+
 class CCamMoveScript : public CScript
 {
 private:
+
+    const float m_CamLerpAlphaSpeed = 5.f;
+    Vec3 m_CamLerpDestPos{};
+
+private:
     
-    class GameObject* m_2DFollowTargetObject{};
-    Vec3 m_FollowDestPos{};
-    bool m_UseLerpToFollow = true;
+    /// <summary>
+    /// 해당 Effect가 켜져있는지 조사 
+    /// </summary>
+    /*map<CAM_EFFECT_TYPE, bool> m_mapCamEffectEnabled = 
+    {
+        { CAM_EFFECT_TYPE::AIRSTRIKE, false },    
+    };*/
     
+    // 해당 AirStrike가 잡혀있다면 AirStrike Effect 진행
+    class CAirStrike*   m_AirStriker{};
+    float               m_OrthoScaleDest = 1.f;
+    float               m_OrthoScaleLerpAlphaSpeed = 20.f;
 public:
     
     CCamMoveScript();
@@ -21,18 +40,20 @@ public:
     virtual void Tick() override;
 
 private:
-    void MoveOrthographic();
-    void MovePerspective();
-    void Move();
-    // void CheckTogglingTargetMode();
+    
+    void HandleCameraEffect();
+    void HandleBoundary();
     
 public:
     
-    void Set2DFollowTargetObject(GameObject* targetObject, bool useLerpToFollow)
-    {
-        m_2DFollowTargetObject = targetObject;
-        m_UseLerpToFollow = useLerpToFollow;
-    }
+    // void SetCameraEffect(CAM_EFFECT_TYPE _Effect, bool _Enabled) { m_mapCamEffectEnabled[_Effect] = _Enabled; }
+    void SetAirStriker(CAirStrike* _AirStrike) { m_AirStriker = _AirStrike; }
+    void SetOrthoScaleLerpData(float _OrthoScaleDest, float _OrthoScaleLerpAlphaSpeed) { m_OrthoScaleDest = _OrthoScaleDest; m_OrthoScaleLerpAlphaSpeed = _OrthoScaleLerpAlphaSpeed; }
+    
+private:
+    
+    void MovePerspective();
+    // void CheckTogglingTargetMode();
     
 public:
     

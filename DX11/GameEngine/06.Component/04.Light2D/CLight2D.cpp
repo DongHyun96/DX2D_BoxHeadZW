@@ -14,7 +14,7 @@ CLight2D::~CLight2D()
 
 void CLight2D::FinalTick()
 {
-    if (!GetOwner()->GetActive() || !GetOwner()->GetIsVisible()) return;
+    if (!GetOwner()->GetActive() || !GetOwner()->GetVisible()) return;
     
     m_Info.WorldPos = Transform()->GetWorldPos();
     m_Info.LightDir = Transform()->GetDir(DIR::RIGHT);

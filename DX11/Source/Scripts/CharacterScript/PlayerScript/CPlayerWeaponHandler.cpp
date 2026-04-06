@@ -3,9 +3,12 @@
 
 #include "CPlayerScript.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/04.Asset/09.Prefab/APrefab.h"
 #include "InvenScript/CEquipmentScript.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/AirStrike/CAirStrike.h"
 #include "Source/Scripts/ProjectileScript/CGrenade.h"
 
 CPlayerWeaponHandler::CPlayerWeaponHandler()
@@ -71,6 +74,8 @@ void CPlayerWeaponHandler::Begin()
 {
     m_PlayerMainScript = GetOwner()->GetScriptComponent<CPlayerScript>().Get();
     m_EquipmentScript = GetOwner()->GetScriptComponent<CEquipmentScript>().Get();
+
+    m_AirStrikePrefab = FIND_ASSET(APrefab, L"Prefab\\AirStrikePrefab.pref");
 }
 
 void CPlayerWeaponHandler::Tick()
@@ -78,6 +83,7 @@ void CPlayerWeaponHandler::Tick()
     TickSwapWeapon();
     TickFireWeapon();
     TickFireGrenade();
+    TickDeployAirStrike();
 
     // TODO : 여기 지우기 & 버프 처리 시, Weapon에 실질적으로 setting을 해주어야 함(지금 무기를 바꿀때만 처리가 되는 중)
     if (KEY_TAP(KEY::MOUSE_X1))
@@ -157,6 +163,16 @@ void CPlayerWeaponHandler::TickFireGrenade()
 {
     if (KEY_TAP(KEY::F))
         GM->SpawnGrenade(Transform()->GetWorldPos(), m_PlayerMainScript->GetPlayerToMousePos().Normalized(), 75.f, 3, 400.f, 300.f, true);
+}
+
+void CPlayerWeaponHandler::TickDeployAirStrike()
+{
+    if (KEY_TAP(KEY::Q))
+    {
+        if (CAirStrike::HasAirStrikeSpawnedAlive()) return;
+        GameObject* AirStriker = m_AirStrikePrefab->InstantiateAndSpawnToCurLevel();
+        AirStriker->Transform()->SetRelativePos(Transform()->GetWorldPos());
+    }
 }
 
 void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)

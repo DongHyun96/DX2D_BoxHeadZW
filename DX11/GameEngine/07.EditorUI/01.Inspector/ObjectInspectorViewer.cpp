@@ -72,9 +72,9 @@ void ObjectInspectorViewer::TickHeaderUI()
         m_TargetObject->SetActive(bIsActive, false);
     
     ImGui::SameLine();
-    bool bIsVisible = m_TargetObject->GetIsVisible();
+    bool bIsVisible = m_TargetObject->GetVisible();
     if (ImGui::Checkbox("IsVisible", &bIsVisible))
-        m_TargetObject->SetIsVisible(bIsVisible);
+        m_TargetObject->SetVisible(bIsVisible);
     
     ImGui::Spacing();
 

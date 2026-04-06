@@ -73,11 +73,13 @@ public: // Effect Spawn 관련
     void SpawnExplosion
     (
         const Vec3& _SpawnPos,
-        float _ExplosionSizeFactor = 1.f,
-        float _FPS = 800.f,
-        float _DamageAmount = 75.f,
-        CScript* _SpawnedBy = nullptr,
-        bool _UseSpawnExplosionCollisionForDamaging = true
+        float       _ExplosionSizeFactor                    = 1.f,
+        float       _FPS                                    = 800.f,
+        float       _DamageAmount                           = 75.f,
+        CScript*    _SpawnedBy                              = nullptr,
+        bool        _UseSpawnExplosionCollisionForDamaging  = true, 
+        bool        _PlayExplosionSound                     = true,
+        const Vec2& _UpwardVelocity                         = { 0.f, 0.75f }
     );
     
 public: // Projectile Spawn 관련

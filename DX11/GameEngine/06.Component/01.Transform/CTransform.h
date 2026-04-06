@@ -69,6 +69,7 @@ public:
     float GetRelativePosX() const { return m_RelativePos.x; }
     float GetRelativePosY() const { return m_RelativePos.y; }
     float GetRelativePosZ() const { return m_RelativePos.z; }
+    Vec2 GetRelativePosXY() const { return { m_RelativePos.x, m_RelativePos.y }; }
     
     void SetRelativePosX(float x) { m_RelativePos.x = x; }
     void SetRelativePosY(float y) { m_RelativePos.y = y; }

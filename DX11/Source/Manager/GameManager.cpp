@@ -83,7 +83,17 @@ void GameManager::SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSize
     }
 }
 
-void GameManager::SpawnExplosion(const Vec3& _SpawnPos, float _ExplosionSizeFactor, float _FPS, float _DamageAmount, CScript* _SpawnedBy, bool _UseSpawnExplosionCollisionForDamaging)
+void GameManager::SpawnExplosion
+(
+    const Vec3& _SpawnPos,
+    float       _ExplosionSizeFactor,
+    float       _FPS,
+    float       _DamageAmount,
+    CScript*    _SpawnedBy,
+    bool        _UseSpawnExplosionCollisionForDamaging,
+    bool        _PlayExplosionSound,
+    const Vec2& _UpwardVelocity
+)
 {
     GameObject* Object = m_mapFlipbookEffectPoolers[FLIPBOOK_EFFECT_POOLER_TYPE::EXPLOSION_EFFECT_POOLER]->SpawnObject();
     if (Object)
@@ -99,10 +109,14 @@ void GameManager::SpawnExplosion(const Vec3& _SpawnPos, float _ExplosionSizeFact
             Explosion->SetExplosionSize(_ExplosionSizeFactor);
             Explosion->SetSpawnedBy(_SpawnedBy);
             Explosion->SetUseCollisionForDamaging(_UseSpawnExplosionCollisionForDamaging);
+            Explosion->SetUpwardVelocity(_UpwardVelocity);
         }
-        
-        Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\Explosion1.mp3");
-        Sound->Play(1, 0.5f, true);
+
+        if (_PlayExplosionSound)
+        {
+            Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\Explosion1.mp3");
+            Sound->Play(1, 0.5f, true);
+        }
     }
 }
 

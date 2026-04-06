@@ -9,7 +9,7 @@ private:
     
 private:
     
-    float m_UpwardSpeed{};
+    Vec2 m_UpwardVelocity{};
     bool m_UseCollisionForDamaging = true; // Collision 검사로 들어온 Character들에게 Damage를 줄건지
 
 public:
@@ -26,6 +26,7 @@ public:
     
     virtual void SetExplosionSize(float _Factor) override;
     void SetUseCollisionForDamaging(bool _UseCollisionForDamaging) { m_UseCollisionForDamaging = _UseCollisionForDamaging; }
+    void SetUpwardVelocity(const Vec2& _UpwardVelocity) { m_UpwardVelocity = _UpwardVelocity; }
     
 private:
     

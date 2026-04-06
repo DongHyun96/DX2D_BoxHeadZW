@@ -63,4 +63,5 @@ public:
 public:
     
     float GetScreenResolDiagLength() const { return m_ScreenResolDiagLength; }
+    float GetScreenResolHalfDiagLength() const { return m_ScreenResolDiagLength * 0.5f; }
 };

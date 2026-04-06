@@ -26,7 +26,7 @@ void CExplosion::Tick()
     CExplosionDome::Tick();
     
     Vec2 RenderOffset = GetRenderCom()->GetRenderOffset();
-    RenderOffset.y += m_UpwardSpeed * DT;
+    RenderOffset += m_UpwardVelocity * DT;
     GetRenderCom()->SetRenderOffset(RenderOffset);
     
     GetRenderCom()->SetRenderScale({GetRandom(0.8f, 1.1f), GetRandom(0.8f, 1.1f)});
@@ -35,7 +35,7 @@ void CExplosion::Tick()
 
 void CExplosion::SetExplosionSize(float _Factor)
 {
-    Transform()->SetRelativeScaleXY(s_ScaleSizeBase * _Factor);    
+    Transform()->SetRelativeScaleXY(s_ScaleSizeBase * _Factor); 
 }
 
 void CExplosion::OnActivateOwnerObject(const Ptr<GameObject>& _OwnerObject)
@@ -44,8 +44,6 @@ void CExplosion::OnActivateOwnerObject(const Ptr<GameObject>& _OwnerObject)
     
     GetRenderCom()->SetRenderOffset({0.f, 0.f});
     GetRenderCom()->SetRenderScale({1.f, 1.f});
-    
-    m_UpwardSpeed = GetRandom(0.5f, 1.f);
     
     GetCollider2D()->SetActive(m_UseCollisionForDamaging);
 }

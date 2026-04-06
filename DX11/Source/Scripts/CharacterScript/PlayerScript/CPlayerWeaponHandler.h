@@ -1,4 +1,7 @@
 ﻿#pragma once
+
+#include "GameEngine/04.Asset/09.Prefab/APrefab.h"
+
 /// <summary>
 /// 하수, 중수, 고수 순으로 버프 처리
 /// </summary>
@@ -120,6 +123,11 @@ private:
     class CEquipmentScript* m_EquipmentScript{};
     
 private:
+    
+    // TODO : AirStrike 쓸 때, Inven의  개수 체크해서 사용할 것
+    Ptr<APrefab> m_AirStrikePrefab{};
+    
+private:
 
     // 이전 Tick에 쐈는지 체크
     bool m_LastTickFired{};
@@ -142,6 +150,7 @@ private:
     void TickSwapWeapon();
     void TickFireWeapon();
     void TickFireGrenade();
+    void TickDeployAirStrike();
     
 public:
 

@@ -1,7 +1,9 @@
 ﻿#include "pch.h"
 #include "CCamMoveScript.h"
 
+#include "AirStrike/CAirStrike.h"
 #include "BackgroundTile/CBackgroundTile.h"
+#include "CharacterScript/PlayerScript/CPlayerScript.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
@@ -25,57 +27,51 @@ void CCamMoveScript::Tick()
     // Move();
     
     // 일단은 Player를 무조건 따라가도록 처리
-    const Vec3 PlayerPos = GM->GetPlayerObject()->Transform()->GetRelativePos();
-    Vec3 CamPos = {PlayerPos.x, PlayerPos.y, CAMERA2D_POS_Z};
+    GameObject* PlayerObject = GM->GetPlayerObject(); 
+    const Vec3 PlayerPos = PlayerObject->Transform()->GetRelativePos();
+    // Vec3 CamPos = {PlayerPos.x, PlayerPos.y, CAMERA2D_POS_Z};
+    m_CamLerpDestPos = ToVec3(GM->GetPlayerObject()->Transform()->GetWorldPos2D(), CAMERA2D_POS_Z);
+    
+    const Vec2 ToMousePosDir = PlayerObject->GetScriptComponent<CPlayerScript>()->GetPlayerToMousePos();
+    const float Length = ToMousePosDir.Length();
 
+    // 바라보는 방향으로 Lerp Dest 조정
+    m_CamLerpDestPos += ToVec3(ToMousePosDir.Normalized()) * MappingToNewRange(Length, 0.f, RESOL_DIAG_HALF_LENGTH, 0.f, 200.f);
+    
+    HandleCameraEffect();
+    HandleBoundary();
+    
+    Vec3 FinalPos = Vec3::Lerp(Transform()->GetRelativePos(), m_CamLerpDestPos, m_CamLerpAlphaSpeed * DT);
+    Transform()->SetRelativePos(FinalPos);
+    
+    float NewOrthoScale = Lerp(Camera()->GetOrthoScale(), m_OrthoScaleDest, m_OrthoScaleLerpAlphaSpeed * DT);
+    Camera()->SetOrthoScale(NewOrthoScale);
+}
+
+void CCamMoveScript::HandleCameraEffect()
+{
+    if (!m_AirStriker) return;
+    
+    m_CamLerpDestPos = ToVec3(m_AirStriker->Transform()->GetRelativePosXY(), CAMERA2D_POS_Z);
+}
+
+void CCamMoveScript::HandleBoundary()
+{
     CBackgroundTile* BackgroundCellMgr = GM->GetBackgroundCellManager();
     
     // Boundary 넘어가지 않도록 조정
-    if (CamPos.x - RESOL_HALF_X < -BackgroundCellMgr->GetWorldSizeHalf())
-        CamPos.x = -BackgroundCellMgr->GetWorldSizeHalf() + RESOL_HALF_X;
-    else if (CamPos.x + RESOL_HALF_X > BackgroundCellMgr->GetWorldSizeHalf())
-        CamPos.x = BackgroundCellMgr->GetWorldSizeHalf() - RESOL_HALF_X;
+    const float BoundaryX = RESOL_HALF_X * m_OrthoScaleDest;
+    const float BoundaryY = RESOL_HALF_Y * m_OrthoScaleDest;
     
-    if (CamPos.y - RESOL_HALF_Y < -BackgroundCellMgr->GetWorldSizeHalf())
-        CamPos.y = -BackgroundCellMgr->GetWorldSizeHalf() + RESOL_HALF_Y;
-    else if (CamPos.y + RESOL_HALF_Y > BackgroundCellMgr->GetWorldSizeHalf())
-        CamPos.y = BackgroundCellMgr->GetWorldSizeHalf() - RESOL_HALF_Y;
-        
-    Transform()->SetRelativePos(CamPos);
-}
-
-void CCamMoveScript::MoveOrthographic()
-{
-    // Target mode
-    if (m_2DFollowTargetObject)
-    {
-        CTransform* TargetTransform = m_2DFollowTargetObject->Transform().Get();
-        m_FollowDestPos = TargetTransform->GetWorldPos() - Vec3(0.f, 0.f, TargetTransform->GetRelativePosZ());
-        
-        if (m_UseLerpToFollow)
-        {
-            Vec3 CurPos = Transform()->GetRelativePos();
-            CurPos = Vec3::Lerp(CurPos, m_FollowDestPos, DT * 5.f);
-            Transform()->SetRelativePos(CurPos);
-        }
-        else Transform()->SetRelativePos(m_FollowDestPos);
-        
-        return;
-    }
+    if (m_CamLerpDestPos.x - BoundaryX < -BackgroundCellMgr->GetWorldSizeHalf())
+        m_CamLerpDestPos.x = -BackgroundCellMgr->GetWorldSizeHalf() + BoundaryX;
+    else if (m_CamLerpDestPos.x + BoundaryX > BackgroundCellMgr->GetWorldSizeHalf())
+        m_CamLerpDestPos.x = BackgroundCellMgr->GetWorldSizeHalf() - BoundaryX;
     
-    // Free mode
-    
-    Vec3 vPos = Transform()->GetRelativePos();
-
-    Vec3 vDir{};
-    
-    if (KEY_PRESSED(KEY::W)) vDir.y += 1.f;
-    if (KEY_PRESSED(KEY::S)) vDir.y -= 1.f;
-    if (KEY_PRESSED(KEY::A)) vDir.x -= 1.f;
-    if (KEY_PRESSED(KEY::D)) vDir.x += 1.f;
-    
-    vPos += vDir * DT * 400.f;
-    Transform()->SetRelativePos(vPos);
+    if (m_CamLerpDestPos.y - BoundaryY < -BackgroundCellMgr->GetWorldSizeHalf())
+        m_CamLerpDestPos.y = -BackgroundCellMgr->GetWorldSizeHalf() + BoundaryY;
+    else if (m_CamLerpDestPos.y + BoundaryY > BackgroundCellMgr->GetWorldSizeHalf())
+        m_CamLerpDestPos.y = BackgroundCellMgr->GetWorldSizeHalf() - BoundaryY;
 }
 
 void CCamMoveScript::MovePerspective()
@@ -110,24 +106,3 @@ void CCamMoveScript::MovePerspective()
     Transform()->SetRelativePos(vPos);
     Transform()->SetRelativeRot(vRot);
 }
-
-void CCamMoveScript::Move()
-{
-    if (Camera()->GetType() == PROJ_TYPE::ORTHOGRAPHIC) MoveOrthographic();
-    else MovePerspective();
-    
-   
-    
-
-    
-
-}
-
-/*void CCamMoveScript::CheckTogglingTargetMode()
-{
-    if (KEY_TAP(KEY::ESC))
-    {
-        // if (m_2DFollowTargetObject->IsDead())    
-        m_2DFollowTargetObject = (m_2DFollowTargetObject) ? nullptr : LevelMgr::GetInst()->GetPlayerObject();
-    }
-}*/
