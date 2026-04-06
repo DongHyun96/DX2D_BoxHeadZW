@@ -111,3 +111,13 @@ SIXTEEN_DIRECTION GetSixteenDirection(const Vec2& _Vector)
     const int DirIndex = static_cast<int>(Degree / 30.f); // 이걸 30도로 나누면 0 ~ 15 사이의 정수 인덱스로 나누어 떨어짐
     return static_cast<SIXTEEN_DIRECTION>(DirIndex);
 }
+
+string ToString(const Vec2& _V)
+{
+    return "{ " + to_string(_V.x) + ", " + to_string(_V.y) + " }";
+}
+
+string ToString(const Vec3& _V)
+{
+    return "{ " + to_string(_V.x) + ", " + to_string(_V.y) + " }";
+}

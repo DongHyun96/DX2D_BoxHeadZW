@@ -18,7 +18,7 @@ CEnemyAnimHandler::~CEnemyAnimHandler()
 
 void CEnemyAnimHandler::Init()
 {
-    AddScriptParam(SCRIPT_PARAM::INT, &m_AnimFPSTemp, L"AnimFPS", true);
+    // AddScriptParam(SCRIPT_PARAM::INT, &m_AnimFPSTemp, L"AnimFPS", true);
 }
 
 void CEnemyAnimHandler::Begin()
@@ -54,7 +54,7 @@ void CEnemyAnimHandler::UpdateAnimTransition()
         if (CurrentDirection == m_PrevAnimDirection && CurrentMainState == m_PrevMainState) return;
 
         // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 12, -1); // Walk
-        FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, m_AnimFPSTemp, -1); // Walk
+        FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 9, -1); // Walk
         // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 16, -1); // Attack 공격 속도 16
     }
         break;

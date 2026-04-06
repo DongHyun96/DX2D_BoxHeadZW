@@ -80,6 +80,7 @@ public:
     float GetRelativeScaleX() const { return m_RelativeScale.x; }
     float GetRelativeScaleY() const { return m_RelativeScale.y; }
     float GetRelativeScaleZ() const { return m_RelativeScale.z; }
+    Vec2 GetRelativeScaleXY() const { return { m_RelativeScale.x, m_RelativeScale.y}; }
     
     void SetRelativeScaleX(float x) { m_RelativeScale.x = x; }
     void SetRelativeScaleY(float y) { m_RelativeScale.y = y; }

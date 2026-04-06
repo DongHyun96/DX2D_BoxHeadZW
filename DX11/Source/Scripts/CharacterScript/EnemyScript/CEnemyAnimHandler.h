@@ -5,7 +5,6 @@ class CEnemyAnimHandler : public CCharacterAnimHandler
 {
 private:
     
-    int m_AnimFPSTemp = 12;
     
 private:
 

@@ -32,6 +32,7 @@ public:
 private:
 
     virtual void Init() override;
+    virtual void Begin() override;
     virtual void AfterLevelBegin() override;
     virtual void Tick() override;
     
@@ -49,6 +50,13 @@ public:
     /// Die Animation 이후로 호출 처리될 함수, FadeOut 및 Pool에 다시 들어갈 준비
     /// </summary>
     void OnDieFlipbookEndNotify();
+
+private:
+    
+    /// <summary>
+    /// Player와의 충돌 Blocking 처리 
+    /// </summary>
+    void BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
     
 public:
     

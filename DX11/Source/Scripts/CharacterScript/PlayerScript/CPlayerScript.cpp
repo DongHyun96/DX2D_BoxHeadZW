@@ -12,6 +12,7 @@
 #include "InvenScript/CEquipmentScript.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
@@ -40,6 +41,8 @@ void CPlayerScript::Init()
 
 void CPlayerScript::Begin()
 {
+    CCharacterScript::Begin();
+    
     GM->SetPlayerObject(GetOwner());
     
     /*if (GetOwner()->FlipbookRender())
@@ -54,6 +57,10 @@ void CPlayerScript::Begin()
     Collider2D()->AddDynamicEndOverlap  (this, static_cast<COLLISION_EVENT>(&CBulletScript::EndOverlap));*/
     ADD_DYNAMIC_BEGIN_OVERLAP(CPlayerScript::BodyColliderOverlapped);
     ADD_DYNAMIC_OVERLAP(CPlayerScript::BodyColliderOverlapped);
+    
+    // Init BodySize
+    m_BodySize = Transform()->GetRelativeScaleXY() * ColliderRect()->GetScale();
+    m_BodySizeHalf = m_BodySize * 0.5f; 
 }
 
 void CPlayerScript::AfterLevelBegin()
@@ -88,7 +95,7 @@ void CPlayerScript::Move()
         // TODO : 이 라인 지우기 (testing 환경에서의 Fast Move 처리)
         m_MoveSpeedFactor = KEY_PRESSED(KEY::LSHIFT) ? 2.f : 1.f; 
 
-        if (Direction.LengthSquared() == 0.f) return;
+        if (Direction.LengthSquared() == 0.f) break;
         Direction.Normalize();
         
         m_Velocity = Direction * m_MoveSpeedBase * m_MoveSpeedFactor;
@@ -96,11 +103,13 @@ void CPlayerScript::Move()
         Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
         Transform()->SetRelativePos(Pos);
     }
-        return;
+        break;
         
     case PLAYER_MAINSTATE::PUSHED_OUT: MovePushedOut(); break;
         
     }
+    
+    HandleBoundary();
 }
 
 void CPlayerScript::UpdateCurrentFacedDirection()
@@ -131,6 +140,27 @@ void CPlayerScript::AfterPushedOutFin()
     PLAYER_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
                                          ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::IDLE;
     SetMainState(NextState);    
+}
+
+void CPlayerScript::HandleBoundary()
+{
+    CBackgroundTile* BackgroundCellMgr = GM->GetBackgroundCellManager();
+    
+    // if (Transform()->GetRelativePosX() - m_BodySizeHalf.x < -BackgroundCellMgr->GetWorldSizeHalf())
+
+    Vec2 Pos = Transform()->GetRelativePosXY();
+    
+    if (Pos.x - m_BodySizeHalf.x < -BackgroundCellMgr->GetWorldSizeHalf())
+        Pos.x = -BackgroundCellMgr->GetWorldSizeHalf() + m_BodySizeHalf.x;
+    else if (Pos.x + m_BodySizeHalf.x > BackgroundCellMgr->GetWorldSizeHalf())
+        Pos.x = BackgroundCellMgr->GetWorldSizeHalf() - m_BodySizeHalf.x;
+    
+    if (Pos.y - m_BodySizeHalf.y < -BackgroundCellMgr->GetWorldSizeHalf())
+        Pos.y = -BackgroundCellMgr->GetWorldSizeHalf() + m_BodySizeHalf.y;
+    else if (Pos.y + m_BodySizeHalf.y > BackgroundCellMgr->GetWorldSizeHalf())
+        Pos.y = BackgroundCellMgr->GetWorldSizeHalf() - m_BodySizeHalf.y;
+    
+    Transform()->SetRelativePosXY(Pos);
 }
 
 PLAYER_HANDSTATE CPlayerScript::GetHandState() const

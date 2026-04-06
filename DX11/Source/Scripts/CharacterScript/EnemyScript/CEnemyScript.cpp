@@ -7,6 +7,8 @@
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
+#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
+
 CEnemyScript::CEnemyScript()
     : CCharacterScript(SCRIPT_TYPE::ENEMYSCRIPT)
 {
@@ -21,6 +23,15 @@ void CEnemyScript::Init()
     CCharacterScript::Init();
     AddScriptParam(SCRIPT_PARAM::INT, &m_EnemyType, L"Enemy Type");
     AddScriptParam(SCRIPT_PARAM::FLOAT, &m_AttackDamage, L"Attack Damage");
+    
+    m_MoveSpeedBase = 150.f;
+}
+
+void CEnemyScript::Begin()
+{
+    CCharacterScript::Begin();
+    ADD_DYNAMIC_BEGIN_OVERLAP(CEnemyScript::BodyColliderOverlapped);
+    ADD_DYNAMIC_OVERLAP(CEnemyScript::BodyColliderOverlapped);
 }
 
 void CEnemyScript::AfterLevelBegin()
@@ -139,6 +150,14 @@ void CEnemyScript::OnDieFlipbookEndNotify()
     m_HasFadeInStart    = false;
     m_HasFadeOutStart   = true;    
     m_FadeInOutTime     = 0.f;
+}
+
+void CEnemyScript::BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
+{
+    if (_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>())
+    {
+        Transform()->UpdateTransformToPrevRelativePos();
+    }
 }
 
 void CEnemyScript::SaveToLevelFile(FILE* _File)
