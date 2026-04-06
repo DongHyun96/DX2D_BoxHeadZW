@@ -1,4 +1,7 @@
 ﻿#pragma once
+#include <array>
+#include <unordered_map>
+#include <unordered_set>
 #include "GameEngine/04.Asset/04.Level/ALevel.h"
 
 union COL_ID
@@ -33,34 +36,77 @@ class CollisionMgr : public Singleton<CollisionMgr>
 
 private:
 
-    map<ULONGLONG, bool> m_mapColID{};
+    struct CollisionPairState
+    {
+        bool    IsColliding{};
+        UINT64  LastSeenFrame{};
+        UINT    LeftID{};
+        UINT    RightID{};
+    };
+
+    std::unordered_map<ULONGLONG, CollisionPairState> m_mapColState{};
+    std::array<vector<Ptr<CCollider2D>>, MAX_LAYER>   m_arrLayerColliders{};
+    std::unordered_map<UINT, Ptr<CCollider2D>>        m_mapColliderByID{};
+    UINT64                                             m_FrameCounter{};
+    float                                              m_GridCellSize = 128.f;
     
     const float RAY_EPSILON = 0.00001f;
     
 public:
     void Progress(const Ptr<ALevel>& _Level);
     
-    void OnLevelPlayToStop() { m_mapColID.clear(); }
-    void OnLevelStopToPlay() { m_mapColID.clear(); }
-    void OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel) { m_mapColID.clear(); }
+    void OnLevelPlayToStop()
+    {
+        m_mapColState.clear();
+        m_mapColliderByID.clear();
+        for (auto& vecLayerColliders : m_arrLayerColliders)
+            vecLayerColliders.clear();
+        m_FrameCounter = 0;
+    }
+    
+    void OnLevelStopToPlay()
+    {
+        m_mapColState.clear();
+        m_mapColliderByID.clear();
+        for (auto& vecLayerColliders : m_arrLayerColliders)
+            vecLayerColliders.clear();
+        m_FrameCounter = 0;
+    }
+    
+    void OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
+    {
+        m_mapColState.clear();
+        m_mapColliderByID.clear();
+        for (auto& vecLayerColliders : m_arrLayerColliders)
+            vecLayerColliders.clear();
+        m_FrameCounter = 0;
+    }
     
 private:
     
-    void CollisionBtwLayer(Layer* _Left, Layer* _Right);
+    void BuildLayerColliderCache(const Ptr<ALevel>& _Level);
+    void CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx);
 
     /// <summary>
     /// 같은 레이어 내에서의 충돌검사 처리를 해야할 때
     /// 중복검사 처리를 피함
     /// </summary>
     /// <param name="_Layer"></param>
-    void CollisionBtwSameLayer(Layer* _Layer);
+    void CollisionBtwSameLayer(UINT _LayerIdx);
+    void ProcessStaleCollisionPairs();
+    void PruneCollisionPairCache();
+    
+    bool TryGetColliderAABB(const Ptr<CCollider2D>& _Collider, Vec2& _OutMin, Vec2& _OutMax);
+    int WorldToCellCoord(float _Coord) const;
+    ULONGLONG MakeCellKey(int _CellX, int _CellY) const;
+    ULONGLONG MakePairKey(UINT _A, UINT _B) const;
 
 private:
     
     /// <summary>
     /// 두 물체의 Collision 검사 진행 & 이전 tick 결과와 현재 tick 검사결과에 따라 Notify 처리 
     /// </summary>
-    void CheckCollisionAndNotify(const Ptr<GameObject>& _LeftObject, const Ptr<GameObject>& _RightObject);
+    void CheckCollisionAndNotify(const Ptr<CCollider2D>& _LeftCol, const Ptr<CCollider2D>& _RightCol);
     
 private:
     

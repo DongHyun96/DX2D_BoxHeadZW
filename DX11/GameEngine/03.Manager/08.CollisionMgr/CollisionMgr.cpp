@@ -2,6 +2,8 @@
 #include "CollisionMgr.h"
 
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/06.Component/03.Collider2D/CColliderCircle.h"
+#include "GameEngine/06.Component/03.Collider2D/CColliderPoint.h"
 #include "GameEngine/06.Component/03.Collider2D/CColliderRect.h"
 
 
@@ -16,102 +18,346 @@ CollisionMgr::~CollisionMgr()
 
 void CollisionMgr::Progress(const Ptr<ALevel>& _Level)
 {
-    UINT* pMatrix = _Level->GetCollisionMatrix();    
+    ++m_FrameCounter;
+    BuildLayerColliderCache(_Level);
+    
+    UINT* pMatrix = _Level->GetCollisionMatrix();
     
     for (UINT Row = 0; Row < MAX_LAYER; ++Row)
     {
         for (UINT Col = Row; Col < MAX_LAYER; ++Col)
         {
             if (false == (pMatrix[Row] & (1 << Col))) continue;
-            CollisionBtwLayer(_Level->GetLayer(Row), _Level->GetLayer(Col));   
+            CollisionBtwLayer(Row, Col);
+        }
+    }
+
+    ProcessStaleCollisionPairs();
+    PruneCollisionPairCache();
+}
+
+void CollisionMgr::BuildLayerColliderCache(const Ptr<ALevel>& _Level)
+{
+    m_mapColliderByID.clear();
+    
+    for (UINT layerIdx = 0; layerIdx < MAX_LAYER; ++layerIdx)
+    {
+        auto& vecLayerColliders = m_arrLayerColliders[layerIdx];
+        vecLayerColliders.clear();
+        
+        const vector<Ptr<GameObject>>& vecAllObjects = _Level->GetLayer(layerIdx)->GetAllObjects();
+        vecLayerColliders.reserve(vecAllObjects.size());
+        
+        for (const Ptr<GameObject>& object : vecAllObjects)
+        {
+            Ptr<CCollider2D> pCollider = object->GetCollider2D();
+            if (!pCollider) continue;
+            
+            vecLayerColliders.push_back(pCollider);
+            m_mapColliderByID[pCollider->GetEntityInstID()] = pCollider;
         }
     }
 }
 
-void CollisionMgr::CollisionBtwLayer(Layer* _Left, Layer* _Right)
+int CollisionMgr::WorldToCellCoord(float _Coord) const
 {
-    if (_Left == _Right) // 같은 layer 내에서의 충돌검사 판정
+    return static_cast<int>(floorf(_Coord / m_GridCellSize));
+}
+
+ULONGLONG CollisionMgr::MakeCellKey(int _CellX, int _CellY) const
+{
+    return (static_cast<ULONGLONG>(static_cast<UINT>(_CellX)) << 32) | static_cast<UINT>(_CellY);
+}
+
+ULONGLONG CollisionMgr::MakePairKey(UINT _A, UINT _B) const
+{
+    const UINT leftID = (_A < _B) ? _A : _B;
+    const UINT rightID = (_A < _B) ? _B : _A;
+
+    COL_ID pairID{};
+    pairID.LeftID = leftID;
+    pairID.RightID = rightID;
+    return pairID.ID;
+}
+
+bool CollisionMgr::TryGetColliderAABB(const Ptr<CCollider2D>& _Collider, Vec2& _OutMin, Vec2& _OutMax)
+{
+    if (!_Collider) return false;
+    
+    if (CColliderRect* pRect = dynamic_cast<CColliderRect*>(_Collider.Get()))
     {
-        CollisionBtwSameLayer(_Left);
+        const Vec3 vCenter = pRect->GetWorldPos();
+        const Vec3 vWorldScale = pRect->Transform()->GetWorldScale();
+        const Vec2 vRectScale = pRect->GetScale();
+        const Vec2 vHalfSize = Vec2(vWorldScale.x * vRectScale.x * 0.5f, vWorldScale.y * vRectScale.y * 0.5f);
+        
+        Vec3 axisX = pRect->Transform()->GetDir(DIR::RIGHT);
+        Vec3 axisY = pRect->Transform()->GetDir(DIR::UP);
+        axisX.z = 0.f;
+        axisY.z = 0.f;
+
+        if (axisX.LengthSquared() > 0.f) axisX.Normalize();
+        else axisX = Vec3::Right;
+
+        if (axisY.LengthSquared() > 0.f) axisY.Normalize();
+        else axisY = Vec3::Up;
+
+        const float extentX = fabsf(axisX.x) * vHalfSize.x + fabsf(axisY.x) * vHalfSize.y;
+        const float extentY = fabsf(axisX.y) * vHalfSize.x + fabsf(axisY.y) * vHalfSize.y;
+
+        _OutMin = Vec2(vCenter.x - extentX, vCenter.y - extentY);
+        _OutMax = Vec2(vCenter.x + extentX, vCenter.y + extentY);
+        return true;
+    }
+
+    if (CColliderCircle* pCircle = dynamic_cast<CColliderCircle*>(_Collider.Get()))
+    {
+        const Vec3 vCenter = pCircle->GetWorldPos();
+        const float fRadius = pCircle->GetRadius();
+        
+        _OutMin = Vec2(vCenter.x - fRadius, vCenter.y - fRadius);
+        _OutMax = Vec2(vCenter.x + fRadius, vCenter.y + fRadius);
+        return true;
+    }
+
+    if (CColliderPoint* pPoint = dynamic_cast<CColliderPoint*>(_Collider.Get()))
+    {
+        const Vec3 vCenter = pPoint->GetWorldPos();
+        _OutMin = Vec2(vCenter.x, vCenter.y);
+        _OutMax = _OutMin;
+        return true;
+    }
+
+    return false;
+}
+
+void CollisionMgr::CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx)
+{
+    if (_LeftLayerIdx == _RightLayerIdx)
+    {
+        CollisionBtwSameLayer(_LeftLayerIdx);
         return;
     }
-    
-    const vector<Ptr<GameObject>>& vecLeft  = _Left->GetAllObjects();    
-    const vector<Ptr<GameObject>>& vecRight = _Right->GetAllObjects();
 
-    for (const Ptr<GameObject>& leftObject : vecLeft)
+    const vector<Ptr<CCollider2D>>& vecLeftColliders = m_arrLayerColliders[_LeftLayerIdx];
+    const vector<Ptr<CCollider2D>>& vecRightColliders = m_arrLayerColliders[_RightLayerIdx];
+    
+    if (vecLeftColliders.empty() || vecRightColliders.empty())
+        return;
+
+    using CellBuckets = std::unordered_map<ULONGLONG, vector<UINT>>;
+
+    auto BuildBuckets = [this](const vector<Ptr<CCollider2D>>& _vecColliders, CellBuckets& _OutBuckets)
     {
-        if (!leftObject->GetCollider2D()) continue;
+        _OutBuckets.clear();
         
-        for (const Ptr<GameObject>& rightObject : vecRight)
+        for (const Ptr<CCollider2D>& collider : _vecColliders)
         {
-            if (!rightObject->GetCollider2D()) continue;
-            CheckCollisionAndNotify(leftObject, rightObject);
+            Vec2 vMin{}, vMax{};
+            if (!TryGetColliderAABB(collider, vMin, vMax)) continue;
+
+            const int minCellX = WorldToCellCoord(vMin.x);
+            const int maxCellX = WorldToCellCoord(vMax.x);
+            const int minCellY = WorldToCellCoord(vMin.y);
+            const int maxCellY = WorldToCellCoord(vMax.y);
+
+            for (int y = minCellY; y <= maxCellY; ++y)
+            {
+                for (int x = minCellX; x <= maxCellX; ++x)
+                {
+                    _OutBuckets[MakeCellKey(x, y)].push_back(collider->GetEntityInstID());
+                }
+            }
+        }
+    };
+
+    CellBuckets leftBuckets{};
+    CellBuckets rightBuckets{};
+    
+    BuildBuckets(vecLeftColliders, leftBuckets);
+    BuildBuckets(vecRightColliders, rightBuckets);
+
+    const CellBuckets* pIterBuckets = &leftBuckets;
+    const CellBuckets* pOtherBuckets = &rightBuckets;
+    bool bIterIsLeft = true;
+    
+    if (leftBuckets.size() > rightBuckets.size())
+    {
+        pIterBuckets = &rightBuckets;
+        pOtherBuckets = &leftBuckets;
+        bIterIsLeft = false;
+    }
+
+    std::unordered_set<ULONGLONG> setCandidatePairs{};
+
+    for (const auto& [cellKey, vecA] : *pIterBuckets)
+    {
+        const auto iterOther = pOtherBuckets->find(cellKey);
+        if (iterOther == pOtherBuckets->end()) continue;
+
+        const vector<UINT>& vecB = iterOther->second;
+
+        for (UINT idA : vecA)
+        {
+            for (UINT idB : vecB)
+            {
+                const UINT leftID = bIterIsLeft ? idA : idB;
+                const UINT rightID = bIterIsLeft ? idB : idA;
+                const ULONGLONG pairKey = MakePairKey(leftID, rightID);
+
+                if (!setCandidatePairs.insert(pairKey).second)
+                    continue;
+
+                const auto iterLeftCol = m_mapColliderByID.find(leftID);
+                const auto iterRightCol = m_mapColliderByID.find(rightID);
+                if (iterLeftCol == m_mapColliderByID.end() || iterRightCol == m_mapColliderByID.end())
+                    continue;
+
+                CheckCollisionAndNotify(iterLeftCol->second, iterRightCol->second);
+            }
         }
     }
 }
 
-void CollisionMgr::CollisionBtwSameLayer(Layer* _Layer)
+void CollisionMgr::CollisionBtwSameLayer(UINT _LayerIdx)
 {
-    const vector<Ptr<GameObject>>& vecAllObjects = _Layer->GetAllObjects();
+    const vector<Ptr<CCollider2D>>& vecLayerColliders = m_arrLayerColliders[_LayerIdx];
+    if (vecLayerColliders.size() < 2)
+        return;
 
-    for (int i = 0; i < vecAllObjects.size(); ++i)
+    using CellBuckets = std::unordered_map<ULONGLONG, vector<UINT>>;
+    CellBuckets buckets{};
+    
+    for (const Ptr<CCollider2D>& collider : vecLayerColliders)
     {
-        const Ptr<GameObject>& leftObject = vecAllObjects[i];
-        if (!leftObject->GetCollider2D()) continue;
-        
-        for (int j = i + 1; j < vecAllObjects.size(); ++j)
+        Vec2 vMin{}, vMax{};
+        if (!TryGetColliderAABB(collider, vMin, vMax)) continue;
+
+        const int minCellX = WorldToCellCoord(vMin.x);
+        const int maxCellX = WorldToCellCoord(vMax.x);
+        const int minCellY = WorldToCellCoord(vMin.y);
+        const int maxCellY = WorldToCellCoord(vMax.y);
+
+        for (int y = minCellY; y <= maxCellY; ++y)
         {
-            const Ptr<GameObject>& rightObject = vecAllObjects[j];
-            if (!rightObject->GetCollider2D()) continue;
-            
-            CheckCollisionAndNotify(leftObject, rightObject);
+            for (int x = minCellX; x <= maxCellX; ++x)
+            {
+                buckets[MakeCellKey(x, y)].push_back(collider->GetEntityInstID());
+            }
+        }
+    }
+
+    std::unordered_set<ULONGLONG> setCandidatePairs{};
+    
+    for (const auto& [cellKey, vecIDs] : buckets)
+    {
+        if (vecIDs.size() < 2) continue;
+
+        for (int i = 0; i < static_cast<int>(vecIDs.size()); ++i)
+        {
+            for (int j = i + 1; j < static_cast<int>(vecIDs.size()); ++j)
+            {
+                const UINT leftID = vecIDs[i];
+                const UINT rightID = vecIDs[j];
+                const ULONGLONG pairKey = MakePairKey(leftID, rightID);
+
+                if (!setCandidatePairs.insert(pairKey).second)
+                    continue;
+
+                const auto iterLeftCol = m_mapColliderByID.find(leftID);
+                const auto iterRightCol = m_mapColliderByID.find(rightID);
+                if (iterLeftCol == m_mapColliderByID.end() || iterRightCol == m_mapColliderByID.end())
+                    continue;
+
+                CheckCollisionAndNotify(iterLeftCol->second, iterRightCol->second);
+            }
         }
     }
 }
 
-void CollisionMgr::CheckCollisionAndNotify(const Ptr<GameObject>& _LeftObject, const Ptr<GameObject>& _RightObject)
+void CollisionMgr::CheckCollisionAndNotify(const Ptr<CCollider2D>& _LeftCol, const Ptr<CCollider2D>& _RightCol)
 {
-    // 두 충돌체의 고유 ID로 조합을 한 키값 생성
-    COL_ID colid{};
-    colid.LeftID    = _LeftObject->GetCollider2D()->GetEntityInstID();
-    colid.RightID   = _RightObject->GetCollider2D()->GetEntityInstID();
-
-    // 이전 Tick 충돌정보 불러오기
-    map<ULONGLONG, bool>::iterator iter = m_mapColID.find(colid.ID);
-    if (iter == m_mapColID.end())
-    {
-        m_mapColID.insert(make_pair(colid.ID, false));
-        iter = m_mapColID.find(colid.ID);
-    }
-
+    if (!_LeftCol || !_RightCol) return;
     
-    // if (IsCollision(_LeftObject->Collider2D(), _RightObject->Collider2D()))          // Only for Rect vs Rect OBB Collision
-    if (_LeftObject->GetCollider2D()->IsCollision(_RightObject->GetCollider2D()))       // 각 모양 및 AABB or OBB 충돌검사 알아서 선택되어 처리됨
+    const UINT leftID = _LeftCol->GetEntityInstID();
+    const UINT rightID = _RightCol->GetEntityInstID();
+    const UINT normalizedLeftID = (leftID < rightID) ? leftID : rightID;
+    const UINT normalizedRightID = (leftID < rightID) ? rightID : leftID;
+    const ULONGLONG pairKey = MakePairKey(leftID, rightID);
+
+    auto [iterState, bInserted] = m_mapColState.try_emplace(pairKey, CollisionPairState{});
+    CollisionPairState& pairState = iterState->second;
+    if (bInserted)
     {
-        if (iter->second) // 이전에도 충돌했었는지
-        {
-            _LeftObject->GetCollider2D()->Overlap(_RightObject->GetCollider2D());
-            _RightObject->GetCollider2D()->Overlap(_LeftObject->GetCollider2D());
-        }
-        else // 이전에는 충돌하지 않았었다.
-        {
-            _LeftObject->GetCollider2D()->BeginOverlap(_RightObject->GetCollider2D());
-            _RightObject->GetCollider2D()->BeginOverlap(_LeftObject->GetCollider2D());
-        }
-                
-        iter->second = true;
+        pairState.LeftID = normalizedLeftID;
+        pairState.RightID = normalizedRightID;
     }
-    else // 현재 충돌중이 아니다
+    
+    pairState.LastSeenFrame = m_FrameCounter;
+    
+    if (_LeftCol->IsCollision(_RightCol))
     {
-        // 이전 프레임에는 충돌 중이었다.
-        if (iter->second)
+        if (pairState.IsColliding)
         {
-            _LeftObject->GetCollider2D()->EndOverlap(_RightObject->GetCollider2D());
-            _RightObject->GetCollider2D()->EndOverlap(_LeftObject->GetCollider2D());
+            _LeftCol->Overlap(_RightCol);
+            _RightCol->Overlap(_LeftCol);
         }
-                
-        iter->second = false;
+        else
+        {
+            _LeftCol->BeginOverlap(_RightCol);
+            _RightCol->BeginOverlap(_LeftCol);
+        }
+
+        pairState.IsColliding = true;
+    }
+    else
+    {
+        if (pairState.IsColliding)
+        {
+            _LeftCol->EndOverlap(_RightCol);
+            _RightCol->EndOverlap(_LeftCol);
+        }
+
+        pairState.IsColliding = false;
+    }
+}
+
+void CollisionMgr::ProcessStaleCollisionPairs()
+{
+    for (auto& [pairKey, pairState] : m_mapColState)
+    {
+        if (pairState.LastSeenFrame == m_FrameCounter) continue;
+        if (!pairState.IsColliding) continue;
+
+        const auto iterLeftCol = m_mapColliderByID.find(pairState.LeftID);
+        const auto iterRightCol = m_mapColliderByID.find(pairState.RightID);
+
+        if (iterLeftCol != m_mapColliderByID.end() && iterRightCol != m_mapColliderByID.end())
+        {
+            iterLeftCol->second->EndOverlap(iterRightCol->second);
+            iterRightCol->second->EndOverlap(iterLeftCol->second);
+        }
+
+        pairState.IsColliding = false;
+    }
+}
+
+void CollisionMgr::PruneCollisionPairCache()
+{
+    constexpr UINT64 CACHE_KEEP_FRAMES = 120;
+
+    auto iter = m_mapColState.begin();
+    while (iter != m_mapColState.end())
+    {
+        const CollisionPairState& pairState = iter->second;
+        
+        if (pairState.IsColliding || pairState.LastSeenFrame + CACHE_KEEP_FRAMES >= m_FrameCounter)
+        {
+            ++iter;
+            continue;
+        }
+
+        iter = m_mapColState.erase(iter);
     }
 }
 

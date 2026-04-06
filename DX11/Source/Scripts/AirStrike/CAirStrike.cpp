@@ -8,6 +8,7 @@
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/CCamMoveScript.h"
+#include "Source/Scripts/StatScript/CStatScript.h"
 
 ASound* CAirStrike::s_AirStrikeSound{};
 bool CAirStrike::s_IsAirStrikeSpawned{};
@@ -113,4 +114,6 @@ void CAirStrike::Tick()
 void CAirStrike::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
     // TODO : 실질적인 Damage 처리
+    if (Ptr<CStatScript> Stat = _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>())
+        Stat->TakeDamage(5000.f, Transform()->GetWorldPos2D());
 }
