@@ -104,52 +104,6 @@ void CGrenade::SetMainGrenadeScale() const
     Transform()->SetRelativeScale(m_ScaleBase);
 }
 
-/*void CGrenade::HandleOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
-{
-    // 이전 위치로 위치 조정 처리
-    m_LogicalPos = m_PrevLogicalPos;
-
-    CTransform* pOwnerTrans = _OwnerCollider->Transform();
-    CTransform* pOtherTrans = _OtherCollider->Transform();
-
-    Vec3 ownerPos = pOwnerTrans->GetWorldPos();
-    Vec3 otherPos = pOtherTrans->GetWorldPos();
-
-    // 2. 충돌 법선(Normal) 벡터 구하기
-    // [중요] 현재 BeginOverlap은 충돌 '발생 여부'만 알려줍니다. 
-    // OBB 충돌(SAT 알고리즘 등) 환경에서 정확한 반사를 하려면, 부딪힌 면의 수직 벡터(Normal)를 알아야 합니다.
-    // 만약 물리 엔진 단에서 충돌 Normal을 제공하지 않는다면, 임시로 중심점 간의 방향을 Normal로 사용합니다.
-    
-    Vec2 normal{};
-    
-    if (CColliderRect* ColliderRect = dynamic_cast<CColliderRect*>(_OtherCollider))
-    {
-        const Vec3 ClosestPoint = ColliderRect->GetCircleClosestPointContacted();
-        normal = ToVec2(ownerPos - ClosestPoint);
-    }
-    else normal = ToVec2(ownerPos- otherPos);
-    
-    normal.Normalize(); 
-    
-    // 3. 반사 벡터 공식 적용: R = V - 2(V · N)N
-    // Z축 속도는 보존하고 X, Y 평면 속도만 튕겨냅니다.
-    const Vec2 currentVelXY = ToVec2(m_Velocity);
-    
-    float dotProduct = currentVelXY.Dot(normal);
-    
-    // 수류탄이 이미 다른 방향으로 밀려나고 있는 중첩 충돌(다중 충돌) 방지
-    if (dotProduct > 0.f) return;
-
-    m_Velocity.x = currentVelXY.x - (2.f * dotProduct * normal.x);
-    m_Velocity.y = currentVelXY.y - (2.f * dotProduct * normal.y);
-
-    // 벽에 부딪혔을 때도 약간의 에너지를 잃도록 처리 (선택 사항)
-    m_Velocity.x *= s_GroundFriction;
-    m_Velocity.y *= s_GroundFriction;
-    
-    // 필요 시 벽 바운스 횟수를 차감하거나 사운드를 재생할 수 있습니다.
-}*/
-
 void CGrenade::HandleOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
     CTransform* pOwnerTrans = _OwnerCollider->Transform();
@@ -179,9 +133,8 @@ void CGrenade::HandleOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCol
             normal = Vec2(0.f, 1.f); 
         }
 
-        // [중요] CColliderCircle 등에서 실제 수류탄의 콜라이더 반지름을 가져와야 합니다.
         // float radius = dynamic_cast<CColliderCircle*>(_OwnerCollider)->GetRadius();
-        float radius = 15.f; // ★여기에 실제 수류탄 반지름 값을 대입하세요!
+        float radius = 7.f; // 실질적인 수류탄 rad = 7 좀 더 여유값을 줬음
         
         // 파고든 깊이 계산
         float penetration = radius - distance;

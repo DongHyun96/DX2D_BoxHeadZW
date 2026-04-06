@@ -45,6 +45,11 @@ public:
     PLAYER_HANDSTATE GetHandState() const;
     
     const Vec2& GetPlayerToMousePos() const { return m_PlayerToMousePos; }
+
+private: // Enemy와 Player BodyCollider와의 충돌 처리 Handling
+
+    // BeginOverlap과 Overlap 모두 이 함수로 들어옴
+    void BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
     
 public:
     

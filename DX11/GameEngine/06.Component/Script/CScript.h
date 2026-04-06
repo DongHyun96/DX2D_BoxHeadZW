@@ -120,7 +120,7 @@ public:
     
 };
 
-#define ADD_DYNAMIC_BEGIN_OVERLAP(MemFunc)   GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&MemFunc));
-#define ADD_DYNAMIC_OVERLAP(MemFunc)         GetCollider2D()->AddDynamicOverlap(this, static_cast<COLLISION_EVENT>(&MemFunc));
-#define ADD_DYNAMIC_END_OVERLAP(MemFunc)     GetCollider2D()->AddDynamicEndOverlap(this, static_cast<COLLISION_EVENT>(&MemFunc));
+#define ADD_DYNAMIC_BEGIN_OVERLAP(MemFunc)   GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&MemFunc))
+#define ADD_DYNAMIC_OVERLAP(MemFunc)         GetCollider2D()->AddDynamicOverlap(this, static_cast<COLLISION_EVENT>(&MemFunc))
+#define ADD_DYNAMIC_END_OVERLAP(MemFunc)     GetCollider2D()->AddDynamicEndOverlap(this, static_cast<COLLISION_EVENT>(&MemFunc))
 

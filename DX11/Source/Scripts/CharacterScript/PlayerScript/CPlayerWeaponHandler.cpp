@@ -171,7 +171,7 @@ void CPlayerWeaponHandler::TickDeployAirStrike()
     {
         if (CAirStrike::HasAirStrikeSpawnedAlive()) return;
         GameObject* AirStriker = m_AirStrikePrefab->InstantiateAndSpawnToCurLevel();
-        AirStriker->Transform()->SetRelativePos(Transform()->GetWorldPos());
+        AirStriker->Transform()->SetRelativePos(Transform()->GetWorldPos() - Vec3::UnitY * 30.f);
     }
 }
 

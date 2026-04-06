@@ -51,7 +51,7 @@ void CAirStrike::Begin()
     if (CamMove)
     {
         CamMove->SetAirStriker(this);
-        CamMove->SetOrthoScaleLerpData(0.35f, 5.f);
+        CamMove->SetOrthoScaleLerpData(0.35f, 2.5f);
     }
     
     // TimeScale 영향 받지 않게끔 설정

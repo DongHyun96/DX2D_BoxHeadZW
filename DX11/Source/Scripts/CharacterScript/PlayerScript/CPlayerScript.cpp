@@ -12,6 +12,7 @@
 #include "InvenScript/CEquipmentScript.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 CPlayerScript::CPlayerScript()
@@ -51,6 +52,8 @@ void CPlayerScript::Begin()
     /*Collider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CBulletScript::BeginOverlap));
     Collider2D()->AddDynamicOverlap     (this, static_cast<COLLISION_EVENT>(&CBulletScript::Overlap));
     Collider2D()->AddDynamicEndOverlap  (this, static_cast<COLLISION_EVENT>(&CBulletScript::EndOverlap));*/
+    ADD_DYNAMIC_BEGIN_OVERLAP(CPlayerScript::BodyColliderOverlapped);
+    ADD_DYNAMIC_OVERLAP(CPlayerScript::BodyColliderOverlapped);
 }
 
 void CPlayerScript::AfterLevelBegin()
@@ -133,6 +136,14 @@ void CPlayerScript::AfterPushedOutFin()
 PLAYER_HANDSTATE CPlayerScript::GetHandState() const
 {
     return GetOwner()->GetScriptComponent<CPlayerWeaponHandler>()->GetHandState();
+}
+
+void CPlayerScript::BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
+{
+    if (_OtherCollider->GetOwner()->GetScriptComponent<CEnemyScript>())
+    {
+        Transform()->UpdateTransformToPrevRelativePos();        
+    }
 }
 
 void CPlayerScript::SaveToLevelFile(FILE* _File)

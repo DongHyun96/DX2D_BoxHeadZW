@@ -148,3 +148,5 @@ float GetEightDirectionToAngle(EDIRECTION _Direction);
 /// </summary>
 SIXTEEN_DIRECTION GetSixteenDirection(const Vec3& _Vector);
 SIXTEEN_DIRECTION GetSixteenDirection(const Vec2& _Vector);
+
+
