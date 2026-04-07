@@ -120,6 +120,9 @@ void CollisionMgr::RayCastFindBestHit
             for (const Ptr<GameObject>& child : Object->GetChildren())
                 q.push(child);
             
+            // 자식 오브젝트의 경우, 독립적인 LayerIdx(부모와 서로 다른 Collision 처리를 하기 위함)를 들고 있을 수 있음, 이 때는 RayCast 검사 자체도 넘어감
+            if (Object->GetLayerIdx() != _TargetLayerMask) continue;
+            
             if 
             (
                 !Object->GetActive() ||
