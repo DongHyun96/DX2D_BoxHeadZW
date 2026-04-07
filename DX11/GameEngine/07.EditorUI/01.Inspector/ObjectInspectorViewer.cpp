@@ -180,9 +180,8 @@ void ObjectInspectorViewer::TickLayerUI()
     ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
     ImGui::Text(LayerTitleName.c_str());
 
-    const bool canEditLayer =
-        (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) &&
-        (m_TargetObject->GetParent() == nullptr);
+    // const bool canEditLayer = (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) && (m_TargetObject->GetParent() == nullptr);
+    const bool canEditLayer = (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP);
 
     ImGui::BeginDisabled(!canEditLayer);
 

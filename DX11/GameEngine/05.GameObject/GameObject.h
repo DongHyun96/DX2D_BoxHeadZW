@@ -122,7 +122,7 @@ public:
 	
 	void AddChild(const Ptr<GameObject>& _Child);
 	void DisconnectWithParent();
-	void DeregisterAsParent();
+	void DeregisterAsRootParent();
 	void RegisterAsParent();
 
 public:

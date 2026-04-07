@@ -260,7 +260,7 @@ void GameObject::AddChild(const Ptr<GameObject>& _Child)
 	{
 		// 레벨 내부에 있던 오브젝트여야 Layer에서의 Parent GameObject에서 제거
 		if (_Child->m_bInLayer)
-			_Child->DeregisterAsParent(); // Layer에서 최상위 부모로 가리키던 포인터를 제거
+			_Child->DeregisterAsRootParent(); // Layer에서 최상위 부모로 가리키던 포인터를 제거
 	}
 
 	m_vecChild.push_back(_Child); 
@@ -268,7 +268,10 @@ void GameObject::AddChild(const Ptr<GameObject>& _Child)
 	
 	if (!_Child->m_bInLayer) // 레벨 밖에 있던 오브젝트가(외부의) Level에 새로 합류한 상황
 	{
-		_Child->m_LayerIdx = this->m_LayerIdx; // Parent의 LayerIdx를 따르게끔 처리 (TODO : 이걸 Child도 고유의 LayerIdx를 들고 있도록 처리를 해주어야 함) 
+		
+		if (_Child->m_LayerIdx == -1) // 부여받지 않은 LayerIdx를 들고 있는 경우, Parent의 LayerIdx를 사용하도록 처리
+			_Child->m_LayerIdx = this->m_LayerIdx;  
+		
 		_Child->m_bInLayer = true; // 레벨 합류 처리
 
 		// 부모가 될 오브젝트는 레벨 내부 소속인 경우 + 레벨이 Play 모드
@@ -309,7 +312,7 @@ void GameObject::DisconnectWithParent()
 	assert(nullptr);
 }
 
-void GameObject::DeregisterAsParent()
+void GameObject::DeregisterAsRootParent()
 {
 	Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
 	Layer* pLayer = pCurLevel->GetLayer(m_LayerIdx); // Layer의 경우 스마트포인터로 가리키면 삭제당함
@@ -365,16 +368,16 @@ bool GameObject::SetLayerIdx(int _LayerIdx)
 	// 현재 레벨에 배치되지 않은 GameObject의 경우, LayerIdx 설정을 setter로 설정할 수 없게끔 조치
 	if (!m_bInLayer) return false;
 
-	// 최상위 부모가 아닌 경우, LayerIdx를 바꿀 수 없다 -> 자식은 무조건 Parent의 LayerIdx를 따른다 (TODO : 이거도 맞나...충돌처리를 자식은 다른 Layer로 빼서 할 수도 있지 않나)
-	if (m_Parent) return false;
-
 	int prevLayer = m_LayerIdx;
 	m_LayerIdx = _LayerIdx;
 	
-	//  바뀐 LayerIdx에 대해 실질적으로 현재 Level에서 바뀐 Layer에 넣어주어야 함
-	Ptr<ALevel> CurLevel = LevelMgr::GetInst()->GetCurLevel();
-	CurLevel->GetLayer(prevLayer)->DeregisterAsParent(this);
-	CurLevel->AddObject(m_LayerIdx, this);
+	//  바뀐 LayerIdx에 대해 실질적으로 현재 Level에서 바뀐 Layer에 넣어주어야 함 (최상위 부모 오브젝트인 경우에만 해당)
+	if (!m_Parent)
+	{
+		Ptr<ALevel> CurLevel = LevelMgr::GetInst()->GetCurLevel();
+		CurLevel->GetLayer(prevLayer)->DeregisterAsParent(this);
+		CurLevel->AddObject(m_LayerIdx, this);
+	}
 	
 	return true;
 }
