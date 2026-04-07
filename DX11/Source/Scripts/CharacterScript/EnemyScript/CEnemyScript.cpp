@@ -4,7 +4,9 @@
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
+#include "Source/AStar/AStarPathFinder.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
@@ -24,7 +26,8 @@ void CEnemyScript::Init()
     AddScriptParam(SCRIPT_PARAM::INT, &m_EnemyType, L"Enemy Type");
     AddScriptParam(SCRIPT_PARAM::FLOAT, &m_AttackDamage, L"Attack Damage");
     
-    m_MoveSpeedBase = 150.f;
+    // m_MoveSpeedBase = 150.f;
+    m_MoveSpeedBase = 300.f;
 }
 
 void CEnemyScript::Begin()
@@ -58,7 +61,8 @@ void CEnemyScript::Move()
     case ENEMY_MAINSTATE::ATTACK: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
     case ENEMY_MAINSTATE::WALK:
     {
-        // TODO : 실질적인 Walk 처리 구현할 것
+        if (GetOwner()->GetName() != L"Devil") return; // TODO : 이 return 문 없앨것
+        /*// TODO : 실질적인 Walk 처리 구현할 것
         if (GetOwner()->GetName() != L"Devil") return;
         
         m_Velocity = Vec3(); // Velocity 초기화
@@ -78,7 +82,9 @@ void CEnemyScript::Move()
         m_Velocity = Direction * m_MoveSpeedBase * m_MoveSpeedFactor;
     
         Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
-        Transform()->SetRelativePos(Pos);
+        Transform()->SetRelativePos(Pos);*/
+        
+        MoveThroughCellPath();
     }
         return;
     case ENEMY_MAINSTATE::PUSHED_OUT: MovePushedOut(); break;
@@ -143,6 +149,47 @@ void CEnemyScript::HandleFadeOut()
     // Pool 에 돌아가는 처리
     // Owner GameObject가 Pool에서 생성된 GameObject라면, IsActive 해제시, 자동적으로 들어간다
     GetOwner()->SetActive(false);
+}
+
+void CEnemyScript::MoveThroughCellPath()
+{
+    Vec3 Pos = Transform()->GetRelativePos();
+    
+    // 임시
+    if (KEY_TAP(KEY::MRB))
+    {
+        const CellCoord myCellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(ToVec2(Pos));
+        const CellCoord destCellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(KeyMgr::GetInst()->GetMouseWorldPos2D());
+        AStarPathFinder::GetInst()->GetPath(myCellCoord, destCellCoord, m_CellPath); // return true or false
+    }
+    
+    // 이동할 수 있는 경로가 없음
+    if (m_CellPath.empty()) return;
+    
+    m_Velocity = Vec3::Zero;
+    
+    const Vec2 Destination = GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(m_CellPath.top()); 
+    const Vec2 Direction = Destination - ToVec2(Pos);
+    
+    // 1. 방향 벡터의 길이(남은 거리)를 구합니다.
+    const float DistToDest = Direction.Length();
+    
+    // 2. 이번 프레임에 실제로 이동할 거리를 구합니다.
+    const float MoveDistThisFrame = m_MoveSpeedBase * DT;
+    
+    // 🚨 핵심: 남은 거리가 이번 이동 거리보다 작거나 같다면 도착한 것으로 판정!
+    if (DistToDest <= MoveDistThisFrame) 
+    {
+        Transform()->SetRelativePos(ToVec3(Destination, Destination.y)); // 목적지에 정확히 위치 고정 (스냅)
+        m_CellPath.pop(); 
+        return;        
+    }
+    
+    // 3. 최적화: Length를 이미 구했으므로 Normalized() 대신 직접 나누어 사용 (sqrt 연산 1회 절약)
+    m_Velocity = ToVec3(Direction / DistToDest) * m_MoveSpeedBase;
+    Pos += m_Velocity * DT;
+    
+    Transform()->SetRelativePos(Pos);
 }
 
 void CEnemyScript::OnDieFlipbookEndNotify()

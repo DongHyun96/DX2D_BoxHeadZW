@@ -7,6 +7,7 @@
 #include "Source/Scripts/ExplosionDome/CExplosionDome.h"
 #include "Source/Scripts/ProjectileScript/CGrenade.h"
 #include "Source/Scripts/ProjectileScript/CRocketProjectile.h"
+#include "Source/Scripts/Structure/CStructure.h"
 
 GameManager::GameManager()
 {
@@ -18,6 +19,9 @@ GameManager::~GameManager()
 
 void GameManager::OnLevelBegin()
 {
+    // Level에 들어있는 Layer들의 Begin 전에 먼저 호출 처리됨 
+    
+    CStructure::ClearInstalledCoordInfo();
 }
 
 void GameManager::OnLevelPlayToStop()
@@ -31,11 +35,14 @@ void GameManager::OnLevelPlayToStop()
     m_RocketProjectilePooler = nullptr;
     m_GrenadePooler = nullptr;
     m_BackgroundCellManager = nullptr;
+    
+    CStructure::ClearInstalledCoordInfo();
 }
 
 void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
 {
     // TODO : 특정 Level에서 다른 Level 로 넘어갈 때 처리할 것 처리하기
+    CStructure::ClearInstalledCoordInfo();
 }
 
 CPoolComponent* GameManager::GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE _PoolerType) const

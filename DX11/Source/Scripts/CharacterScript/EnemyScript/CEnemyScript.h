@@ -23,6 +23,10 @@ private: // FadeIn Out 관련
     const float m_FadeInOutTotalTime = 1.f;
     float       m_FadeInOutTime{};
     
+private: // AStar Path 관련
+    
+    stack<CellCoord> m_CellPath{};
+    
 public:
     
     CEnemyScript();
@@ -44,6 +48,13 @@ private:
     
     void HandleFadeOut();
 
+private:
+    
+    /// <summary>
+    /// m_CellPath를 따라 이동
+    /// </summary>
+    void MoveThroughCellPath();
+    
 public:
     
     /// <summary>

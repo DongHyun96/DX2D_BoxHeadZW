@@ -172,7 +172,9 @@ void CStructureHandler::UpdateSpawnStructure(const Vec2& _PreviewPos, bool _Avai
         m_InvenScript->ReduceCurrentStructureCount(m_CurrentStructureHolding); // 갯수를 하나 줄인다
         
         // Taken Cell 기록
-        GM->GetBackgroundCellManager()->SetCellTaken(_PreviewPos, true);
+        const CellCoord cellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(_PreviewPos); 
+        GM->GetBackgroundCellManager()->SetCellTaken(cellCoord, true);
+        CStructure::AddInstalledCoord(cellCoord);
     }
 }
 

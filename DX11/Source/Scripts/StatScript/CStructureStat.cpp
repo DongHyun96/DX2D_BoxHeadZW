@@ -21,10 +21,13 @@ bool CStructureStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePo
     
     if (IsDead())
     {
+        // 자기자신 Destroy
         Destroy();
         
         // Taken Cell 상태 되돌리기
-        GM->GetBackgroundCellManager()->SetCellTaken(Transform()->GetWorldPos2D(), false);
+        const CellCoord cellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(Transform()->GetWorldPos2D());
+        GM->GetBackgroundCellManager()->SetCellTaken(cellCoord, false);
+        CStructure::RemoveInstalledCoord(cellCoord);
 
         // Barrel 종류인 경우, 연쇄 폭파 작동 처리
         if (Ptr<CBarrel> Barrel = GetOwner()->GetScriptComponent<CBarrel>())

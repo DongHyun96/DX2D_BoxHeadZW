@@ -39,6 +39,9 @@ private: // Poolers
     
 public:
     
+    /// <summary>
+    /// Level Begin시, 가장 먼저 호출 처리됨 (Layer들 보다 먼저)
+    /// </summary>
     void OnLevelBegin();
     void OnLevelPlayToStop();
     void OnLevelChanged(class ALevel* _PrevLevel, ALevel* _NextLevel);

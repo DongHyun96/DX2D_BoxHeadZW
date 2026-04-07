@@ -7,7 +7,7 @@
 CBackgroundTile::CBackgroundTile()
     : CScript(SCRIPT_TYPE::BACKGROUNDTILE)
 {
-    m_CellTaken.assign(m_TileRowCount, vector<bool>(m_TileRowCount, false));
+    m_CellTaken.assign(CELL_ROW_COUNT, vector<bool>(CELL_ROW_COUNT, false));
 }
 
 CBackgroundTile::~CBackgroundTile()
@@ -98,7 +98,7 @@ bool CBackgroundTile::IsWorldPosOutOfBounds(const Vec2& _WorldPos) const
 
 bool CBackgroundTile::IsCellCoordOutOfBounds(const CellCoord& _CellCoord) const
 {
-    return _CellCoord.x < 0 || _CellCoord.x >= m_TileRowCount || _CellCoord.y < 0 || _CellCoord.y >= m_TileRowCount;
+    return _CellCoord.x < 0 || _CellCoord.x >= CELL_ROW_COUNT || _CellCoord.y < 0 || _CellCoord.y >= CELL_ROW_COUNT;
 }
 
 void CBackgroundTile::SaveToLevelFile(FILE* _File)
@@ -112,13 +112,13 @@ void CBackgroundTile::SaveToLevelFile(FILE* _File)
 
 void CBackgroundTile::LoadFromLevelFile(FILE* _File)
 {
-    m_CellTaken.resize(m_TileRowCount);
+    m_CellTaken.resize(CELL_ROW_COUNT);
     for (vector<bool>& ColVec : m_CellTaken)
-        ColVec.resize(m_TileRowCount);
+        ColVec.resize(CELL_ROW_COUNT);
     
     for (vector<bool>& ColVec : m_CellTaken)
     {
-        for (int i = 0; i < m_TileRowCount; i++)
+        for (int i = 0; i < CELL_ROW_COUNT; i++)
         {
             bool Temp{};
             fread(&Temp, sizeof(bool), 1, _File);

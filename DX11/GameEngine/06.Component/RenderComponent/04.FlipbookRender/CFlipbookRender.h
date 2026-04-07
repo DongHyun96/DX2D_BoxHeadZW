@@ -63,7 +63,7 @@ public:
     
     /// <summary>
     /// 특정 카테고리의 특정 인덱스 플립북이 끝날 때 호출받을 함수 
-    /// 만약 기존에 EndEvent가 걸려있었다면, 해당 EndEvent는 대체 처리한다 -> functional 라이브러리의 function<void()> 특성상, 특정한 함수객체를 찝어서 없앨 수 없음
+    /// 만약 기존에 EndEvent가 걸려있었다면, 해당 EndEvent는 대체 처리한다 -> functional 라이브러리의 function<void()> 특성상, 특정한 함수포인터를 찝어서 없앨 수 없음
     /// </summary>
     /// <param name="_Category"></param>
     /// <param name="_FlipbookIdx"></param>

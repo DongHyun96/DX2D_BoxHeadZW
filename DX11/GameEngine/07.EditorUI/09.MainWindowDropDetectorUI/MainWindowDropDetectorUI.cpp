@@ -192,16 +192,15 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
 {
     if (!_BackgroundTile) return;
 
-    const UINT rowCount = _BackgroundTile->GetTileRowCount();
     const float tileSize = _BackgroundTile->GetTileSize();
-    if (rowCount == 0 || tileSize <= 0.f) return;
+    if (tileSize <= 0.f) return;
 
     const float worldHalfSize = _BackgroundTile->GetWorldSizeHalf();
     const float worldMin = -worldHalfSize;
     const float worldMax = worldHalfSize;
 
     const Vec4 gridColor(1.f, 1.f, 1.f, 0.25f);
-    for (UINT i = 0; i <= rowCount; ++i)
+    for (UINT i = 0; i <= CELL_ROW_COUNT; ++i)
     {
         const float linePos = worldMin + (tileSize * static_cast<float>(i));
         DrawDebugLine(Vec3(linePos, worldMin, 0.f), Vec3(linePos, worldMax, 0.f), gridColor, 0.f, false);
@@ -251,9 +250,9 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
         m_SelectedCellY = hoveredCellY;
     }
 
-    for (UINT y = 0; y < rowCount; ++y)
+    for (UINT y = 0; y < CELL_ROW_COUNT; ++y)
     {
-        for (UINT x = 0; x < rowCount; ++x)
+        for (UINT x = 0; x < CELL_ROW_COUNT; ++x)
         {
             const CellCoord cellCoord(static_cast<int>(x), static_cast<int>(y));
             if (!_BackgroundTile->IsCellTaken(cellCoord)) continue;

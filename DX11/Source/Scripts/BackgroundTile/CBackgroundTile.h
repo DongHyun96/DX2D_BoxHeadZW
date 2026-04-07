@@ -1,31 +1,5 @@
 ﻿#pragma once
 
-
-struct CellCoord
-{
-    int x{};
-    int y{};
-    
-    CellCoord() {}
-    CellCoord(int x, int y) :x(x), y(y) {}
-    
-    bool operator==(const CellCoord& other) const
-    {
-        return (this->x == other.x && this->y == other.y);
-    }
-
-    bool operator!=(const CellCoord& other) const
-    {
-        return (this->x != other.x || this->y != other.y);
-    }
-
-    bool operator<(const CellCoord& other) const
-    {
-        if (this->x != other.x) return this->x < other.x;
-        return this->y < other.y;
-    }
-};
-
 /// <summary>
 /// 설치물 설치 위치 기록
 /// Cell Coord 관리
@@ -41,8 +15,6 @@ private:
     
     const float m_TileSize      = 60.f; // TileCell 한 칸당 크기 (가로, 세로 동일) (75)
     const float m_TileHalfSize  = 30.f;
-    
-    const UINT m_TileRowCount   = 75; // Tile Row Count (Col Count도 동일)
     
 private:
 
@@ -62,10 +34,9 @@ public:
 
 public:
     
-    float GetWorldSize() const { return m_WorldSize; }
-    float GetWorldSizeHalf() const { return m_WorldHalfSize; }
-    float GetTileSize() const { return m_TileSize; }
-    UINT GetTileRowCount() const { return m_TileRowCount; }
+    float GetWorldSize()        const { return m_WorldSize; }
+    float GetWorldSizeHalf()    const { return m_WorldHalfSize; }
+    float GetTileSize()         const { return m_TileSize; }
 
 public:
     /// <summary>

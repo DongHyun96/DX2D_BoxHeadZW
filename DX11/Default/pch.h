@@ -60,6 +60,7 @@ typedef SimpleMath::Matrix      Matrix;
 #include <map>
 #include <unordered_map>
 #include <set>
+#include <stack>
 #include <unordered_set>
 #include <string>
 #include <algorithm>
@@ -97,3 +98,4 @@ using namespace std;
 ///////////////////////////////////////////////////User include///////////////////////////////////////////////////
 #include "Source/UserHeader/userDefine.h"
 #include "Source/UserHeader/userEnum.h"
+#include "Source/UserHeader/userStruct.h"

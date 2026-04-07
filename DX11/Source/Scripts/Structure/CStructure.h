@@ -1,9 +1,16 @@
 ﻿#pragma once
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 
 
 class CStructure : public CScript
 {
+private:
+    
+    // 맵에 현재 설치된 Structure들의 위치정보
+    // Enemy의 Target setting을 할 때에, 사용을 할 수 있도록 한다
+    static set<CellCoord> s_InstalledCoord;
+    
 private:
 
     Ptr<ASound> m_InstallSound{};
@@ -45,6 +52,13 @@ public:
     {
         if (m_InstallSound) m_InstallSound->Play(1, 0.5f, true);
     }
+
+public:
+    
+    static void ClearInstalledCoordInfo() { s_InstalledCoord.clear(); }
+    static void AddInstalledCoord(const CellCoord& _CellCoord) { s_InstalledCoord.insert(_CellCoord); }
+    static void RemoveInstalledCoord(const CellCoord& _CellCoord) { s_InstalledCoord.erase(_CellCoord); }
+    
     
 public:
     

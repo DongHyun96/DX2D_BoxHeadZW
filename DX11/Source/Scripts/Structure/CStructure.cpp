@@ -5,6 +5,8 @@
 #include "Source/Scripts/CharacterScript/CCharacterScript.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 
+set<CellCoord> CStructure::s_InstalledCoord{};
+
 CStructure::CStructure()
     : CScript(SCRIPT_TYPE::STRUCTURE)
 {

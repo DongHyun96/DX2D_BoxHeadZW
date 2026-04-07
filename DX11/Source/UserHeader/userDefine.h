@@ -35,3 +35,5 @@
 
 
 constexpr float CAMERA2D_POS_Z = -5000.f;
+
+constexpr UINT CELL_ROW_COUNT = 75; // Col Count도 동일한 정사각형
