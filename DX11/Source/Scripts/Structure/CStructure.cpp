@@ -37,6 +37,7 @@ void CStructure::Begin()
 {
     ADD_DYNAMIC_BEGIN_OVERLAP(CStructure::BodyColliderBeginOverlap);
     ADD_DYNAMIC_OVERLAP(CStructure::BodyColliderOverlap);
+    ADD_DYNAMIC_END_OVERLAP(CStructure::BodyColliderEndOverlap);
 }
 
 void CStructure::Tick()
@@ -45,6 +46,15 @@ void CStructure::Tick()
 
 void CStructure::BodyColliderBeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
+    // Preview 오브젝트인 경우, 캐릭터와 overlapping 중인지 판별을 해야함
+    // 그냥 Overlapping 중인지만 테스트한다면, Enemy의 AttackArea에 들어가버리면 설치 자체가 되질 않아서 체크를 해주어야 함
+    if (m_IsPreviewObject)
+    {
+        // 캐릭터 BodyCollider가 들어왔을 때
+        if (_OtherCollider->GetOwner()->GetScriptComponent<CCharacterScript>()) ++m_CharacterBodyOverlapCount;
+        return;
+    }
+    
     // Character Movement로 해당 Collider에 부딪힌 경우
     if (BlockCharacterCollider(_OtherCollider)) return;
     
@@ -53,14 +63,21 @@ void CStructure::BodyColliderBeginOverlap(CCollider2D* _OwnerCollider, CCollider
 
 void CStructure::BodyColliderOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
-    if (BlockCharacterCollider(_OtherCollider)) return;
+    // 프리뷰 오브젝트에 캐릭터가 blocking되면 안됨
+    if (!m_IsPreviewObject) BlockCharacterCollider(_OtherCollider);
+}
+
+void CStructure::BodyColliderEndOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
+{
+    if (m_IsPreviewObject)
+    {
+        // 캐릭터 BodyCollider가 들어왔을 때
+        if (_OtherCollider->GetOwner()->GetScriptComponent<CCharacterScript>()) --m_CharacterBodyOverlapCount;
+    }
 }
 
 bool CStructure::BlockCharacterCollider(CCollider2D* _OtherCollider)
 {
-    // 프리뷰 오브젝트에 캐릭터가 blocking되면 안됨
-    if (m_IsPreviewObject) return false;
-    
     // 캐릭터가 아닌 다른 GameObject
     if (!_OtherCollider->GetOwner()->GetScriptComponent<CCharacterScript>()) return false;
 

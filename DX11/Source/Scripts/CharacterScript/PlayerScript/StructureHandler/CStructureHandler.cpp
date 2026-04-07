@@ -90,7 +90,7 @@ void CStructureHandler::Tick()
     const Vec2 MousePosToCellWorldPos   = BackgroundCellManager->GetCellCoordToWorldPos(cellCoord);
     const bool CellAvailable            = BackgroundCellManager->IsCellAvailable(cellCoord);
     
-    const bool PreviewObjectOverlapping = m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->GetCollider2D()->IsCurrentlyOverlapping();
+    const bool PreviewObjectOverlapping = m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->GetScriptComponent<CStructure>()->IsCharacterBodyOverlapping();
     const bool StructureAvailable = CellAvailable && !PreviewObjectOverlapping;
     
     // 두 가지를 체크해야 함 -> Cell 위치가 Available한 Cell인지 & Preview Object와 Ovelapped 중인 물체가 있는지

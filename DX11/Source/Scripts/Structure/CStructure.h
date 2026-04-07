@@ -14,8 +14,11 @@ private:
 private:
 
     Ptr<ASound> m_InstallSound{};
+
+private:
     
     bool m_IsPreviewObject{}; // 설치할 위치 Preview Object 보여주기용인지
+    int m_CharacterBodyOverlapCount{};
     
 public:
     
@@ -36,8 +39,11 @@ public:
 
 private:
     
-    virtual void BodyColliderBeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
-    virtual void BodyColliderOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
+    void BodyColliderBeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
+    void BodyColliderOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
+    void BodyColliderEndOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);
+
+private:
     
     bool BlockCharacterCollider(CCollider2D* _OtherCollider);
     
@@ -45,6 +51,8 @@ public:
     
     void SetIsPreviewObject(bool isPreviewObject) { m_IsPreviewObject = isPreviewObject; }
     bool GetIsPreviewObject() const { return m_IsPreviewObject; }
+    
+    bool IsCharacterBodyOverlapping() const { return m_CharacterBodyOverlapCount > 0; }
     
 public:
     
