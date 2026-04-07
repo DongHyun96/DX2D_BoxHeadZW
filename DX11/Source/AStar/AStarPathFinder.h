@@ -17,6 +17,7 @@ struct ASNode
     int F = INF;			// 합산 거리 점수
     
     bool Visited{};
+    UINT SearchEpoch{}; // 이 노드가 마지막으로 초기화된 길찾기 회차
 };
 
 /* A* 알고리즘 내에서 prioriy_queue의 Priority 조건 */
@@ -37,6 +38,7 @@ private:
 
     /* Game field 각 cell 위치에 해당하는 ASNode들 */
     static ASNode* m_FieldNodes[CELL_ROW_COUNT][CELL_ROW_COUNT];
+    static UINT m_CurrentEpoch; // 현재 길찾기 회차 ID
     
 public:
     /// <summary>
@@ -48,9 +50,9 @@ public:
     /// <returns> : 해당 경로가 존재하지 않으면 return false </returns>
     static bool GetPath(const CellCoord& start, const CellCoord& dest, stack<CellCoord>& _OutPath);    
     
-private:
+public:
     
-    static void InitFields();
+    static void Init();
 
     /// <summary>
     /// AStar 알고리즘 내에서 사용할 거리 측정 함수 

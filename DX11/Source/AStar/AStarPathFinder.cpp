@@ -5,6 +5,7 @@
 #include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 
 ASNode* AStarPathFinder::m_FieldNodes[CELL_ROW_COUNT][CELL_ROW_COUNT];
+UINT AStarPathFinder::m_CurrentEpoch{};
 
 AStarPathFinder::AStarPathFinder()
 {
@@ -30,23 +31,30 @@ bool AStarPathFinder::GetPath(const CellCoord& start, const CellCoord& dest, sta
     // 이동 방향에 따른 비용 (대각의 경우 루트2 -> 대략 10을 곱해서 처리)
     static const int cost[8] = { 10, 10, 10, 10, 14, 14, 14, 14 };
     
-    
-    InitFields();
 
     // _OutPath 스택 초기화
     stack<CellCoord>().swap(_OutPath);
 
     // 이미 도달한 경로
     if (start == dest) return true;
+    
+    // 이번 길찾기 회차 증가 시키기
+    ++m_CurrentEpoch;
 
     priority_queue<ASNode*, vector<ASNode*>, CompareNode> pq{};
     
-    UINT startH = GetDiagonalDist(start, dest);
-    m_FieldNodes[start.y][start.x]->G = 0;
-    m_FieldNodes[start.y][start.x]->H = startH;
-    m_FieldNodes[start.y][start.x]->F = startH;
+    UINT startH         = GetDiagonalDist(start, dest);
+    ASNode* StartNode   = m_FieldNodes[start.y][start.x];
 
-    pq.push(m_FieldNodes[start.y][start.x]);
+    // StartNode값 이번 Epoch으로 초기화 처리
+    StartNode->SearchEpoch  = m_CurrentEpoch;
+    StartNode->Visited      = false;
+    StartNode->G            = 0;
+    StartNode->H            = startH;
+    StartNode->F            = startH;
+    StartNode->Parent       = nullptr;
+
+    pq.push(StartNode);
 
     while (!pq.empty())
     {
@@ -98,19 +106,29 @@ bool AStarPathFinder::GetPath(const CellCoord& start, const CellCoord& dest, sta
                 if (!BackgroundCellManager->IsCellAvailable(check1) || !BackgroundCellManager->IsCellAvailable(check2))
                     continue;
             }
+
+            ASNode* NextNode = m_FieldNodes[nextCoord.y][nextCoord.x];
+            
+            // 이번 길찾기 회차에서 처음 등록된 노드 -> 새로이 초기화 처리를 먼저 해줌
+            if (NextNode->SearchEpoch != m_CurrentEpoch)
+            {
+                NextNode->SearchEpoch   = m_CurrentEpoch;
+                NextNode->F             = INF;
+                NextNode->Visited       = false;
+            }
             
             // f, g, h값 구하기
             const UINT G = curNode->G + cost[i]; // 발자국 점수 처리 (대각의 경우 살짝 늘어난 값 합산 처리됨)
             const UINT H = GetDiagonalDist(nextCoord, dest);
-            const int F = G + H;
+            const int  F = G + H;
             
-            if (F < m_FieldNodes[nextCoord.y][nextCoord.x]->F)
+            if (F < NextNode->F)
             {
-                m_FieldNodes[nextCoord.y][nextCoord.x]->G = G;
-                m_FieldNodes[nextCoord.y][nextCoord.x]->H = H;
-                m_FieldNodes[nextCoord.y][nextCoord.x]->F = F;
-                m_FieldNodes[nextCoord.y][nextCoord.x]->Parent = curNode;
-                pq.push(m_FieldNodes[nextCoord.y][nextCoord.x]);
+                NextNode->G = G;
+                NextNode->H = H;
+                NextNode->F = F;
+                NextNode->Parent = curNode;
+                pq.push(NextNode);
             }
         }
     }
@@ -119,18 +137,11 @@ bool AStarPathFinder::GetPath(const CellCoord& start, const CellCoord& dest, sta
 	return false;
 }
 
-void AStarPathFinder::InitFields()
+void AStarPathFinder::Init()
 {
     for (UINT i = 0; i < CELL_ROW_COUNT; i++)
-    {
         for (UINT j = 0; j < CELL_ROW_COUNT; j++)
-        {
-            m_FieldNodes[i][j]->G       = 0;
-            m_FieldNodes[i][j]->H       = 0;
-            m_FieldNodes[i][j]->F       = INF;
-            m_FieldNodes[i][j]->Visited = false;
-        }
-    }
+            m_FieldNodes[i][j] = {};
 }
 
 UINT AStarPathFinder::GetDiagonalDist(const CellCoord& _Coord1, const CellCoord& _Coord2)
