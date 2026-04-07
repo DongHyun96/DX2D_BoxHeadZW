@@ -26,7 +26,7 @@ void PrefabUI::Tick_UI()
         return;
     }
 
-    m_ObjectViewer.SetTargetObject(pPrefab->m_ProtoObj);
+    m_ObjectViewer.SetTargetObject(pPrefab->m_ProtoObj.Get());
 
     if (!m_ObjectViewer.GetTargetObject())
     {

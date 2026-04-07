@@ -117,7 +117,7 @@ void ObjectInspectorViewer::CreateChildUI()
     ADD_COMPONENT_UI(COMPONENT_TYPE::POOL,              PoolUI,                 Vec2(0.f, 300.f));
 }
 
-void ObjectInspectorViewer::SetTargetObject(const Ptr<GameObject>& _Object)
+void ObjectInspectorViewer::SetTargetObject(GameObject* _Object)
 {
     m_TargetObject = _Object;
 

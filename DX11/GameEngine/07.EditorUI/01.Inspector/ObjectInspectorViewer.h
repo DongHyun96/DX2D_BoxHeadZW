@@ -7,7 +7,7 @@ class ObjectInspectorViewer : public Entity
 {
 private:
     EditorUI*               m_Owner{};
-    Ptr<GameObject>         m_TargetObject{};
+    GameObject*             m_TargetObject{};
     Ptr<ComponentUI>        m_arrComUI[static_cast<UINT>(COMPONENT_TYPE::END)]{};
     vector<Ptr<ScriptUI>>   m_vecScriptUI{};
 
@@ -27,8 +27,8 @@ public:
     
 public:
     
-    void SetTargetObject(const Ptr<GameObject>& _Object);
-    const Ptr<GameObject>& GetTargetObject() const { return m_TargetObject; }
+    void SetTargetObject(GameObject* _Object);
+    GameObject* GetTargetObject() const { return m_TargetObject; }
 
 private:
     

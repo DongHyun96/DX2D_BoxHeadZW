@@ -47,7 +47,7 @@ void Inspector::SetTargetObject(const Ptr<GameObject>& _Object)
 {
     if (m_LockTarget && (m_ObjectViewer.GetTargetObject() || m_TargetAsset)) return;
     
-    m_ObjectViewer.SetTargetObject(_Object);
+    m_ObjectViewer.SetTargetObject(_Object.Get());
     
     // AssetUI 비활성화
     for (Ptr<AssetUI>& assetUI : m_arrAssetUI)

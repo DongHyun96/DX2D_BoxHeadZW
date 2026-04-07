@@ -127,7 +127,7 @@ public:
 
 public:
 	
-	Ptr<GameObject> GetParent() const { return m_Parent; }
+	GameObject* GetParent() const { return m_Parent; }
 	
 	Ptr<GameObject> GetChild(UINT _Idx) const { return m_vecChild[_Idx]; }
 	const vector<Ptr<GameObject>>& GetChildren() const { return m_vecChild; }
