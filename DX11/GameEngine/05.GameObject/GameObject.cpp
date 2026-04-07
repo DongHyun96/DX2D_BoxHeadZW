@@ -48,6 +48,16 @@ GameObject::GameObject(const GameObject& _Origin)
 	, m_IsVisible(_Origin.m_IsVisible)
 	, m_IgnoreGlobalTimeScale(_Origin.m_IgnoreGlobalTimeScale)
 {
+	/* 복사 처리 안하고 원본 초기값을 사용하는 변수들 (밑의 추가처리까지 포함해서)
+	 * m_ObjectMarkedDeactivated
+	 * m_vecDelegateOnActivate
+	 * m_vecOnDeactivate
+	 * m_Parent
+	 * m_bInLayer
+	 */
+	
+	
+	
 	// 원본 오브젝트와 동일한 세팅의 컴포넌트를 복사해서 나한테 넣어준다.
 	for (UINT i = 0; i < static_cast<UINT>(COMPONENT_TYPE::END); ++i)
 	{
@@ -60,6 +70,7 @@ GameObject::GameObject(const GameObject& _Origin)
 		AddComponent(Script->Clone());
 
 	// 원본 오브젝트가 보유한 자식 오브젝트를 복사해서 나한테 붙여준다.
+	// 이 때 Clone 처리된 자식 오브젝트는 Parent가 없는 최상위 Parent 오브젝트
 	for (const Ptr<GameObject>& Child : _Origin.m_vecChild)
 		AddChild(Child->Clone());
 }
@@ -257,7 +268,7 @@ void GameObject::AddChild(const Ptr<GameObject>& _Child)
 	
 	if (!_Child->m_bInLayer) // 레벨 밖에 있던 오브젝트가(외부의) Level에 새로 합류한 상황
 	{
-		_Child->m_LayerIdx = this->m_LayerIdx; // Parent의 LayerIdx를 따르게끔 처리
+		_Child->m_LayerIdx = this->m_LayerIdx; // Parent의 LayerIdx를 따르게끔 처리 (TODO : 이걸 Child도 고유의 LayerIdx를 들고 있도록 처리를 해주어야 함) 
 		_Child->m_bInLayer = true; // 레벨 합류 처리
 
 		// 부모가 될 오브젝트는 레벨 내부 소속인 경우 + 레벨이 Play 모드
