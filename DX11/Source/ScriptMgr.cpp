@@ -11,7 +11,11 @@
 #include "Source/Scripts/CharacterScript\CCharacterScript.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\CEnemyAnimHandler.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\CEnemyScript.h"
+#include "Source/Scripts/CharacterScript\EnemyScript\Devil\CDevil.h"
+#include "Source/Scripts/CharacterScript\EnemyScript\Mummy\CMummy.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\PerceptionHandler\CPerceptionHandler.h"
+#include "Source/Scripts/CharacterScript\EnemyScript\Runner\CRunner.h"
+#include "Source/Scripts/CharacterScript\EnemyScript\Vampire\CVampire.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerAnimHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerScript.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerWeaponHandler.h"
@@ -52,7 +56,11 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CCamMoveScript");
 	_vec.push_back(L"CEnemyAnimHandler");
 	_vec.push_back(L"CEnemyScript");
+	_vec.push_back(L"CDevil");
+	_vec.push_back(L"CMummy");
 	_vec.push_back(L"CPerceptionHandler");
+	_vec.push_back(L"CRunner");
+	_vec.push_back(L"CVampire");
 	_vec.push_back(L"CPlayerAnimHandler");
 	_vec.push_back(L"CPlayerScript");
 	_vec.push_back(L"CPlayerWeaponHandler");
@@ -105,8 +113,16 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CEnemyAnimHandler;
 	if (L"CEnemyScript" == _strScriptName)
 		return new CEnemyScript;
+	if (L"CDevil" == _strScriptName)
+		return new CDevil;
+	if (L"CMummy" == _strScriptName)
+		return new CMummy;
 	if (L"CPerceptionHandler" == _strScriptName)
 		return new CPerceptionHandler;
+	if (L"CRunner" == _strScriptName)
+		return new CRunner;
+	if (L"CVampire" == _strScriptName)
+		return new CVampire;
 	if (L"CPlayerAnimHandler" == _strScriptName)
 		return new CPlayerAnimHandler;
 	if (L"CPlayerScript" == _strScriptName)
@@ -192,8 +208,16 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CEnemyAnimHandler;
 	case (UINT)SCRIPT_TYPE::ENEMYSCRIPT:
 		return new CEnemyScript;
+	case (UINT)SCRIPT_TYPE::DEVIL:
+		return new CDevil;
+	case (UINT)SCRIPT_TYPE::MUMMY:
+		return new CMummy;
 	case (UINT)SCRIPT_TYPE::PERCEPTIONHANDLER:
 		return new CPerceptionHandler;
+	case (UINT)SCRIPT_TYPE::RUNNER:
+		return new CRunner;
+	case (UINT)SCRIPT_TYPE::VAMPIRE:
+		return new CVampire;
 	case (UINT)SCRIPT_TYPE::PLAYERANIMHANDLER:
 		return new CPlayerAnimHandler;
 	case (UINT)SCRIPT_TYPE::PLAYERSCRIPT:
@@ -280,8 +304,16 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CEnemyAnimHandler";
 	case SCRIPT_TYPE::ENEMYSCRIPT:
 		return L"CEnemyScript";
+	case SCRIPT_TYPE::DEVIL:
+		return L"CDevil";
+	case SCRIPT_TYPE::MUMMY:
+		return L"CMummy";
 	case SCRIPT_TYPE::PERCEPTIONHANDLER:
 		return L"CPerceptionHandler";
+	case SCRIPT_TYPE::RUNNER:
+		return L"CRunner";
+	case SCRIPT_TYPE::VAMPIRE:
+		return L"CVampire";
 	case SCRIPT_TYPE::PLAYERANIMHANDLER:
 		return L"CPlayerAnimHandler";
 	case SCRIPT_TYPE::PLAYERSCRIPT:

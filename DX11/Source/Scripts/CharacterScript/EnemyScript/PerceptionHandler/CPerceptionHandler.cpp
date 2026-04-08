@@ -3,6 +3,9 @@
 
 #include "Source/ScriptMgr.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
+#include "Source/Scripts/StatScript/CStatScript.h"
+#include "Source/Scripts/Structure/CStructure.h"
 
 enum class ENEMY_WWALK_TYPE;
 
@@ -29,6 +32,8 @@ void CPerceptionHandler::Begin()
     
     MoveStraightDetectionObj->GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnStraightThroughColliderBeginOverlap));
     MoveStraightDetectionObj->GetCollider2D()->AddDynamicEndOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnStraightThroughColliderEndOverlap));
+    
+    m_AttackColliderObject->GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnAttackDamageColliderBeginOverlap));
     
     // 자기자신의 MainEnemyScript 초기화
     m_MainEnemyScript = GetOwner()->GetScriptComponent<CEnemyScript>().Get();
@@ -71,9 +76,53 @@ void CPerceptionHandler::Tick()
     }
 }
 
+GameObject* CPerceptionHandler::GetFirstAttackAreaObject() const
+{
+    if (m_setAttackAreaEnteredObjects.empty()) return nullptr;
+    return *m_setAttackAreaEnteredObjects.begin();
+}
+
+GameObject* CPerceptionHandler::GetNearestStraightThroughDetectionEnteredObject() const
+{
+    const Vec2 MyPos = Transform()->GetRelativePosXY();
+    float MinDist = FLT_MAX;
+    GameObject* Object{};
+
+    for (GameObject* CurObject : m_setStraightThroughDetectionEnteredObjects)
+    {
+        float CurDist = Vec2::DistanceSquared(MyPos, CurObject->Transform()->GetRelativePosXY());
+        
+        if (CurDist < MinDist)
+        {
+            MinDist = CurDist;
+            Object= CurObject;
+        }
+    }
+    return Object;
+}
+
+void CPerceptionHandler::ToggleDamagingCollider(bool _Enabled, float _RotationAngle)
+{
+    m_AttackColliderObject->SetActive(_Enabled);
+    m_AttackColliderObject->Transform()->SetRelativeRotZ(_RotationAngle);
+    
+    // Damage 피격 들어갔는지 체킹하는 자료구조 clear 처리
+    m_AlreadyDamaged.clear();
+}
+
 void CPerceptionHandler::OnStraightThroughColliderBeginOverlap(CCollider2D* _StraightThroughCollider, CCollider2D* _OtherCollider)
 {
     // New Sight received (Tick보다 여기가 더 일찍 들어오게 됨)
+    
+    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
+    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
+        return;
+    
+    // Preview Structure인 경우 넘어감
+    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
+    {
+        if (Structure->GetIsPreviewObject()) return;
+    }
     
     m_setStraightThroughDetectionEnteredObjects.insert(_OtherCollider->GetOwner());
     
@@ -110,6 +159,16 @@ void CPerceptionHandler::OnStraightThroughColliderBeginOverlap(CCollider2D* _Str
 
 void CPerceptionHandler::OnStraightThroughColliderEndOverlap(CCollider2D* _StraightThroughCollider, CCollider2D* _OtherCollider)
 {
+    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
+    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
+        return;
+    
+    // Preview Structure인 경우 넘어감
+    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
+    {
+        if (Structure->GetIsPreviewObject()) return;
+    }
+    
     // Lose sight
     m_setStraightThroughDetectionEnteredObjects.erase(_OtherCollider->GetOwner());
 
@@ -125,6 +184,16 @@ void CPerceptionHandler::OnStraightThroughColliderEndOverlap(CCollider2D* _Strai
 
 void CPerceptionHandler::OnAttackAreaColliderBeginOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider)
 {
+    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
+    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
+        return;
+    
+    // Preview Structure인 경우 넘어감
+    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
+    {
+        if (Structure->GetIsPreviewObject()) return;
+    }
+    
     // New Sight Received
     m_setAttackAreaEnteredObjects.insert(_OtherCollider->GetOwner());
 
@@ -143,6 +212,16 @@ void CPerceptionHandler::OnAttackAreaColliderBeginOverlap(CCollider2D* _AttackAr
 
 void CPerceptionHandler::OnAttackAreaColliderEndOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider)
 {
+    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
+    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
+        return;
+    
+    // Preview Structure인 경우 넘어감
+    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
+    {
+        if (Structure->GetIsPreviewObject()) return;
+    }
+    
     // Lose sight
     m_setAttackAreaEnteredObjects.erase(_OtherCollider->GetOwner());
     
@@ -163,4 +242,27 @@ void CPerceptionHandler::OnAttackAreaColliderEndOverlap(CCollider2D* _AttackArea
     }
     
     
+}
+
+void CPerceptionHandler::OnAttackDamageColliderBeginOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider)
+{
+    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
+    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
+        return;
+    
+    // Preview Structure인 경우 넘어감
+    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
+    {
+        if (Structure->GetIsPreviewObject()) return;
+    }
+    
+    // 이미 피격처리한 오브젝트인 경우
+    if (m_AlreadyDamaged.contains(_OtherCollider)) return;
+
+    // 두 번 피격 처리 못하게끔 막음
+    m_AlreadyDamaged.insert(_OtherCollider);
+    
+    // 들어온 물체에 대해 피격 처리를 해준다
+    const float DamageAmount = m_MainEnemyScript->GetAttackDamage();
+    _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>()->TakeDamage(DamageAmount, Transform()->GetRelativePosXY());
 }

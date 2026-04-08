@@ -139,7 +139,7 @@ void CPlayerScript::AfterPushedOutFin()
 {
     PLAYER_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
                                          ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::IDLE;
-    SetMainState(NextState);    
+    SetMainState(NextState);
 }
 
 void CPlayerScript::HandleBoundary()

@@ -53,12 +53,23 @@ void CEnemyAnimHandler::UpdateAnimTransition()
         // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
         if (CurrentDirection == m_PrevAnimDirection && CurrentMainState == m_PrevMainState) return;
 
+        // TODO : Runner의 경우, 근접 Straight Move일 때, 달려와야 함 (16 direction 처리로 해야함
         // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 12, -1); // Walk
         FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 9, -1); // Walk
         // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 16, -1); // Attack 공격 속도 16
     }
         break;
     case ENEMY_MAINSTATE::ATTACK:
+    {
+        
+        // 이전 상태와 동일한 Animation이 재생 중인 상태 -> 한 번 더 재생 처리 방지
+        // TODO : Runner의 경우, 공격 방향이 16방향 -> 이 방향으로 Flipbook 재생을 처리를 해야 함
+        if (CurrentDirection == m_PrevAnimDirection && CurrentMainState == m_PrevMainState) return;
+        
+        const int FlipBookIndexByDirection = static_cast<int>(CurrentDirection);
+        
+        FlipbookRender()->Play(L"Attack", FlipBookIndexByDirection, 10.f, 1); // Attack 모션 시작
+    }
         break;
     case ENEMY_MAINSTATE::PUSHED_OUT: FlipbookRender()->Stop(L"PushedOut", 0, m_PushedOutSpriteIdxToShow); break; 
     case ENEMY_MAINSTATE::DIE:

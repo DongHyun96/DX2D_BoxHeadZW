@@ -4,6 +4,7 @@
 #include "EnemyWalkStrategy/EnemyWalkStrategy.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
+#include "PerceptionHandler/CPerceptionHandler.h"
 #include "Source/ScriptMgr.h"
 #include "Source/AStar/AStarPathFinder.h"
 #include "Source/Manager/GameManager.h"
@@ -27,14 +28,19 @@ CEnemyScript::~CEnemyScript()
 {
 }
 
+CEnemyScript::CEnemyScript(SCRIPT_TYPE _Type)
+    : CCharacterScript(_Type)
+{
+}
+
 void CEnemyScript::Init()
 {
     CCharacterScript::Init();
     AddScriptParam(SCRIPT_PARAM::INT, &m_EnemyType, L"Enemy Type");
     AddScriptParam(SCRIPT_PARAM::FLOAT, &m_AttackDamage, L"Attack Damage");
     
-    // m_MoveSpeedBase = 150.f;
-    m_MoveSpeedBase = 300.f;
+    m_MoveSpeedBase = 150.f;
+    // m_MoveSpeedBase = 300.f;
 }
 
 void CEnemyScript::Begin()
@@ -42,6 +48,9 @@ void CEnemyScript::Begin()
     CCharacterScript::Begin();
     ADD_DYNAMIC_BEGIN_OVERLAP(CEnemyScript::BodyColliderOverlapped);
     ADD_DYNAMIC_OVERLAP(CEnemyScript::BodyColliderOverlapped);
+
+    for (int i = 0; i < m_AttackFlipbookCount; ++i)
+        FlipbookRender()->AddNotifyFlipbookEndEvent(L"Attack", i, bind(&CEnemyScript::OnAttackFlipbookEndNotify, this));
 }
 
 void CEnemyScript::AfterLevelBegin()
@@ -136,7 +145,9 @@ void CEnemyScript::UpdateCurrentFacedDirection()
         return;
     case ENEMY_MAINSTATE::ATTACK:
     {
+        UpdateAttackFacedDirection();
         // TODO : 공격방향을 향해 Direction 지정할 것
+        // 근데 여기서도, Runner의 경우 16 direction 으로 처리가 됨
     }
         return;
     }
@@ -177,25 +188,67 @@ void CEnemyScript::HandleStateTransition()
 {
     switch (m_MainState)
     {
+    case ENEMY_MAINSTATE::PUSHED_OUT: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
+        
     case ENEMY_MAINSTATE::WALK:
     {
-        if (!IsValid(m_TargetObject))
+        CPerceptionHandler* PHandler = GetOwner()->GetScriptComponent<CPerceptionHandler>().Get();
+        
+        // Attack 반경에 들어온 오브젝트가 있다면 Attack 시도
+        if (PHandler->GetFirstAttackAreaObject())
         {
-            // Perception Handler에서 새로운 TargetObject 구하기
-            
+            m_TargetObject = PHandler->GetFirstAttackAreaObject();
+            m_MainState = ENEMY_MAINSTATE::ATTACK;
+            return;
         }
         
+        // 나머지는 Walk 상태 지정 처리
+        
+        if (m_CurrentWalkType == ENEMY_WALK_TYPE::STRAIGHT)
+        {
+            // TargetObject가 사망 또는 사라진 경우, 또는 현재 TargetObject가 Straight Walk 반경에서 벗어난 오브젝트인 경우
+            if (!IsValid(m_TargetObject) || !PHandler->IsStraightThroughDetectionSetContainObject(m_TargetObject.Get()))
+            {
+                // CellPath Walk로 지정해서 다음 Target(Walking Strategy 초반에 설정이 된다)로 이동
+                m_CurrentWalkType = ENEMY_WALK_TYPE::CELL_PATH;
+                return;
+            }
+        }
+        
+        if (m_CurrentWalkType == ENEMY_WALK_TYPE::CELL_PATH)
+        {
+            // StraightThrough 영역에 들어온 Object가 있다면, 해당 GameObject로 Target 세팅 및 Walk Strategy 세팅
+            if (GameObject* Object = PHandler->GetNearestStraightThroughDetectionEnteredObject())
+            {
+                m_TargetObject = Object;
+                m_CurrentWalkType = ENEMY_WALK_TYPE::STRAIGHT;
+            }
+        }
     }
-        break;
+        return;
     case ENEMY_MAINSTATE::ATTACK:
-        break;
-    case ENEMY_MAINSTATE::PUSHED_OUT:
-        break;
-    case ENEMY_MAINSTATE::DIE:
-        break;
-    case ENEMY_MAINSTATE::END:
-        break;
+    {
+        // 이미 공격중이라면, 다른 처리 x -> 해당 공격모션 기다리기
+        if (m_HasAttackStart) return;
+        
+        // 첫 공격 처리 여기로 들어옴
+        m_HasAttackStart = true;
+        
+        // TODO : Devil의 경우 override한 StateTransition 함수에서 이 처리 빼기
+
+        // Attack Collider Rotation 설정(방향 설정) / 켜주기 처리
+        const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
+        GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(true, GetVectorAngle(ToTarget));
     }
+        return;
+    }
+}
+
+void CEnemyScript::UpdateAttackFacedDirection()
+{
+    // TODO : Faced Direction 지정할 것 -> Runner의 경우 16방향에 대한 처리를 해야해서 virtual로 뚫어둠
+    const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
+    m_CurrentFacedDirection = GetEightDirection(ToTarget.Normalized());
 }
 
 void CEnemyScript::MoveThroughCellPath()
@@ -240,6 +293,18 @@ void CEnemyScript::OnDieFlipbookEndNotify()
     m_HasFadeInStart    = false;
     m_HasFadeOutStart   = true;    
     m_FadeInOutTime     = 0.f;
+}
+
+void CEnemyScript::OnAttackFlipbookEndNotify()
+{
+    // 공격 모션이 정상 종료 또는 Interrupt 당했을 때 해당 함수로 Callback이 들어옴
+    m_HasAttackStart = false;
+    
+    // Attack Collider Rotation 설정(방향 설정) / 끄기 처리
+    GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(false);
+
+    if (m_MainState == ENEMY_MAINSTATE::DIE || m_MainState == ENEMY_MAINSTATE::PUSHED_OUT) return;
+    m_MainState = ENEMY_MAINSTATE::WALK;
 }
 
 void CEnemyScript::BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)

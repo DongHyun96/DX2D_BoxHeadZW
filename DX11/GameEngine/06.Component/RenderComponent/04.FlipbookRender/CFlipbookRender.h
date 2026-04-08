@@ -13,6 +13,7 @@ private:
     map<wstring, vector<Ptr<AFlipbook>>> m_mapCategoryFlipbooks{}; // 카테고리 이름, Flipbook 벡터 형식의 자료구조로 Flipbook 저장
 
     // 해당 플립북의 재생이 끝났을 때에 Callback처리할 EndEvent를 걸 수 있다
+    // 재생이 끝난 뒤 or 재생이 중간에 interrupt 되었을 때에도 호출 처리함
     map<AFlipbook*, function<void()>> m_EndEvents{};
 
 private:
@@ -33,6 +34,12 @@ private: // 현재 선택된 AFlipbook 내에서의 Anim Data
     
     bool            m_bPlayReverse{};           // 반대로 재생시킬건지
     bool            m_bStopped{};               // Animation이 멈춘 상태인지 (멈춘상태에서 Sprite 한 장을 보여주는 식으로 처리를 할 수도 있다)
+    
+private:
+
+    // 직전에 재생중이었던 Flipbook 정보 (새로이 Play나 Stop이 들어왔을 때, EndEvent 또한 호출하기 위함)
+    wstring m_PrevAnimatedCategory{};
+    int     m_PrevSelectedFlipbookIdx{};
     
 public:
     

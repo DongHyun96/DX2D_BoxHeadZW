@@ -127,6 +127,17 @@ static Vec2 GetSpreadVector(const Vec2& _V, const float& _Angle)
     return {_V.x * Cos - _V.y * Sin, _V.x * Sin + _V.y * Cos};
 }
 
+/// <summary>
+/// Vector의 Angle값 계산 (Right -> 0 시작  ~ 2 * PI)
+/// </summary>
+/// <param name="_V"></param>
+/// <returns></returns>
+static float GetVectorAngle(const Vec2& _V)
+{
+    const float Angle = atan2f(_V.y, _V.x);
+    return (Angle < 0.f) ? Angle + XM_2PI : Angle;
+}
+
 
 enum class EDIRECTION;
 

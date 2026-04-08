@@ -47,13 +47,24 @@ private: // AStar Path 및 Walk 관련
     static map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> s_mapWalkingStrategies;
     ENEMY_WALK_TYPE m_CurrentWalkType{};
     
+private:
+
+    bool m_HasAttackStart{};
+
+protected:
+    UINT m_AttackFlipbookCount = 8;
+    
 public:
     
     CEnemyScript();
     virtual ~CEnemyScript() override;
     CLONE(CEnemyScript)
+    
+protected:
+    
+    CEnemyScript(SCRIPT_TYPE _Type);
 
-private:
+public:
 
     virtual void Init() override;
     virtual void Begin() override;
@@ -63,16 +74,26 @@ private:
 private:
 
     virtual void Move() override;
+    
     virtual void UpdateCurrentFacedDirection() override;
+    
+    /// <summary>
+    /// Attack 상태에서의 FacedDirection 업데이트
+    /// Runner의 경우 16방향 업데이트로 처리를 해야해서 virtual로 뚫어둠
+    /// </summary>
+    virtual void UpdateAttackFacedDirection();
+    
     virtual void AfterPushedOutFin() override;
     
     void HandleFadeOut();
 
     /// <summary>
     /// Perception의 Sight에 들어온 Enemy들 및, 현 State / TargetObject 상태에 따른 State Transition 처리 담당
-    /// Devil의 경우 이 함수 override해서 처리해야할듯?
+    /// TODO : Devil의 경우 이 함수 override해서 처리해야할듯?
     /// </summary>
-    void HandleStateTransition();
+    virtual void HandleStateTransition();
+
+    
 
 private:
     
@@ -87,6 +108,11 @@ public:
     /// Die Animation 이후로 호출 처리될 함수, FadeOut 및 Pool에 다시 들어갈 준비
     /// </summary>
     void OnDieFlipbookEndNotify();
+
+    /// <summary>
+    /// 공격 모션이 Interrupt, 또는 정상 종료 되었을 때 호출받을 함수 
+    /// </summary>
+    virtual void OnAttackFlipbookEndNotify(); // TODO : Devil의 경우, 이거 override
 
 private:
     
@@ -104,6 +130,8 @@ public:
     const Ptr<GameObject>& GetTargetObject() const { return m_TargetObject; }
     
     void SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType) { m_CurrentWalkType = _WalkType; }
+    
+    float GetAttackDamage() const { return m_AttackDamage; }
 
 public:
     

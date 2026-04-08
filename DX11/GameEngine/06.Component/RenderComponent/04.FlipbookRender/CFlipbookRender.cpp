@@ -232,9 +232,28 @@ bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool 
     if (!m_vecCurSelectedCategoryFlipbooks) return false; // 현재 골라놓은 카테고리가 없음
     if (_FlipbookIdx < 0 || _FlipbookIdx >= m_vecCurSelectedCategoryFlipbooks->size()) return false;
     if (_RepeatCount < -1 || _RepeatCount == 0) return false; // Invalid Repeat Count
+
     
-    m_bPlayReverse = _bPlayReverse;
-    m_CurSelectedFlipbookIdx = _FlipbookIdx;
+    m_bPlayReverse              = _bPlayReverse;
+    m_PrevSelectedFlipbookIdx   = m_CurSelectedFlipbookIdx; // 이전에 골랐었던 Flipbook idx 기록
+    m_CurSelectedFlipbookIdx    = _FlipbookIdx;
+    
+    // 만일 이전에 골랐던 Flipbook이 재생 중이었고 EndEvent가 존재한다면, 해당 EndEvent 호출 처리
+    if (m_mapCategoryFlipbooks.contains(m_PrevAnimatedCategory))
+    {
+        const vector<Ptr<AFlipbook>>& Flipbooks = m_mapCategoryFlipbooks[m_PrevAnimatedCategory];
+        if (-1 < m_PrevSelectedFlipbookIdx && m_PrevSelectedFlipbookIdx < Flipbooks.size())
+        {
+            if (!m_bStopped)
+            {
+                AFlipbook* PrevFlipbook =  Flipbooks[m_PrevSelectedFlipbookIdx].Get();
+                if (m_EndEvents.contains(PrevFlipbook))
+                {
+                    m_EndEvents[PrevFlipbook](); // Callback 처리
+                }
+            }
+        }
+    }
     
     Ptr<AFlipbook> TargetFlipbook = m_vecCurSelectedCategoryFlipbooks->at(m_CurSelectedFlipbookIdx);
     
@@ -255,9 +274,11 @@ bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool 
 bool CFlipbookRender::Play(const wstring& _Category, int _FlipbookIdx, float _FPS, int _RepeatCount, bool _bPlayReverse)
 {
     assert(_FPS > 0.f);
-
     if (!m_mapCategoryFlipbooks.contains(_Category)) return false;
 
+    // 이전 카테고리 기록
+    m_PrevAnimatedCategory = m_CurSelectedCategory;
+    
     // 고른 카테고리로 데이터 세팅
     m_CurSelectedCategory = _Category;
     m_vecCurSelectedCategoryFlipbooks = &m_mapCategoryFlipbooks[_Category];

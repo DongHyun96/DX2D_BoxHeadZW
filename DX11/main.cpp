@@ -10,6 +10,7 @@
 #include "GameEngine/04.Asset/Entity.h"
 
 #include "ImGui/imgui_impl_win32.h"
+#include "Source/AStar/AStarPathFinder.h"
 
 #define MAX_LOADSTRING 100
 
@@ -43,6 +44,9 @@ int APIENTRY wWinMain
     // _CrtSetBreakAlloc(138); // 누수 발생지점 중단점 걸어주는 기능
 
     hInst = hInstance;
+
+    // Field node 먼저 초기화 처리를 해주어야 해서, GetInst() 한 번 호출 처리함
+    AStarPathFinder::GetInst();
     
     // Engine 초기화, 최상위 관리자
     if (FAILED(Engine::GetInst()->Init(hInstance, RESOL_X, RESOL_Y, true)))

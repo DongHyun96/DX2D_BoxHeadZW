@@ -28,10 +28,13 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
 {
     // 기본 Damage 입히기 처리 실패했다면 return false 
     if (!CCharacterStat::TakeDamage(_DamageAmount, _DamageSourcePos)) return false;
+    
+    // TODO : 테스트 때문에 무적기 걸어둠
+    ApplyHeal(100.f);
 
     const PLAYER_MAINSTATE NextState = IsDead() ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::PUSHED_OUT;
     const Ptr<CPlayerScript>& MainPlayerScript = GetOwner()->GetScriptComponent<CPlayerScript>();
-    
+
     MainPlayerScript->SetMainState(NextState);
 
     return true;

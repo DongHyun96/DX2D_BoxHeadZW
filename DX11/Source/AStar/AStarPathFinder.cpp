@@ -141,7 +141,17 @@ void AStarPathFinder::Init()
 {
     for (UINT i = 0; i < CELL_ROW_COUNT; i++)
         for (UINT j = 0; j < CELL_ROW_COUNT; j++)
-            m_FieldNodes[i][j] = {};
+        {
+            ASNode* Node        = m_FieldNodes[i][j]; 
+            Node->Parent        = nullptr;
+            Node->G             = 0;
+            Node->H             = 0;
+            Node->F             = INF;
+            Node->Visited       = false;
+            Node->SearchEpoch   = 0;
+        }
+    
+    m_CurrentEpoch = 0;
 }
 
 UINT AStarPathFinder::GetDiagonalDist(const CellCoord& _Coord1, const CellCoord& _Coord2)

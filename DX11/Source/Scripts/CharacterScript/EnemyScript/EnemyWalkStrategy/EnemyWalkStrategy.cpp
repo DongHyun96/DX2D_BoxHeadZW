@@ -39,11 +39,7 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     Vec3 EnemyPos = _Enemy->Transform()->GetRelativePos();
     
     // 이미 해당 이동방법으로 이동을 끝낸 상황이거나, 이동하려했던 Target이 죽은 상황
-    if (    
-            _Enemy->m_CellPath.empty() ||
-            !IsValid(_Enemy->m_TargetObject) ||
-            _Enemy->m_TargetObject->GetScriptComponent<CStatScript>()->IsDead()
-        )
+    if (_Enemy->m_CellPath.empty() || !IsValid(_Enemy->m_TargetObject))
     {
         // 새로운 Target 찾기
         GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy);
@@ -56,6 +52,13 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
         
         // Target 지정
         _Enemy->m_TargetObject = TargetSelected;
+    }
+
+    // 새로운 경로를 받았음에도 empty일 경우가 있음 (이때는 처리 x)
+    // 플레이어가 죽었고, 설치물이 모두 파괴되었을 때 여기로 들어옴 (거의 들어올 일 없음)
+    if (_Enemy->m_CellPath.empty())
+    {
+        return;
     }
     
     _Enemy->m_Velocity = Vec3::Zero;
@@ -83,7 +86,7 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
 void EnemyWalkStraightStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
 {
     // Target Object가 valid하지 않은 상황, 새로운 TargetObject 찾아서 지정
-    if (!IsValid(_Enemy->m_TargetObject) || _Enemy->m_TargetObject->GetScriptComponent<CStatScript>()->IsDead())
+    if (!IsValid(_Enemy->m_TargetObject))
     {
         GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy); // 여기를 사실, 전체 물체탐색을 할게 아니라, perception에 들어온 Target에 대한 setting으로 변경처리를 해주어야 더 좋을 듯 -> 이걸 한 번 처리를 함
         _Enemy->m_TargetObject = TargetSelected;

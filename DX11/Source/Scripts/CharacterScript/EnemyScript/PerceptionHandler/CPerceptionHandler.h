@@ -12,6 +12,9 @@ private:
     // 실질적인 피격 처리 Collider를 들고 있는 게임 오브젝트
     GameObject* m_AttackColliderObject{};
 
+    // 피격 판정이 이번 공격에 들어갔는지 체킹
+    set<CCollider2D*> m_AlreadyDamaged{};
+
 private:
 
     set<GameObject*> m_setStraightThroughDetectionEnteredObjects{}; // 현재 StraightThrough 영역에 들어와 있는 오브젝트들
@@ -31,6 +34,20 @@ public:
     virtual void Begin() override;
     virtual void Tick() override;
 
+public:
+    
+    GameObject* GetFirstAttackAreaObject() const;
+    GameObject* GetNearestStraightThroughDetectionEnteredObject() const;
+    
+    bool IsStraightThroughDetectionSetContainObject(GameObject* _Object) const { return m_setStraightThroughDetectionEnteredObjects.contains(_Object); }
+
+    /// <summary>
+    /// DamagingCollider 켜고 끄기
+    /// </summary>
+    /// <param name="_Enabled"></param>
+    /// <param name="_RotationAngle"> : Spawn시킬 회전 방향 </param>
+    void ToggleDamagingCollider(bool _Enabled, float _RotationAngle = 0.f);
+    
 private:
     
     /// <summary>
@@ -44,7 +61,11 @@ private:
     /// </summary>
     void OnAttackAreaColliderBeginOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider);
     void OnAttackAreaColliderEndOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider);
-    
+
+    /// <summary>
+    /// Attack 피격 범위 Collider overlap handling 
+    /// </summary>
+    void OnAttackDamageColliderBeginOverlap(CCollider2D* _DamageCollider, CCollider2D* _OtherCollider);
     
 public:
     
