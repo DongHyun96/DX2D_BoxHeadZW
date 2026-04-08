@@ -2,8 +2,6 @@
 #include "CStatScript.h"
 
 #include "Source/ScriptMgr.h"
-#include "Source/Scripts/CharacterScript/CCharacterAnimHandler.h"
-#include "Source/Scripts/CharacterScript/CCharacterScript.h"
 
 CStatScript::CStatScript()
     : CScript(static_cast<int>(SCRIPT_TYPE::STATSCRIPT))

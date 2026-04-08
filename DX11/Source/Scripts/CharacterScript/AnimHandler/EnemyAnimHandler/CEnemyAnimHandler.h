@@ -1,10 +1,23 @@
 ﻿#pragma once
-#include "Source/Scripts/CharacterScript/CCharacterAnimHandler.h"
+
+#include "EAnimTransitionStrategy.h"
+#include "Source/Scripts/CharacterScript/AnimHandler/CCharacterAnimHandler.h"
+
+enum class ENEMY_ANIMTRANS_TYPE
+{
+    COMMON,
+    RUNNER
+};
 
 class CEnemyAnimHandler : public CCharacterAnimHandler
 {
-private:
+    friend class CommonEnemyTransitionStrategy;
+    friend class RunnerTransitionStrategy;
     
+private:
+
+    static map<ENEMY_ANIMTRANS_TYPE, Ptr<EAnimTransitionStrategy>> s_mapAnimTransitionStrategies;
+    Ptr<EAnimTransitionStrategy> m_TransitionStrategy{};
     
 private:
 

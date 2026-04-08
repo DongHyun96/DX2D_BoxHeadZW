@@ -2,8 +2,8 @@
 #include "CCharacterStat.h"
 
 #include "Source/ScriptMgr.h"
-#include "Source/Scripts/CharacterScript/CCharacterAnimHandler.h"
 #include "Source/Scripts/CharacterScript/CCharacterScript.h"
+#include "Source/Scripts/CharacterScript/AnimHandler/CCharacterAnimHandler.h"
 
 CCharacterStat::CCharacterStat()
     : CStatScript(SCRIPT_TYPE::CHARACTERSTAT)

@@ -1,11 +1,9 @@
 ﻿#include "pch.h"
 #include "CPlayerAnimHandler.h"
 
-#include "CPlayerScript.h"
-#include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
-#include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
-#include "Source/Scripts/StatScript/PlayerStat/CPlayerStat.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
+
 
 CPlayerAnimHandler::CPlayerAnimHandler()
     : CCharacterAnimHandler(SCRIPT_TYPE::PLAYERANIMHANDLER)

@@ -92,23 +92,15 @@ SIXTEEN_DIRECTION GetSixteenDirection(const Vec3& _Vector)
 
 SIXTEEN_DIRECTION GetSixteenDirection(const Vec2& _Vector)
 {
-    Vec2 v = _Vector;
-    
-    if (v.LengthSquared() == 0.f)
-        return SIXTEEN_DIRECTION::END;
-    
-    v.Normalize();
-    
-    const float Angle = atan2f(v.y, v.x);
+    const float Angle = GetVectorAngle(_Vector);
     float Degree = XMConvertToDegrees(Angle);
-    
-    if (Degree < 0.f) Degree += 360.f; // 음수값 방지
 
-    // 0 ~ 30
-    Degree += 30.f;
+    // 0 ~ 22.5
+    Degree += 22.5f;
+    
     if (Degree >= 360.f) Degree -= 360.f;
     
-    const int DirIndex = static_cast<int>(Degree / 30.f); // 이걸 30도로 나누면 0 ~ 15 사이의 정수 인덱스로 나누어 떨어짐
+    const int DirIndex = static_cast<int>(Degree / 22.5f); // 이걸 22.5로 나누면 0 ~ 15 사이의 정수 인덱스로 나누어 떨어짐
     return static_cast<SIXTEEN_DIRECTION>(DirIndex);
 }
 

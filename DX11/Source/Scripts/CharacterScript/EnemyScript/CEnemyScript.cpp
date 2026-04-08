@@ -97,11 +97,9 @@ void CEnemyScript::Move()
 
 void CEnemyScript::UpdateCurrentFacedDirection()
 {
-    switch (m_MainState)
-    {
     // PushedOut과 Die의 경우, Flipbook 관련 방향 처리가 다르기 때문에 FacedDirection Update 필요 없이 따로 처리
-    case ENEMY_MAINSTATE::PUSHED_OUT: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return; 
-    case ENEMY_MAINSTATE::WALK:
+    
+    if (m_MainState == ENEMY_MAINSTATE::WALK)
     {
         EDIRECTION NextDirection = GetEightDirection(m_Velocity);
     
@@ -113,16 +111,17 @@ void CEnemyScript::UpdateCurrentFacedDirection()
             return; // 이전에 바라봤던 방향으로 처리
         }
     
-        m_CurrentFacedDirection = NextDirection;        
-    }
+        m_CurrentFacedDirection = NextDirection;
         return;
-    case ENEMY_MAINSTATE::ATTACK:
+    }
+    
+    
+    
+    
+    if (m_MainState == ENEMY_MAINSTATE::ATTACK)
     {
-        UpdateAttackFacedDirection();
-        // TODO : 공격방향을 향해 Direction 지정할 것
-        // 근데 여기서도, Runner의 경우 16 direction 으로 처리가 됨
-    }
-        return;
+        const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
+        m_CurrentFacedDirection = GetEightDirection(ToTarget.Normalized());
     }
 }
 
@@ -161,7 +160,7 @@ void CEnemyScript::HandleStateTransition()
 {
     switch (m_MainState)
     {
-    case ENEMY_MAINSTATE::PUSHED_OUT: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
+    case ENEMY_MAINSTATE::ATTACK: case ENEMY_MAINSTATE::PUSHED_OUT: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
         
     case ENEMY_MAINSTATE::WALK:
     {
@@ -183,7 +182,7 @@ void CEnemyScript::HandleStateTransition()
             if (!IsValid(m_TargetObject) || !PHandler->IsStraightThroughDetectionSetContainObject(m_TargetObject.Get()))
             {
                 // CellPath Walk로 지정해서 다음 Target(Walking Strategy 초반에 설정이 된다)로 이동
-                m_CurrentWalkType = ENEMY_WALK_TYPE::CELL_PATH;
+                SetCurrentWalkType(ENEMY_WALK_TYPE::CELL_PATH);
                 return;
             }
         }
@@ -194,35 +193,13 @@ void CEnemyScript::HandleStateTransition()
             if (GameObject* Object = PHandler->GetNearestStraightThroughDetectionEnteredObject())
             {
                 m_TargetObject = Object;
-                m_CurrentWalkType = ENEMY_WALK_TYPE::STRAIGHT;
+                SetCurrentWalkType(ENEMY_WALK_TYPE::STRAIGHT);
+                
             }
         }
     }
         return;
-    case ENEMY_MAINSTATE::ATTACK:
-    {
-        // 이미 공격중이라면, 다른 처리 x -> 해당 공격모션 기다리기
-        if (m_HasAttackStart) return;
-        
-        // 첫 공격 처리 여기로 들어옴
-        m_HasAttackStart = true;
-        
-        // TODO : Devil의 경우 override한 StateTransition 함수에서 이 처리 빼기
-
-        // Attack Collider Rotation 설정(방향 설정) / 켜주기 처리
-        // Attack Animation 특정 Sprite idx에서 켜줄 예정 (바로 켜버리면 어색함)
-        /*const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
-        GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(true, GetVectorAngle(ToTarget));*/
     }
-        return;
-    }
-}
-
-void CEnemyScript::UpdateAttackFacedDirection()
-{
-    // TODO : Faced Direction 지정할 것 -> Runner의 경우 16방향에 대한 처리를 해야해서 virtual로 뚫어둠
-    const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
-    m_CurrentFacedDirection = GetEightDirection(ToTarget.Normalized());
 }
 
 void CEnemyScript::MoveThroughCellPath()
@@ -272,13 +249,13 @@ void CEnemyScript::OnDieFlipbookEndNotify()
 void CEnemyScript::OnAttackFlipbookEndNotify()
 {
     // 공격 모션이 정상 종료 또는 Interrupt 당했을 때 해당 함수로 Callback이 들어옴
-    m_HasAttackStart = false;
     
     // Attack Collider Rotation 설정(방향 설정) / 끄기 처리
     GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(false);
 
     if (m_MainState == ENEMY_MAINSTATE::DIE || m_MainState == ENEMY_MAINSTATE::PUSHED_OUT) return;
-    
+
+    // 다시금 IDLE 상태격인 Walk로 돌아감
     m_MainState = ENEMY_MAINSTATE::WALK;
 }
 

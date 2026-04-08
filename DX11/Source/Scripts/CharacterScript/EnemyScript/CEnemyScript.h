@@ -47,10 +47,6 @@ private: // AStar Path 및 Walk 관련
     static map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> s_mapWalkingStrategies;
     ENEMY_WALK_TYPE m_CurrentWalkType{};
     
-private:
-
-    bool m_HasAttackStart{};
-
 protected:
     UINT m_AttackFlipbookCount = 8;
     
@@ -76,12 +72,6 @@ private:
     virtual void Move() override;
     
     virtual void UpdateCurrentFacedDirection() override;
-    
-    /// <summary>
-    /// Attack 상태에서의 FacedDirection 업데이트
-    /// Runner의 경우 16방향 업데이트로 처리를 해야해서 virtual로 뚫어둠
-    /// </summary>
-    virtual void UpdateAttackFacedDirection();
     
     virtual void AfterPushedOutFin() override;
     
@@ -134,8 +124,10 @@ public:
     
     void SetTargetObject(const Ptr<GameObject>& _Target) { m_TargetObject = _Target; }
     const Ptr<GameObject>& GetTargetObject() const { return m_TargetObject; }
-    
-    void SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType) { m_CurrentWalkType = _WalkType; }
+
+    // Runner의 경우, WALK_TYPE에 따른 속력이 바뀜
+    virtual void SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType) { m_CurrentWalkType = _WalkType; }
+    ENEMY_WALK_TYPE GetCurrentWalkType() const { return m_CurrentWalkType; }
     
     float GetAttackDamage() const { return m_AttackDamage; }
 

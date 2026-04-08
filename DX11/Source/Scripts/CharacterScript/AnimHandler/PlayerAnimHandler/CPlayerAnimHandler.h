@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "Source/Scripts/CharacterScript/CCharacterAnimHandler.h"
+#include "Source/Scripts/CharacterScript/AnimHandler/CCharacterAnimHandler.h"
+
 
 class CPlayerAnimHandler : public CCharacterAnimHandler
 {

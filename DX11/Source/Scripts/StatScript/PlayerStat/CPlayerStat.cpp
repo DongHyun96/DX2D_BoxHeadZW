@@ -2,7 +2,6 @@
 #include "CPlayerStat.h"
 
 #include "Source/ScriptMgr.h"
-#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerAnimHandler.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 
 CPlayerStat::CPlayerStat()

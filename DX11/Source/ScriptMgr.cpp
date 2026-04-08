@@ -7,16 +7,16 @@
 #include "Source/Scripts/AirStrike\CAirStrike.h"
 #include "Source/Scripts/BackgroundTile\CBackgroundTile.h"
 #include "Source/Scripts/CCamMoveScript.h"
-#include "Source/Scripts/CharacterScript\CCharacterAnimHandler.h"
+#include "Source/Scripts/CharacterScript\AnimHandler\CCharacterAnimHandler.h"
+#include "Source/Scripts/CharacterScript\AnimHandler\EnemyAnimHandler\CEnemyAnimHandler.h"
+#include "Source/Scripts/CharacterScript\AnimHandler\PlayerAnimHandler\CPlayerAnimHandler.h"
 #include "Source/Scripts/CharacterScript\CCharacterScript.h"
-#include "Source/Scripts/CharacterScript\EnemyScript\CEnemyAnimHandler.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\CEnemyScript.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\Devil\CDevil.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\Mummy\CMummy.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\PerceptionHandler\CPerceptionHandler.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\Runner\CRunner.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\Vampire\CVampire.h"
-#include "Source/Scripts/CharacterScript\PlayerScript\CPlayerAnimHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerScript.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\CPlayerWeaponHandler.h"
 #include "Source/Scripts/CharacterScript\PlayerScript\InvenScript\CEquipmentScript.h"
@@ -45,7 +45,6 @@
 #include "Source/Scripts/Structure\CBarrel.h"
 #include "Source/Scripts/Structure\CStructure.h"
 #include "Source/Scripts/Structure\CTurret.h"
-#include "Source/Scripts/Structure\CTurretMGEffectPooler.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
@@ -56,13 +55,13 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBackgroundTile");
 	_vec.push_back(L"CCamMoveScript");
 	_vec.push_back(L"CEnemyAnimHandler");
+	_vec.push_back(L"CPlayerAnimHandler");
 	_vec.push_back(L"CEnemyScript");
 	_vec.push_back(L"CDevil");
 	_vec.push_back(L"CMummy");
 	_vec.push_back(L"CPerceptionHandler");
 	_vec.push_back(L"CRunner");
 	_vec.push_back(L"CVampire");
-	_vec.push_back(L"CPlayerAnimHandler");
 	_vec.push_back(L"CPlayerScript");
 	_vec.push_back(L"CPlayerWeaponHandler");
 	_vec.push_back(L"CEquipmentScript");
@@ -90,7 +89,6 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBarrel");
 	_vec.push_back(L"CStructure");
 	_vec.push_back(L"CTurret");
-	_vec.push_back(L"CTurretMGEffectPooler");
 }
 
 CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
@@ -109,10 +107,12 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CCamMoveScript;
 	if (L"CCharacterAnimHandler" == _strScriptName)
 		return nullptr;
-	if (L"CCharacterScript" == _strScriptName)
-		return nullptr;
 	if (L"CEnemyAnimHandler" == _strScriptName)
 		return new CEnemyAnimHandler;
+	if (L"CPlayerAnimHandler" == _strScriptName)
+		return new CPlayerAnimHandler;
+	if (L"CCharacterScript" == _strScriptName)
+		return nullptr;
 	if (L"CEnemyScript" == _strScriptName)
 		return new CEnemyScript;
 	if (L"CDevil" == _strScriptName)
@@ -125,8 +125,6 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CRunner;
 	if (L"CVampire" == _strScriptName)
 		return new CVampire;
-	if (L"CPlayerAnimHandler" == _strScriptName)
-		return new CPlayerAnimHandler;
 	if (L"CPlayerScript" == _strScriptName)
 		return new CPlayerScript;
 	if (L"CPlayerWeaponHandler" == _strScriptName)
@@ -183,8 +181,6 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CStructure;
 	if (L"CTurret" == _strScriptName)
 		return new CTurret;
-	if (L"CTurretMGEffectPooler" == _strScriptName)
-		return new CTurretMGEffectPooler;
 	return nullptr;
 }
 
@@ -206,10 +202,12 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CCamMoveScript;
 	case (UINT)SCRIPT_TYPE::CHARACTERANIMHANDLER:
 		return nullptr;
-	case (UINT)SCRIPT_TYPE::CHARACTERSCRIPT:
-		return nullptr;
 	case (UINT)SCRIPT_TYPE::ENEMYANIMHANDLER:
 		return new CEnemyAnimHandler;
+	case (UINT)SCRIPT_TYPE::PLAYERANIMHANDLER:
+		return new CPlayerAnimHandler;
+	case (UINT)SCRIPT_TYPE::CHARACTERSCRIPT:
+		return nullptr;
 	case (UINT)SCRIPT_TYPE::ENEMYSCRIPT:
 		return new CEnemyScript;
 	case (UINT)SCRIPT_TYPE::DEVIL:
@@ -222,8 +220,6 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CRunner;
 	case (UINT)SCRIPT_TYPE::VAMPIRE:
 		return new CVampire;
-	case (UINT)SCRIPT_TYPE::PLAYERANIMHANDLER:
-		return new CPlayerAnimHandler;
 	case (UINT)SCRIPT_TYPE::PLAYERSCRIPT:
 		return new CPlayerScript;
 	case (UINT)SCRIPT_TYPE::PLAYERWEAPONHANDLER:
@@ -280,8 +276,6 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CStructure;
 	case (UINT)SCRIPT_TYPE::TURRET:
 		return new CTurret;
-	case (UINT)SCRIPT_TYPE::TURRETMGEFFECTPOOLER:
-		return new CTurretMGEffectPooler;
 	}
 	return nullptr;
 }
@@ -304,10 +298,12 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CCamMoveScript";
 	case SCRIPT_TYPE::CHARACTERANIMHANDLER:
 		return L"CCharacterAnimHandler";
-	case SCRIPT_TYPE::CHARACTERSCRIPT:
-		return L"CCharacterScript";
 	case SCRIPT_TYPE::ENEMYANIMHANDLER:
 		return L"CEnemyAnimHandler";
+	case SCRIPT_TYPE::PLAYERANIMHANDLER:
+		return L"CPlayerAnimHandler";
+	case SCRIPT_TYPE::CHARACTERSCRIPT:
+		return L"CCharacterScript";
 	case SCRIPT_TYPE::ENEMYSCRIPT:
 		return L"CEnemyScript";
 	case SCRIPT_TYPE::DEVIL:
@@ -320,8 +316,6 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CRunner";
 	case SCRIPT_TYPE::VAMPIRE:
 		return L"CVampire";
-	case SCRIPT_TYPE::PLAYERANIMHANDLER:
-		return L"CPlayerAnimHandler";
 	case SCRIPT_TYPE::PLAYERSCRIPT:
 		return L"CPlayerScript";
 	case SCRIPT_TYPE::PLAYERWEAPONHANDLER:
@@ -378,8 +372,6 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CStructure";
 	case SCRIPT_TYPE::TURRET:
 		return L"CTurret";
-	case SCRIPT_TYPE::TURRETMGEFFECTPOOLER:
-		return L"CTurretMGEffectPooler";
 	}
 	return nullptr;
 }
