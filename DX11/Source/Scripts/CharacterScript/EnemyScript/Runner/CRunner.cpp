@@ -21,6 +21,21 @@ void CRunner::Begin()
 void CRunner::Tick()
 {
     CEnemyScript::Tick();
+
+    switch (m_MainState)
+    {
+    case ENEMY_MAINSTATE::WALK: DebugUtil::SetPermanentDebugLog("RunnerState", "WALK", DEF_COLOR_CYAN);
+        break;
+    case ENEMY_MAINSTATE::ATTACK: DebugUtil::SetPermanentDebugLog("RunnerState", "ATTACK", DEF_COLOR_CYAN);
+        break;
+    case ENEMY_MAINSTATE::PUSHED_OUT: DebugUtil::SetPermanentDebugLog("RunnerState", "PUSHED_OUT", DEF_COLOR_CYAN);
+        break;
+    case ENEMY_MAINSTATE::DIE: DebugUtil::SetPermanentDebugLog("RunnerState", "DIE", DEF_COLOR_CYAN);
+        break;
+    case ENEMY_MAINSTATE::END: DebugUtil::SetPermanentDebugLog("RunnerState", "END", DEF_COLOR_CYAN);
+        break;
+    }
+    
 }
 
 void CRunner::UpdateCurrentFacedDirection()

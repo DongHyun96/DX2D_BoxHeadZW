@@ -126,7 +126,7 @@ void CPerceptionHandler::OnStraightThroughColliderBeginOverlap(CCollider2D* _Str
     
     m_setStraightThroughDetectionEnteredObjects.insert(_OtherCollider->GetOwner());
     
-    // Valid한 TargetObject가 없는 경우
+    /*// Valid한 TargetObject가 없는 경우
     if (!IsValid(m_MainEnemyScript->GetTargetObject()))
     {
         //StraightThrough 목록 중 가장 가까운 오브젝트를 TargetObject로 세팅하고 WalkStrategy를 바꾼다
@@ -154,7 +154,7 @@ void CPerceptionHandler::OnStraightThroughColliderBeginOverlap(CCollider2D* _Str
     {
         m_MainEnemyScript->SetTargetObject(_OtherCollider->GetOwner());
         m_MainEnemyScript->SetCurrentWalkType(ENEMY_WALK_TYPE::STRAIGHT);        
-    }
+    }*/
 }
 
 void CPerceptionHandler::OnStraightThroughColliderEndOverlap(CCollider2D* _StraightThroughCollider, CCollider2D* _OtherCollider)
@@ -172,14 +172,14 @@ void CPerceptionHandler::OnStraightThroughColliderEndOverlap(CCollider2D* _Strai
     // Lose sight
     m_setStraightThroughDetectionEnteredObjects.erase(_OtherCollider->GetOwner());
 
-    // 현재 공격이 진행중이라면 return
+    /*// 현재 공격이 진행중이라면 return
     if (m_MainEnemyScript->GetMainState() == ENEMY_MAINSTATE::ATTACK) return;
 
     // MainState가 공격이 아니고, TargetObject와 같은 오브젝트인 경우 -> Target Lose sight
     if (m_MainEnemyScript->GetTargetObject() == _OtherCollider->GetOwner())
     {
         m_MainEnemyScript->SetTargetObject(nullptr);
-    }
+    }*/
 }
 
 void CPerceptionHandler::OnAttackAreaColliderBeginOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider)
@@ -197,7 +197,7 @@ void CPerceptionHandler::OnAttackAreaColliderBeginOverlap(CCollider2D* _AttackAr
     // New Sight Received
     m_setAttackAreaEnteredObjects.insert(_OtherCollider->GetOwner());
 
-    // 현재의 TargetObject가 valid하지 않다면, 새로이 TargetObject 지정 및 Attack 상태 지정
+    /*// 현재의 TargetObject가 valid하지 않다면, 새로이 TargetObject 지정 및 Attack 상태 지정
     if (!IsValid(m_MainEnemyScript->GetTargetObject()))
     {
         m_MainEnemyScript->SetTargetObject(_OtherCollider->GetOwner());
@@ -207,7 +207,7 @@ void CPerceptionHandler::OnAttackAreaColliderBeginOverlap(CCollider2D* _AttackAr
 
     // 현재 TargetObject가 Valid한 상황
     // Attack상태전환만 따로 처리
-    m_MainEnemyScript->SetMainState(ENEMY_MAINSTATE::ATTACK);
+    m_MainEnemyScript->SetMainState(ENEMY_MAINSTATE::ATTACK);*/
 }
 
 void CPerceptionHandler::OnAttackAreaColliderEndOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider)
@@ -225,7 +225,7 @@ void CPerceptionHandler::OnAttackAreaColliderEndOverlap(CCollider2D* _AttackArea
     // Lose sight
     m_setAttackAreaEnteredObjects.erase(_OtherCollider->GetOwner());
     
-    // 현재의 공격대상이 Attack 반경을 벗어난 상황 (사망이든 뭐든)
+    /*// 현재의 공격대상이 Attack 반경을 벗어난 상황 (사망이든 뭐든)
     if (m_MainEnemyScript->GetTargetObject() == _OtherCollider->GetOwner())
     {
         // 공격 반경에 들어있는 다른 오브젝트가 있다면, 해당 오브젝트 공격
@@ -240,6 +240,7 @@ void CPerceptionHandler::OnAttackAreaColliderEndOverlap(CCollider2D* _AttackArea
         m_MainEnemyScript->SetTargetObject(nullptr);
         
     }
+    */
     
     
 }

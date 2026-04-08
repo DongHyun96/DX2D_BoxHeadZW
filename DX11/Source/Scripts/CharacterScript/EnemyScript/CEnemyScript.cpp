@@ -80,8 +80,9 @@ void CEnemyScript::Move()
     switch (m_MainState)
     {
     case ENEMY_MAINSTATE::ATTACK:
-        
-    if (!IsValid(m_TargetObject)) m_MainState = ENEMY_MAINSTATE::WALK;
+    {
+        if (!IsValid(m_TargetObject)) m_MainState = ENEMY_MAINSTATE::WALK;
+    }
         
         break;
     case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
