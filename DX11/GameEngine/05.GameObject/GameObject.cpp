@@ -126,7 +126,8 @@ void GameObject::FinalTick()
 	{
 		Ptr<GameObject>& child = *iter;
 		child->FinalTick();
-		
+
+		// Child에 대한 Destroy 처리가 마킹되어있다면, child 지워버리기
 		if (child->IsObjectDestroyed()) iter = m_vecChild.erase(iter);
 		else ++iter;
 	}
@@ -148,7 +149,10 @@ void GameObject::FinalTick_Editor()
 		Ptr<GameObject>& child = *iter;
 		child->FinalTick();
 		
-		if (child->IsObjectDestroyed()) iter = m_vecChild.erase(iter);
+		if (child->IsObjectDestroyed())
+		{
+			iter = m_vecChild.erase(iter);
+		}
 		else ++iter;
 	}
 }

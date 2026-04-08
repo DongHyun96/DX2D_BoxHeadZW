@@ -94,46 +94,15 @@ void CEnemyScript::Move()
     switch (m_MainState)
     {
     case ENEMY_MAINSTATE::ATTACK:
-    if (!IsValid(m_TargetObject))
-    {
-        m_MainState = ENEMY_MAINSTATE::WALK;
-        return;
-    }
         
-        // 현재 Attack 모션 중이라면 기다리고, Attack 모션 중이 아니라면 Attack 모션을 진행
+    if (!IsValid(m_TargetObject)) m_MainState = ENEMY_MAINSTATE::WALK;
         
         break;
     case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
         
     case ENEMY_MAINSTATE::WALK:
     {
-        if (GetOwner()->GetName() != L"Zombie") return; // TODO : 이 return 문 없앨것
-        /*// TODO : 실질적인 Walk 처리 구현할 것
-        if (GetOwner()->GetName() != L"Devil") return;
-        
-        m_Velocity = Vec3(); // Velocity 초기화
-        Vec3 Direction{};
-    
-        if (KEY_PRESSED(KEY::LEFT)) Direction.x -= 1.f; // Left
-        if (KEY_PRESSED(KEY::RIGHT)) Direction.x += 1.f; // Right
-        if (KEY_PRESSED(KEY::UP))   Direction.y += 1.f; // Up
-        if (KEY_PRESSED(KEY::DOWN)) Direction.y -= 1.f; // Down
-
-        if (KEY_PRESSED(KEY::LSHIFT)) m_MoveSpeedFactor = 2.f;
-        else m_MoveSpeedFactor = 1.f;
-
-        if (Direction.LengthSquared() == 0.f) return;
-        Direction.Normalize();
-    
-        m_Velocity = Direction * m_MoveSpeedBase * m_MoveSpeedFactor;
-    
-        Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
-        Transform()->SetRelativePos(Pos);*/
-
-        // Target Straight walk or CellPath walk through
         s_mapWalkingStrategies[m_CurrentWalkType]->UseWalkStrategy(this);
-        // MoveThroughCellPath();
-        // MoveStraightToTarget();
     }
         break;
     case ENEMY_MAINSTATE::PUSHED_OUT: MovePushedOut(); break;

@@ -45,7 +45,7 @@ void TaskMgr::Progress()
             
             if (gObject->IsObjectDestroyed()) continue;
             
-            gObject->m_ObjectDestroyed = true;
+            gObject->m_ObjectDestroyed = true; // 지워질 Object 마킹 체크 (Tick 한 번은 호출되게끔 처리)
             m_Garbage.push_back(gObject);
             
             Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
