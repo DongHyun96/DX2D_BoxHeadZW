@@ -95,6 +95,7 @@ void Layer::FinalTick()
             gameObject->m_ObjectMarkedDeactivated = false; // FinalTick 호출 이후, 해당 마킹 지워버리기
         }
         
+        // 최상위 부모일 경우, 여기서 삭제 처리
         if (gameObject->IsObjectDestroyed()) iter = m_vecParents.erase(iter);
         else ++iter;
     }

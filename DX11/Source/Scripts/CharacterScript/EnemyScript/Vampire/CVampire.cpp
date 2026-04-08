@@ -19,4 +19,5 @@ void CVampire::Begin()
 
 void CVampire::Tick()
 {
+    CEnemyScript::Tick();
 }

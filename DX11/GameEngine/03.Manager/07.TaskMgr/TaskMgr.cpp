@@ -47,6 +47,13 @@ void TaskMgr::Progress()
             
             gObject->m_ObjectDestroyed = true; // 지워질 Object 마킹 체크 (Tick 한 번은 호출되게끔 처리)
             m_Garbage.push_back(gObject);
+
+            // 부모가 비활성 상태여도 다음 프레임에 계층 FinalTick이 한 번은 돌도록 보장한다.
+            // (자식 제거 + Collision EndOverlap/OverlapCount 정리를 위해 필요)
+            GameObject* rootObject = gObject.Get();
+            while (rootObject->GetParent())
+                rootObject = rootObject->GetParent();
+            rootObject->m_ObjectMarkedDeactivated = true;
             
             Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
             pCurLevel->SetChanged();
