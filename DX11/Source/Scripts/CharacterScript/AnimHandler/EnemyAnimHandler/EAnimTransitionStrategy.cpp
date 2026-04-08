@@ -14,15 +14,15 @@ void CommonEnemyTransitionStrategy::UseWalkStateTransitionStrategy(CEnemyAnimHan
     const wstring& AnimCategory         = mapEnemyMainStateAnimCategory.at(CurrentMainState);
     const int FlipBookIndexByDirection = static_cast<int>(CurrentDirection);
 
-    // 이동하고 있지 않은 상태
-    if (CurrentVelocity.LengthSquared() == 0.f)
+    // 이동하고 있지 않은 상태 -> 이 상태 자체가 없긴 함 Enemy의 경우
+    /*if (CurrentVelocity.LengthSquared() == 0.f)
     {
         // 해당 방향으로 자연스럽게 멈춤
         // 2번 index가 멈춘 상태의 Sprite 모양
         _AnimHandler->FlipbookRender()->Stop(AnimCategory, FlipBookIndexByDirection, 2);
         _AnimHandler->m_PrevAnimDirection = EDIRECTION::END;
         return;
-    }
+    }*/
 
     // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
     if (CurrentDirection == _AnimHandler->m_PrevAnimDirection && CurrentMainState == _AnimHandler->m_PrevMainState) return;
@@ -71,7 +71,7 @@ void RunnerTransitionStrategy::UseWalkStateTransitionStrategy(CEnemyAnimHandler*
         
         const int FlipBookIndexByDirection = static_cast<int>(CurrentDirection);
 
-        // 이동하고 있지 않은 상태
+        /*// 이동하고 있지 않은 상태
         if (CurrentVelocity.LengthSquared() == 0.f)
         {
             // 해당 방향으로 자연스럽게 멈춤
@@ -79,7 +79,7 @@ void RunnerTransitionStrategy::UseWalkStateTransitionStrategy(CEnemyAnimHandler*
             _AnimHandler->FlipbookRender()->Stop(L"Run", FlipBookIndexByDirection, 2);
             _AnimHandler->m_PrevAnimDirection = EDIRECTION::END;
             return;
-        }
+        }*/
 
         // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
         if (CurrentDirection == m_PrevSixteenDirection && CurrentMainState == _AnimHandler->m_PrevMainState) return;

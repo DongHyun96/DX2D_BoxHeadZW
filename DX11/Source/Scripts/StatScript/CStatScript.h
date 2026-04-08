@@ -44,6 +44,7 @@ public:
 public:
     
     float GetHP() const { return m_HP; }
+    bool IsFullHP() const { return m_HP >= m_HPMax; }
     bool IsDead() const { return m_HP <= 0.f; }
     
 public:

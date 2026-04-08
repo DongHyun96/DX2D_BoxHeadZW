@@ -176,7 +176,8 @@ void CEnemyScript::HandleStateTransition()
         }
         
         // 나머지는 Walk 상태 지정 처리
-        
+
+        // Straight -> CellPath 전환 시도
         if (m_CurrentWalkType == ENEMY_WALK_TYPE::STRAIGHT)
         {
             // TargetObject가 사망 또는 사라진 경우, 또는 현재 TargetObject가 Straight Walk 반경에서 벗어난 오브젝트인 경우
@@ -187,7 +188,8 @@ void CEnemyScript::HandleStateTransition()
                 return;
             }
         }
-        
+
+        // CellPath -> Straight 전환 시도
         if (m_CurrentWalkType == ENEMY_WALK_TYPE::CELL_PATH)
         {
             // StraightThrough 영역에 들어온 Object가 있다면, 해당 GameObject로 Target 세팅 및 Walk Strategy 세팅
@@ -201,43 +203,6 @@ void CEnemyScript::HandleStateTransition()
     }
         return;
     }
-}
-
-void CEnemyScript::MoveThroughCellPath()
-{
-    Vec3 Pos = Transform()->GetRelativePos();
-    
-    // 임시 Targeting -> 정상적인 게임 작동중에는 무조건 Target이 있음(Player가 살아 있을 동안)
-    if (KEY_TAP(KEY::MRB))
-    {
-        const CellCoord myCellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(ToVec2(Pos));
-        const CellCoord destCellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(KeyMgr::GetInst()->GetMouseWorldPos2D());
-        AStarPathFinder::GetInst()->GetPath(myCellCoord, destCellCoord, m_CellPath); // return true or false
-    }
-    
-    // 이동할 수 있는 경로가 없음
-    if (m_CellPath.empty()) return;
-    
-    m_Velocity = Vec3::Zero;
-    
-    const Vec2 Destination = GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(m_CellPath.top()); 
-    const Vec2 Direction = Destination - ToVec2(Pos);
-    
-    const float DistToDest = Direction.Length();
-    const float MoveDistThisFrame = m_MoveSpeedBase * DT;
-    
-    // 이번 이동 거리보다 남은 거리가 작다면 도착한 것으로 판정
-    if (DistToDest <= MoveDistThisFrame) 
-    {
-        Transform()->SetRelativePos(ToVec3(Destination, Destination.y)); // Dest로 위치보정 처리
-        m_CellPath.pop(); 
-        return;        
-    }
-    
-    m_Velocity = ToVec3(Direction / (DistToDest == 0.f ? FLT_EPSILON : DistToDest) ) * m_MoveSpeedBase;
-    Pos += m_Velocity * DT;
-    
-    Transform()->SetRelativePos(Pos);
 }
 
 void CEnemyScript::OnDieFlipbookEndNotify()

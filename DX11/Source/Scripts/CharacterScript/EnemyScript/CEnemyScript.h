@@ -66,6 +66,13 @@ public:
     virtual void Begin() override;
     virtual void AfterLevelBegin() override;
     virtual void Tick() override;
+
+public:
+    
+    /// <summary>
+    /// 피격 당한 이후 처리를 해야 하는 Enemy 종류의 경우, 해당 함수 override 할 것 
+    /// </summary>
+    virtual void OnTakeDamage() {}
     
 private:
 
@@ -83,15 +90,6 @@ private:
     /// </summary>
     virtual void HandleStateTransition();
 
-    
-
-private:
-    
-    /// <summary>
-    /// m_CellPath를 따라 이동
-    /// </summary>
-    void MoveThroughCellPath();
-    
 public:
     
     /// <summary>

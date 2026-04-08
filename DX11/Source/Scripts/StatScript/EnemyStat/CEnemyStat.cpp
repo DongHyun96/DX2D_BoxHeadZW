@@ -26,5 +26,7 @@ bool CEnemyStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
     
     MainEnemyScript->SetMainState(NextState);
     
+    GetOwner()->GetScriptComponent<CEnemyScript>()->OnTakeDamage();
+    
     return true;
 }
