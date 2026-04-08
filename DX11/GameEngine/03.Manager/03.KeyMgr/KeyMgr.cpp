@@ -54,20 +54,23 @@ void KeyMgr::Tick()
 {
     // GetFocus() : 현재 포커싱 중인 윈도우 핸들 반환
     // 현재 ImGui에 Focus가 잡혔을 때
-    if (GetFocus() != Engine::GetInst()->GetMainWndHwnd() || !m_Active)
+    if (Engine::GetInst()->IsEditorMode())
     {
-        for (UINT i = 0; i < static_cast<UINT>(KEY::KEY_END); ++i)
+        if (GetFocus() != Engine::GetInst()->GetMainWndHwnd() || !m_Active)
         {
-            GetAsyncKeyState(g_KeyIndex[i]); // 누적 입력처리 해소
-            
-            if (m_vecKeys[i].State == TAP || m_vecKeys[i].State == PRESSED)
-                m_vecKeys[i].State = RELEASED;
-            else m_vecKeys[i].State = NONE;
+            for (UINT i = 0; i < static_cast<UINT>(KEY::KEY_END); ++i)
+            {
+                GetAsyncKeyState(g_KeyIndex[i]); // 누적 입력처리 해소
+                
+                if (m_vecKeys[i].State == TAP || m_vecKeys[i].State == PRESSED)
+                    m_vecKeys[i].State = RELEASED;
+                else m_vecKeys[i].State = NONE;
 
-            m_vecKeys[i].Pressed = false;
+                m_vecKeys[i].Pressed = false;
+            }
+            
+            return;
         }
-        
-        return;
     }
     
     for (UINT i = 0; i < m_vecKeys.size(); i++)

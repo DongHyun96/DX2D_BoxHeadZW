@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "EditorMgr.h"
 
+#include "GameEngine/01.Engine/Engine.h"
 #include "GameEngine/02.Device/Device.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "GameEngine/06.Component/Script/CEditorCamMoveScript.h"
@@ -27,9 +28,12 @@ EditorMgr::EditorMgr()
 EditorMgr::~EditorMgr()
 {
     // Cleanup
-    ImGui_ImplDX11_Shutdown();
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
+    if (Engine::GetInst()->IsEditorMode())
+    {
+        ImGui_ImplDX11_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
+    }
 }
 
 void EditorMgr::AddInspector()

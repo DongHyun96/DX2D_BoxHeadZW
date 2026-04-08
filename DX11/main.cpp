@@ -49,11 +49,13 @@ int APIENTRY wWinMain
     AStarPathFinder::GetInst();
     
     // Engine 초기화, 최상위 관리자
+    // ReleaseMode일 경우, EditorMode false 로 처리할 것
     if (FAILED(Engine::GetInst()->Init(hInstance, RESOL_X, RESOL_Y, true)))
         return 0;
 
     // LevelMgr::GetInst()->LoadTestLevel();
     ChangeLevel(L"Level\\NightSceneLevel.lv", true);
+    // ChangeLevelState(LEVEL_STATE::PLAY);
     // CreateTestLevel();
     
     // 단축키 테이블 정보 핸들 받음

@@ -32,11 +32,7 @@ private:
 	
 private:
 	
-#ifdef _DEBUG
-	bool m_EditorMode = true; // Editor 모드인지 확인
-#else
-	bool m_EditorMode = false; // Release 모드에서는 Editor 필요 x
-#endif
+	bool m_EditorMode{}; // Editor 모드인지 확인
 	
 public:
 	HRESULT Init(HINSTANCE _hInst, UINT _Width, UINT _Height, bool _EditorMode);

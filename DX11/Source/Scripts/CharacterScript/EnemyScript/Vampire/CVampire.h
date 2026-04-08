@@ -14,10 +14,14 @@ private:
     float m_AfterLastDamagedTimer{}; // 마지막 피격 당한 이후 흐른 시간
     
     class CStatScript* m_Stat{};
+    CEnemyScript* m_EnemyScript{};
     
 private:
+
+    static const Vec2 s_TeleportStartTimeMinMax;
+    float             m_TeleportStartTimeLimit;
     
-    float m_TeleportStartTimeLimit{};
+    float m_TeleportTimer{};
     
 public:
     CVampire();
@@ -32,6 +36,7 @@ public:
 private:
     
     virtual void OnTakeDamage() override;
+    virtual void SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType) override;
     
 private:
     
@@ -42,4 +47,11 @@ private:
     /// 순간이동 처리를 한 뒤에는 Walk 상태(이미 되어있긴한데)로 되돌리고, TargetObject도 재설정 처리를 위해 nullptr로 비워두기 
     /// </summary>
     void HandleTeleport();
+    
+    void InitTeleportTimer()
+    {
+        m_TeleportTimer = 0.f;
+        m_TeleportStartTimeLimit = GetRandom(s_TeleportStartTimeMinMax.x, s_TeleportStartTimeMinMax.y);
+    }
+    
 };

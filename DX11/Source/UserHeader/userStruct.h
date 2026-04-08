@@ -18,6 +18,16 @@ struct CellCoord
     {
         return (this->x != other.x || this->y != other.y);
     }
+    
+    CellCoord operator+(const CellCoord& other) const
+    {
+        return CellCoord(this->x + other.x, this->y + other.y);
+    }
+    
+    CellCoord operator-(const CellCoord& other) const
+    {
+        return CellCoord(this->x - other.x, this->y - other.y);
+    }
 
     bool operator<(const CellCoord& other) const
     {

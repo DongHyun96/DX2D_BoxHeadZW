@@ -124,6 +124,7 @@ public:
     const Ptr<GameObject>& GetTargetObject() const { return m_TargetObject; }
 
     // Runner의 경우, WALK_TYPE에 따른 속력이 바뀜
+    // Vampire의 경우, CellPath Walk setting 시 setting할 값들이 있음
     virtual void SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType) { m_CurrentWalkType = _WalkType; }
     ENEMY_WALK_TYPE GetCurrentWalkType() const { return m_CurrentWalkType; }
     
