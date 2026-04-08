@@ -72,8 +72,6 @@ void CFlipbookRender::FinalTick()
 
     const float frameTimeLimit = 1.f / m_FPS;
 
-    // TODO : 다시 DT로 수정하기
-    // m_FrameTimer += DT;
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) m_FrameTimer += E_DT;
     else // Play 중 
     {
@@ -95,6 +93,14 @@ void CFlipbookRender::FinalTick()
             // 나간 Idx에 대해 다시 Boundary로 들어오게끔 처리
             if (!m_bPlayReverse) --m_CurAnimatingSpriteIdx;
             else                 ++m_CurAnimatingSpriteIdx;
+        }
+        
+        // 특정 Idx Event가 있다면 해당 Event 호출 처리
+        Ptr<AFlipbook> CurrentFlipbook = vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx];
+        if (m_OnSpriteIdxEvent.contains(CurrentFlipbook.Get()) &&
+            m_OnSpriteIdxEvent[CurrentFlipbook.Get()].first == m_CurAnimatingSpriteIdx)
+        {
+            m_OnSpriteIdxEvent[CurrentFlipbook.Get()].second();
         }
     }    
 }
@@ -193,6 +199,25 @@ bool CFlipbookRender::AddNotifyFlipbookEndEvent(const wstring& _Category, UINT _
     
     m_EndEvents[ m_mapCategoryFlipbooks[_Category][_FlipbookIdx].Get() ] = _EndEvent;
     return true;
+}
+
+bool CFlipbookRender::AddNotifyFlipbookOnSpriteIdx(const wstring& _Category, UINT _FlipbookIdx, UINT _SpriteIdx, function<void()> _Event)
+{
+    if (!m_mapCategoryFlipbooks.contains(_Category))                                        return false;
+    if (_FlipbookIdx >= m_mapCategoryFlipbooks[_Category].size())                           return false;
+    if (_SpriteIdx >= m_mapCategoryFlipbooks[_Category][_FlipbookIdx]->GetSpriteCount())    return false;
+    
+    m_OnSpriteIdxEvent[ m_mapCategoryFlipbooks[_Category][_FlipbookIdx].Get() ] = {_SpriteIdx, _Event};
+    return true;
+}
+
+void CFlipbookRender::RemoveNotifyFlipbookOnSpriteIdx(const wstring& _Category, UINT _FlipbookIdx)
+{
+    if (!m_mapCategoryFlipbooks.contains(_Category))              return;
+    if (_FlipbookIdx >= m_mapCategoryFlipbooks[_Category].size()) return;
+    
+    AFlipbook* Flipbook = m_mapCategoryFlipbooks[_Category][_FlipbookIdx].Get();
+    m_OnSpriteIdxEvent.erase(Flipbook);    
 }
 
 bool CFlipbookRender::SetCurrentCategory(const wstring& _CategoryKey, int _FlipbookToSelect, int _SpriteToSelect)

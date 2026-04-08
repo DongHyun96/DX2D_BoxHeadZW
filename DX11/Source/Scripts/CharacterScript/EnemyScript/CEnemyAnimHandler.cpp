@@ -64,11 +64,16 @@ void CEnemyAnimHandler::UpdateAnimTransition()
         
         // 이전 상태와 동일한 Animation이 재생 중인 상태 -> 한 번 더 재생 처리 방지
         // TODO : Runner의 경우, 공격 방향이 16방향 -> 이 방향으로 Flipbook 재생을 처리를 해야 함
-        if (CurrentDirection == m_PrevAnimDirection && CurrentMainState == m_PrevMainState) return;
-        
         const int FlipBookIndexByDirection = static_cast<int>(CurrentDirection);
+        if (CurrentDirection == m_PrevAnimDirection && CurrentMainState == m_PrevMainState)
+        {
+            // 같은 방향에 같은 모션인데, 해당 모션 재생이 모두 끝난 경우, 다시 재생시켜주어야 한다
+            if (FlipbookRender()->GetIsStopped()) FlipbookRender()->Play(L"Attack", FlipBookIndexByDirection, 8.f, 1); // Attack 모션 시작
+            return;
+        }
         
-        FlipbookRender()->Play(L"Attack", FlipBookIndexByDirection, 10.f, 1); // Attack 모션 시작
+        // 다른 방향 또는 MainState가 바뀌었을 때, 새로운 공격 방향으로 Attack 모션을 재생시킨다
+        FlipbookRender()->Play(L"Attack", FlipBookIndexByDirection, 8.f, 1); // Attack 모션 시작
     }
         break;
     case ENEMY_MAINSTATE::PUSHED_OUT: FlipbookRender()->Stop(L"PushedOut", 0, m_PushedOutSpriteIdxToShow); break; 

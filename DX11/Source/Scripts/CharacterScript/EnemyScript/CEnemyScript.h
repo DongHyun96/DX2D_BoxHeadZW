@@ -114,6 +114,12 @@ public:
     /// </summary>
     virtual void OnAttackFlipbookEndNotify(); // TODO : Devil의 경우, 이거 override
 
+    /// <summary>
+    /// Attack Flipbook 재생 시, 특정 Idx를 지날 때 호출받을 함수
+    /// 이 함수 내에서 AttackDamageCollider를 켜준다
+    /// </summary>
+    void OnAttackNotify();
+
 private:
     
     /// <summary>

@@ -16,6 +16,9 @@ private:
     // 재생이 끝난 뒤 or 재생이 중간에 interrupt 되었을 때에도 호출 처리함
     map<AFlipbook*, function<void()>> m_EndEvents{};
 
+    // 특정 Index 시작에서 호출될 이벤트
+    map<AFlipbook*, pair<int, function<void()>>> m_OnSpriteIdxEvent{};
+
 private:
     
     wstring                 m_CurSelectedCategory{};             // null 문자열일 경우, 선택된 카테고리가 존재하지 않음
@@ -77,6 +80,21 @@ public:
     /// <param name="_EndEvent"></param>
     /// <returns> 해당하는 Flipbook을 찾지 못했다면 return false </returns>
     bool AddNotifyFlipbookEndEvent(const wstring& _Category, UINT _FlipbookIdx, function<void()> _EndEvent);
+
+    /// <summary>
+    /// 특정 카테고리, 특정 인덱스 플립북의 특정 Idx 재생 시작 시 호출받을 함수 binding 
+    /// </summary>
+    /// <param name="_Category"></param>
+    /// <param name="_FlipbookIdx"></param>
+    /// <param name="_SpriteIdx"></param>
+    /// <param name="_Event"></param>
+    /// <returns></returns>
+    bool AddNotifyFlipbookOnSpriteIdx(const wstring& _Category, UINT _FlipbookIdx, UINT _SpriteIdx, function<void()> _Event);
+
+    /// <summary>
+    /// 해당 카테고리의 해당 Flipbook에 걸려있는 SpriteIdx Notify 제거 
+    /// </summary>
+    void RemoveNotifyFlipbookOnSpriteIdx(const wstring& _Category, UINT _FlipbookIdx);
     
 public:
     
@@ -167,6 +185,8 @@ public:
     Ptr<AFlipbook> GetFlipbook(const wstring& _Category, int _Idx);
     
     wstring GetCurSelectedCategory() const { return m_CurSelectedCategory; }
+    
+    bool GetIsStopped() const { return m_bStopped; }
 
 public:
     

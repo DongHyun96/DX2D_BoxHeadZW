@@ -49,8 +49,11 @@ void CEnemyScript::Begin()
     ADD_DYNAMIC_BEGIN_OVERLAP(CEnemyScript::BodyColliderOverlapped);
     ADD_DYNAMIC_OVERLAP(CEnemyScript::BodyColliderOverlapped);
 
-    for (int i = 0; i < m_AttackFlipbookCount; ++i)
-        FlipbookRender()->AddNotifyFlipbookEndEvent(L"Attack", i, bind(&CEnemyScript::OnAttackFlipbookEndNotify, this));
+    for (int FlipbookIdx = 0; FlipbookIdx < m_AttackFlipbookCount; ++FlipbookIdx)
+    {
+        FlipbookRender()->AddNotifyFlipbookEndEvent(L"Attack", FlipbookIdx, bind(&CEnemyScript::OnAttackFlipbookEndNotify, this));
+        FlipbookRender()->AddNotifyFlipbookOnSpriteIdx(L"Attack", FlipbookIdx, 2, bind(&CEnemyScript::OnAttackNotify, this)); // Devil의 경우, 해당 처리 빼는 내용 추가해둠
+    }
 }
 
 void CEnemyScript::AfterLevelBegin()
@@ -67,6 +70,21 @@ void CEnemyScript::Tick()
     HandleStateTransition();
     CCharacterScript::Tick(); // Handling Walk & UpdateCurrentFacedDirection involved
     HandleFadeOut();
+    
+    DebugUtil::SetPermanentDebugLog("Enemy State", "asdf", DEF_COLOR_RED);
+    switch (m_MainState)
+    {
+    case ENEMY_MAINSTATE::WALK: DebugUtil::SetPermanentDebugLog("Enemy State", "State : WALK", DEF_COLOR_RED);
+        break;
+    case ENEMY_MAINSTATE::ATTACK: DebugUtil::SetPermanentDebugLog("Enemy State", "State : ATTACK", DEF_COLOR_RED);
+        break;
+    case ENEMY_MAINSTATE::PUSHED_OUT: DebugUtil::SetPermanentDebugLog("Enemy State", "State : PUSHED_OUT", DEF_COLOR_RED);
+        break;
+    case ENEMY_MAINSTATE::DIE: DebugUtil::SetPermanentDebugLog("Enemy State", "State : DIE", DEF_COLOR_RED);
+        break;
+    case ENEMY_MAINSTATE::END: DebugUtil::SetPermanentDebugLog("Enemy State", "State : END", DEF_COLOR_RED);
+        break;
+    }
 }
 
 void CEnemyScript::Move()
@@ -237,8 +255,9 @@ void CEnemyScript::HandleStateTransition()
         // TODO : Devil의 경우 override한 StateTransition 함수에서 이 처리 빼기
 
         // Attack Collider Rotation 설정(방향 설정) / 켜주기 처리
-        const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
-        GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(true, GetVectorAngle(ToTarget));
+        // Attack Animation 특정 Sprite idx에서 켜줄 예정 (바로 켜버리면 어색함)
+        /*const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
+        GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(true, GetVectorAngle(ToTarget));*/
     }
         return;
     }
@@ -304,7 +323,14 @@ void CEnemyScript::OnAttackFlipbookEndNotify()
     GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(false);
 
     if (m_MainState == ENEMY_MAINSTATE::DIE || m_MainState == ENEMY_MAINSTATE::PUSHED_OUT) return;
+    
     m_MainState = ENEMY_MAINSTATE::WALK;
+}
+
+void CEnemyScript::OnAttackNotify()
+{
+    const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
+    GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(true, GetVectorAngle(ToTarget));
 }
 
 void CEnemyScript::BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
