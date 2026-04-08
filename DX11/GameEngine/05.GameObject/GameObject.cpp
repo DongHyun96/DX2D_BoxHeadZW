@@ -325,6 +325,14 @@ void GameObject::RegisterAsParent()
 	LevelMgr::GetInst()->GetCurLevel()->GetLayer(m_LayerIdx)->AddObject(this);
 }
 
+Ptr<GameObject> GameObject::GetChildByName(const wstring& _ObjectName) const
+{
+	for (const Ptr<GameObject>& Child : m_vecChild)
+		if (Child->GetName() == _ObjectName) return Child;
+	
+	return nullptr;
+}
+
 void GameObject::SetActive(bool _Active, bool _SetActiveHierarchy)
 {
 	m_IsActive = _Active;

@@ -3,9 +3,22 @@
 
 enum class ENEMY_TYPE;
 enum class ENEMY_MAINSTATE;
+enum class ENEMY_WALK_TYPE;
+
+
+enum class ENEMY_WALK_TYPE
+{
+    CELL_PATH,
+    STRAIGHT,
+};
 
 class CEnemyScript : public CCharacterScript
 {
+
+    friend class EnemyWalkStrategy;
+    friend class EnemyWalkThroughCellPathStrategy;
+    friend class EnemyWalkStraightStrategy;
+
 protected:
 
     ENEMY_TYPE      m_EnemyType{};
@@ -22,10 +35,17 @@ private: // FadeIn Out 관련
     
     const float m_FadeInOutTotalTime = 1.f;
     float       m_FadeInOutTime{};
+
+private:
     
-private: // AStar Path 관련
+    Ptr<GameObject> m_TargetObject{}; // 접근하는 GameObject, 또는 공격대상 모두 이 TargetObject로 잡아서 처리
     
-    stack<CellCoord> m_CellPath{};
+private: // AStar Path 및 Walk 관련
+    
+    stack<CellCoord> m_CellPath{}; // AStar로 찾은 CellPath
+    
+    static map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> s_mapWalkingStrategies;
+    ENEMY_WALK_TYPE m_CurrentWalkType{};
     
 public:
     
@@ -47,6 +67,12 @@ private:
     virtual void AfterPushedOutFin() override;
     
     void HandleFadeOut();
+
+    /// <summary>
+    /// Perception의 Sight에 들어온 Enemy들 및, 현 State / TargetObject 상태에 따른 State Transition 처리 담당
+    /// Devil의 경우 이 함수 override해서 처리해야할듯?
+    /// </summary>
+    void HandleStateTransition();
 
 private:
     
@@ -73,6 +99,11 @@ public:
     
     void SetMainState(ENEMY_MAINSTATE _MainState) { m_MainState = _MainState; }
     ENEMY_MAINSTATE GetMainState() const { return m_MainState; }
+    
+    void SetTargetObject(const Ptr<GameObject>& _Target) { m_TargetObject = _Target; }
+    const Ptr<GameObject>& GetTargetObject() const { return m_TargetObject; }
+    
+    void SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType) { m_CurrentWalkType = _WalkType; }
 
 public:
     

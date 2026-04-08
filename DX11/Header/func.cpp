@@ -452,3 +452,8 @@ bool IsValid(Ptr<GameObject>& _Object)
     
     return true;
 }
+
+bool IsValid(const Ptr<GameObject>& _Object)
+{
+    return _Object && !_Object->IsObjectDestroyed();  
+}

@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CEnemyScript.h"
 
+#include "EnemyWalkStrategy/EnemyWalkStrategy.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
@@ -10,6 +11,12 @@
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
+
+map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> CEnemyScript::s_mapWalkingStrategies = 
+{
+    { ENEMY_WALK_TYPE::CELL_PATH, new EnemyWalkThroughCellPathStrategy },
+    { ENEMY_WALK_TYPE::STRAIGHT, new EnemyWalkStraightStrategy }
+};
 
 CEnemyScript::CEnemyScript()
     : CCharacterScript(SCRIPT_TYPE::ENEMYSCRIPT)
@@ -48,7 +55,8 @@ void CEnemyScript::AfterLevelBegin()
 
 void CEnemyScript::Tick()
 {
-    CCharacterScript::Tick();
+    HandleStateTransition();
+    CCharacterScript::Tick(); // Handling Walk & UpdateCurrentFacedDirection involved
     HandleFadeOut();
 }
 
@@ -58,7 +66,17 @@ void CEnemyScript::Move()
     
     switch (m_MainState)
     {
-    case ENEMY_MAINSTATE::ATTACK: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
+    case ENEMY_MAINSTATE::ATTACK:
+    if (!IsValid(m_TargetObject))
+    {
+        m_MainState = ENEMY_MAINSTATE::WALK;
+        return;
+    }
+        
+        // 현재 Attack 모션 중이라면 기다리고, Attack 모션 중이 아니라면 Attack 모션을 진행
+        
+        break;
+    case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
         
     case ENEMY_MAINSTATE::WALK:
     {
@@ -84,8 +102,11 @@ void CEnemyScript::Move()
     
         Vec3 Pos = Transform()->GetRelativePos() + m_Velocity * DT;
         Transform()->SetRelativePos(Pos);*/
-        
-        MoveThroughCellPath();
+
+        // Target Straight walk or CellPath walk through
+        s_mapWalkingStrategies[m_CurrentWalkType]->UseWalkStrategy(this);
+        // MoveThroughCellPath();
+        // MoveStraightToTarget();
     }
         break;
     case ENEMY_MAINSTATE::PUSHED_OUT: MovePushedOut(); break;
@@ -152,11 +173,36 @@ void CEnemyScript::HandleFadeOut()
     GetOwner()->SetActive(false);
 }
 
+void CEnemyScript::HandleStateTransition()
+{
+    switch (m_MainState)
+    {
+    case ENEMY_MAINSTATE::WALK:
+    {
+        if (!IsValid(m_TargetObject))
+        {
+            // Perception Handler에서 새로운 TargetObject 구하기
+            
+        }
+        
+    }
+        break;
+    case ENEMY_MAINSTATE::ATTACK:
+        break;
+    case ENEMY_MAINSTATE::PUSHED_OUT:
+        break;
+    case ENEMY_MAINSTATE::DIE:
+        break;
+    case ENEMY_MAINSTATE::END:
+        break;
+    }
+}
+
 void CEnemyScript::MoveThroughCellPath()
 {
     Vec3 Pos = Transform()->GetRelativePos();
     
-    // 임시
+    // 임시 Targeting -> 정상적인 게임 작동중에는 무조건 Target이 있음(Player가 살아 있을 동안)
     if (KEY_TAP(KEY::MRB))
     {
         const CellCoord myCellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(ToVec2(Pos));

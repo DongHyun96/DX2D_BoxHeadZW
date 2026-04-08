@@ -130,6 +130,7 @@ public:
 	GameObject* GetParent() const { return m_Parent; }
 	
 	Ptr<GameObject> GetChild(UINT _Idx) const { return m_vecChild[_Idx]; }
+	Ptr<GameObject> GetChildByName(const wstring& _ObjectName) const;
 	const vector<Ptr<GameObject>>& GetChildren() const { return m_vecChild; }
 
 public:
@@ -217,3 +218,4 @@ Ptr<T> GameObject::GetScriptComponent() const
 }
 
 bool IsValid(Ptr<GameObject>& _Object);
+bool IsValid(const Ptr<GameObject>& _Object);

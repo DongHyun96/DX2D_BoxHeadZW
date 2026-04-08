@@ -174,7 +174,7 @@ void CStructureHandler::UpdateSpawnStructure(const Vec2& _PreviewPos, bool _Avai
         // Taken Cell 기록
         const CellCoord cellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(_PreviewPos); 
         GM->GetBackgroundCellManager()->SetCellTaken(cellCoord, true);
-        CStructure::AddInstalledCoord(cellCoord);
+        CStructure::AddInstalledStructure(SpawnedStructure->GetScriptComponent<CStructure>().Get());
     }
 }
 

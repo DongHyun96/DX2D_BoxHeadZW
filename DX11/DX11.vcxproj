@@ -293,6 +293,8 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\CharacterScript\CCharacterScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\EnemyWalkStrategy\EnemyWalkStrategy.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\PerceptionHandler\CPerceptionHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.h" />
@@ -1061,6 +1063,8 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\CharacterScript\CCharacterScript.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyAnimHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\EnemyWalkStrategy\EnemyWalkStrategy.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\PerceptionHandler\CPerceptionHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.cpp" />

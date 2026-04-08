@@ -22,7 +22,7 @@ void GameManager::OnLevelBegin()
 {
     // Level에 들어있는 Layer들의 Begin 전에 먼저 호출 처리됨 
     
-    CStructure::ClearInstalledCoordInfo();
+    CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
 }
 
@@ -38,13 +38,13 @@ void GameManager::OnLevelPlayToStop()
     m_GrenadePooler = nullptr;
     m_BackgroundCellManager = nullptr;
     
-    CStructure::ClearInstalledCoordInfo();
+    CStructure::ClearInstalledInfo();
 }
 
 void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
 {
     // TODO : 특정 Level에서 다른 Level 로 넘어갈 때 처리할 것 처리하기
-    CStructure::ClearInstalledCoordInfo();
+    CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
 }
 
