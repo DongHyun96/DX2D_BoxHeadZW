@@ -4,6 +4,7 @@
 #include "Source/ScriptMgr.h"
 #include "Source/Scripts/CharacterScript/CCharacterScript.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "Source/Manager/GameManager.h"
 
 set<CStructure*> CStructure::s_setInstalledStructures{};
 
@@ -22,6 +23,10 @@ CStructure::CStructure(const CStructure& _Origin)
 
 CStructure::~CStructure()
 {
+    // 여기서도 안전장치로 TakenCell Remove 처리 추가
+    /*CStructure* StructureScript = GetOwner()->GetScriptComponent<CStructure>().Get();
+    CStructure::RemoveInstalledStructure(StructureScript);
+    GM->GetBackgroundCellManager()->SetCellTaken(Transform()->GetWorldPos2D(), false);*/
 }
 
 CStructure::CStructure(SCRIPT_TYPE _ScriptType)

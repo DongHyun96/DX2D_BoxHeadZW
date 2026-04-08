@@ -20,5 +20,5 @@ Entity::Entity(const Entity& _Other)
 
 Entity::~Entity()
 {
-    --g_NextID;
+    // --g_NextID;
 }
