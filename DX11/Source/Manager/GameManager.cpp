@@ -31,7 +31,6 @@ void GameManager::OnLevelPlayToStop()
     m_PlayerObject = nullptr;
     m_MainPlayerScript = nullptr;
     
-    m_mapEnemyPoolers.clear();
     m_mapFlipbookEffectPoolers.clear();
     
     m_RocketProjectilePooler = nullptr;
@@ -52,12 +51,6 @@ CPoolComponent* GameManager::GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE
 {
     if (!m_mapFlipbookEffectPoolers.contains(_PoolerType)) return nullptr;
     return m_mapFlipbookEffectPoolers.at(_PoolerType);
-}
-
-CPoolComponent* GameManager::GetEnemyPooler(ENEMY_TYPE _EnemyType) const
-{
-    if (!m_mapEnemyPoolers.contains(_EnemyType)) return nullptr;
-    return m_mapEnemyPoolers.at(_EnemyType);
 }
 
 void GameManager::SpawnRocketSmoke(const Vec3& _SpawnPos)

@@ -72,9 +72,6 @@ void CVampire::HandleTeleport()
     // Walk 상태이고, CellPath Type Walk 상태 지속 시간 체크
     m_TeleportTimer += DT;
     
-    DebugUtil::SetPermanentDebugLog("VampireTeleport", "Vampire Time : " + to_string(m_TeleportTimer), DEF_COLOR_CYAN);
- 
-    
     if (m_TeleportTimer > m_TeleportStartTimeLimit)
     {
         // 50%의 확률로 Teleport 처리

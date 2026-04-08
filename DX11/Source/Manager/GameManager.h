@@ -32,7 +32,6 @@ private: // BackgroundTile & Cell Manager
     
 private: // Poolers
     
-    map<ENEMY_TYPE, CPoolComponent*> m_mapEnemyPoolers{};
     map<FLIPBOOK_EFFECT_POOLER_TYPE, CPoolComponent*> m_mapFlipbookEffectPoolers{};
     
     CPoolComponent* m_RocketProjectilePooler{};
@@ -57,9 +56,6 @@ public:
     
     void AddFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE _PoolerType, CPoolComponent* _PoolComponent) { m_mapFlipbookEffectPoolers[_PoolerType] = _PoolComponent; }
     CPoolComponent* GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE _PoolerType) const;
-    
-    void AddEnemyPooler(ENEMY_TYPE _EnemyType, CPoolComponent* _EnemyPooler) { m_mapEnemyPoolers[_EnemyType] = _EnemyPooler; }
-    CPoolComponent* GetEnemyPooler(ENEMY_TYPE _EnemyType) const;
     
     void SetRocketProjectilePooler(CPoolComponent* _PoolComponent) { m_RocketProjectilePooler = _PoolComponent; }
     CPoolComponent* GetRocketProjectilePooler() const { return m_RocketProjectilePooler; }

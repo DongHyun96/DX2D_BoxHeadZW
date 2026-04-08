@@ -42,6 +42,8 @@ void Outliner::Tick_UI()
     ChangeObjectNameTick();
     
     Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
+
+    DebugUtil::SetPermanentDebugLog("ParentObjectCount", "Parent Object Count : " + to_string(m_Tree->GetNodeCount()), DEF_COLOR_YELLOW);
     
     if (pCurLevel && pCurLevel->HasChanged())
         ReNew(); // 복원 실패 시, inspector clear 까지 처리

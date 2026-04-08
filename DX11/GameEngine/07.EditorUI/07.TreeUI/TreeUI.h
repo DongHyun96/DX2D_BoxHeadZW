@@ -202,5 +202,7 @@ public:
     
     void GetOpenedNodeData(vector<DWORD_PTR>& _OutData) const;
     
+    UINT GetNodeCount() const { return m_vecNode.size(); }
+    
     
 };
