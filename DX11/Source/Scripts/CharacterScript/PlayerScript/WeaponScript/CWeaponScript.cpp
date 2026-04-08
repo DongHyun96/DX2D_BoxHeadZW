@@ -41,7 +41,7 @@ void CWeaponScript::SpawnMuzzleEffects(const Vec2& _MuzzleWorldPos)
 
 void CWeaponScript::SpawnMuzzleFlash(const Vec2& _MuzzleWorldPos)
 {
-    GameObject* SpawnedFlashEffect = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::MUZZLE_FLASH_POOLER)->SpawnObject(ToVec3(_MuzzleWorldPos)); // 두 번째 Play 시, 
+    GameObject* SpawnedFlashEffect = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::PLAYER_MUZZLE_FLASH_POOLER)->SpawnObject(ToVec3(_MuzzleWorldPos)); // 두 번째 Play 시, 
     if (SpawnedFlashEffect)
     {
         const EDIRECTION PlayerDirection = GM->GetMainPlayerScript()->GetCurrentFacedDirection();

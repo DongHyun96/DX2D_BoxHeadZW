@@ -10,7 +10,7 @@
 const float CMuzzleFlashScript::s_OffsetFactorFromMuzzle = 1.2f;
 
 CMuzzleFlashScript::CMuzzleFlashScript()
-    : CFlipbookEffectScript(SCRIPT_TYPE::MUZZLEFLASHSCRIPT, FLIPBOOK_EFFECT_POOLER_TYPE::MUZZLE_FLASH_POOLER, L"Flash")
+    : CFlipbookEffectScript(SCRIPT_TYPE::MUZZLEFLASHSCRIPT, FLIPBOOK_EFFECT_POOLER_TYPE::PLAYER_MUZZLE_FLASH_POOLER, L"Flash")
 {
 }
 
