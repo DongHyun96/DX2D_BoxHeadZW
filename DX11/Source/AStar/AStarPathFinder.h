@@ -48,7 +48,7 @@ public:
     /// <param name="dest"> : 도착점 </param>
     /// <param name="_OutPath"> : 구한 경로 push(구하지 못했다면 empty) </param>
     /// <returns> : 해당 경로가 존재하지 않으면 return false </returns>
-    static bool GetPath(const CellCoord& start, const CellCoord& dest, stack<CellCoord>& _OutPath);    
+    static bool GetPath(const CellCoord& start, const CellCoord& dest, stack<CellCoord>& _OutPath); // TODO : Tick에 걸쳐서 계속 호출처리되면 부하가 일어남    
     
 public:
     

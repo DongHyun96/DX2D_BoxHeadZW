@@ -43,6 +43,7 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     {
         // 새로운 Target 찾기
         GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy);
+        if (!TargetSelected) return; // 맵에 고를 Target이 없는 상황
 
         // Target을 향한 새로운 경로 지정
         const CellCoord CurrentCellCoord    = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(ToVec2(EnemyPos));

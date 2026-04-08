@@ -51,3 +51,8 @@ void CVampire::HandleSelfHeal()
             m_Stat->ApplyHeal(DT * s_HealPerSec);
     }
 }
+
+void CVampire::HandleTeleport()
+{
+    
+}

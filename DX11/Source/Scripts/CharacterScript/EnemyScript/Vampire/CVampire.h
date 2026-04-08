@@ -15,6 +15,10 @@ private:
     
     class CStatScript* m_Stat{};
     
+private:
+    
+    float m_TeleportStartTimeLimit{};
+    
 public:
     CVampire();
     virtual ~CVampire() override;
@@ -32,4 +36,10 @@ private:
 private:
     
     void HandleSelfHeal();
+
+    /// <summary>
+    /// 주기적으로 Player의 근처에 Teleport할 수 있는 위치에 순간이동한다
+    /// 순간이동 처리를 한 뒤에는 Walk 상태(이미 되어있긴한데)로 되돌리고, TargetObject도 재설정 처리를 위해 nullptr로 비워두기 
+    /// </summary>
+    void HandleTeleport();
 };
