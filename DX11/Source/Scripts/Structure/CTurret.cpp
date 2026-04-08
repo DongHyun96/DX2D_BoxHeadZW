@@ -59,6 +59,8 @@ void CTurret::Begin()
     
     // Init Flipbook category
     FlipbookRender()->SetCurrentCategory(L"Turret");
+    
+    // 만약 MGTurret인 경우, 자기자신의 MuzzleFlash를 여기서 초기화 처리를 해준다
 }
 
 void CTurret::Tick()

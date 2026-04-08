@@ -405,6 +405,7 @@ void GameObject::RegisterLayer()
 void GameObject::Destroy()
 {
 	if (m_ObjectDestroyed) return; // 이미 삭제 요청이 들어갔었던 Object
+	if (m_OwnerPoolComponent) return; // Pooling된 Object에 대한 삭제요청은 허용 x
     
 	TaskInfo info = {};
     

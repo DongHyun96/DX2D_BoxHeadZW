@@ -43,7 +43,7 @@ void TaskMgr::Progress()
         {
             Ptr<GameObject> gObject = reinterpret_cast<GameObject*>(task.Param_0);
             
-            if (gObject->IsObjectDestroyed()) continue;
+            if (gObject->m_ObjectDestroyed) continue;
             
             gObject->m_ObjectDestroyed = true; // 지워질 Object 마킹 체크 (Tick 한 번은 호출되게끔 처리)
             m_Garbage.push_back(gObject);
@@ -54,6 +54,28 @@ void TaskMgr::Progress()
             while (rootObject->GetParent())
                 rootObject = rootObject->GetParent();
             rootObject->m_ObjectMarkedDeactivated = true;
+            
+            // 자식 오브젝트 중, 오브젝트 pooling 처리된 자식이 존재하는 경우 해당 자식의 Parent를 nullptr로 세팅하고
+            // Pool로 되돌아가야 한다 (recursively)
+            
+            queue<Ptr<GameObject>> q{};
+            q.push(gObject);
+            
+            while (!q.empty())
+            {
+                Ptr<GameObject> CurrentChild = q.front(); q.pop();
+                
+                if (CurrentChild->GetOwnerPoolComponent())
+                {
+                    // 최상위 parent로 해방
+                    CurrentChild->DisconnectWithParent(); 
+                    CurrentChild->RegisterAsParent();
+                    CurrentChild->SetActive(false); // Pool로 다시 돌아가는 처리
+                }
+
+                for (const Ptr<GameObject>& Child : CurrentChild->GetChildren())
+                    q.push(Child);
+            }
             
             Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
             pCurLevel->SetChanged();

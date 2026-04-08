@@ -49,6 +49,7 @@ void CEnemyScript::Begin()
     ADD_DYNAMIC_BEGIN_OVERLAP(CEnemyScript::BodyColliderOverlapped);
     ADD_DYNAMIC_OVERLAP(CEnemyScript::BodyColliderOverlapped);
 
+    // Runner의 경우 AttackFlipbook 개수가 16(방향마다 있음) / 따라서 m_AttacakFlipbookCount 개수를 자기자신이 조정함
     for (int FlipbookIdx = 0; FlipbookIdx < m_AttackFlipbookCount; ++FlipbookIdx)
     {
         FlipbookRender()->AddNotifyFlipbookEndEvent(L"Attack", FlipbookIdx, bind(&CEnemyScript::OnAttackFlipbookEndNotify, this));
@@ -68,23 +69,8 @@ void CEnemyScript::AfterLevelBegin()
 void CEnemyScript::Tick()
 {
     HandleStateTransition();
-    CCharacterScript::Tick(); // Handling Walk & UpdateCurrentFacedDirection involved
+    CCharacterScript::Tick(); // Handling Move & UpdateCurrentFacedDirection involved
     HandleFadeOut();
-    
-    DebugUtil::SetPermanentDebugLog("Enemy State", "asdf", DEF_COLOR_RED);
-    switch (m_MainState)
-    {
-    case ENEMY_MAINSTATE::WALK: DebugUtil::SetPermanentDebugLog("Enemy State", "State : WALK", DEF_COLOR_RED);
-        break;
-    case ENEMY_MAINSTATE::ATTACK: DebugUtil::SetPermanentDebugLog("Enemy State", "State : ATTACK", DEF_COLOR_RED);
-        break;
-    case ENEMY_MAINSTATE::PUSHED_OUT: DebugUtil::SetPermanentDebugLog("Enemy State", "State : PUSHED_OUT", DEF_COLOR_RED);
-        break;
-    case ENEMY_MAINSTATE::DIE: DebugUtil::SetPermanentDebugLog("Enemy State", "State : DIE", DEF_COLOR_RED);
-        break;
-    case ENEMY_MAINSTATE::END: DebugUtil::SetPermanentDebugLog("Enemy State", "State : END", DEF_COLOR_RED);
-        break;
-    }
 }
 
 void CEnemyScript::Move()
@@ -298,8 +284,12 @@ void CEnemyScript::OnAttackFlipbookEndNotify()
 
 void CEnemyScript::OnAttackNotify()
 {
-    const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
-    GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(true, GetVectorAngle(ToTarget));
+    // TargetObject가 아직 Valid할 때에만 실질적인 공격 시도 처리를 한다 (다른 Enemy에 의해 나의 TargetObject 또한 삭제 처리가 됐을 수 있음)
+    if (IsValid(m_TargetObject))
+    {
+        const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
+        GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(true, GetVectorAngle(ToTarget));
+    }
 }
 
 void CEnemyScript::BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)

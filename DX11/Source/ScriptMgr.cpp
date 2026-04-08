@@ -45,6 +45,7 @@
 #include "Source/Scripts/Structure\CBarrel.h"
 #include "Source/Scripts/Structure\CStructure.h"
 #include "Source/Scripts/Structure\CTurret.h"
+#include "Source/Scripts/Structure\CTurretMGEffectPooler.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
@@ -89,6 +90,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBarrel");
 	_vec.push_back(L"CStructure");
 	_vec.push_back(L"CTurret");
+	_vec.push_back(L"CTurretMGEffectPooler");
 }
 
 CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
@@ -181,6 +183,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CStructure;
 	if (L"CTurret" == _strScriptName)
 		return new CTurret;
+	if (L"CTurretMGEffectPooler" == _strScriptName)
+		return new CTurretMGEffectPooler;
 	return nullptr;
 }
 
@@ -276,6 +280,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CStructure;
 	case (UINT)SCRIPT_TYPE::TURRET:
 		return new CTurret;
+	case (UINT)SCRIPT_TYPE::TURRETMGEFFECTPOOLER:
+		return new CTurretMGEffectPooler;
 	}
 	return nullptr;
 }
@@ -372,6 +378,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CStructure";
 	case SCRIPT_TYPE::TURRET:
 		return L"CTurret";
+	case SCRIPT_TYPE::TURRETMGEFFECTPOOLER:
+		return L"CTurretMGEffectPooler";
 	}
 	return nullptr;
 }

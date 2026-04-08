@@ -168,27 +168,29 @@ void Outliner::ChangeObjectNameTick()
     }
 }
 
-bool Outliner::ReNew()
+void Outliner::ReNew()
 {
-    /*// 매 프레임 현재 Level에 존재하는 GameObject 정보 업데이트
-    m_Tree->Clear();
-
-    // Stop 중인 경우, Editor 전용 오브젝트들 띄우기
-    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
+    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY)
     {
-        for (const Ptr<GameObject>& EditorObject : EditorMgr::GetInst()->GetGameObjects())
-            AddGameObject(nullptr, EditorObject);
+        // 매 프레임 현재 Level에 존재하는 GameObject 정보 업데이트
+        m_Tree->Clear();
+
+        // Stop 중인 경우, Editor 전용 오브젝트들 띄우기
+        if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
+        {
+            for (const Ptr<GameObject>& EditorObject : EditorMgr::GetInst()->GetGameObjects())
+                AddGameObject(nullptr, EditorObject);
+        }
+        
+        Ptr<ALevel> CurLevel = LevelMgr::GetInst()->GetCurLevel();
+
+        for (int i = 0; i < MAX_LAYER; ++i)
+        {
+            for (const Ptr<GameObject>& ParentObject : CurLevel->GetLayer(i)->GetParentObjects())
+                AddGameObject(nullptr, ParentObject);
+        }
+        return;
     }
-    
-    Ptr<ALevel> CurLevel = LevelMgr::GetInst()->GetCurLevel();
-
-    for (int i = 0; i < MAX_LAYER; ++i)
-    {
-        for (const Ptr<GameObject>& ParentObject : CurLevel->GetLayer(i)->GetParentObjects())
-            AddGameObject(nullptr, ParentObject);
-    }*/
-    
-    
     
     vector<DWORD_PTR> prevSelectedData{};
     for (const Ptr<TreeNode>& node : m_Tree->GetSelectedNodes())
@@ -243,10 +245,6 @@ bool Outliner::ReNew()
         m_GizmoSelectedObject = nullptr;
         EditorMgr::GetInst()->SetTargetObjectToInspectors(nullptr);
     }
-
-    return hasRestoredSelection;
-    
-    
 }
 
 void Outliner::AddGameObject(const Ptr<TreeNode>& _ParentNode, const Ptr<GameObject>& _Object)

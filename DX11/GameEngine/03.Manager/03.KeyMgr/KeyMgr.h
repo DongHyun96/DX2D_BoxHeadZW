@@ -123,6 +123,7 @@ public:
 	int GetMouseWheel() const { return m_Wheel; } // 1(WheelUp), 0, -1(WheelDown)
 	void SetMouseWheel(int _Wheel)
 	{
+		if (_Wheel == 0) return;
 		m_WheelChanged = true;
 		m_Wheel = _Wheel / abs(_Wheel);
 	}

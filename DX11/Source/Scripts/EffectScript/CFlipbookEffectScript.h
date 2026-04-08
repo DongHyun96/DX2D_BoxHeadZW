@@ -8,7 +8,7 @@ enum class FLIPBOOK_EFFECT_POOLER_TYPE;
 class CFlipbookEffectScript : public CScript
 {
 private:
-    
+
     wstring                     m_MainEffectAnimCategory{};
     FLIPBOOK_EFFECT_POOLER_TYPE m_PoolerType{};
     
