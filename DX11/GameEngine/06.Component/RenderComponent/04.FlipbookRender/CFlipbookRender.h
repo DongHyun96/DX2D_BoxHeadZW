@@ -15,9 +15,11 @@ private:
     // 해당 플립북의 재생이 끝났을 때에 Callback처리할 EndEvent를 걸 수 있다
     // 재생이 끝난 뒤 or 재생이 중간에 interrupt 되었을 때에도 호출 처리함
     map<AFlipbook*, function<void()>> m_EndEvents{};
+    map<AFlipbook*, function<void()>> m_StartEvents{};
 
     // 특정 Index 시작에서 호출될 이벤트
     map<AFlipbook*, pair<int, function<void()>>> m_OnSpriteIdxEvent{};
+    
 
 private:
     
@@ -80,6 +82,8 @@ public:
     /// <param name="_EndEvent"></param>
     /// <returns> 해당하는 Flipbook을 찾지 못했다면 return false </returns>
     bool AddNotifyFlipbookEndEvent(const wstring& _Category, UINT _FlipbookIdx, function<void()> _EndEvent);
+    
+    bool AddNotifyFlipbookStartEvent(const wstring& _Category, UINT _FlipbookIdx, function<void()> _StartEvent);
 
     /// <summary>
     /// 특정 카테고리, 특정 인덱스 플립북의 특정 Idx 재생 시작 시 호출받을 함수 binding 

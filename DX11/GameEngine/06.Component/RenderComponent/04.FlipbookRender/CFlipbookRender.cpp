@@ -96,7 +96,7 @@ void CFlipbookRender::FinalTick()
         }
         
         // 특정 Idx Event가 있다면 해당 Event 호출 처리
-        Ptr<AFlipbook> CurrentFlipbook = vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx];
+        const Ptr<AFlipbook>& CurrentFlipbook = vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx];
         if (m_OnSpriteIdxEvent.contains(CurrentFlipbook.Get()) &&
             m_OnSpriteIdxEvent[CurrentFlipbook.Get()].first == m_CurAnimatingSpriteIdx)
         {
@@ -163,7 +163,7 @@ bool CFlipbookRender::CheckFinish()
     if (m_bStopped)              return true;   // Stopped된 상황
     if (!m_bCurCycleFinished)    return false;  // 아직 현재 사이클이 진행중
     
-    const Ptr<AFlipbook> CurrentFlipbook = (*m_vecCurSelectedCategoryFlipbooks)[m_CurSelectedFlipbookIdx];
+    const Ptr<AFlipbook>& CurrentFlipbook = (*m_vecCurSelectedCategoryFlipbooks)[m_CurSelectedFlipbookIdx];
     
     if (m_RepeatCount == 0)
     {
@@ -198,6 +198,16 @@ bool CFlipbookRender::AddNotifyFlipbookEndEvent(const wstring& _Category, UINT _
     if (_FlipbookIdx >= m_mapCategoryFlipbooks[_Category].size()) return false;
     
     m_EndEvents[ m_mapCategoryFlipbooks[_Category][_FlipbookIdx].Get() ] = _EndEvent;
+    return true;
+}
+
+bool CFlipbookRender::AddNotifyFlipbookStartEvent(const wstring& _Category, UINT _FlipbookIdx, function<void()> _StartEvent)
+    
+{
+    if (!m_mapCategoryFlipbooks.contains(_Category)) return false;
+    if (_FlipbookIdx >= m_mapCategoryFlipbooks[_Category].size()) return false;
+    
+    m_StartEvents[ m_mapCategoryFlipbooks[_Category][_FlipbookIdx].Get() ] = _StartEvent;
     return true;
 }
 
@@ -262,6 +272,12 @@ bool CFlipbookRender::Play(int _FlipbookIdx, float _FPS, int _RepeatCount, bool 
     m_bPlayReverse              = _bPlayReverse;
     m_PrevSelectedFlipbookIdx   = m_CurSelectedFlipbookIdx; // 이전에 골랐었던 Flipbook idx 기록
     m_CurSelectedFlipbookIdx    = _FlipbookIdx;
+
+    const Ptr<AFlipbook>& CurrentFlipbook = (*m_vecCurSelectedCategoryFlipbooks)[m_CurSelectedFlipbookIdx];
+    
+    // StartEvent가 있는지 조사
+    if (m_StartEvents.contains(CurrentFlipbook.Get()) && m_StartEvents[CurrentFlipbook.Get()])
+        m_StartEvents[CurrentFlipbook.Get()](); // Callback 처리
     
     // 만일 이전에 골랐던 Flipbook이 재생 중이었고 EndEvent가 존재한다면, 해당 EndEvent 호출 처리
     if (m_mapCategoryFlipbooks.contains(m_PrevAnimatedCategory))

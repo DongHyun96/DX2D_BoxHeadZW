@@ -16,7 +16,10 @@ private:
     
 private:
     
+    class CFlameLineHandler* m_FlameLineHandler{};
+    
 public:
+    
     CDevil();
     virtual ~CDevil() override;
     CLONE(CDevil)

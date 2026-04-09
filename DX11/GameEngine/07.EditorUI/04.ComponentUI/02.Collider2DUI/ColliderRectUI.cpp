@@ -34,4 +34,10 @@ void ColliderRectUI::Tick_UI()
     if (ImGui::DragFloat2("##Scale", Scale, 0.01f))
         Collider->SetScale(Scale);
     
+    ImGui::Text("PivotLocal");
+    ImGui::SameLine(100);
+    Vec2 Pivot = Collider->GetPivotLocal();
+    if (ImGui::DragFloat2("##Pivot", Pivot, 0.01f))
+        Collider->SetPivotLocal(Pivot);
+    
 }

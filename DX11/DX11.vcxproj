@@ -299,6 +299,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\CharacterScript\CharacterStat\PlayerStat\CPlayerStat.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\Devil\CDevil.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\Devil\CFlameLineHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\EnemySpawnHandler\CEnemySpawnHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\EnemyWalkStrategy\EnemyWalkStrategy.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\Mummy\CMummy.h" />
@@ -1455,6 +1456,7 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\Devil\CFlameLineHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\EnemySpawnHandler\CEnemySpawnHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\EnemyWalkStrategy\EnemyWalkStrategy.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\Mummy\CMummy.cpp" />

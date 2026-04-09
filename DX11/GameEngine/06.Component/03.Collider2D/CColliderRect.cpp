@@ -20,9 +20,13 @@ void CColliderRect::FinalTick()
 {
     CCollider2D::FinalTick();
     
-    Matrix matTranslation   = XMMatrixTranslation(GetOffset().x, GetOffset().y, 0.f);
+    Matrix matPivotToOrigin = XMMatrixTranslation(-m_PivotLocal.x, -m_PivotLocal.y, 0.f);
     Matrix matScale         = XMMatrixScaling(m_Scale.x, m_Scale.y, 1.f);
-    GetWorldMat()           = matScale * matTranslation * Transform()->GetWorldMatrix();
+    Matrix matPivotBack     = XMMatrixTranslation( m_PivotLocal.x,  m_PivotLocal.y, 0.f);
+    Matrix matTranslation   = XMMatrixTranslation(GetOffset().x, GetOffset().y, 0.f);
+
+    // row-vector 기준: T(-Pivot) * S * T(Pivot)
+    GetWorldMat() = matPivotToOrigin * matScale * matPivotBack * matTranslation * Transform()->GetWorldMatrix();
 
     DrawDebugRect(GetWorldMat(), GetColor(), 0.f);
 }
@@ -223,6 +227,8 @@ void CColliderRect::SaveToLevelFile(FILE* _File)
     CCollider2D::SaveToLevelFile(_File);
     
     fwrite(&m_Scale, sizeof(Vec2), 1, _File);
+    fwrite(&m_PivotLocal, sizeof(Vec2), 1, _File);
+    
 }
 
 void CColliderRect::LoadFromLevelFile(FILE* _File)
@@ -230,4 +236,5 @@ void CColliderRect::LoadFromLevelFile(FILE* _File)
     CCollider2D::LoadFromLevelFile(_File);
     
     fread(&m_Scale, sizeof(Vec2), 1, _File);
+    fread(&m_PivotLocal, sizeof(Vec2), 1, _File);
 }

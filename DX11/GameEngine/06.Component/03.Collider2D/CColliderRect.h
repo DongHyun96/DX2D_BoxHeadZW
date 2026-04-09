@@ -8,7 +8,8 @@ class CColliderRect : public CCollider2D
     friend class CColliderPoint;
     
 private:
-    
+
+    Vec2 m_PivotLocal{};
     Vec2 m_Scale = {1.f, 1.f};
     
     // Circle과 충돌 되었을 때 기록된, Circle과 가장 가까운 점
@@ -27,6 +28,7 @@ public:
 public:
     
     GET_SET(Vec2, Scale)
+    GET_SET(Vec2, PivotLocal)
 
 private:
     
