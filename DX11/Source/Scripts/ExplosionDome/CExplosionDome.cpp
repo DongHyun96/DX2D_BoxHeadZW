@@ -54,7 +54,7 @@ void CExplosionDome::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _Oth
         {
             // 두 번 Damage 처리 x
             m_setAlreadyDamaged.insert(_OtherCollider);
-            Stat->TakeDamage(m_DamageAmount, ToVec2(Transform()->GetWorldPos()));
+            Stat->TakeDamage(m_DamageAmount, GetOwner());
         }
         return;
     }
@@ -64,6 +64,6 @@ void CExplosionDome::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _Oth
     {
         // 두 번 Damage 처리 x
         m_setAlreadyDamaged.insert(_OtherCollider);
-        Stat->TakeDamage(m_DamageAmount, ToVec2(Transform()->GetWorldPos()));
+        Stat->TakeDamage(m_DamageAmount, GetOwner());
     }
 }

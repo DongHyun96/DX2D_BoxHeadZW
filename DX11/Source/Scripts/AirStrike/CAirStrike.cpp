@@ -162,5 +162,5 @@ void CAirStrike::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCo
 {
     // TODO : 실질적인 Damage 처리
     if (Ptr<CStatScript> Stat = _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>())
-        Stat->TakeDamage(5000.f, Transform()->GetWorldPos2D());
+        Stat->TakeDamage(5000.f, GetOwner());
 }

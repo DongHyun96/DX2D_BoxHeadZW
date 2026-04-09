@@ -36,7 +36,7 @@ void CVampire::Tick()
     HandleTeleport();
 }
 
-void CVampire::OnTakeDamage()
+void CVampire::OnTakeDamage(GameObject* _DamageCauser)
 {
     // Damage Timer 초기화
     m_AfterLastDamagedTimer = 0.f;

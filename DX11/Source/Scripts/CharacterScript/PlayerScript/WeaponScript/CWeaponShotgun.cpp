@@ -48,7 +48,7 @@ bool CWeaponShotgun::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirectio
             
             Ptr<CCollider2D> CollidedCollider = Hit.Collider;
             if (Ptr<CStatScript> Stat = CollidedCollider->GetOwner()->GetScriptComponent<CStatScript>())
-                Stat->TakeDamage(GetDamageAmountPerRound(), _MuzzleWorldPos);
+                Stat->TakeDamage(GetDamageAmountPerRound(), GM->GetPlayerObject());
         }
         else
         {

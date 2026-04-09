@@ -72,7 +72,7 @@ public:
     /// <summary>
     /// 피격 당한 이후 처리를 해야 하는 Enemy 종류의 경우, 해당 함수 override 할 것 
     /// </summary>
-    virtual void OnTakeDamage() {}
+    virtual void OnTakeDamage(GameObject* _DamageCauser) {}
     
 private:
     
@@ -86,8 +86,12 @@ private:
     virtual void Move() override;
     
     virtual void UpdateCurrentFacedDirection() override;
+
+protected:
     
     virtual void AfterPushedOutFin() override;
+    
+private:
     
     void HandleFadeOut();
 
@@ -124,7 +128,7 @@ private:
     
 public:
     
-    void SetMainState(ENEMY_MAINSTATE _MainState) { m_MainState = _MainState; }
+    virtual void SetMainState(ENEMY_MAINSTATE _MainState) { m_MainState = _MainState; }
     ENEMY_MAINSTATE GetMainState() const { return m_MainState; }
     
     void SetTargetObject(const Ptr<GameObject>& _Target) { m_TargetObject = _Target; }

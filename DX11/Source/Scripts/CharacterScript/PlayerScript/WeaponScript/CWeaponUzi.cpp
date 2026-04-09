@@ -5,6 +5,7 @@
 #include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 CWeaponUzi::CWeaponUzi()
@@ -43,7 +44,7 @@ bool CWeaponUzi::Fire(const Vec2& _MuzzleWorldPos, const Vec2& _FireDirection)
         
         Ptr<CCollider2D> CollidedCollider = Hit.Collider;
         if (Ptr<CStatScript> Stat = CollidedCollider->GetOwner()->GetScriptComponent<CStatScript>())
-            Stat->TakeDamage(GetDamageAmountPerRound(), _MuzzleWorldPos);
+            Stat->TakeDamage(GetDamageAmountPerRound(), GM->GetPlayerObject());
     }
     else
     {

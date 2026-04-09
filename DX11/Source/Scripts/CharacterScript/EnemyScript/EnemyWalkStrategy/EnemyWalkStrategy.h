@@ -13,12 +13,12 @@ public:
 
     virtual void UseWalkStrategy(class CEnemyScript* _Enemy) = 0;
 
-protected:
+public:
     
     /// <summary>
     /// 전체 Target으로 삼을 수 있는 오브젝트를 탐색하여 찾기 
     /// </summary>
-    GameObject* FindNearestTargetFromAllObjects(CEnemyScript* _Enemy);
+    static GameObject* FindNearestTargetFromAllObjects(CEnemyScript* _Enemy);
     
 };
 

@@ -33,13 +33,13 @@ CStructureStat::~CStructureStat()
 {
 }
 
-bool CStructureStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
+bool CStructureStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
 {
     // Preview 오브젝트인 경우, 그냥 넘어가야함
     CStructure* StructureScript = GetOwner()->GetScriptComponent<CStructure>().Get();
     if (StructureScript->GetIsPreviewObject()) return false;
     
-    if (!CStatScript::TakeDamage(_DamageAmount, _DamageSourcePos)) return false;
+    if (!CStatScript::TakeDamage(_DamageAmount, _DamageCauser)) return false;
     
     if (IsDead())
     {

@@ -35,7 +35,7 @@ public:
     
 private:
     
-    virtual void OnTakeDamage() override;
+    virtual void OnTakeDamage(GameObject* _DamageCauser) override;
     virtual void SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType) override;
     
 private:

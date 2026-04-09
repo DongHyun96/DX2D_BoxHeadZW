@@ -39,6 +39,13 @@ void CColliderRect::FinalTick()
     
     for (int i = 0; i < 4; ++i)
         m_CornersWorldPos[i] = XMVector3TransformCoord(kLocalCorners[i], GetWorldMat());
+    
+    // 각 변의 중점
+    m_EdgeMid[0] = (m_CornersWorldPos[0] + m_CornersWorldPos[1]) * 0.5f; // Top
+    m_EdgeMid[1] = (m_CornersWorldPos[1] + m_CornersWorldPos[2]) * 0.5f; // Right
+    m_EdgeMid[2] = (m_CornersWorldPos[2] + m_CornersWorldPos[3]) * 0.5f; // Bottom
+    m_EdgeMid[3] = (m_CornersWorldPos[3] + m_CornersWorldPos[0]) * 0.5f; // Left
+    
 
     DrawDebugRect(GetWorldMat(), GetColor(), 0.f);
 }

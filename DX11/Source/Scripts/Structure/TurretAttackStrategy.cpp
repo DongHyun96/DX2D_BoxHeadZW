@@ -53,7 +53,7 @@ bool Turret_MGAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _T
     {
         Ptr<CCollider2D> CollidedCollider = Hit.Collider;
         if (Ptr<CStatScript> Stat = CollidedCollider->GetOwner()->GetScriptComponent<CStatScript>())
-            Stat->TakeDamage(GetRandom(20.f, 35.f), MuzzlePos2D);
+            Stat->TakeDamage(GetRandom(20.f, 35.f), _Turret->GetOwner());
     }
     
     /////////// Muzzle Effect ///////////

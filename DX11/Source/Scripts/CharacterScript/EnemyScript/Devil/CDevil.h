@@ -26,6 +26,8 @@ private:
     
     Ptr<ASound> m_AttackSound{};
     
+    GameObject* m_LastDamageCauser{};
+    
 public:
     
     CDevil();
@@ -40,7 +42,9 @@ public:
     
 private:
 
-    virtual void OnTakeDamage() override;
+    virtual void OnTakeDamage(GameObject* _DamageCauser) override;
+    
+    virtual void AfterPushedOutFin() override;
     virtual void HandleStateTransition() override;
     virtual void OnAttackFlipbookEndNotify() override;
 
@@ -50,6 +54,10 @@ private:
     /// Attack 모션이 시작될 때 Callback 받음 -> 바라보는 방향으로 FlameLine 쏘기 처리할 것
     /// </summary>
     void OnAttackAnimStart();
+
+private:
+
+    virtual void SetMainState(ENEMY_MAINSTATE _MainState) override;
     
 public:
     

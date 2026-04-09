@@ -16,6 +16,6 @@ protected:
     
 public:
     
-    virtual bool TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos) override;
+    virtual bool TakeDamage(float _DamageAmount, GameObject* _DamageCauser) override;
     
 };

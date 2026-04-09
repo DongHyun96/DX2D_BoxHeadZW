@@ -23,10 +23,10 @@ void CPlayerStat::Tick()
     CCharacterStat::Tick();
 }
 
-bool CPlayerStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
+bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
 {
     // 기본 Damage 입히기 처리 실패했다면 return false 
-    if (!CCharacterStat::TakeDamage(_DamageAmount, _DamageSourcePos)) return false;
+    if (!CCharacterStat::TakeDamage(_DamageAmount, _DamageCauser)) return false;
     
     // TODO : 테스트 때문에 무적기 걸어둠
     ApplyHeal(100.f);

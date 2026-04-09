@@ -265,5 +265,5 @@ void CPerceptionHandler::OnAttackDamageColliderBeginOverlap(CCollider2D* _Attack
     
     // 들어온 물체에 대해 피격 처리를 해준다
     const float DamageAmount = m_MainEnemyScript->GetAttackDamage();
-    _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>()->TakeDamage(DamageAmount, Transform()->GetRelativePosXY());
+    _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>()->TakeDamage(DamageAmount, m_MainEnemyScript->GetOwner());
 }

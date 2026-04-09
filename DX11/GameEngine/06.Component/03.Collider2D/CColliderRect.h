@@ -18,6 +18,7 @@ private:
 private:
     
     Vec3 m_CornersWorldPos[4]; // LT, RT, RB, LB
+    Vec3 m_EdgeMid[4]; // 각 변의 중점 (Top, Right, Bottom, Left 순)
 
 public:
     
@@ -35,6 +36,7 @@ public:
     GET_SET(Vec2, PivotLocal)
     
     const Vec3& GetCornerWorldPos(UINT _CornerIdx) const { return m_CornersWorldPos[_CornerIdx]; }
+    const Vec3& GetEdgeMidWorldPos(UINT _Idx) const { return m_EdgeMid[_Idx]; }
     
     void SetScaleX(float _ScaleX) { m_Scale.x = _ScaleX; }
     void SetScaleY(float _ScaleY) { m_Scale.y = _ScaleY; }

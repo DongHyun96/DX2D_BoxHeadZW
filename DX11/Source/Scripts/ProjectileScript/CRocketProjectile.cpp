@@ -107,7 +107,7 @@ void CRocketProjectile::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _
     {
         // 주의 : Barrel 빼고는 여기서 Damage를 주면 안됨 / Barrel의 경우에만 연쇄폭발 첫 Barrel을 여기서 터트림
         if (_OtherCollider->GetOwner()->GetScriptComponent<CBarrel>())
-            Stat->TakeDamage(m_DamageAmount, ToVec2(Transform()->GetWorldPos()));
+            Stat->TakeDamage(m_DamageAmount, GetOwner());
     }
 }
 

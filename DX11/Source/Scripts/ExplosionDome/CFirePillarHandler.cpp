@@ -94,7 +94,7 @@ void CFirePillarHandler::SpawnStepExplosion(const FirePillarSpawnDesc& _Desc, in
     Desc.SpawnPos.y          += GetRandom(-_Desc.VerticalJitter, _Desc.VerticalJitter);
     Desc.SpawnPos.z          = Desc.SpawnPos.y;
     Desc.ExplosionSizeFactor *= StepScale;
-    Desc.FPS = 1500.f;
+    Desc.FPS = 2500.f;
 
     Desc.PlayExplosionSound = false;
     /*if (!_Desc.PlaySoundEachStep && _StepIndex > 0)

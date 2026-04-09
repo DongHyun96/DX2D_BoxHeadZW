@@ -13,9 +13,9 @@ CEnemyStat::~CEnemyStat()
 {
 }
 
-bool CEnemyStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
+bool CEnemyStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
 {
-    if (!CCharacterStat::TakeDamage(_DamageAmount, _DamageSourcePos)) return false;
+    if (!CCharacterStat::TakeDamage(_DamageAmount, _DamageCauser)) return false;
 
     // 사망 체크할 것
     // TODO : 사망 시 사망 Animation 재생 및 사망 끝 처리 EndEvent에 다시 Pool로 돌아가게끔 처리할 것 -> 이거를 Dead Flipbook 이후
@@ -26,7 +26,7 @@ bool CEnemyStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
     
     MainEnemyScript->SetMainState(NextState);
     
-    GetOwner()->GetScriptComponent<CEnemyScript>()->OnTakeDamage();
+    GetOwner()->GetScriptComponent<CEnemyScript>()->OnTakeDamage(_DamageCauser);
     
     return true;
 }

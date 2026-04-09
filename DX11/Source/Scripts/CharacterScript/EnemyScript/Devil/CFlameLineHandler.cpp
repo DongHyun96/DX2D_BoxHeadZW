@@ -6,6 +6,7 @@
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 
 CFlameLineHandler::CFlameLineHandler()
     : CScript(SCRIPT_TYPE::FLAMELINEHANDLER)
@@ -25,27 +26,40 @@ void CFlameLineHandler::Tick()
 {
     if (!ColliderRect()->GetActive()) return;
     
-    m_AttackColliderScaleTimer += DT;
-    ColliderRect()->SetScaleX(MappingToNewRange(m_AttackColliderScaleTimer, 0.f, 1.f, 1.f, 10.f));
+    static constexpr float TotalAttackTime              = 1.25f;
+    static constexpr float FirePillarIntervalTime       = 0.065f; // 이 간격으로 ColliderRect의 오른쪽 모서리 위치에 FirePillar 스폰 처리
+    static constexpr float FirePillarSpawnDownOffsetY   = 18.f; // 우측 변 중앙에서 아래로 내릴 오프셋
+    static constexpr float AttackColliderScaleDest      = 8.5f; // 얼만큼 AttackCollider 늘릴것인지
     
-    static const float FirePillarIntervalTime = 0.05f; // 이 간격으로 ColliderRect의 오른쪽 모서리 위치에 FirePillar 스폰 처리
+    
+    m_AttackColliderScaleTimer += DT;
+    ColliderRect()->SetScaleX(MappingToNewRange(m_AttackColliderScaleTimer, 0.f, TotalAttackTime, 1.f, AttackColliderScaleDest));
+    
     m_PillarIntervalTimer += DT;
     
     if (m_PillarIntervalTimer > FirePillarIntervalTime) // Time to spawn Pillar 
     {
         m_PillarIntervalTimer -= FirePillarIntervalTime;
-        const Vec3& ColliderRTWorldPos = ColliderRect()->GetCornerWorldPos(1);
-        const Vec3& ColliderRBWorldPos = ColliderRect()->GetCornerWorldPos(2);
+        Vec3 SpawnPos = ColliderRect()->GetEdgeMidWorldPos(1);
+        SpawnPos.y -= FirePillarSpawnDownOffsetY;
+        SpawnPos.z = SpawnPos.y;
         
-        const Vec2 Direction = ToVec2(ColliderRBWorldPos - ColliderRTWorldPos);
-        // Vec2 FinalPos = ColliderRBWorldPos - 
-        
-        GM->SpawnFirePillar(ColliderRBWorldPos, 0.f);
+        GM->SpawnFirePillar(SpawnPos, 0.f);
     }
 
     // 총 공격 시간 끝이라고 판단 처리
-    if (m_AttackColliderScaleTimer > 2.f)
+    if (m_AttackColliderScaleTimer > TotalAttackTime)
+    {
         ColliderRect()->SetActive(false);
+        InitWaitState();
+    }
+}
+
+void CFlameLineHandler::InitWaitState()
+{
+    m_AttackColliderScaleTimer = 0.f;
+    m_PillarIntervalTimer = 0.f;
+    m_PlayerDamagedCount = 0;
 }
 
 void CFlameLineHandler::MakeFlameLine(float _Angle, float _Damage)
@@ -64,5 +78,15 @@ void CFlameLineHandler::MakeFlameLine(float _Angle, float _Damage)
 void CFlameLineHandler::OnAttackColliderBeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)
 {
     if (const Ptr<CStatScript>& Stat = _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>())
-        Stat->TakeDamage(m_Damage, ToVec2(ColliderRect()->GetWorldPos()));
+    {
+        if (_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>())
+        {
+            if (m_PlayerDamagedCount < 3) // Player의 경우 한 턴에 3회 이상 공격을 하지 못하도록 처리를 한다
+            {
+                Stat->TakeDamage(m_Damage, GetOwner()->GetParent());
+                m_PlayerDamagedCount++;
+            }
+        }
+        else Stat->TakeDamage(120.f, GetOwner()->GetParent()); // 구조물의 경우, 더 많은 양의 데미지를 입히도록 처리한다
+    }
 }

@@ -7,6 +7,8 @@ class CFlameLineHandler : public CScript
 {
 private:
 
+    int m_PlayerDamagedCount{}; // 한 공격 내에서 공격 횟수가 3회 이상 넘어가지 않도록 처리를 한다 (3회여도 뒤지긴 함)
+    
 private:
 
     float m_Damage = 80.f;
@@ -25,6 +27,11 @@ public:
 
     virtual void Begin() override;
     virtual void Tick() override;
+
+public:
+
+    // 공격 대기 시간으로 전환 시, 초기화할 변수 처리
+    void InitWaitState();
     
 public:
     

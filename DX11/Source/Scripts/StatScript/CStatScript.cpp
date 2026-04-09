@@ -33,7 +33,7 @@ void CStatScript::Tick()
 {
 }
 
-bool CStatScript::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
+bool CStatScript::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
 {
     if (IsDead()) return false; // 이미 사망처리된 오브젝트
     if (_DamageAmount <= 0.f) return false; // 잘못된 Damage량

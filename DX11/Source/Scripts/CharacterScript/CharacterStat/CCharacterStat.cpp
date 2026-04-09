@@ -19,14 +19,14 @@ CCharacterStat::CCharacterStat(SCRIPT_TYPE _ScriptType)
 {
 }
 
-bool CCharacterStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos)
+bool CCharacterStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
 {
-    if (!CStatScript::TakeDamage(_DamageAmount, _DamageSourcePos)) return false;
+    if (!CStatScript::TakeDamage(_DamageAmount, _DamageCauser)) return false;
     
     // PushedOut 이후 Dead 처리가 이루어져야 함
     if (const Ptr<CCharacterScript>& MainCharacterScript = GetOwner()->GetScriptComponent<CCharacterScript>())
     {
-        Vec2 PushedOutFaceDirection = _DamageSourcePos - ToVec2(Transform()->GetWorldPos());
+        Vec2 PushedOutFaceDirection = _DamageCauser->Transform()->GetWorldPos2D() - ToVec2(Transform()->GetWorldPos());
         PushedOutFaceDirection.Normalize();
         
         // PushedOut의 경우, PushedOut Animation(정확히는 밀린 장면 Stop 시간 얼마나 보여줄지) time rewind 처리를 여기서 해주어야 한다

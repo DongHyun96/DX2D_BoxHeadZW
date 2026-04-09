@@ -35,9 +35,9 @@ public:
     /// Damage 입히기 시도
     /// </summary>
     /// <param name="_DamageAmount"> : Damage 총량 </param>
-    /// <param name="_DamageSourcePos"> : Damage를 준 Source의 위치 </param>
+    /// <param name="_DamageCauser"> : Damage를 준 Causer Object</param>
     /// <returns> : 제대로 Damage 처리가 되었다면 return true </returns>
-    virtual bool TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePos);
+    virtual bool TakeDamage(float _DamageAmount, GameObject* _DamageCauser);
     
     virtual bool ApplyHeal(float _HealAmount);
 
