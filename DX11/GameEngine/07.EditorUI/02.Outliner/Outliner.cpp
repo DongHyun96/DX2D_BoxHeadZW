@@ -172,6 +172,8 @@ void Outliner::ChangeObjectNameTick()
 
 void Outliner::ReNew()
 {
+    m_CurrentObjectDataInTree.clear();
+
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY)
     {
         // 매 프레임 현재 Level에 존재하는 GameObject 정보 업데이트
@@ -191,6 +193,8 @@ void Outliner::ReNew()
             for (const Ptr<GameObject>& ParentObject : CurLevel->GetLayer(i)->GetParentObjects())
                 AddGameObject(nullptr, ParentObject);
         }
+
+        CleanupInactiveDelegateRegistrations();
         return;
     }
     
@@ -247,6 +251,8 @@ void Outliner::ReNew()
         m_GizmoSelectedObject = nullptr;
         EditorMgr::GetInst()->SetTargetObjectToInspectors(nullptr);
     }
+
+    CleanupInactiveDelegateRegistrations();
 }
 
 void Outliner::AddGameObject(const Ptr<TreeNode>& _ParentNode, const Ptr<GameObject>& _Object)
@@ -254,9 +260,52 @@ void Outliner::AddGameObject(const Ptr<TreeNode>& _ParentNode, const Ptr<GameObj
     const string ObjectNameStr = _Object->GetName().empty() ? "UnNamed" : string(_Object->GetName().begin(), _Object->GetName().end()); 
     
     Ptr<TreeNode> ParentNode = m_Tree->AddItem(_ParentNode, ObjectNameStr, reinterpret_cast<DWORD_PTR>(_Object.Get()));
+    ParentNode->SetTextDimmed(!_Object->GetActive());
+    RegisterActiveStateDelegate(_Object);
     
     for (const Ptr<GameObject>& ChildObject : _Object->GetChildren())
         AddGameObject(ParentNode, ChildObject);
+}
+
+void Outliner::RegisterActiveStateDelegate(const Ptr<GameObject>& _Object)
+{
+    if (!_Object) return;
+
+    const DWORD_PTR objectData = reinterpret_cast<DWORD_PTR>(_Object.Get());
+    m_CurrentObjectDataInTree.insert(objectData);
+
+    if (!m_ActiveDelegateRegisteredObjects.insert(objectData).second) return;
+
+    _Object->AddActivateDelegate([this](const Ptr<GameObject>& changedObject)
+    {
+        OnGameObjectActiveChanged(changedObject);
+    });
+
+    _Object->AddDeactivateDelegate([this](const Ptr<GameObject>& changedObject)
+    {
+        OnGameObjectActiveChanged(changedObject);
+    });
+}
+
+void Outliner::OnGameObjectActiveChanged(const Ptr<GameObject>& _Object)
+{
+    if (!_Object) return;
+
+    Ptr<TreeNode> node = m_Tree->FindNodeByData(reinterpret_cast<DWORD_PTR>(_Object.Get()));
+    if (!node) return;
+
+    node->SetTextDimmed(!_Object->GetActive());
+}
+
+void Outliner::CleanupInactiveDelegateRegistrations()
+{
+    for (auto iter = m_ActiveDelegateRegisteredObjects.begin(); iter != m_ActiveDelegateRegisteredObjects.end();)
+    {
+        if (m_CurrentObjectDataInTree.find(*iter) == m_CurrentObjectDataInTree.end())
+            iter = m_ActiveDelegateRegisteredObjects.erase(iter);
+        else
+            ++iter;
+    }
 }
 
 vector<Ptr<GameObject>> Outliner::GetSelectedObjects() const

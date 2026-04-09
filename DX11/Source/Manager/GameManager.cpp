@@ -20,7 +20,17 @@ GameManager::~GameManager()
 
 void GameManager::OnLevelBegin()
 {
-    // Level에 들어있는 Layer들의 Begin 전에 먼저 호출 처리됨 
+    // Level에 들어있는 Layer들의 Begin 전에 먼저 호출 처리됨
+    
+    m_PlayerObject      = nullptr;
+    m_MainPlayerScript  = nullptr;
+    
+    m_mapFlipbookEffectPoolers.clear();
+    
+    m_RocketProjectilePooler    = nullptr;
+    m_GrenadePooler             = nullptr;
+    m_BackgroundCellManager     = nullptr;
+    m_EnemySpawnHandler         = nullptr;
     
     CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
@@ -28,14 +38,15 @@ void GameManager::OnLevelBegin()
 
 void GameManager::OnLevelPlayToStop()
 {
-    m_PlayerObject = nullptr;
-    m_MainPlayerScript = nullptr;
+    m_PlayerObject      = nullptr;
+    m_MainPlayerScript  = nullptr;
     
     m_mapFlipbookEffectPoolers.clear();
     
-    m_RocketProjectilePooler = nullptr;
-    m_GrenadePooler = nullptr;
-    m_BackgroundCellManager = nullptr;
+    m_RocketProjectilePooler    = nullptr;
+    m_GrenadePooler             = nullptr;
+    m_BackgroundCellManager     = nullptr;
+    m_EnemySpawnHandler         = nullptr;
     
     CStructure::ClearInstalledInfo();
 }

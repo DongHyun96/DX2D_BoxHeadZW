@@ -84,7 +84,8 @@ void TaskMgr::Progress()
         case TASK_TYPE::SPAWN_POOLED_OBJECT:
         {
             Ptr<GameObject> gObject = reinterpret_cast<GameObject*>(task.Param_0);
-            gObject->SetActive(true);
+            bool ActiveHierarchy = static_cast<bool>(task.Param_1);
+            gObject->SetActive(true, ActiveHierarchy);
         }
             break;
         case TASK_TYPE::CHANGE_LEVEL:

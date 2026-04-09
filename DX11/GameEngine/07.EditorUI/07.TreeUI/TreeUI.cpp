@@ -35,8 +35,23 @@ void TreeNode::Tick()
     if (Framed && vecChildNode.empty())
         NodeName = "   " + NodeName;
     
-    if (FolderVisual)
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.95f, 0.78f, 0.22f, 1.f));
+    const bool UseCustomTextColor = FolderVisual || TextDimmed;
+    if (UseCustomTextColor)
+    {
+        ImVec4 textColor = FolderVisual
+            ? ImVec4(0.95f, 0.78f, 0.22f, 1.f)
+            : ImGui::GetStyleColorVec4(ImGuiCol_Text);
+
+        if (TextDimmed)
+        {
+            constexpr float dimFactor = 0.35f;
+            textColor.x *= dimFactor;
+            textColor.y *= dimFactor;
+            textColor.z *= dimFactor;
+        }
+
+        ImGui::PushStyleColor(ImGuiCol_Text, textColor);
+    }
 
     // Renew 이 후, 이전에 골랐었던 TreeNode에 대해 강제 오픈 처리를 위한 단계
     if (OpenRequested)
@@ -48,7 +63,7 @@ void TreeNode::Tick()
     const bool Opened = ImGui::TreeNodeEx(NodeName.c_str(), Flags);
     WasOpen = Opened;
 
-    if (FolderVisual)
+    if (UseCustomTextColor)
         ImGui::PopStyleColor();
 
     if (Opened)

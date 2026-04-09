@@ -75,6 +75,13 @@ public:
     virtual void OnTakeDamage() {}
     
 private:
+    
+    /// <summary>
+    /// FadeOut 처리가 끝난 뒤, 더 처리할 구현이 있다면 해당 함수 override 할 것 (Mummy) 
+    /// </summary>
+    virtual void OnFadeOutEnd() {}
+    
+private:
 
     virtual void Move() override;
     

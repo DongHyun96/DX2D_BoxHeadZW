@@ -15,6 +15,7 @@ public:
     
     bool                    Framed{};               // Frame 처리로 보여줄지
     bool                    IsFolderNode{};         // 폴더 노드인지
+    bool                    TextDimmed{};           // 텍스트를 살짝 어둡게 표시할지
     
     class TreeUI*           m_Owner{};              // 노드를 소유하고 있는 TreeUI
     
@@ -47,6 +48,7 @@ public:
     
     void SetFramed(bool _Frame) { Framed = _Frame; }
     void SetIsFolderStyleNode(bool _IsFolderStyle) { IsFolderNode = _IsFolderStyle; }
+    void SetTextDimmed(bool _Dimmed) { TextDimmed = _Dimmed; }
     
     
 private:

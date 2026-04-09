@@ -159,6 +159,8 @@ void GameObject::FinalTick_Editor()
 
 void GameObject::Render()
 {
+	if (!m_IsActive || !m_IsVisible) return;
+	
 	if (m_RenderCom)
 	{
 		// Transform 위치 정보를 constant buffer로 binding 처리한 뒤, MeshRenderer component가 그리기 처리

@@ -37,6 +37,8 @@ private: // Poolers
     CPoolComponent* m_RocketProjectilePooler{};
     CPoolComponent* m_GrenadePooler{};
     
+    class CEnemySpawnHandler* m_EnemySpawnHandler{}; 
+    
 public:
     
     /// <summary>
@@ -65,6 +67,9 @@ public:
     
     void SetBackgroundCellManager(CBackgroundTile* _BackgroundCellManager) { m_BackgroundCellManager = _BackgroundCellManager; }
     CBackgroundTile* GetBackgroundCellManager() const { return m_BackgroundCellManager; }
+    
+    void SetEnemySpawnHandler(CEnemySpawnHandler* _EnemySpawnHandler) { m_EnemySpawnHandler = _EnemySpawnHandler; }
+    CEnemySpawnHandler* GetEnemySpawnHandler() const { return m_EnemySpawnHandler; }
     
 public: // Effect Spawn 관련
 

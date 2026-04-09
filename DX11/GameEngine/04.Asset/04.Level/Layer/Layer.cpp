@@ -116,8 +116,5 @@ void Layer::AfterLevelBegin()
 void Layer::Render()
 {
     for (const Ptr<GameObject>& gameObject : m_vecParents)
-    {
-        if (!gameObject->GetActive() || !gameObject->GetVisible()) continue;
         gameObject->Render();
-    }
 }

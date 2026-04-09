@@ -155,6 +155,8 @@ void CEnemyScript::HandleFadeOut()
     // Pool 에 돌아가는 처리
     // Owner GameObject가 Pool에서 생성된 GameObject라면, IsActive 해제시, 자동적으로 들어간다
     GetOwner()->SetActive(false);
+    
+    OnFadeOutEnd();
 }
 
 void CEnemyScript::HandleStateTransition()

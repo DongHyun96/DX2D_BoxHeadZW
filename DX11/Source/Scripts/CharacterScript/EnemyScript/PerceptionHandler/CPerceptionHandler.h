@@ -48,6 +48,8 @@ public:
     /// <param name="_RotationAngle"> : Spawn시킬 회전 방향 </param>
     void ToggleDamagingCollider(bool _Enabled, float _RotationAngle = 0.f);
     
+    GameObject* GetDamageColliderObject() const { return m_AttackColliderObject; }
+    
 private:
     
     /// <summary>

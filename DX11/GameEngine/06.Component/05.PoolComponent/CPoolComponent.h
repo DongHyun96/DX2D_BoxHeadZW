@@ -30,13 +30,13 @@ public:
     /// 프리팹에서 저장된 기본 Transform 위치정보에 Spawn 처리
     /// </summary>
     /// <returns> : 스폰된 GameObject, 제대로 Spawn되지 않았다면 nullptr </returns>
-    GameObject* SpawnObject();
+    GameObject* SpawnObject(bool _SetActiveHierarchy = true);
 
     /// <summary>
     /// 특정 위치에 GameObject 스폰 처리
     /// </summary>
     /// <returns> : 스폰된 GameObject, 제대로 Spawn되지 않았다면 nullptr </returns>
-    GameObject* SpawnObject(const Vec3& _SpawnPosition);
+    GameObject* SpawnObject(const Vec3& _SpawnPosition, bool _SetActiveHierarchy = true);
     
 private:
     

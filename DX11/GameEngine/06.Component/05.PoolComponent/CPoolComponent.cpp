@@ -78,7 +78,7 @@ void CPoolComponent::FinalTick()
     // Nothing to do
 }
 
-GameObject* CPoolComponent::SpawnObject()
+GameObject* CPoolComponent::SpawnObject(bool _SetActiveHierarchy)
 {
     if (m_SpawningPool.empty())
     {
@@ -88,16 +88,18 @@ GameObject* CPoolComponent::SpawnObject()
     
     TaskInfo info{};
 
+    // Transform 정보를 Tick에서 한번 업데이트 처리를 해주어야, 올바른 위치에 스폰 처리되기 때문에, TaskMgr를 통해 Active를 켜준다
     Ptr<GameObject> gObject = m_SpawningPool.front(); m_SpawningPool.pop();
     
     info.Type       = TASK_TYPE::SPAWN_POOLED_OBJECT;
     info.Param_0    = reinterpret_cast<DWORD_PTR>(gObject.Get());
+    info.Param_1    = static_cast<DWORD_PTR>(_SetActiveHierarchy); // 부모와 자식 모두 한번에 켤건지 체킹
     TaskMgr::GetInst()->AddTask(info);
     
     return gObject.Get();
 }
 
-GameObject* CPoolComponent::SpawnObject(const Vec3& _SpawnPosition)
+GameObject* CPoolComponent::SpawnObject(const Vec3& _SpawnPosition, bool _SetActiveHierarchy)
 {
     if (m_SpawningPool.empty())
     {
@@ -112,6 +114,7 @@ GameObject* CPoolComponent::SpawnObject(const Vec3& _SpawnPosition)
     
     info.Type       = TASK_TYPE::SPAWN_POOLED_OBJECT;
     info.Param_0    = reinterpret_cast<DWORD_PTR>(gObject.Get());
+    info.Param_1    = static_cast<DWORD_PTR>(_SetActiveHierarchy);
     TaskMgr::GetInst()->AddTask(info);
     
     return gObject.Get();

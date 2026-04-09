@@ -23,10 +23,11 @@ public:
     CPoolComponent* GetEnemyPooler(ENEMY_TYPE _EnemyType) const;*/
 
     /// <summary>
-    /// 해당 EnemyType 해당 위치에 Spawn 시키기
+    /// 해당 EnemyType 해당 위치에 Spawn 시키기 (Cell에 맞추어 Spawn처리됨)
     /// </summary>
-    /// <returns> 제대로 Spawn되었다면 return true </returns>
-    bool SpawnEnemy(ENEMY_TYPE _EnemyType, const Vec2& _SpawnPos);
+    /// <returns> 제대로 Spawn되었다면 Spawn된 Enemy GameObject 반환 </returns>
+    GameObject* SpawnEnemy(ENEMY_TYPE _EnemyType, const Vec2& _SpawnPos);
+    GameObject* SpawnEnemy(ENEMY_TYPE _EnemyType, const CellCoord& _CellCoord);
     
 public:
     
