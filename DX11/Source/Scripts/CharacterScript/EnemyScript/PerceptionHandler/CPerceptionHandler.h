@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <unordered_set>
+
 /// <summary>
 /// Enemy AI의 각 Detection Area detecting에 따른 State 전환 및 기본 처리 담당
 /// Devil을 뺀 모든 Enemy에 대한 기본 Perception 처리 담당
@@ -13,12 +15,12 @@ private:
     GameObject* m_AttackColliderObject{};
 
     // 피격 판정이 이번 공격에 들어갔는지 체킹
-    set<CCollider2D*> m_AlreadyDamaged{};
+    unordered_set<CCollider2D*> m_AlreadyDamaged{};
 
 private:
 
-    set<GameObject*> m_setStraightThroughDetectionEnteredObjects{}; // 현재 StraightThrough 영역에 들어와 있는 오브젝트들
-    set<GameObject*> m_setAttackAreaEnteredObjects{};               // 현재 Attack 반경에 들어와 있는 오브젝트들
+    unordered_set<GameObject*> m_setStraightThroughDetectionEnteredObjects{}; // 현재 StraightThrough 영역에 들어와 있는 오브젝트들
+    unordered_set<GameObject*> m_setAttackAreaEnteredObjects{};               // 현재 Attack 반경에 들어와 있는 오브젝트들
 
 private:
     
@@ -49,6 +51,10 @@ public:
     void ToggleDamagingCollider(bool _Enabled, float _RotationAngle = 0.f);
     
     GameObject* GetDamageColliderObject() const { return m_AttackColliderObject; }
+
+private:
+
+    GameObject* ResolvePerceptionTarget(CCollider2D* _OtherCollider) const;
     
 private:
     

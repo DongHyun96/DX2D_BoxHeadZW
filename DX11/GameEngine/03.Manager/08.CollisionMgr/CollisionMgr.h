@@ -36,6 +36,8 @@ class CollisionMgr : public Singleton<CollisionMgr>
 
 private:
 
+    using CellBuckets = unordered_map<ULONGLONG, vector<UINT>>;
+
     struct CollisionPairState
     {
         bool    IsColliding{};
@@ -44,11 +46,12 @@ private:
         UINT    RightID{};
     };
 
-    unordered_map<ULONGLONG, CollisionPairState> m_mapColState{};
-    array<vector<Ptr<CCollider2D>>, MAX_LAYER>   m_arrLayerColliders{};
-    unordered_map<UINT, Ptr<CCollider2D>>        m_mapColliderByID{};
-    UINT64                                             m_FrameCounter{};
-    float                                              m_GridCellSize = 128.f;
+    unordered_map<ULONGLONG, CollisionPairState>        m_mapColState{};
+    array<vector<Ptr<CCollider2D>>, MAX_LAYER>          m_arrLayerColliders{};
+    array<CellBuckets, MAX_LAYER>                       m_arrLayerBuckets{};
+    unordered_map<UINT, Ptr<CCollider2D>>               m_mapColliderByID{};
+    UINT64                                              m_FrameCounter{};
+    float                                               m_GridCellSize = 180.f;
     
     const float RAY_EPSILON = 0.00001f;
     
@@ -61,6 +64,8 @@ public:
         m_mapColliderByID.clear();
         for (auto& vecLayerColliders : m_arrLayerColliders)
             vecLayerColliders.clear();
+        for (auto& layerBuckets : m_arrLayerBuckets)
+            layerBuckets.clear();
         m_FrameCounter = 0;
     }
     
@@ -70,6 +75,8 @@ public:
         m_mapColliderByID.clear();
         for (auto& vecLayerColliders : m_arrLayerColliders)
             vecLayerColliders.clear();
+        for (auto& layerBuckets : m_arrLayerBuckets)
+            layerBuckets.clear();
         m_FrameCounter = 0;
     }
     
@@ -79,6 +86,8 @@ public:
         m_mapColliderByID.clear();
         for (auto& vecLayerColliders : m_arrLayerColliders)
             vecLayerColliders.clear();
+        for (auto& layerBuckets : m_arrLayerBuckets)
+            layerBuckets.clear();
         m_FrameCounter = 0;
     }
     

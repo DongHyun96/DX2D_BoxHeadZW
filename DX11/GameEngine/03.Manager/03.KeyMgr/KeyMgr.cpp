@@ -144,16 +144,20 @@ void KeyMgr::CalculateMouseWorldPos()
     // if (pPOVCam->GetType() == PROJ_TYPE::ORTHOGRAPHIC) return Vec3::Zero;
             
 
-    const Vec2 vRenderRes = Device::GetInst()->GetRenderResolution();
-    if (vRenderRes.x <= 0.f || vRenderRes.y <= 0.f)
+    RECT clientRect{};
+    GetClientRect(Engine::GetInst()->GetMainWndHwnd(), &clientRect);
+    const float clientWidth = static_cast<float>(clientRect.right - clientRect.left);
+    const float clientHeight = static_cast<float>(clientRect.bottom - clientRect.top);
+    
+    if (clientWidth <= 0.f || clientHeight <= 0.f)
     {
         m_MouseWorldPos =  Vec3::Zero;
         return;        
     }
 
     // Client(0~해상도) -> NDC(-1~1)
-    const float ndcX = (m_MousePos.x / vRenderRes.x) * 2.f - 1.f;
-    const float ndcY = 1.f - (m_MousePos.y / vRenderRes.y) * 2.f;
+    const float ndcX = (m_MousePos.x / clientWidth) * 2.f - 1.f;
+    const float ndcY = 1.f - (m_MousePos.y / clientHeight) * 2.f;
 
     const float worldW = pPOVCam->GetWidth() * pPOVCam->GetOrthoScale();
     const float worldH = (pPOVCam->GetWidth() / pPOVCam->GetAspectRatio()) * pPOVCam->GetOrthoScale();

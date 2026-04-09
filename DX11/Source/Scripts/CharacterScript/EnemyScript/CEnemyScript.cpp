@@ -42,6 +42,9 @@ void CEnemyScript::Init()
 void CEnemyScript::Begin()
 {
     CCharacterScript::Begin();
+    m_PerceptionHandler = GetOwner()->GetScriptComponent<CPerceptionHandler>().Get();
+    m_StatScript = GetOwner()->GetScriptComponent<CStatScript>().Get();
+    
     ADD_DYNAMIC_BEGIN_OVERLAP(CEnemyScript::BodyColliderOverlapped);
     ADD_DYNAMIC_OVERLAP(CEnemyScript::BodyColliderOverlapped);
 
@@ -64,6 +67,13 @@ void CEnemyScript::AfterLevelBegin()
 
 void CEnemyScript::Tick()
 {
+    if (m_PathReplanCooldown > 0.f)
+    {
+        m_PathReplanCooldown -= DT;
+        if (m_PathReplanCooldown < 0.f)
+            m_PathReplanCooldown = 0.f;
+    }
+    
     HandleStateTransition();
     CCharacterScript::Tick(); // Handling Move & UpdateCurrentFacedDirection involved
     HandleFadeOut();
@@ -80,7 +90,8 @@ void CEnemyScript::Move()
         if (!IsValid(m_TargetObject)) m_MainState = ENEMY_MAINSTATE::WALK;
         return;
     case ENEMY_MAINSTATE::WALK:
-        s_mapWalkingStrategies[m_CurrentWalkType]->UseWalkStrategy(this);
+        if (auto iter = s_mapWalkingStrategies.find(m_CurrentWalkType); iter != s_mapWalkingStrategies.end())
+            iter->second->UseWalkStrategy(this);
         return;
     case ENEMY_MAINSTATE::PUSHED_OUT: MovePushedOut(); return;
     }
@@ -118,7 +129,7 @@ void CEnemyScript::UpdateCurrentFacedDirection()
 
 void CEnemyScript::AfterPushedOutFin()
 {
-    ENEMY_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
+    ENEMY_MAINSTATE NextState = m_StatScript && m_StatScript->IsDead()
                                          ? ENEMY_MAINSTATE::DIE : ENEMY_MAINSTATE::WALK;
     SetMainState(NextState);
 }
@@ -157,12 +168,12 @@ void CEnemyScript::HandleStateTransition()
         
     case ENEMY_MAINSTATE::WALK:
     {
-        CPerceptionHandler* PHandler = GetOwner()->GetScriptComponent<CPerceptionHandler>().Get();
+        if (!m_PerceptionHandler) return;
         
         // Attack 반경에 들어온 오브젝트가 있다면 Attack 시도
-        if (PHandler->GetFirstAttackAreaObject())
+        if (m_PerceptionHandler->GetFirstAttackAreaObject())
         {
-            m_TargetObject = PHandler->GetFirstAttackAreaObject();
+            m_TargetObject = m_PerceptionHandler->GetFirstAttackAreaObject();
             m_MainState = ENEMY_MAINSTATE::ATTACK;
             return;
         }
@@ -173,7 +184,7 @@ void CEnemyScript::HandleStateTransition()
         if (m_CurrentWalkType == ENEMY_WALK_TYPE::STRAIGHT)
         {
             // TargetObject가 사망 또는 사라진 경우, 또는 현재 TargetObject가 Straight Walk 반경에서 벗어난 오브젝트인 경우
-            if (!IsValid(m_TargetObject) || !PHandler->IsStraightThroughDetectionSetContainObject(m_TargetObject.Get()))
+            if (!IsValid(m_TargetObject) || !m_PerceptionHandler->IsStraightThroughDetectionSetContainObject(m_TargetObject.Get()))
             {
                 // CellPath Walk로 지정해서 다음 Target(Walking Strategy 초반에 설정이 된다)로 이동
                 SetCurrentWalkType(ENEMY_WALK_TYPE::CELL_PATH);
@@ -185,7 +196,7 @@ void CEnemyScript::HandleStateTransition()
         if (m_CurrentWalkType == ENEMY_WALK_TYPE::CELL_PATH)
         {
             // StraightThrough 영역에 들어온 Object가 있다면, 해당 GameObject로 Target 세팅 및 Walk Strategy 세팅
-            if (GameObject* Object = PHandler->GetNearestStraightThroughDetectionEnteredObject())
+            if (GameObject* Object = m_PerceptionHandler->GetNearestStraightThroughDetectionEnteredObject())
             {
                 m_TargetObject = Object;
                 SetCurrentWalkType(ENEMY_WALK_TYPE::STRAIGHT);
@@ -209,7 +220,8 @@ void CEnemyScript::OnAttackFlipbookEndNotify()
     // 공격 모션이 정상 종료 또는 Interrupt 당했을 때 해당 함수로 Callback이 들어옴
     
     // Attack Collider Rotation 설정(방향 설정) / 끄기 처리
-    GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(false);
+    if (m_PerceptionHandler)
+        m_PerceptionHandler->ToggleDamagingCollider(false);
 
     if (m_MainState == ENEMY_MAINSTATE::DIE || m_MainState == ENEMY_MAINSTATE::PUSHED_OUT) return;
 
@@ -220,10 +232,10 @@ void CEnemyScript::OnAttackFlipbookEndNotify()
 void CEnemyScript::OnAttackNotify()
 {
     // TargetObject가 아직 Valid할 때에만 실질적인 공격 시도 처리를 한다 (다른 Enemy에 의해 나의 TargetObject 또한 삭제 처리가 됐을 수 있음)
-    if (IsValid(m_TargetObject))
+    if (m_PerceptionHandler && IsValid(m_TargetObject))
     {
         const Vec2 ToTarget = m_TargetObject->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
-        GetOwner()->GetScriptComponent<CPerceptionHandler>()->ToggleDamagingCollider(true, GetVectorAngle(ToTarget));
+        m_PerceptionHandler->ToggleDamagingCollider(true, GetVectorAngle(ToTarget));
     }
 }
 

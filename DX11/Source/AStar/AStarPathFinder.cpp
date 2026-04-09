@@ -24,6 +24,9 @@ AStarPathFinder::~AStarPathFinder()
 
 bool AStarPathFinder::GetPath(const CellCoord& start, const CellCoord& dest, stack<CellCoord>& _OutPath)
 {
+    CBackgroundTile* const BackgroundCellManager = GM->GetBackgroundCellManager();
+    if (!BackgroundCellManager) return false;
+    
     // 8 way movements (상, 하, 좌, 우, 좌상, 우상, 좌하, 우하)
     static const int dx[8] = { 0, 0, -1, 1, -1, 1, -1, 1 };
     static const int dy[8] = { 1, -1, 0, 0, 1, 1, -1, -1 };
@@ -90,8 +93,6 @@ bool AStarPathFinder::GetPath(const CellCoord& start, const CellCoord& dest, sta
             // if (nx < 0 || nx >= CELL_ROW_COUNT || ny < 0 || ny >= CELL_ROW_COUNT) continue;
             
             CellCoord nextCoord = { nx, ny };
-
-            CBackgroundTile* BackgroundCellManager = GM->GetBackgroundCellManager(); 
             
             // 범위 판정 및, 장애물이 존재하는 좌표인지 체크 모두 들어가 있다
             if (!BackgroundCellManager->IsCellAvailable(nextCoord)) continue;

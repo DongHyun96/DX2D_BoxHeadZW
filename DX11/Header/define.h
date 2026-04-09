@@ -30,16 +30,20 @@ SET(ValueType, MemName)
 
 #define CLONE(Type) Type* Clone() const { return new Type(*this); }
 
-#define RESOL_X 1600.f
+/*#define RESOL_X 1600.f
 #define RESOL_Y 900.f
 #define RESOL_HALF_X 800.f
-#define RESOL_HALF_Y 450.f
+#define RESOL_HALF_Y 450.f*/
 
-//#define RESOL_X 1920.f
-//#define RESOL_Y 1080.f
+#define RESOL_X 1920.f
+#define RESOL_Y 1080.f
+#define RESOL_HALF_X 960.f
+#define RESOL_HALF_Y 540.f
 
-//#define RESOL_X 2560.f
-//#define RESOL_Y 1440.f
+/*#define RESOL_X 2560.f
+#define RESOL_Y 1440.f
+#define RESOL_HALF_X 1280.f
+#define RESOL_HALF_Y 720.f*/
 
 #define RESOL_DIAG_LENGTH RenderMgr::GetInst()->GetScreenResolDiagLength()
 #define RESOL_DIAG_HALF_LENGTH RenderMgr::GetInst()->GetScreenResolHalfDiagLength()

@@ -83,15 +83,18 @@ bool CCollider2D::IsCollision(const Ptr<CCollider2D>& _Other)
     if (!this->GetOwner()->GetActive() || !_Other->GetOwner()->GetActive()) return false;                // Active가 꺼진 오브젝트
     if (this->GetOwner()->IsObjectDestroyed() || _Other->GetOwner()->IsObjectDestroyed()) return false;  // 곧 삭제 처리될 오브젝트
     if (!this->GetActive() || !_Other->GetActive()) return false; // Collision Component가 꺼진 상태
-    
-    if (CColliderRect* ColliderRect = dynamic_cast<CColliderRect*>(_Other.Get()))
-        return IsCollision(ColliderRect);
-    
-    if (CColliderPoint* ColliderPoint = dynamic_cast<CColliderPoint*>(_Other.Get()))
-        return IsCollision(ColliderPoint);
-    
-    if (CColliderCircle* ColliderCircle = dynamic_cast<CColliderCircle*>(_Other.Get()))
-        return IsCollision(ColliderCircle);
+
+    switch (_Other->GetComponentType())
+    {
+    case COMPONENT_TYPE::COLLIDER2D_RECT:
+        return IsCollision(static_cast<CColliderRect*>(_Other.Get()));
+    case COMPONENT_TYPE::COLLIDER2D_POINT:
+        return IsCollision(static_cast<CColliderPoint*>(_Other.Get()));
+    case COMPONENT_TYPE::COLLIDER2D_CIRCLE:
+        return IsCollision(static_cast<CColliderCircle*>(_Other.Get()));
+    default:
+        break;
+    }
 
     assert(nullptr);
     return false;

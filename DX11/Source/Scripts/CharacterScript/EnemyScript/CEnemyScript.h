@@ -27,6 +27,9 @@ protected:
 private:
     
     float m_AttackDamage{}; // 공격 Damage량 (Devil의 경우, 불쏘시개 하나 당 damage)
+
+    class CPerceptionHandler* m_PerceptionHandler{};
+    class CStatScript*        m_StatScript{};
     
 private: // FadeIn Out 관련
 
@@ -43,6 +46,8 @@ private:
 private: // AStar Path 및 Walk 관련
     
     stack<CellCoord> m_CellPath{}; // AStar로 찾은 CellPath
+    float            m_PathReplanCooldown{};
+    static constexpr float PATH_REPLAN_INTERVAL = 0.12f;
     
     static map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> s_mapWalkingStrategies;
     ENEMY_WALK_TYPE m_CurrentWalkType{};

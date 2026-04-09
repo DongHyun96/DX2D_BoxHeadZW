@@ -43,7 +43,9 @@ void CollisionMgr::BuildLayerColliderCache(const Ptr<ALevel>& _Level)
     for (UINT layerIdx = 0; layerIdx < MAX_LAYER; ++layerIdx)
     {
         auto& vecLayerColliders = m_arrLayerColliders[layerIdx];
+        auto& layerBuckets = m_arrLayerBuckets[layerIdx];
         vecLayerColliders.clear();
+        layerBuckets.clear();
         
         const vector<Ptr<GameObject>>& vecAllObjects = _Level->GetLayer(layerIdx)->GetAllObjects();
         vecLayerColliders.reserve(vecAllObjects.size());
@@ -55,6 +57,26 @@ void CollisionMgr::BuildLayerColliderCache(const Ptr<ALevel>& _Level)
             
             vecLayerColliders.push_back(pCollider);
             m_mapColliderByID[pCollider->GetEntityInstID()] = pCollider;
+
+            if (!object->GetActive() || object->IsObjectDestroyed() || !pCollider->GetActive())
+                continue;
+
+            Vec2 vMin{}, vMax{};
+            if (!TryGetColliderAABB(pCollider, vMin, vMax))
+                continue;
+
+            const int minCellX = WorldToCellCoord(vMin.x);
+            const int maxCellX = WorldToCellCoord(vMax.x);
+            const int minCellY = WorldToCellCoord(vMin.y);
+            const int maxCellY = WorldToCellCoord(vMax.y);
+
+            for (int y = minCellY; y <= maxCellY; ++y)
+            {
+                for (int x = minCellX; x <= maxCellX; ++x)
+                {
+                    layerBuckets[MakeCellKey(x, y)].push_back(pCollider->GetEntityInstID());
+                }
+            }
         }
     }
 }
@@ -83,35 +105,34 @@ ULONGLONG CollisionMgr::MakePairKey(UINT _A, UINT _B) const
 bool CollisionMgr::TryGetColliderAABB(const Ptr<CCollider2D>& _Collider, Vec2& _OutMin, Vec2& _OutMax)
 {
     if (!_Collider) return false;
-    
-    if (CColliderRect* pRect = dynamic_cast<CColliderRect*>(_Collider.Get()))
+
+    switch (_Collider->GetComponentType())
     {
-        const Vec3 vCenter = pRect->GetWorldPos();
-        const Vec3 vWorldScale = pRect->Transform()->GetWorldScale();
-        const Vec2 vRectScale = pRect->GetScale();
-        const Vec2 vHalfSize = Vec2(vWorldScale.x * vRectScale.x * 0.5f, vWorldScale.y * vRectScale.y * 0.5f);
-        
-        Vec3 axisX = pRect->Transform()->GetDir(DIR::RIGHT);
-        Vec3 axisY = pRect->Transform()->GetDir(DIR::UP);
-        axisX.z = 0.f;
-        axisY.z = 0.f;
+    case COMPONENT_TYPE::COLLIDER2D_RECT:
+    {
+        CColliderRect* pRect = static_cast<CColliderRect*>(_Collider.Get());
+        Vec3 corner = pRect->GetCornerWorldPos(0);
+        float minX = corner.x;
+        float maxX = corner.x;
+        float minY = corner.y;
+        float maxY = corner.y;
 
-        if (axisX.LengthSquared() > 0.f) axisX.Normalize();
-        else axisX = Vec3::Right;
+        for (UINT i = 1; i < 4; ++i)
+        {
+            corner = pRect->GetCornerWorldPos(i);
+            minX = min(minX, corner.x);
+            maxX = max(maxX, corner.x);
+            minY = min(minY, corner.y);
+            maxY = max(maxY, corner.y);
+        }
 
-        if (axisY.LengthSquared() > 0.f) axisY.Normalize();
-        else axisY = Vec3::Up;
-
-        const float extentX = fabsf(axisX.x) * vHalfSize.x + fabsf(axisY.x) * vHalfSize.y;
-        const float extentY = fabsf(axisX.y) * vHalfSize.x + fabsf(axisY.y) * vHalfSize.y;
-
-        _OutMin = Vec2(vCenter.x - extentX, vCenter.y - extentY);
-        _OutMax = Vec2(vCenter.x + extentX, vCenter.y + extentY);
+        _OutMin = Vec2(minX, minY);
+        _OutMax = Vec2(maxX, maxY);
         return true;
     }
-
-    if (CColliderCircle* pCircle = dynamic_cast<CColliderCircle*>(_Collider.Get()))
+    case COMPONENT_TYPE::COLLIDER2D_CIRCLE:
     {
+        CColliderCircle* pCircle = static_cast<CColliderCircle*>(_Collider.Get());
         const Vec3 vCenter = pCircle->GetWorldPos();
         const float fRadius = pCircle->GetRadius();
         
@@ -119,16 +140,17 @@ bool CollisionMgr::TryGetColliderAABB(const Ptr<CCollider2D>& _Collider, Vec2& _
         _OutMax = Vec2(vCenter.x + fRadius, vCenter.y + fRadius);
         return true;
     }
-
-    if (CColliderPoint* pPoint = dynamic_cast<CColliderPoint*>(_Collider.Get()))
+    case COMPONENT_TYPE::COLLIDER2D_POINT:
     {
+        CColliderPoint* pPoint = static_cast<CColliderPoint*>(_Collider.Get());
         const Vec3 vCenter = pPoint->GetWorldPos();
         _OutMin = Vec2(vCenter.x, vCenter.y);
         _OutMax = _OutMin;
         return true;
     }
-
-    return false;
+    default:
+        return false;
+    }
 }
 
 void CollisionMgr::CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx)
@@ -139,44 +161,12 @@ void CollisionMgr::CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx)
         return;
     }
 
-    const vector<Ptr<CCollider2D>>& vecLeftColliders = m_arrLayerColliders[_LeftLayerIdx];
-    const vector<Ptr<CCollider2D>>& vecRightColliders = m_arrLayerColliders[_RightLayerIdx];
-    
-    if (vecLeftColliders.empty() || vecRightColliders.empty())
+    const CellBuckets& leftBuckets = m_arrLayerBuckets[_LeftLayerIdx];
+    const CellBuckets& rightBuckets = m_arrLayerBuckets[_RightLayerIdx];
+
+    if (leftBuckets.empty() || rightBuckets.empty())
         return;
-
-    using CellBuckets = unordered_map<ULONGLONG, vector<UINT>>;
-
-    auto BuildBuckets = [this](const vector<Ptr<CCollider2D>>& _vecColliders, CellBuckets& _OutBuckets)
-    {
-        _OutBuckets.clear();
-        
-        for (const Ptr<CCollider2D>& collider : _vecColliders)
-        {
-            Vec2 vMin{}, vMax{};
-            if (!TryGetColliderAABB(collider, vMin, vMax)) continue;
-
-            const int minCellX = WorldToCellCoord(vMin.x);
-            const int maxCellX = WorldToCellCoord(vMax.x);
-            const int minCellY = WorldToCellCoord(vMin.y);
-            const int maxCellY = WorldToCellCoord(vMax.y);
-
-            for (int y = minCellY; y <= maxCellY; ++y)
-            {
-                for (int x = minCellX; x <= maxCellX; ++x)
-                {
-                    _OutBuckets[MakeCellKey(x, y)].push_back(collider->GetEntityInstID());
-                }
-            }
-        }
-    };
-
-    CellBuckets leftBuckets{};
-    CellBuckets rightBuckets{};
     
-    BuildBuckets(vecLeftColliders, leftBuckets);
-    BuildBuckets(vecRightColliders, rightBuckets);
-
     const CellBuckets* pIterBuckets = &leftBuckets;
     const CellBuckets* pOtherBuckets = &rightBuckets;
     bool bIterIsLeft = true;
@@ -221,31 +211,8 @@ void CollisionMgr::CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx)
 
 void CollisionMgr::CollisionBtwSameLayer(UINT _LayerIdx)
 {
-    const vector<Ptr<CCollider2D>>& vecLayerColliders = m_arrLayerColliders[_LayerIdx];
-    if (vecLayerColliders.size() < 2)
-        return;
-
-    using CellBuckets = unordered_map<ULONGLONG, vector<UINT>>;
-    CellBuckets buckets{};
-    
-    for (const Ptr<CCollider2D>& collider : vecLayerColliders)
-    {
-        Vec2 vMin{}, vMax{};
-        if (!TryGetColliderAABB(collider, vMin, vMax)) continue;
-
-        const int minCellX = WorldToCellCoord(vMin.x);
-        const int maxCellX = WorldToCellCoord(vMax.x);
-        const int minCellY = WorldToCellCoord(vMin.y);
-        const int maxCellY = WorldToCellCoord(vMax.y);
-
-        for (int y = minCellY; y <= maxCellY; ++y)
-        {
-            for (int x = minCellX; x <= maxCellX; ++x)
-            {
-                buckets[MakeCellKey(x, y)].push_back(collider->GetEntityInstID());
-            }
-        }
-    }
+    const CellBuckets& buckets = m_arrLayerBuckets[_LayerIdx];
+    if (buckets.empty()) return;
 
     unordered_set<ULONGLONG> setCandidatePairs{};
     

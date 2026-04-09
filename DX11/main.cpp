@@ -33,6 +33,8 @@ int APIENTRY wWinMain
     _In_     int    
 )
 {
+    // DPI 인식은 윈도우 생성 전에 켜야 좌표/크기 스케일이 일관된다.
+    ImGui_ImplWin32_EnableDpiAwareness();
     
     GetRandom(10, 20);
     GetRandom(25, 10);

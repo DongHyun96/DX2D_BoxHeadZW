@@ -57,7 +57,7 @@ HRESULT Engine::Init(HINSTANCE _hInst, UINT _Width, UINT _Height, bool _EditorMo
     RECT rt = {0, 0, static_cast<LONG>(m_Resolution.x), static_cast<LONG>(m_Resolution.y)};
 
     // 느낌표 두개는 bool type으로 맞추기 위함
-    AdjustWindowRect(&rt, WS_OVERLAPPEDWINDOW, !!GetMenu(m_hWnd));
+    AdjustWindowRect(&rt, Style, !!GetMenu(m_hWnd));
     
     // 윈도우 크기 및 위치 변경
     SetWindowPos(m_hWnd, nullptr, 0, 0, rt.right - rt.left, rt.bottom - rt.top, 0);

@@ -2,6 +2,7 @@
 #include "Device.h"
 
 #include "ConstBuffer/ConstBuffer.h"
+#include "GameEngine/01.Engine/Engine.h"
 #include "GameEngine/06.Component/01.Transform/CTransform.h"
 
 Device::Device()
@@ -150,8 +151,9 @@ HRESULT Device::CreateSwapChain()
     // SwapChain이 렌더타겟을 출력시킬 목적지 윈도우(비트맵)
     m_Desc.OutputWindow = m_hWnd;
 
-    // 창모드 설정 (true : 창 모드, false : 전체화면 모드)
-    m_Desc.Windowed = true;
+    // Editor 모드에서는 창모드 스왑체인을 사용해 ImGui 좌표계와 입력 좌표계를 일치시킨다.
+    // 비에디터 게임 실행 모드에서는 기존처럼 전체화면 스왑체인을 사용한다.
+    m_Desc.Windowed = Engine::GetInst()->IsEditorMode();
     
     // 픽셀의 종류, 픽셀 타입
     m_Desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

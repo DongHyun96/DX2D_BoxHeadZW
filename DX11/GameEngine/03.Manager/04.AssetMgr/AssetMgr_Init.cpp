@@ -270,7 +270,7 @@ void AssetMgr::CreateEngineShader()
     shader->CreatePixelShader(L"Shader\\flipbook.fx", "PS_Flipbook");
     shader->SetBSType(BS_TYPE::ALPHA_BLEND);
     shader->SetRSType(RS_TYPE::CULL_NONE);
-    shader->SetDSType(DS_TYPE::NO_TEST);
+    shader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
     
     shader->SetIsProvidedByEngine(true);
     

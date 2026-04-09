@@ -3,7 +3,6 @@
 
 #include "Source/ScriptMgr.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
-#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 #include "Source/Scripts/Structure/CStructure.h"
 
@@ -76,6 +75,26 @@ void CPerceptionHandler::Tick()
     }
 }
 
+GameObject* CPerceptionHandler::ResolvePerceptionTarget(CCollider2D* _OtherCollider) const
+{
+    if (!_OtherCollider) return nullptr;
+    
+    GameObject* OtherOwner = _OtherCollider->GetOwner();
+    if (!OtherOwner) return nullptr;
+
+    if (OtherOwner->HasScript(SCRIPT_TYPE::PLAYERSCRIPT))
+        return OtherOwner;
+
+    if (!OtherOwner->HasScript(SCRIPT_TYPE::STRUCTURE))
+        return nullptr;
+
+    CStructure* Structure = OtherOwner->GetScriptComponent<CStructure>().Get();
+    if (!Structure || Structure->GetIsPreviewObject())
+        return nullptr;
+
+    return OtherOwner;
+}
+
 GameObject* CPerceptionHandler::GetFirstAttackAreaObject() const
 {
     if (m_setAttackAreaEnteredObjects.empty()) return nullptr;
@@ -113,18 +132,10 @@ void CPerceptionHandler::ToggleDamagingCollider(bool _Enabled, float _RotationAn
 void CPerceptionHandler::OnStraightThroughColliderBeginOverlap(CCollider2D* _StraightThroughCollider, CCollider2D* _OtherCollider)
 {
     // New Sight received (Tick보다 여기가 더 일찍 들어오게 됨)
-    
-    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
-    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
-        return;
-    
-    // Preview Structure인 경우 넘어감
-    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
-    {
-        if (Structure->GetIsPreviewObject()) return;
-    }
-    
-    m_setStraightThroughDetectionEnteredObjects.insert(_OtherCollider->GetOwner());
+    GameObject* OtherOwner = ResolvePerceptionTarget(_OtherCollider);
+    if (!OtherOwner) return;
+
+    m_setStraightThroughDetectionEnteredObjects.insert(OtherOwner);
     
     /*// Valid한 TargetObject가 없는 경우
     if (!IsValid(m_MainEnemyScript->GetTargetObject()))
@@ -159,18 +170,11 @@ void CPerceptionHandler::OnStraightThroughColliderBeginOverlap(CCollider2D* _Str
 
 void CPerceptionHandler::OnStraightThroughColliderEndOverlap(CCollider2D* _StraightThroughCollider, CCollider2D* _OtherCollider)
 {
-    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
-    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
-        return;
-    
-    // Preview Structure인 경우 넘어감
-    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
-    {
-        if (Structure->GetIsPreviewObject()) return;
-    }
-    
+    GameObject* OtherOwner = ResolvePerceptionTarget(_OtherCollider);
+    if (!OtherOwner) return;
+
     // Lose sight
-    m_setStraightThroughDetectionEnteredObjects.erase(_OtherCollider->GetOwner());
+    m_setStraightThroughDetectionEnteredObjects.erase(OtherOwner);
 
     /*// 현재 공격이 진행중이라면 return
     if (m_MainEnemyScript->GetMainState() == ENEMY_MAINSTATE::ATTACK) return;
@@ -184,18 +188,11 @@ void CPerceptionHandler::OnStraightThroughColliderEndOverlap(CCollider2D* _Strai
 
 void CPerceptionHandler::OnAttackAreaColliderBeginOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider)
 {
-    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
-    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
-        return;
-    
-    // Preview Structure인 경우 넘어감
-    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
-    {
-        if (Structure->GetIsPreviewObject()) return;
-    }
-    
+    GameObject* OtherOwner = ResolvePerceptionTarget(_OtherCollider);
+    if (!OtherOwner) return;
+
     // New Sight Received
-    m_setAttackAreaEnteredObjects.insert(_OtherCollider->GetOwner());
+    m_setAttackAreaEnteredObjects.insert(OtherOwner);
 
     /*// 현재의 TargetObject가 valid하지 않다면, 새로이 TargetObject 지정 및 Attack 상태 지정
     if (!IsValid(m_MainEnemyScript->GetTargetObject()))
@@ -212,18 +209,11 @@ void CPerceptionHandler::OnAttackAreaColliderBeginOverlap(CCollider2D* _AttackAr
 
 void CPerceptionHandler::OnAttackAreaColliderEndOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider)
 {
-    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
-    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
-        return;
-    
-    // Preview Structure인 경우 넘어감
-    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
-    {
-        if (Structure->GetIsPreviewObject()) return;
-    }
-    
+    GameObject* OtherOwner = ResolvePerceptionTarget(_OtherCollider);
+    if (!OtherOwner) return;
+
     // Lose sight
-    m_setAttackAreaEnteredObjects.erase(_OtherCollider->GetOwner());
+    m_setAttackAreaEnteredObjects.erase(OtherOwner);
     
     /*// 현재의 공격대상이 Attack 반경을 벗어난 상황 (사망이든 뭐든)
     if (m_MainEnemyScript->GetTargetObject() == _OtherCollider->GetOwner())
@@ -247,15 +237,8 @@ void CPerceptionHandler::OnAttackAreaColliderEndOverlap(CCollider2D* _AttackArea
 
 void CPerceptionHandler::OnAttackDamageColliderBeginOverlap(CCollider2D* _AttackAreaCollider, CCollider2D* _OtherCollider)
 {
-    // Turret의 Attack 반경 Collider가 여기로 들어올 수 있음 (실물 오브젝트가 아닌 경우 넘어감)
-    if (!_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>() && !_OtherCollider->GetOwner()->GetScriptComponent<CStructure>())
-        return;
-    
-    // Preview Structure인 경우 넘어감
-    if (CStructure* Structure = _OtherCollider->GetOwner()->GetScriptComponent<CStructure>().Get())
-    {
-        if (Structure->GetIsPreviewObject()) return;
-    }
+    GameObject* OtherOwner = ResolvePerceptionTarget(_OtherCollider);
+    if (!OtherOwner) return;
     
     // 이미 피격처리한 오브젝트인 경우
     if (m_AlreadyDamaged.contains(_OtherCollider)) return;
@@ -265,5 +248,5 @@ void CPerceptionHandler::OnAttackDamageColliderBeginOverlap(CCollider2D* _Attack
     
     // 들어온 물체에 대해 피격 처리를 해준다
     const float DamageAmount = m_MainEnemyScript->GetAttackDamage();
-    _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>()->TakeDamage(DamageAmount, m_MainEnemyScript->GetOwner());
+    OtherOwner->GetScriptComponent<CStatScript>()->TakeDamage(DamageAmount, m_MainEnemyScript->GetOwner());
 }

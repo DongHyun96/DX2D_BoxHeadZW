@@ -37,7 +37,7 @@ void CEnemySpawnHandler::Tick()
 {
     if (KEY_TAP(KEY::MRB))
     {
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < 50; ++i)
         {
             ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, 4));
             SpawnEnemy(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));

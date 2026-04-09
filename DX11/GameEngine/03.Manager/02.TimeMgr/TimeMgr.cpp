@@ -43,18 +43,22 @@ void TimeMgr::Tick()
 
     // 누적 시간 계산
     m_Time += m_DeltaTime;
-    
-    ++m_FPS;
 
-    // 1초마다 if 수행
-    if (1.f < m_Time)
+    m_FPSAccumTime += m_DeltaTime;
+    ++m_FPSFrameCount;
+
+    const float safeDeltaTime = (m_DeltaTime > 0.000001f) ? m_DeltaTime : 0.000001f;
+    m_FPS = static_cast<UINT>(1.f / safeDeltaTime);
+
+    wchar_t buff[255];
+    swprintf_s(buff, L"DT : %.3f ms | %u FPS", m_DeltaTime * 1000.f, m_FPS);
+    SetWindowText(Engine::GetInst()->GetMainWndHwnd(), buff);
+    DebugUtil::SetPermanentDebugLog("FPS", "FPS : " + to_string(m_FPS), DEF_COLOR_GREEN);
+
+    if (m_FPSAccumTime >= 1.f)
     {
-        wchar_t buff[255];
-        swprintf_s(buff, L"DT : %f ms | %d FPS", m_DeltaTime, m_FPS);
-        SetWindowText(Engine::GetInst()->GetMainWndHwnd(), buff);
-
-        m_FPS = 0;
-        m_Time -= 1.f;
+        m_FPSAccumTime -= 1.f;
+        m_FPSFrameCount = 0;
     }
 
     // Game Engine용 Time

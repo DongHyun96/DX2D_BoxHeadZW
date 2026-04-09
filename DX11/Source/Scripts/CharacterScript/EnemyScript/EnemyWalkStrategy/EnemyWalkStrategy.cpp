@@ -36,23 +36,32 @@ GameObject* EnemyWalkStrategy::FindNearestTargetFromAllObjects(CEnemyScript* _En
 
 void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
 {
+    if (!_Enemy) return;
+    
+    CBackgroundTile* const BackgroundCellManager = GM->GetBackgroundCellManager();
+    if (!BackgroundCellManager) return;
+    
     Vec3 EnemyPos = _Enemy->Transform()->GetRelativePos();
     
     // 이미 해당 이동방법으로 이동을 끝낸 상황이거나, 이동하려했던 Target이 죽은 상황
     if (_Enemy->m_CellPath.empty() || !IsValid(_Enemy->m_TargetObject))
     {
+        if (_Enemy->m_PathReplanCooldown > 0.f) return;
+        
         // 새로운 Target 찾기
         GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy);
         if (!TargetSelected) return; // 맵에 고를 Target이 없는 상황
 
         // Target을 향한 새로운 경로 지정
-        const CellCoord CurrentCellCoord    = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(ToVec2(EnemyPos));
-        const CellCoord destCellCoord       = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(TargetSelected->Transform()->GetWorldPos2D());
+        const CellCoord CurrentCellCoord    = BackgroundCellManager->GetWorldPosToCellCoord(ToVec2(EnemyPos));
+        const CellCoord destCellCoord       = BackgroundCellManager->GetWorldPosToCellCoord(TargetSelected->Transform()->GetWorldPos2D());
         
-        AStarPathFinder::GetInst()->GetPath(CurrentCellCoord, destCellCoord, _Enemy->m_CellPath);
+        if (CurrentCellCoord != destCellCoord)
+            AStarPathFinder::GetInst()->GetPath(CurrentCellCoord, destCellCoord, _Enemy->m_CellPath);
         
         // Target 지정
         _Enemy->m_TargetObject = TargetSelected;
+        _Enemy->m_PathReplanCooldown = CEnemyScript::PATH_REPLAN_INTERVAL;
     }
 
     // 새로운 경로를 받았음에도 empty일 경우가 있음 (이때는 처리 x)
@@ -64,7 +73,7 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     
     _Enemy->m_Velocity = Vec3::Zero;
     
-    const Vec2 Destination = GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_Enemy->m_CellPath.top()); 
+    const Vec2 Destination = BackgroundCellManager->GetCellCoordToWorldPos(_Enemy->m_CellPath.top()); 
     const Vec2 Direction = Destination - ToVec2(EnemyPos);
     
     const float DistToDest = Direction.Length();
