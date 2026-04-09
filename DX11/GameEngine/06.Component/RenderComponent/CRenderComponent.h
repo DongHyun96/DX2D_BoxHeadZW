@@ -38,6 +38,7 @@ public:
 
     virtual void Init() override;
     virtual void Begin() override;
+    virtual void AfterLevelBegin() override;
     virtual void FinalTick() override;
     virtual void Render() = 0;
 
@@ -72,6 +73,10 @@ protected:
     /// Material Const Vec4_3 슬롯을 사용할 예정
     /// </summary>
     void ApplyRenderTransformConst();
+    
+public:
+    
+    void DeregisterFromRenderDomain();
     
 public:
     

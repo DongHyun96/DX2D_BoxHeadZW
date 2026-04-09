@@ -30,14 +30,6 @@ private:
     vector<Ptr<GameObject>> m_vecTransparent{};
     vector<Ptr<GameObject>> m_vecPostProcess{};*/
     
-    map<RENDER_DOMAIN, vector<GameObject*>> m_mapDomainGameObject = 
-    {
-        {RENDER_DOMAIN::DOMAIN_OPAQUE,      {}},
-        {RENDER_DOMAIN::DOMAIN_MASKED,      {}},
-        {RENDER_DOMAIN::DOMAIN_TRANSPARENT, {}},
-        {RENDER_DOMAIN::DOMAIN_POSTPROCESS, {}}   
-    };
-    
 public:
     
     CCamera();
@@ -88,6 +80,6 @@ public:
     
 private:
     
-    void SortObject();
+    // void SortObject();
     
 };

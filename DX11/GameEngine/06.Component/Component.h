@@ -66,5 +66,11 @@ public:
 	virtual void Init() {}
 	
 	virtual void Begin() {}
+	
+	/// <summary>
+	/// Level 시작 시 Begin 처리가 모두 끝난 뒤 처리할 내용이 있다면 해당함수 override
+	/// </summary>
+	virtual void AfterLevelBegin() {}
+	
 	virtual void FinalTick() = 0;
 };

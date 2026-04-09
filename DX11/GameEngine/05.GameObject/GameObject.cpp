@@ -93,6 +93,9 @@ void GameObject::Begin()
 
 void GameObject::AfterLevelBegin()
 {
+	for (const Ptr<Component>& component : m_Components)
+		if (component) component->AfterLevelBegin();
+	
 	for (const Ptr<CScript>& script : m_vecScripts)
 		script->AfterLevelBegin();
 }
@@ -406,6 +409,9 @@ void GameObject::Destroy()
 {
 	if (m_ObjectDestroyed) return; // 이미 삭제 요청이 들어갔었던 Object
 	if (m_OwnerPoolComponent) return; // Pooling된 Object에 대한 삭제요청은 허용 x
+	
+	// RenderComponent를 들고 있던 경우, Render domain에서 제거
+	if (m_RenderCom) m_RenderCom->DeregisterFromRenderDomain();
     
 	TaskInfo info = {};
     

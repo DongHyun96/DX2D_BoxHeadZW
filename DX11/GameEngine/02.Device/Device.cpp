@@ -139,7 +139,8 @@ HRESULT Device::CreateSwapChain()
     DXGI_SWAP_CHAIN_DESC m_Desc{};
 
     // Swapchain을 만들 때 생성할 render target의 갯수
-    m_Desc.BufferCount = 1; 
+    // m_Desc.BufferCount = 1; 
+    m_Desc.BufferCount = 2; 
     
     // 버퍼 해상도 == 윈도우 비트맵 해상도
     m_Desc.BufferDesc.Width     = static_cast<UINT>(m_RenderResol.x);
@@ -159,7 +160,8 @@ HRESULT Device::CreateSwapChain()
     m_Desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     // 렌더타겟의 이미지를 출력후 버려도 된다.
-    m_Desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    // m_Desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    m_Desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     
     m_Desc.BufferDesc.RefreshRate.Numerator     = 240;
     m_Desc.BufferDesc.RefreshRate.Denominator   = 1;

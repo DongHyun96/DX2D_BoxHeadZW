@@ -26,6 +26,15 @@ private:
     
     bool                    m_bDebugRender = true;  // 디버그 랜더 기능 on / off
     
+    map<RENDER_DOMAIN, list<GameObject*>> m_mapDomainGameObject = 
+    {
+        {RENDER_DOMAIN::DOMAIN_OPAQUE,      {}},
+        {RENDER_DOMAIN::DOMAIN_MASKED,      {}},
+        {RENDER_DOMAIN::DOMAIN_TRANSPARENT, {}},
+        {RENDER_DOMAIN::DOMAIN_POSTPROCESS, {}}
+    };
+    
+    
 private:
     
     float                   m_ScreenResolDiagLength = sqrtf(RESOL_X * RESOL_X + RESOL_Y * RESOL_Y);
@@ -42,6 +51,10 @@ public:
     void Init();
     void Progress();
     
+    void OnLevelBegin();
+    void OnLevelPlayToStop();
+    void OnLevelChanged(class ALevel* _PrevLevel, ALevel* _NextLevel);
+    
 private:
     
     void Render_Start();
@@ -49,6 +62,9 @@ private:
     void Render_Debug();
     
 public:
+
+    void AddGameObjectToRenderDomain(RENDER_DOMAIN _Domain, GameObject* _GameObject) { m_mapDomainGameObject[_Domain].push_back(_GameObject); }
+    void RemoveGameObjectFromRenderDomain(RENDER_DOMAIN _Domain, GameObject* _GameObject) { m_mapDomainGameObject[_Domain].remove(_GameObject); }
     
     void RegisterMainCamera(const Ptr<CCamera>& _Cam) { m_MainCam = _Cam; }
     void RegisterUICamera(const Ptr<CCamera>& _Cam) { m_UICam = _Cam; }
@@ -64,4 +80,9 @@ public:
     
     float GetScreenResolDiagLength() const { return m_ScreenResolDiagLength; }
     float GetScreenResolHalfDiagLength() const { return m_ScreenResolDiagLength * 0.5f; }
+
+public:
+    
+    const map<RENDER_DOMAIN, list<GameObject*>>& GetDomainGameObjects() const { return m_mapDomainGameObject; }
+    
 };

@@ -42,12 +42,5 @@ GameObject* CScript::Instantiate(APrefab* _Prefab, int _LayerIdx, Vec3 _WorldPos
 
 void CScript::Destroy()
 {
-    if (!GetOwner() || GetOwner()->IsObjectDestroyed()) return; // 이미 삭제 요청이 들어갔었던 Object
-    if (GetOwner()->GetOwnerPoolComponent()) return; // Object pooling 된 GameObject의 경우, 삭제 요청 무시
-    
-    TaskInfo info = {};
-    
-    info.Type       = TASK_TYPE::DESTROY_OBJECT;
-    info.Param_0    = reinterpret_cast<DWORD_PTR>(GetOwner());
-    TaskMgr::GetInst()->AddTask(info);
+    GetOwner()->Destroy();
 }

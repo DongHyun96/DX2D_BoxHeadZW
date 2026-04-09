@@ -42,6 +42,12 @@ void CRenderComponent::Init()
 
 void CRenderComponent::Begin()
 {
+    if (!GetMesh() || !GetMaterial()) return;
+    RenderMgr::GetInst()->AddGameObjectToRenderDomain(m_Material->GetDomain(), GetOwner());
+}
+
+void CRenderComponent::AfterLevelBegin()
+{
 }
 
 void CRenderComponent::FinalTick()
@@ -71,6 +77,12 @@ void CRenderComponent::ApplyRenderTransformConst()
     m_Material->SetScalar(VEC4_3, Vec4(
         m_RenderOffset.x, m_RenderOffset.y,
         m_RenderScale.x,  m_RenderScale.y));
+}
+
+void CRenderComponent::DeregisterFromRenderDomain()
+{
+    if (!GetMesh() || !GetMaterial()) return;
+    RenderMgr::GetInst()->RemoveGameObjectFromRenderDomain(m_Material->GetDomain(), GetOwner());
 }
 
 void CRenderComponent::SaveToLevelFile(FILE* _File)

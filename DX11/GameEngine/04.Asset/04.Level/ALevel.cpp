@@ -35,6 +35,7 @@ void ALevel::Begin()
     m_mapLayerNameIndex.clear();
     
     GM->OnLevelBegin();
+    RenderMgr::GetInst()->OnLevelBegin();
     AssetMgr::GetInst()->OnLevelBegin();
     
     for (Layer& layer : m_arrLayer)

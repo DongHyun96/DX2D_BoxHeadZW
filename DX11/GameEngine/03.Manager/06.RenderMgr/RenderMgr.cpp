@@ -59,13 +59,28 @@ void RenderMgr::Progress()
 
         // 카메라를 이용해서 Render 처리
         // m_EditorCam->SortObject(); // RenderDomain 별 정렬
-        m_EditorCam->Render(true);
+        m_EditorCam->Render(false);
     }    
     
     // 디버그 렌더링 요청 처리
     if (m_bDebugRender) Render_Debug();
     
     Render_End();
+}
+
+void RenderMgr::OnLevelBegin()
+{
+    m_mapDomainGameObject.clear();
+}
+
+void RenderMgr::OnLevelPlayToStop()
+{
+    m_mapDomainGameObject.clear();
+}
+
+void RenderMgr::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
+{
+    m_mapDomainGameObject.clear();
 }
 
 void RenderMgr::Render_Start()

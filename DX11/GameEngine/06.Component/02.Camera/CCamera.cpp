@@ -51,13 +51,14 @@ void CCamera::Init()
     // -5000 ~ 5000
     if (GetOwner()->GetName() == L"UICamera")
         RenderMgr::GetInst()->RegisterUICamera(this);
+    
+    // RenderMgr에 카메라(본인)을 등록
+    if (GetOwner()->GetName() == L"MainCamera")
+        RenderMgr::GetInst()->RegisterMainCamera(this);
 }
 
 void CCamera::Begin()
 {
-    // RenderMgr에 카메라(본인)을 등록
-    if (GetOwner()->GetName() == L"MainCamera")
-        RenderMgr::GetInst()->RegisterMainCamera(this);
 }
 
 void CCamera::FinalTick()
@@ -109,7 +110,7 @@ void CCamera::FinalTick()
                                                          XMMatrixPerspectiveFovLH(m_FOV, m_AspectRatio, 1.f, m_Far);
 }
 
-void CCamera::SortObject()
+/*void CCamera::SortObject()
 {
     for (auto& Pair : m_mapDomainGameObject)
         Pair.second.clear();
@@ -129,7 +130,7 @@ void CCamera::SortObject()
 
         for (const Ptr<GameObject>& object : vecObjects)
         {
-            // 오브젝틀가 렌더링을 할 수 있는 상태인지 확인
+            // 오브젝트가 렌더링을 할 수 있는 상태인지 확인
             if (!object->GetRenderCom() ||
                 !object->GetRenderCom()->GetMesh() ||
                 !object->GetRenderCom()->GetMaterial())
@@ -140,7 +141,7 @@ void CCamera::SortObject()
             m_mapDomainGameObject[Domain].push_back(object.Get());
         }
     }
-}
+}*/
 
 void CCamera::Render(bool _bUseRenderDomainSort)
 {
@@ -177,11 +178,11 @@ void CCamera::Render(bool _bUseRenderDomainSort)
         return;
     }
     
-    SortObject();
+    // SortObject();
     CFlipbookRender::BeginInstancing();
     
     // Domain 순서대로 렌더링 진행
-    for (const auto& Pair : m_mapDomainGameObject)
+    for (const auto& Pair : RenderMgr::GetInst()->GetDomainGameObjects())
     {
         for (const Ptr<GameObject>& GameObject : Pair.second)
             GameObject->Render();
