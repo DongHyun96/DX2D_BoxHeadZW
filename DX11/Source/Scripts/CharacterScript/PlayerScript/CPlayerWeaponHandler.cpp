@@ -80,6 +80,8 @@ void CPlayerWeaponHandler::Begin()
 
 void CPlayerWeaponHandler::Tick()
 {
+    if (m_PlayerMainScript->GetMainState() == PLAYER_MAINSTATE::DIE) return;
+    
     TickSwapWeapon();
     TickFireWeapon();
     TickFireGrenade();

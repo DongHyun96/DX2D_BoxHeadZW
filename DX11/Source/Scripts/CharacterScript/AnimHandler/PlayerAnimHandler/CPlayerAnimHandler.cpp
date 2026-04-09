@@ -90,4 +90,5 @@ void CPlayerAnimHandler::UpdateAnimTransition()
     m_PrevAnimDirection     = m_MainPlayerScript->GetCurrentFacedDirection();
     m_PrevWalkingBackward   = m_WalkingBackward;
     m_PrevHandState         = CurrentHandState;
+    m_PrevMainState         = CurrentMainState;
 }
