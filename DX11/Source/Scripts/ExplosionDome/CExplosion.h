@@ -29,7 +29,7 @@ private:
     float m_NoiseFreq2 = 46.f;
     bool m_DamagePulseArmed{};
     bool m_DamagePulseStarted{};
-    float m_DamagePulseDelay = 0.06f;
+    float m_DamagePulseDelay    = 0.06f;
     float m_DamagePulseDuration = 0.04f;
     float m_DamagePulseStartAge{};
     int m_DamagePulseSpriteIdx = 2;
@@ -61,12 +61,12 @@ public:
     void SetSecondaryBurst
     (
         int _Count,
-        float _Radius = 90.f,
-        float _MinDelay = 0.08f,
-        float _MaxDelay = 0.20f,
+        float _Radius      = 90.f,
+        float _MinDelay    = 0.08f,
+        float _MaxDelay    = 0.20f,
         float _DamageScale = 0.6f,
-        float _SizeScale = 0.55f,
-        bool _PlaySound = false
+        float _SizeScale   = 0.55f,
+        bool _PlaySound    = false
     );
     void SetUseCollisionForDamaging(bool _UseCollisionForDamaging) { m_UseCollisionForDamaging = _UseCollisionForDamaging; }
     void SetUpwardVelocity(const Vec2& _UpwardVelocity) { m_UpwardVelocity = _UpwardVelocity; }
