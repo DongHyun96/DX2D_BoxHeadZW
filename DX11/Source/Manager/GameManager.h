@@ -38,6 +38,7 @@ private: // Poolers
     CPoolComponent* m_GrenadePooler{};
     
     class CEnemySpawnHandler* m_EnemySpawnHandler{}; 
+    class CFirePillarHandler* m_FirePillarHandler{};
     
 public:
     
@@ -71,12 +72,17 @@ public:
     void SetEnemySpawnHandler(CEnemySpawnHandler* _EnemySpawnHandler) { m_EnemySpawnHandler = _EnemySpawnHandler; }
     CEnemySpawnHandler* GetEnemySpawnHandler() const { return m_EnemySpawnHandler; }
     
+    void SetFirePillarHandler(CFirePillarHandler* _FirePillarHandler) { m_FirePillarHandler = _FirePillarHandler; }
+    CFirePillarHandler* GetFirePillarHandler() const { return m_FirePillarHandler; }
+    
 public: // Effect Spawn 관련
 
     void SpawnRocketSmoke(const Vec3& _SpawnPos);
     void SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f, CScript* _SpawnedBy = nullptr);
     
     void SpawnExplosion(const ExplosionSpawnDesc& _Desc);
+    bool SpawnFirePillar(const FirePillarSpawnDesc& _Desc);
+    bool SpawnFirePillar(const Vec3& _SpawnPos, float _DamageAmount = 75.f, CScript* _SpawnedBy = nullptr);
     
 public: // Projectile Spawn 관련
 

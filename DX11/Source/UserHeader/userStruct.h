@@ -57,3 +57,17 @@ struct ExplosionSpawnDesc
     float       SecondaryBurstSizeScale          = 0.55f;
     bool        SecondaryBurstPlaySound          = false;
 };
+
+struct FirePillarSpawnDesc
+{
+    Vec3                SpawnPos{};
+    int                 StepCount                        = 6;
+    float               StepIntervalSec                  = 0.03f;
+    float               StepHeight                       = 26.f;
+    float               BaseExplosionSizeScale           = 1.2f;
+    float               TopExplosionSizeScale            = 0.55f;
+    float               HorizontalJitter                 = 6.f;
+    float               VerticalJitter                   = 4.f;
+    bool                PlaySoundEachStep                = false;
+    ExplosionSpawnDesc  ExplosionTemplate{};
+};

@@ -100,7 +100,7 @@ void CGrenade::Tick()
                 for (int i = 0; i < 4; ++i)
                 {
                     const Vec2 Direction = GetSpreadVector(Vec2::UnitX, XM_PIDIV4 + i * XM_PIDIV2);
-                    GM->SpawnGrenade(Transform()->GetWorldPos(), Direction, m_DamageAmount * 0.5f, 0, 150.f, 250.f, false);
+                    GM->SpawnGrenade(Transform()->GetWorldPos(), Direction, m_DamageAmount * 0.5f, GetRandom(0, 2), 150.f, 250.f, false);
                 }
             }
         }

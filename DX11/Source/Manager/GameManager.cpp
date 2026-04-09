@@ -6,6 +6,7 @@
 #include "Source/AStar/AStarPathFinder.h"
 #include "Source/Scripts/ExplosionDome/CExplosion.h"
 #include "Source/Scripts/ExplosionDome/CExplosionDome.h"
+#include "Source/Scripts/ExplosionDome/CFirePillarHandler.h"
 #include "Source/Scripts/ProjectileScript/CGrenade.h"
 #include "Source/Scripts/ProjectileScript/CRocketProjectile.h"
 #include "Source/Scripts/Structure/CStructure.h"
@@ -30,7 +31,8 @@ void GameManager::OnLevelBegin()
     m_RocketProjectilePooler    = nullptr;
     m_GrenadePooler             = nullptr;
     m_BackgroundCellManager     = nullptr;
-    m_EnemySpawnHandler         = nullptr;
+    m_EnemySpawnHandler         = nullptr;    
+    m_FirePillarHandler         = nullptr;
     
     CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
@@ -47,6 +49,7 @@ void GameManager::OnLevelPlayToStop()
     m_GrenadePooler             = nullptr;
     m_BackgroundCellManager     = nullptr;
     m_EnemySpawnHandler         = nullptr;
+    m_FirePillarHandler         = nullptr;
     
     CStructure::ClearInstalledInfo();
 }
@@ -125,6 +128,7 @@ void GameManager::SpawnExplosion(const ExplosionSpawnDesc& _Desc)
                 _Desc.SecondaryBurstSizeScale,
                 _Desc.SecondaryBurstPlaySound
             );
+            if (_Desc.DamageAmount <= 0.f) Explosion->GetCollider2D()->SetActive(false);
         }
 
         if (_Desc.PlayExplosionSound)
@@ -133,6 +137,20 @@ void GameManager::SpawnExplosion(const ExplosionSpawnDesc& _Desc)
             Sound->Play(1, 0.5f, true);
         }
     }
+}
+
+bool GameManager::SpawnFirePillar(const FirePillarSpawnDesc& _Desc)
+{
+    if (!m_FirePillarHandler) return false;
+    m_FirePillarHandler->SpawnFirePillar(_Desc);
+    return true;
+}
+
+bool GameManager::SpawnFirePillar(const Vec3& _SpawnPos, float _DamageAmount, CScript* _SpawnedBy)
+{
+    if (!m_FirePillarHandler) return false;
+    m_FirePillarHandler->SpawnFirePillar(_SpawnPos, _DamageAmount, _SpawnedBy);
+    return true;
 }
 
 bool GameManager::SpawnRocketProjectile(const Vec3& _SpawnPos, const Vec2& _Direction, float _Damage)
@@ -191,4 +209,5 @@ bool GameManager::SpawnGrenade
     Grenade->SetSpawnSubGrenade(_SpawnSubGrenade);
     
     _IsSubGrenade ? Grenade->SetSubGrenadeScale() : Grenade->SetMainGrenadeScale();
+    return true;
 }

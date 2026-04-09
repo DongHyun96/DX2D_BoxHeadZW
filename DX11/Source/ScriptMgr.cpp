@@ -39,6 +39,7 @@
 #include "Source/Scripts/EffectScript\MuzzleEffects\CMuzzleSmokeScript.h"
 #include "Source/Scripts/ExplosionDome\CExplosion.h"
 #include "Source/Scripts/ExplosionDome\CExplosionDome.h"
+#include "Source/Scripts/ExplosionDome\CFirePillarHandler.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/ProjectileScript\CGrenade.h"
 #include "Source/Scripts/ProjectileScript\CRocketProjectile.h"
@@ -85,6 +86,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CMuzzleSmokeScript");
 	_vec.push_back(L"CExplosion");
 	_vec.push_back(L"CExplosionDome");
+	_vec.push_back(L"CFirePillarHandler");
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CGrenade");
 	_vec.push_back(L"CRocketProjectile");
@@ -173,6 +175,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CExplosion;
 	if (L"CExplosionDome" == _strScriptName)
 		return new CExplosionDome;
+	if (L"CFirePillarHandler" == _strScriptName)
+		return new CFirePillarHandler;
 	if (L"CObstacle" == _strScriptName)
 		return new CObstacle;
 	if (L"CGrenade" == _strScriptName)
@@ -272,6 +276,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CExplosion;
 	case (UINT)SCRIPT_TYPE::EXPLOSIONDOME:
 		return new CExplosionDome;
+	case (UINT)SCRIPT_TYPE::FIREPILLARHANDLER:
+		return new CFirePillarHandler;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
 		return new CObstacle;
 	case (UINT)SCRIPT_TYPE::GRENADE:
@@ -372,6 +378,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CExplosion";
 	case SCRIPT_TYPE::EXPLOSIONDOME:
 		return L"CExplosionDome";
+	case SCRIPT_TYPE::FIREPILLARHANDLER:
+		return L"CFirePillarHandler";
 	case SCRIPT_TYPE::OBSTACLE:
 		return L"CObstacle";
 	case SCRIPT_TYPE::GRENADE:

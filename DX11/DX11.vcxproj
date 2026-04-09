@@ -323,6 +323,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\EffectScript\MuzzleEffects\CMuzzleSmokeScript.h" />
     <ClInclude Include="Source\Scripts\ExplosionDome\CExplosion.h" />
     <ClInclude Include="Source\Scripts\ExplosionDome\CExplosionDome.h" />
+    <ClInclude Include="Source\Scripts\ExplosionDome\CFirePillarHandler.h" />
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CGrenade.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CRocketProjectile.h" />
@@ -1632,6 +1633,7 @@ CodeGen.exe</Command>
     </ClCompile>
     <ClCompile Include="Source\Scripts\ExplosionDome\CExplosion.cpp" />
     <ClCompile Include="Source\Scripts\ExplosionDome\CExplosionDome.cpp" />
+    <ClCompile Include="Source\Scripts\ExplosionDome\CFirePillarHandler.cpp" />
     <ClCompile Include="Source\Scripts\Obstacle\CObstacle.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CGrenade.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CRocketProjectile.cpp" />
