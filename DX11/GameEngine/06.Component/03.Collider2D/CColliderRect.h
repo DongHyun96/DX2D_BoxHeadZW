@@ -14,6 +14,10 @@ private:
     
     // Circle과 충돌 되었을 때 기록된, Circle과 가장 가까운 점
     Vec3 m_CircleClosestPointContacted{};
+    
+private:
+    
+    Vec3 m_CornersWorldPos[4]; // LT, RT, RB, LB
 
 public:
     
@@ -29,6 +33,11 @@ public:
     
     GET_SET(Vec2, Scale)
     GET_SET(Vec2, PivotLocal)
+    
+    const Vec3& GetCornerWorldPos(UINT _CornerIdx) const { return m_CornersWorldPos[_CornerIdx]; }
+    
+    void SetScaleX(float _ScaleX) { m_Scale.x = _ScaleX; }
+    void SetScaleY(float _ScaleY) { m_Scale.y = _ScaleY; }
 
 private:
     

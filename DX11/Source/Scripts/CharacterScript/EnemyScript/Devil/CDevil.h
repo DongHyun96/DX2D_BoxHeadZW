@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
 
 /// <summary>
@@ -18,6 +19,13 @@ private:
     
     class CFlameLineHandler* m_FlameLineHandler{};
     
+private:
+
+    float m_AttackTransitionWaitTime{};
+    float m_TransitionToAttackTimer{};
+    
+    Ptr<ASound> m_AttackSound{};
+    
 public:
     
     CDevil();
@@ -25,7 +33,8 @@ public:
     CLONE(CDevil)
     
 public:
-    
+
+    virtual void Init() override;
     virtual void Begin() override;
     virtual void Tick() override;
     
@@ -41,5 +50,10 @@ private:
     /// Attack 모션이 시작될 때 Callback 받음 -> 바라보는 방향으로 FlameLine 쏘기 처리할 것
     /// </summary>
     void OnAttackAnimStart();
+    
+public:
+    
+    virtual void SaveToLevelFile(FILE* _File) override;
+    virtual void LoadFromLevelFile(FILE* _File) override;
     
 };

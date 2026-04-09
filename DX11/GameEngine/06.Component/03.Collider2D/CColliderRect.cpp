@@ -27,6 +27,18 @@ void CColliderRect::FinalTick()
 
     // row-vector 기준: T(-Pivot) * S * T(Pivot)
     GetWorldMat() = matPivotToOrigin * matScale * matPivotBack * matTranslation * Transform()->GetWorldMatrix();
+    
+        
+    static const Vec3 kLocalCorners[4] = 
+    {
+        Vec3(-0.5f,  0.5f, 0.f), // LT
+        Vec3( 0.5f,  0.5f, 0.f), // RT
+        Vec3( 0.5f, -0.5f, 0.f), // RB
+        Vec3(-0.5f, -0.5f, 0.f), // LB
+    };
+    
+    for (int i = 0; i < 4; ++i)
+        m_CornersWorldPos[i] = XMVector3TransformCoord(kLocalCorners[i], GetWorldMat());
 
     DrawDebugRect(GetWorldMat(), GetColor(), 0.f);
 }
@@ -81,9 +93,10 @@ bool CColliderRect::AABBCollision(CColliderCircle* _OtherCircle)
     // Rect vs Circle AABB
 
     const Vec3 CircleMid = _OtherCircle->GetWorldPos();
+
+    static Ptr<AMesh> pRectMesh{};
+    if (!pRectMesh) pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
     
-    
-    Ptr<AMesh> pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
     const Vtx* pVtx = pRectMesh->GetVtxSysMem();
     
     const Vec3 ThisLeftTop      = XMVector3TransformCoord(pVtx[0].vPos, this->GetWorldMat());
@@ -104,7 +117,9 @@ bool CColliderRect::AABBCollision(CColliderPoint* _OtherPoint)
 {
     // Rect vs Point AABB
     
-    Ptr<AMesh> pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
+    static Ptr<AMesh> pRectMesh{};
+    if (!pRectMesh) pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
+    
     const Vtx* pVtx = pRectMesh->GetVtxSysMem();
     
     const Vec3 ThisPos          = GetWorldPos();
@@ -122,7 +137,8 @@ bool CColliderRect::AABBCollision(CColliderPoint* _OtherPoint)
 bool CColliderRect::OBBCollision(CColliderRect* _OtherRect)
 {
     // Rect vs Rect OBB
-    Ptr<AMesh> pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
+    static Ptr<AMesh> pRectMesh{};
+    if (!pRectMesh) pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
 
     const Vtx* pVtx             = pRectMesh->GetVtxSysMem();
     const Matrix& matWorldLeft  = this->GetWorldMat();
