@@ -3,6 +3,10 @@
 
 class CStructureStat : public CStatScript
 {
+private:
+    
+    ExplosionSpawnDesc m_BarrelExplosionDesc{};
+    
 public:
     
     CStructureStat();

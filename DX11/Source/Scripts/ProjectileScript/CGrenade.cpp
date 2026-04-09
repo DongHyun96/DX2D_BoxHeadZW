@@ -14,6 +14,24 @@ const float CGrenade::s_GroundFriction = 0.8f; // 바닥에 튕길 때 x, y 축�
 CGrenade::CGrenade()
     : CScript(SCRIPT_TYPE::GRENADE)
 {
+    m_ExplosionSpawnDesc.SpawnPos                   = Vec3();
+    m_ExplosionSpawnDesc.ExplosionSizeFactor        = 1.f;
+    m_ExplosionSpawnDesc.FPS                        = 1500.f;
+    m_ExplosionSpawnDesc.DamageAmount               = 0.f;
+    m_ExplosionSpawnDesc.SpawnedBy                  = this;
+    m_ExplosionSpawnDesc.UseCollisionForDamaging    = true;
+    m_ExplosionSpawnDesc.PlayExplosionSound         = true;
+    m_ExplosionSpawnDesc.UpwardVelocity             = Vec2::UnitY * GetRandom(0.5f, 1.f);
+    m_ExplosionSpawnDesc.DamagePulseDelaySec        = 0.02f;
+    m_ExplosionSpawnDesc.DamagePulseDurationSec     = 0.08f;
+    m_ExplosionSpawnDesc.DamagePulseSpriteIdx       = 1;
+    m_ExplosionSpawnDesc.SecondaryBurstCount        = 0;
+    m_ExplosionSpawnDesc.SecondaryBurstRadius       = 85.f;
+    m_ExplosionSpawnDesc.SecondaryBurstMinDelaySec  = 0.05f;
+    m_ExplosionSpawnDesc.SecondaryBurstMaxDelaySec  = 0.18f;
+    m_ExplosionSpawnDesc.SecondaryBurstDamageScale  = 0.f; // visual only
+    m_ExplosionSpawnDesc.SecondaryBurstSizeScale    = 0.6f;
+    m_ExplosionSpawnDesc.SecondaryBurstPlaySound    = false;
 }
 
 CGrenade::~CGrenade()
@@ -68,7 +86,12 @@ void CGrenade::Tick()
             m_Velocity = Vec3::Zero;
             
             // GM->SpawnExplosionDome(Transform()->GetWorldPos(), 1.5f, 50.f, 50.f, this);
-            GM->SpawnExplosion(Transform()->GetWorldPos(), 1.f, 1500.f, 75.f, this, true, true, Vec2::UnitY * GetRandom(0.5f, 1.f));
+            
+            m_ExplosionSpawnDesc.SpawnPos            = Transform()->GetWorldPos();
+            m_ExplosionSpawnDesc.DamageAmount        = m_DamageAmount;
+            m_ExplosionSpawnDesc.UpwardVelocity      = Vec2::UnitY * GetRandom(0.5f, 1.f);
+            m_ExplosionSpawnDesc.SecondaryBurstCount = m_SpawnSubGrenade ? 4 : 2;
+            GM->SpawnExplosion(m_ExplosionSpawnDesc);
             GetOwner()->SetActive(false);
 
             // SubGrenade 추가로 Spawn처리할 경우

@@ -14,6 +14,10 @@ private:
     
     static const float EFFECT_SPAWN_INTERVAL; // Effect 스폰 Interval
     float m_EffectTimer = EFFECT_SPAWN_INTERVAL; // 첫 Effect는 바로 Spawn 처리 되도록 설정
+
+private:
+    
+    ExplosionSpawnDesc m_ExplosionSpawnDesc{};
     
 public:
     CAirStrike();

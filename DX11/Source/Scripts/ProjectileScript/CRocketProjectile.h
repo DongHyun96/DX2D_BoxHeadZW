@@ -12,6 +12,10 @@ private:
     
     static const float s_SMOKE_SPAWN_INTERVAL;
     float m_SmokeSpawnTime = s_SMOKE_SPAWN_INTERVAL;
+
+private:
+    
+    ExplosionSpawnDesc m_ExplosionSpawnDesc{};
     
 public:
 

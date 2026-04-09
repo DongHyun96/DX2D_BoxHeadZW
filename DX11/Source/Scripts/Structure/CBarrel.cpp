@@ -13,6 +13,24 @@ const float CBarrel::m_LateExplodeWaitTime = 0.1f;
 CBarrel::CBarrel()
     : CStructure(SCRIPT_TYPE::BARREL)
 {
+    m_LateExplosionSpawnDesc.SpawnPos                   = Vec3();
+    m_LateExplosionSpawnDesc.ExplosionSizeFactor        = 1.f;
+    m_LateExplosionSpawnDesc.FPS                        = 1300.f;
+    m_LateExplosionSpawnDesc.DamageAmount               = 50.f;
+    m_LateExplosionSpawnDesc.SpawnedBy                  = nullptr;
+    m_LateExplosionSpawnDesc.UseCollisionForDamaging    = true;
+    m_LateExplosionSpawnDesc.PlayExplosionSound         = true;
+    m_LateExplosionSpawnDesc.UpwardVelocity             = Vec2::UnitY;
+    m_LateExplosionSpawnDesc.DamagePulseDelaySec        = 0.03f;
+    m_LateExplosionSpawnDesc.DamagePulseDurationSec     = 0.06f;
+    m_LateExplosionSpawnDesc.DamagePulseSpriteIdx       = 1;
+    m_LateExplosionSpawnDesc.SecondaryBurstCount        = 2;
+    m_LateExplosionSpawnDesc.SecondaryBurstRadius       = 65.f;
+    m_LateExplosionSpawnDesc.SecondaryBurstMinDelaySec  = 0.04f;
+    m_LateExplosionSpawnDesc.SecondaryBurstMaxDelaySec  = 0.12f;
+    m_LateExplosionSpawnDesc.SecondaryBurstDamageScale  = 0.f; // visual only
+    m_LateExplosionSpawnDesc.SecondaryBurstSizeScale    = 0.5f;
+    m_LateExplosionSpawnDesc.SecondaryBurstPlaySound    = false;
 }
 
 CBarrel::~CBarrel()
@@ -53,7 +71,10 @@ void CBarrel::UpdateLateExplosion()
     CStructure* StructureScript = GetOwner()->GetScriptComponent<CStructure>().Get();
     CStructure::RemoveInstalledStructure(StructureScript);
     
-    GM->SpawnExplosionDome(Transform()->GetRelativePos(), GetRandom(1.2f, 1.5f));
+    m_LateExplosionSpawnDesc.SpawnPos            = Transform()->GetRelativePos();
+    m_LateExplosionSpawnDesc.ExplosionSizeFactor = GetRandom(1.2f, 1.5f);
+    m_LateExplosionSpawnDesc.UpwardVelocity      = Vec2::UnitY * GetRandom(0.25f, 0.55f);
+    GM->SpawnExplosion(m_LateExplosionSpawnDesc);
     TryExplodeAdjacentCells(); // 연쇄 폭파 처리 continue
 }
 

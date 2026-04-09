@@ -19,6 +19,18 @@ const float CAirStrike::EFFECT_SPAWN_INTERVAL = 0.125f; // Effect 스폰 Interva
 CAirStrike::CAirStrike()
     : CScript(SCRIPT_TYPE::AIRSTRIKE)
 {
+    m_ExplosionSpawnDesc.SpawnPos                   = Vec3();
+    m_ExplosionSpawnDesc.ExplosionSizeFactor        = 1.25f;
+    m_ExplosionSpawnDesc.FPS                        = 1500.f;
+    m_ExplosionSpawnDesc.DamageAmount               = 0.f;
+    m_ExplosionSpawnDesc.SpawnedBy                  = nullptr;
+    m_ExplosionSpawnDesc.UseCollisionForDamaging    = false;
+    m_ExplosionSpawnDesc.PlayExplosionSound         = false;
+    m_ExplosionSpawnDesc.UpwardVelocity             = Vec2();
+    m_ExplosionSpawnDesc.DamagePulseDelaySec        = 0.06f;
+    m_ExplosionSpawnDesc.DamagePulseDurationSec     = 0.04f;
+    m_ExplosionSpawnDesc.DamagePulseSpriteIdx       = 2;
+    m_ExplosionSpawnDesc.SecondaryBurstCount        = 0;
 }
 
 CAirStrike::~CAirStrike()
@@ -116,8 +128,11 @@ void CAirStrike::TickAirStriking(const Ptr<CCamMoveScript>& CamMove)
             float x = Radius * cosf(i * Angle) + Transform()->GetWorldPos().x;
             float y = Radius * sinf(i * Angle) + Transform()->GetWorldPos().y;
 
-            // Damage 처리를 False로 둠
-            GM->SpawnExplosion({x, y, y}, 1.25f, 1500.f, 0.f, nullptr, false, false, {GetRandom(-0.05f, 0.05f), GetRandom(0.2f, 0.4f)});
+            // Damage 처리를 False로 둠 + SecondaryBurstCount(2차 폭발) 0으로 고정
+            
+            m_ExplosionSpawnDesc.SpawnPos       = Vec3(x, y, y);
+            m_ExplosionSpawnDesc.UpwardVelocity = Vec2(GetRandom(-0.05f, 0.05f), GetRandom(0.2f, 0.4f));
+            GM->SpawnExplosion(m_ExplosionSpawnDesc);
         }
         
         // 터지는 소리 한번만 재생

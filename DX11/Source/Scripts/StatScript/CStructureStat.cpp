@@ -9,6 +9,24 @@
 CStructureStat::CStructureStat()
     : CStatScript(SCRIPT_TYPE::STRUCTURESTAT)
 {
+    m_BarrelExplosionDesc.SpawnPos                   = Vec3();
+    m_BarrelExplosionDesc.ExplosionSizeFactor        = 1.f;
+    m_BarrelExplosionDesc.FPS                        = 1300.f;
+    m_BarrelExplosionDesc.DamageAmount               = 50.f;
+    m_BarrelExplosionDesc.SpawnedBy                  = nullptr;
+    m_BarrelExplosionDesc.UseCollisionForDamaging    = true;
+    m_BarrelExplosionDesc.PlayExplosionSound         = true;
+    m_BarrelExplosionDesc.UpwardVelocity             = Vec2::UnitY;
+    m_BarrelExplosionDesc.DamagePulseDelaySec        = 0.03f;
+    m_BarrelExplosionDesc.DamagePulseDurationSec     = 0.06f;
+    m_BarrelExplosionDesc.DamagePulseSpriteIdx       = 1;
+    m_BarrelExplosionDesc.SecondaryBurstCount        = 2;
+    m_BarrelExplosionDesc.SecondaryBurstRadius       = 65.f;
+    m_BarrelExplosionDesc.SecondaryBurstMinDelaySec  = 0.04f;
+    m_BarrelExplosionDesc.SecondaryBurstMaxDelaySec  = 0.12f;
+    m_BarrelExplosionDesc.SecondaryBurstDamageScale  = 0.f; // visual only
+    m_BarrelExplosionDesc.SecondaryBurstSizeScale    = 0.5f;
+    m_BarrelExplosionDesc.SecondaryBurstPlaySound    = false;
 }
 
 CStructureStat::~CStructureStat()
@@ -37,7 +55,10 @@ bool CStructureStat::TakeDamage(float _DamageAmount, const Vec2& _DamageSourcePo
         // Barrel 종류인 경우, 연쇄 폭파 작동 처리
         if (Ptr<CBarrel> Barrel = dynamic_cast<CBarrel*>(StructureScript))
         {
-            GM->SpawnExplosionDome(Transform()->GetRelativePos(), GetRandom(1.2f, 1.5f));
+            m_BarrelExplosionDesc.SpawnPos            = Transform()->GetRelativePos();
+            m_BarrelExplosionDesc.ExplosionSizeFactor = GetRandom(1.2f, 1.5f);
+            m_BarrelExplosionDesc.UpwardVelocity      = Vec2::UnitY * GetRandom(0.25f, 0.55f);
+            GM->SpawnExplosion(m_BarrelExplosionDesc);
 
             // 자기자신 CellCoord map 에서 제거
             CBarrel::RemoveSpawnedBarrelFromStaticMap(Barrel.Get());

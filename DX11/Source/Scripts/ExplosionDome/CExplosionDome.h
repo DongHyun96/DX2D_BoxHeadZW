@@ -37,6 +37,7 @@ public:
     
     void ClearAlreadyDamaged() { m_setAlreadyDamaged.clear(); }
     void SetDamage(float _DamageAmount) { m_DamageAmount = _DamageAmount; }
+    float GetDamageAmount() const { return m_DamageAmount; }
 
     /// <summary>
     /// Scale의 Factor로 곱해질 Size 값 설정
@@ -45,6 +46,7 @@ public:
     virtual void SetExplosionSize(float _Factor);
     
     void SetSpawnedBy(CScript* _SpawnedBy) { m_SpawnedBy = _SpawnedBy; }
+    CScript* GetSpawnedBy() const { return m_SpawnedBy; }
 
 private:
     

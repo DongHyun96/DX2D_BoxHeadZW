@@ -26,6 +26,8 @@ private:
     // 터질 때, ExplosionDome의 Damage Amount
     float m_DamageAmount{};
     
+    ExplosionSpawnDesc m_ExplosionSpawnDesc{};
+    
 public:
     CGrenade();
     virtual ~CGrenade() override;

@@ -18,6 +18,10 @@ private: // 지연 폭파 관련
     float m_LateExplodeTimer{};
     static const float m_LateExplodeWaitTime;
     
+private:
+    
+    ExplosionSpawnDesc m_LateExplosionSpawnDesc{};
+    
     
 public:
     

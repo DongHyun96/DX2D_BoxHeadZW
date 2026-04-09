@@ -17,6 +17,24 @@ const float CRocketProjectile::s_SMOKE_SPAWN_INTERVAL = 0.1f;
 CRocketProjectile::CRocketProjectile()
     : CScript(SCRIPT_TYPE::ROCKETPROJECTILE)
 {
+    m_ExplosionSpawnDesc.SpawnPos                   = Vec3();
+    m_ExplosionSpawnDesc.ExplosionSizeFactor        = 1.f;
+    m_ExplosionSpawnDesc.FPS                        = 1450.f;
+    m_ExplosionSpawnDesc.DamageAmount               = 0.f;
+    m_ExplosionSpawnDesc.SpawnedBy                  = this;
+    m_ExplosionSpawnDesc.UseCollisionForDamaging    = true;
+    m_ExplosionSpawnDesc.PlayExplosionSound         = true;
+    m_ExplosionSpawnDesc.UpwardVelocity             = Vec2::UnitY;
+    m_ExplosionSpawnDesc.DamagePulseDelaySec        = 0.01f;
+    m_ExplosionSpawnDesc.DamagePulseDurationSec     = 0.07f;
+    m_ExplosionSpawnDesc.DamagePulseSpriteIdx       = 1;
+    m_ExplosionSpawnDesc.SecondaryBurstCount        = 3;
+    m_ExplosionSpawnDesc.SecondaryBurstRadius       = 70.f;
+    m_ExplosionSpawnDesc.SecondaryBurstMinDelaySec  = 0.04f;
+    m_ExplosionSpawnDesc.SecondaryBurstMaxDelaySec  = 0.14f;
+    m_ExplosionSpawnDesc.SecondaryBurstDamageScale  = 0.f; // visual only
+    m_ExplosionSpawnDesc.SecondaryBurstSizeScale    = 0.5f;
+    m_ExplosionSpawnDesc.SecondaryBurstPlaySound    = false;
 }
 
 CRocketProjectile::~CRocketProjectile()
@@ -79,7 +97,11 @@ void CRocketProjectile::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _
     GetOwner()->SetActive(false);
     
     // Effect Spawn 처리하기
-    GM->SpawnExplosionDome(Transform()->GetWorldPos(), GetRandom(1.f, 1.2f), m_DamageAmount);
+    m_ExplosionSpawnDesc.SpawnPos            = Transform()->GetWorldPos();
+    m_ExplosionSpawnDesc.ExplosionSizeFactor = GetRandom(1.f, 1.2f);
+    m_ExplosionSpawnDesc.DamageAmount        = m_DamageAmount;
+    m_ExplosionSpawnDesc.UpwardVelocity      = Vec2::UnitY * GetRandom(0.35f, 0.7f);
+    GM->SpawnExplosion(m_ExplosionSpawnDesc);
     
     if (Ptr<CStatScript> Stat = _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>())
     {

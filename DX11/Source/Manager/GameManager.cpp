@@ -97,36 +97,37 @@ void GameManager::SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSize
     }
 }
 
-void GameManager::SpawnExplosion
-(
-    const Vec3& _SpawnPos,
-    float       _ExplosionSizeFactor,
-    float       _FPS,
-    float       _DamageAmount,
-    CScript*    _SpawnedBy,
-    bool        _UseSpawnExplosionCollisionForDamaging,
-    bool        _PlayExplosionSound,
-    const Vec2& _UpwardVelocity
-)
+void GameManager::SpawnExplosion(const ExplosionSpawnDesc& _Desc)
 {
     GameObject* Object = m_mapFlipbookEffectPoolers[FLIPBOOK_EFFECT_POOLER_TYPE::EXPLOSION_EFFECT_POOLER]->SpawnObject();
     if (Object)
     {
-        Object->Transform()->SetRelativePosX(_SpawnPos.x);
-        Object->Transform()->SetRelativePosY(_SpawnPos.y);
-        Object->FlipbookRender()->Play(0, _FPS, 1);
+        Object->Transform()->SetRelativePosX(_Desc.SpawnPos.x);
+        Object->Transform()->SetRelativePosY(_Desc.SpawnPos.y);
+        Object->FlipbookRender()->Play(0, _Desc.FPS, 1);
         
         if (Ptr<CExplosion> Explosion = Object->GetScriptComponent<CExplosion>())
         {
             Explosion->ClearAlreadyDamaged();
-            Explosion->SetDamage(_DamageAmount);
-            Explosion->SetExplosionSize(_ExplosionSizeFactor);
-            Explosion->SetSpawnedBy(_SpawnedBy);
-            Explosion->SetUseCollisionForDamaging(_UseSpawnExplosionCollisionForDamaging);
-            Explosion->SetUpwardVelocity(_UpwardVelocity);
+            Explosion->SetDamage(_Desc.DamageAmount);
+            Explosion->SetExplosionSize(_Desc.ExplosionSizeFactor);
+            Explosion->SetSpawnedBy(_Desc.SpawnedBy);
+            Explosion->SetUseCollisionForDamaging(_Desc.UseCollisionForDamaging);
+            Explosion->SetUpwardVelocity(_Desc.UpwardVelocity);
+            Explosion->ConfigureDamagePulse(_Desc.DamagePulseDelaySec, _Desc.DamagePulseDurationSec, _Desc.DamagePulseSpriteIdx);
+            Explosion->SetSecondaryBurst
+            (
+                _Desc.SecondaryBurstCount,
+                _Desc.SecondaryBurstRadius,
+                _Desc.SecondaryBurstMinDelaySec,
+                _Desc.SecondaryBurstMaxDelaySec,
+                _Desc.SecondaryBurstDamageScale,
+                _Desc.SecondaryBurstSizeScale,
+                _Desc.SecondaryBurstPlaySound
+            );
         }
 
-        if (_PlayExplosionSound)
+        if (_Desc.PlayExplosionSound)
         {
             Ptr<ASound> Sound = FIND_ASSET(ASound, L"Sound\\Explosion1.mp3");
             Sound->Play(1, 0.5f, true);
