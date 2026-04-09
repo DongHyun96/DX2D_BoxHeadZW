@@ -78,44 +78,37 @@ bool CColliderRect::AABBCollision(CColliderRect* _OtherRect)
 {
     // Rect vs Rect AABB
     
-    const Vec3 ThisPos          = GetWorldPos();
-    const Vec3 ThisWorldScale   = Transform()->GetWorldScale(); 
-    const Vec2 ThisSize         = {ThisWorldScale.x * m_Scale.x, ThisWorldScale.y * m_Scale.y};
-    
-    const Vec3 OtherPos         = _OtherRect->GetWorldPos();
-    const Vec3 OtherWorldScale  = _OtherRect->Transform()->GetWorldScale(); 
-    const Vec2 OtherSize        = {OtherWorldScale.x * _OtherRect->m_Scale.x, OtherWorldScale.y * _OtherRect->m_Scale.y};
-    
-    const float x = abs(ThisPos.x - OtherPos.x);
-    const float y = abs(ThisPos.y - OtherPos.y);
-    
-    const float SizeX = (ThisSize.x + OtherSize.x) * 0.5f;
-    const float SizeY = (ThisSize.y + OtherSize.y) * 0.5f;
+    // LT.x, RB.x, LT.y, RB.y 로 각 Rect의 AABB를 구성
+    // m_CornersWorldPos : [0]=LT [1]=RT [2]=RB [3]=LB
+    const float thisLeft   = m_CornersWorldPos[0].x;
+    const float thisRight  = m_CornersWorldPos[2].x;
+    const float thisTop    = m_CornersWorldPos[0].y;
+    const float thisBottom = m_CornersWorldPos[2].y;
 
-    return x < SizeX && y < SizeY; 
+    const float otherLeft   = _OtherRect->m_CornersWorldPos[0].x;
+    const float otherRight  = _OtherRect->m_CornersWorldPos[2].x;
+    const float otherTop    = _OtherRect->m_CornersWorldPos[0].y;
+    const float otherBottom = _OtherRect->m_CornersWorldPos[2].y;
+
+    return thisRight > otherLeft  && thisLeft  < otherRight && thisTop   > otherBottom && thisBottom < otherTop;
 }
 
 bool CColliderRect::AABBCollision(CColliderCircle* _OtherCircle)
 {
     // Rect vs Circle AABB
+    const float left   = m_CornersWorldPos[0].x;
+    const float right  = m_CornersWorldPos[2].x;
+    const float top    = m_CornersWorldPos[0].y;
+    const float bottom = m_CornersWorldPos[2].y;
 
-    const Vec3 CircleMid = _OtherCircle->GetWorldPos();
+    const Vec3 circleCenter = _OtherCircle->GetWorldPos();
 
-    static Ptr<AMesh> pRectMesh{};
-    if (!pRectMesh) pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
-    
-    const Vtx* pVtx = pRectMesh->GetVtxSysMem();
-    
-    const Vec3 ThisLeftTop      = XMVector3TransformCoord(pVtx[0].vPos, this->GetWorldMat());
-    const Vec3 ThisRightBottom  = XMVector3TransformCoord(pVtx[2].vPos, this->GetWorldMat());
-    
-    const float Left            = ThisLeftTop.x;
-    const float Right           = ThisRightBottom.x;
-    const float Top             = ThisLeftTop.y;
-    const float Bottom          = ThisRightBottom.y;
-    
-    m_CircleClosestPointContacted.x = min(max(Left, CircleMid.x), Right);
-    m_CircleClosestPointContacted.y = min(max(Bottom, CircleMid.y), Top);
+    // 사각형 위에서 원의 중심에 가장 가까운 점 (Closest Point)
+    m_CircleClosestPointContacted.x = min(max(left, circleCenter.x), right);
+    m_CircleClosestPointContacted.y = min(max(bottom, circleCenter.y), top);
+    m_CircleClosestPointContacted.z = 0.f;
+
+    return _OtherCircle->IsCollision(m_CircleClosestPointContacted);
     
     return _OtherCircle->IsCollision(m_CircleClosestPointContacted);
 }
@@ -124,125 +117,97 @@ bool CColliderRect::AABBCollision(CColliderPoint* _OtherPoint)
 {
     // Rect vs Point AABB
     
-    static Ptr<AMesh> pRectMesh{};
-    if (!pRectMesh) pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
-    
-    const Vtx* pVtx = pRectMesh->GetVtxSysMem();
-    
-    const Vec3 ThisPos          = GetWorldPos();
-    const Vec3 ThisWorldScale   = Transform()->GetWorldScale(); 
-    const Vec2 ThisSize         = {ThisWorldScale.x * m_Scale.x, ThisWorldScale.y * m_Scale.y};
-    
-    const Vec3 OtherPointPos = _OtherPoint->GetWorldPos();
-    
-    float x = abs(OtherPointPos.x - ThisPos.x);
-    float y = abs(OtherPointPos.y - ThisPos.y);
-    
-    return (x < ThisSize.x * 0.5f) && (y < ThisSize.y * 0.5f);   
+    const float left   = m_CornersWorldPos[0].x;
+    const float right  = m_CornersWorldPos[2].x;
+    const float top    = m_CornersWorldPos[0].y;
+    const float bottom = m_CornersWorldPos[2].y;
+
+    const Vec3 point = _OtherPoint->GetWorldPos();
+
+    return point.x > left  && point.x < right &&
+           point.y > bottom && point.y < top;
 }
 
 bool CColliderRect::OBBCollision(CColliderRect* _OtherRect)
 {
-    // Rect vs Rect OBB
-    static Ptr<AMesh> pRectMesh{};
-    if (!pRectMesh) pRectMesh = FIND_ASSET(AMesh, L"RectMesh");
+    // 두 Rect의 로컬 축 : RT-LT, LB-LT (FinalTick 코너 재활용)
+    // [0]=LT [1]=RT [2]=RB [3]=LB
+    Vec3 Axes[4];
+    Axes[0] = m_CornersWorldPos[1] - m_CornersWorldPos[0]; // this Right 축 (절반 포함)
+    Axes[1] = m_CornersWorldPos[3] - m_CornersWorldPos[0]; // this Up 축   (절반 포함)
+    Axes[2] = _OtherRect->m_CornersWorldPos[1] - _OtherRect->m_CornersWorldPos[0];
+    Axes[3] = _OtherRect->m_CornersWorldPos[3] - _OtherRect->m_CornersWorldPos[0];
 
-    const Vtx* pVtx             = pRectMesh->GetVtxSysMem();
-    const Matrix& matWorldLeft  = this->GetWorldMat();
-    const Matrix& matWorldRight =_OtherRect->GetWorldMat();
+    const Vec3 vCenter = _OtherRect->GetWorldPos() - GetWorldPos();
 
-    // 월드 공간상에서 충돌을 검사하기 위해서, RectMesh 모델을 각 충돌체의 월드행렬을 곱해서 정점을 충돌체 꼭지점에 배치시킨다.
-    // 각 꼭지점끼리 빼서 두 충돌체의 표면 방향벡터를 각 충돌체로부터 2개씩 구한다.
-    
-    Vec3 Axes[4]{};
-    
-    // Left collider 축 초기화
-    Axes[0] = XMVector3TransformCoord(pVtx[1].vPos, matWorldLeft) - XMVector3TransformCoord(pVtx[0].vPos, matWorldLeft);
-    Axes[1] = XMVector3TransformCoord(pVtx[3].vPos, matWorldLeft) - XMVector3TransformCoord(pVtx[0].vPos, matWorldLeft);
-
-    // Right Collider 축 초기화
-    Axes[2] = XMVector3TransformCoord(pVtx[1].vPos, matWorldRight) - XMVector3TransformCoord(pVtx[0].vPos, matWorldRight);
-    Axes[3] = XMVector3TransformCoord(pVtx[3].vPos, matWorldRight) - XMVector3TransformCoord(pVtx[0].vPos, matWorldRight);
-
-    Vec3 vCenter = XMVector3TransformCoord(Vec3(0.f, 0.f, 0.f), matWorldRight) - XMVector3TransformCoord(Vec3(0.f, 0.f, 0.f), matWorldLeft);
-
-    
     for (int i = 0; i < 4; ++i)
     {
-        // 4개의 축 중에서, 하나를 투영 목적지로 정함
-        // 원본값을 훼손하면 나중에 투영할 때 문제가 생기기 때문에, 정규화한 벡터를 따로 지역변수로 둠
         Vec3 vProjAxis = Axes[i];
         vProjAxis.Normalize();
-        
-        // 투영축으로 4개의 벡터를 투영시켜서 얻은 면적의 절반 길이를 구함
-        float Dot{};
-        
+
+        float fHalfSum = 0.f;
         for (const Vec3& Ax : Axes)
-            Dot += fabs(vProjAxis.Dot(Ax));
-        
-        Dot *= 0.5f;
-        
-        // 두 충돌체 중심을 잇는 벡터도 투영
-        float fCenter = fabs(vCenter.Dot(vProjAxis));
-        
-        if (fCenter > Dot) return false;
+            fHalfSum += fabsf(vProjAxis.Dot(Ax));
+        fHalfSum *= 0.5f;
+
+        if (fabsf(vCenter.Dot(vProjAxis)) > fHalfSum)
+            return false;
     }
-    
+
     return true;
 }
 
 bool CColliderRect::OBBCollision(CColliderCircle* _OtherCircle)
 {
-    Vec3 vAxes[2]{};
-    vAxes[0] = GetWorldMat().Right();
-    vAxes[1] = GetWorldMat().Up();
-    vAxes[0].Normalize();
-    vAxes[1].Normalize();
+    // Axes는 정규화된 로컬 축
+    // m_CornersWorldPos에서 축 방향을 꺼낸 뒤 정규화
+    Vec3 vRight = m_CornersWorldPos[1] - m_CornersWorldPos[0];
+    Vec3 vUp    = m_CornersWorldPos[3] - m_CornersWorldPos[0];
 
-    const Vec2 vHalfSize = Transform()->GetWorldScale() * m_Scale * 0.5f;
-    
-    Vec3 vDiff = _OtherCircle->GetWorldPos() - this->GetWorldPos();
+    const float halfW = vRight.Length() * 0.5f;
+    const float halfH = vUp.Length()    * 0.5f;
+
+    vRight.Normalize();
+    vUp.Normalize();
+
+    Vec3 vDiff = _OtherCircle->GetWorldPos() - GetWorldPos();
     vDiff.z = 0.f;
-    m_CircleClosestPointContacted = this->GetWorldPos();
+
+    m_CircleClosestPointContacted = GetWorldPos();
     m_CircleClosestPointContacted.z = 0.f;
 
-    for (int i = 0; i < 2; ++i)
-    {
-        // 원의 중심을 각 축에 투영
-        float fDist = vDiff.Dot(vAxes[i]);
+    // 각 축에 투영 후 Clamp → Closest Point 계산
+    float distRight = vDiff.Dot(vRight);
+    distRight = min(max(distRight, -halfW), halfW);
+    m_CircleClosestPointContacted += vRight * distRight;
 
-        // 투영된 거리를 사각형 범위 내로 제한(Clamp)
-        if (fDist > vHalfSize[i])       fDist = vHalfSize[i];
-        else if (fDist < -vHalfSize[i]) fDist = -vHalfSize[i];
-
-        // 제한된 거리만큼 축 방향으로 이동하여 Closest Point 업데이트
-        m_CircleClosestPointContacted += vAxes[i] * fDist;
-    }
+    float distUp = vDiff.Dot(vUp);
+    distUp = min(max(distUp, -halfH), halfH);
+    m_CircleClosestPointContacted += vUp * distUp;
 
     Vec3 vDistVec = _OtherCircle->GetWorldPos() - m_CircleClosestPointContacted;
     vDistVec.z = 0.f;
-    
-    const float fDistSq = vDistVec.LengthSquared(); 
+
     const float fRadius = _OtherCircle->GetRadius();
-    
-    return fDistSq <= (fRadius * fRadius);
+    return vDistVec.LengthSquared() <= fRadius * fRadius;
 }
 
 bool CColliderRect::OBBCollision(CColliderPoint* _OtherPoint)
 {
-    // Rect vs Point OBB
-    
-    const Matrix InvWorld = XMMatrixInverse(nullptr, GetWorldMat()); // 여기서 Scale까지 원상복구 처리되는 Matrix가 생성이 되어버림
+    Vec3 vRight = m_CornersWorldPos[1] - m_CornersWorldPos[0];
+    Vec3 vUp    = m_CornersWorldPos[3] - m_CornersWorldPos[0];
 
-    Vec3 InvPoint = XMVector3TransformCoord(_OtherPoint->GetWorldPos(), InvWorld);
-    InvPoint.x *= m_Scale.x * Transform()->GetWorldScale().x; // 총 Scale 곱만 원상복구
-    InvPoint.y *= m_Scale.y * Transform()->GetWorldScale().y;
-    
-    
-    const Vec3 ThisWorldScale = Transform()->GetWorldScale(); 
-    const Vec2 RectWorldScale = {ThisWorldScale.x * m_Scale.x, ThisWorldScale.y * m_Scale.y};
-    
-    return abs(InvPoint.x) < RectWorldScale.x * 0.5f && abs(InvPoint.y) < RectWorldScale.y * 0.5f; 
+    const float halfW = vRight.Length() * 0.5f;
+    const float halfH = vUp.Length()    * 0.5f;
+
+    vRight.Normalize();
+    vUp.Normalize();
+
+    Vec3 vDiff = _OtherPoint->GetWorldPos() - GetWorldPos();
+    vDiff.z = 0.f;
+
+    return fabsf(vDiff.Dot(vRight)) < halfW &&
+           fabsf(vDiff.Dot(vUp))    < halfH;
 }
 
 void CColliderRect::SaveToLevelFile(FILE* _File)
