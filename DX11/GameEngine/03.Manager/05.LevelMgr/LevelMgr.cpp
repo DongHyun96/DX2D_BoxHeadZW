@@ -46,8 +46,8 @@ void LevelMgr::Progress()
     m_CurLevel->FinalTick();
 
     // 충돌 검사 진행 -> TODO : Level이 각자의 CollisionMgr을 들고 있는 형태로 가져가면 어떨까
-    if (m_LevelState == LEVEL_STATE::PLAY)
-        CollisionMgr::GetInst()->Progress(m_CurLevel);
+    /*if (m_LevelState == LEVEL_STATE::PLAY)
+        CollisionMgr::GetInst()->Progress(m_CurLevel);*/
 }
 
 void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)

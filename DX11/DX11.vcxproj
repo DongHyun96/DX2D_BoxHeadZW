@@ -327,6 +327,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CGrenade.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CRocketProjectile.h" />
+    <ClInclude Include="Source\Scripts\RoundHandler\CRoundHandler.h" />
     <ClInclude Include="Source\Scripts\StatScript\CStatScript.h" />
     <ClInclude Include="Source\Scripts\Structure\CBarrel.h" />
     <ClInclude Include="Source\Scripts\Structure\CStructure.h" />
@@ -1637,6 +1638,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\Obstacle\CObstacle.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CGrenade.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CRocketProjectile.cpp" />
+    <ClCompile Include="Source\Scripts\RoundHandler\CRoundHandler.cpp" />
     <ClCompile Include="Source\Scripts\StatScript\CStatScript.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

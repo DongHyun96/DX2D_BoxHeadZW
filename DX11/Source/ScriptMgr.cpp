@@ -43,6 +43,7 @@
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/ProjectileScript\CGrenade.h"
 #include "Source/Scripts/ProjectileScript\CRocketProjectile.h"
+#include "Source/Scripts/RoundHandler\CRoundHandler.h"
 #include "Source/Scripts/StatScript\CStatScript.h"
 #include "Source/Scripts/Structure\CBarrel.h"
 #include "Source/Scripts/Structure\CStructure.h"
@@ -90,6 +91,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CGrenade");
 	_vec.push_back(L"CRocketProjectile");
+	_vec.push_back(L"CRoundHandler");
 	_vec.push_back(L"CStatScript");
 	_vec.push_back(L"CBarrel");
 	_vec.push_back(L"CStructure");
@@ -183,6 +185,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CGrenade;
 	if (L"CRocketProjectile" == _strScriptName)
 		return new CRocketProjectile;
+	if (L"CRoundHandler" == _strScriptName)
+		return new CRoundHandler;
 	if (L"CStatScript" == _strScriptName)
 		return new CStatScript;
 	if (L"CBarrel" == _strScriptName)
@@ -284,6 +288,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CGrenade;
 	case (UINT)SCRIPT_TYPE::ROCKETPROJECTILE:
 		return new CRocketProjectile;
+	case (UINT)SCRIPT_TYPE::ROUNDHANDLER:
+		return new CRoundHandler;
 	case (UINT)SCRIPT_TYPE::STATSCRIPT:
 		return new CStatScript;
 	case (UINT)SCRIPT_TYPE::BARREL:
@@ -386,6 +392,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CGrenade";
 	case SCRIPT_TYPE::ROCKETPROJECTILE:
 		return L"CRocketProjectile";
+	case SCRIPT_TYPE::ROUNDHANDLER:
+		return L"CRoundHandler";
 	case SCRIPT_TYPE::STATSCRIPT:
 		return L"CStatScript";
 	case SCRIPT_TYPE::BARREL:

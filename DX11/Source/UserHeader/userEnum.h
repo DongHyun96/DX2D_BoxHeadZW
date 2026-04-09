@@ -118,6 +118,13 @@ enum class ENEMY_TYPE
     END
 };
 
+enum class ROUND_STATE
+{
+    WAIT,
+    ROUND_GOING,
+    GAME_OVER
+};
+
 // 우선순위로 따지면 : Die / PushedOut / Attack / Walk 순
 static const map<ENEMY_MAINSTATE, wstring> mapEnemyMainStateAnimCategory = 
 {

@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CEnemySpawnHandler.h"
 
+#include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
@@ -34,6 +35,14 @@ void CEnemySpawnHandler::Begin()
 
 void CEnemySpawnHandler::Tick()
 {
+    if (KEY_TAP(KEY::MRB))
+    {
+        for (int i = 0; i < 100; ++i)
+        {
+            ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, 4));
+            SpawnEnemy(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
+        }
+    }
 }
 
 GameObject* CEnemySpawnHandler::SpawnEnemy(ENEMY_TYPE _EnemyType, const Vec2& _SpawnPos)
