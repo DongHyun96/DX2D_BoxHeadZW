@@ -266,11 +266,11 @@ void AssetMgr::CreateEngineShader()
     // ==============
     shader = new AGraphicShader;
     shader->SetName(L"FlipbookEffectShader");
-    shader->CreateVertexShader(L"Shader\\flipbook.fx","VS_Flipbook");
-    shader->CreatePixelShader(L"Shader\\flipbook.fx", "PS_Flipbook");
-    shader->SetBSType(BS_TYPE::ALPHA_BLEND);
+    shader->CreateVertexShader(L"Shader\\flipbookeffect.fx","VS_Flipbook");
+    shader->CreatePixelShader(L"Shader\\flipbookeffect.fx", "PS_Flipbook");
+    shader->SetBSType(BS_TYPE::ADDITIVE);
     shader->SetRSType(RS_TYPE::CULL_NONE);
-    shader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+    shader->SetDSType(DS_TYPE::LESS_NO_WRITE);
     
     shader->SetIsProvidedByEngine(true);
     

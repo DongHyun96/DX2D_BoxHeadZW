@@ -272,7 +272,7 @@ HRESULT Device::CreateBlendState()
     Desc.RenderTarget[0].RenderTargetWriteMask  = D3D11_COLOR_WRITE_ENABLE_ALL; // 블랜딩 결과를 타겟에 출력
     
     Desc.RenderTarget[0].BlendOp    = D3D11_BLEND_OP_ADD;
-    Desc.RenderTarget[0].SrcBlend   = D3D11_BLEND_ONE;     
+    Desc.RenderTarget[0].SrcBlend   = D3D11_BLEND_SRC_ALPHA;     
     Desc.RenderTarget[0].DestBlend  = D3D11_BLEND_ONE;
 
     // 최종 혼합된 색상의 Alpha는 어떻게 setting할 것인지에 대한 옵션 (최종 색상은 어차피 RGB값만 쓰기 때문에 Alpha는 상관이 없다)
@@ -281,7 +281,7 @@ HRESULT Device::CreateBlendState()
     Desc.RenderTarget[0].SrcBlendAlpha  = D3D11_BLEND_ONE;      
     Desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
     
-    hr = DEVICE->CreateBlendState(&Desc, m_BSState[static_cast<UINT>(BS_TYPE::ONE_ONE)].GetAddressOf());
+    hr = DEVICE->CreateBlendState(&Desc, m_BSState[static_cast<UINT>(BS_TYPE::ADDITIVE)].GetAddressOf());
     if (FAILED(hr)) return E_FAIL;
     
     return S_OK;
@@ -410,6 +410,17 @@ HRESULT Device::CreateDepthStencilState()
     HR = DEVICE->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(DS_TYPE::NO_TEST)].GetAddressOf());
     if (FAILED(HR)) return E_FAIL;
 
+    // LESS_NO_WRITE (투명 / 가산 혼합 이펙트용 필수 상태!)
+    Desc = {};
+    ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+    Desc.DepthEnable    = true;                          // 깊이 판정은 한다 (벽이나 캐릭터 뒤에 정상적으로 가려지기 위함)
+    Desc.DepthFunc      = D3D11_COMPARISON_LESS_EQUAL;   
+    Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;   // ⭐ 핵심: 깊이 버퍼에 기록을 하지 않음! (D3D11_DEPTH_WRITE_MASK_ZERO)
+    Desc.StencilEnable  = false;
+
+    HR = DEVICE->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(DS_TYPE::LESS_NO_WRITE)].GetAddressOf());
+    if (FAILED(HR)) return E_FAIL;
+    
     // NO_TEST_NO_WRITE
     Desc = {};
     ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));

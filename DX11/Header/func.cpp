@@ -311,6 +311,7 @@ string RenderDomainTypeToString(RENDER_DOMAIN _RenderDomain)
     case RENDER_DOMAIN::DOMAIN_OPAQUE:      return "Domain Opaque";
     case RENDER_DOMAIN::DOMAIN_MASKED:      return "Domain Masked";
     case RENDER_DOMAIN::DOMAIN_TRANSPARENT: return "Domain Transparent";
+    case RENDER_DOMAIN::DOMAIN_TRANSPARENT_EFFECT:       return "Domain Transparent Effect";
     case RENDER_DOMAIN::DOMAIN_POSTPROCESS: return "Domain PostProcess";
     case RENDER_DOMAIN::DOMAIN_DEBUG:       return "Domain Debug";
     case RENDER_DOMAIN::DOMAIN_NONE:        return "Domain None";
@@ -323,7 +324,7 @@ string BSTypeToString(BS_TYPE _BSType)
     {
     case BS_TYPE::DEFAULT:      return "BS Default";
     case BS_TYPE::ALPHA_BLEND:  return "BS Alpha Blend";
-    case BS_TYPE::ONE_ONE:      return "BS One One";
+    case BS_TYPE::ADDITIVE:      return "BS One One";
     case BS_TYPE::END:          return "Invalid";
     }    
     return "Invalid";

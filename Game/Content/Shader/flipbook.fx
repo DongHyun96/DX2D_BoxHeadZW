@@ -75,7 +75,7 @@ float4 PS_Flipbook(VS_OUT _input) : SV_Target
             discard;
         }
 
-        if (vColor.a <0.1f) discard;
+        if (vColor.a == 0.f) discard;
     }
 
     vColor *= instanceData.TintColor;

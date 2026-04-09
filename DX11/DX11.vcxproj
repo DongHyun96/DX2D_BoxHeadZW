@@ -1835,6 +1835,17 @@ CodeGen.exe</Command>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Flipbook</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
     </FxCompile>
+    <FxCompile Include="HLSL\flipbookeffect.fx">
+      <ObjectFileOutput>D:\AssortRock\Project\DX\Project\DX2D_BoxHeadZW\Game\Bin\%(Filename).cso</ObjectFileOutput>
+      <TrackerLogDirectory>x64\Debug\GameClient.tlog\</TrackerLogDirectory>
+      <EntryPointName>VS_Flipbook</EntryPointName>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ShaderModel>5.0</ShaderModel>
+      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+      <DisableOptimizations>true</DisableOptimizations>
+      <EnableDebuggingInformation>true</EnableDebuggingInformation>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
     <FxCompile Include="HLSL\func.fx">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>

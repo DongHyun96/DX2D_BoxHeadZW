@@ -15,7 +15,8 @@ enum class BS_TYPE
 {
     DEFAULT,        // SrcRGB * 1 + DestRGB * 0
     ALPHA_BLEND,    // (SrcRGB * SrcA) + (DestRGB * (1 - SrcA)) 
-    ONE_ONE,        // (SrcRGB * 1) + (DestRGB * 1)
+    // ONE_ONE,        // (SrcRGB * 1) + (DestRGB * 1)
+    ADDITIVE,        
     END
 };
 
@@ -34,10 +35,11 @@ enum class DS_TYPE
 {
     LESS,               // Default setting, 깊이판정 LESS(가까운게 판정 성공), 판정 성공 시 깊이 재기록
     LESS_EQUAL,         // 깊이판정 작거나 같은 경우까지 허용
-    LESS_WRITE,      // 깊이판정은 하되, 깊이 쓰기 x (반투명용)
+    LESS_WRITE,      
     NO_TEST,            // 깊이판정 x, 무조건 성공처리, 깊이쓰기 o
+    LESS_NO_WRITE,      // 깊이판정은 하되, 깊이 쓰기 x (반투명용)
     NO_TEST_NO_WRITE,   // 깊이판정 x, 무조건 성공처리, 깊이쓰기 x,
-    END
+    END,
 };
 
 enum class ASSET_TYPE
@@ -178,10 +180,11 @@ enum class LIGHT_TYPE
 /// <summary> 재질이 렌더링되는 시점 </summary>
 enum class RENDER_DOMAIN
 {
-    DOMAIN_OPAQUE,      // 불투명
-    DOMAIN_MASKED,      // 불투명 + 완전 투명 (Discard 처리하는 Material의 경우)
-    DOMAIN_TRANSPARENT, // 반투명
-    DOMAIN_POSTPROCESS, // 후처리 - 가장 마지막에 동작, 기존에 그려진 장면을 재 가공
+    DOMAIN_OPAQUE,              // 불투명
+    DOMAIN_MASKED,              // 불투명 + 완전 투명 (Discard 처리하는 Material의 경우)
+    DOMAIN_TRANSPARENT,         // 반투명
+    DOMAIN_TRANSPARENT_EFFECT,  // 반투명 effect
+    DOMAIN_POSTPROCESS,         // 후처리 - 가장 마지막에 동작, 기존에 그려진 장면을 재 가공
     
     DOMAIN_DEBUG,       // 디버그 렌더링 전용 도메인
     

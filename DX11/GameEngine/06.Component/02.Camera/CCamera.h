@@ -84,7 +84,10 @@ public:
     virtual void Begin() override;
     virtual void FinalTick() override;
     
+    void Render(bool _bUseRenderDomainSort = true);
+    
+private:
+    
     void SortObject();
-    void Render();
     
 };

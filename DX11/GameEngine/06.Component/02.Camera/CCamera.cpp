@@ -142,7 +142,62 @@ void CCamera::SortObject()
     }
 }
 
-void CCamera::Render()
+void CCamera::Render(bool _bUseRenderDomainSort)
+{
+    g_Trans.matView = m_matView;
+    g_Trans.matProj = m_matProj;
+
+    if (!_bUseRenderDomainSort)
+    {
+        Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
+        if (!pCurLevel) return;
+
+        CFlipbookRender::BeginInstancing();
+        for (UINT i = 0; i < MAX_LAYER; ++i)
+        {
+            if (false == (m_LayerCheck & (1 << i))) continue;
+
+            // 레이어에 소속된 모든 오브젝트를 가져온다
+            Layer* pLayer = pCurLevel->GetLayer(i);
+            const vector<Ptr<GameObject>>& vecObjects = pLayer->GetAllObjects();
+
+            for (const Ptr<GameObject>& object : vecObjects)
+            {
+                // 오브젝틀가 렌더링을 할 수 있는 상태인지 확인
+                if (!object->GetRenderCom() || !object->GetRenderCom()->GetMesh() || !object->GetRenderCom()->GetMaterial())
+                    continue;
+                
+                object->Render();
+                
+                if (object->GetRenderCom()->GetMaterial()->GetDomain() == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
+                    CFlipbookRender::FlushInstancing();
+            }
+        }
+        CFlipbookRender::FlushInstancing();
+        return;
+    }
+    
+    SortObject();
+    CFlipbookRender::BeginInstancing();
+    
+    // Domain 순서대로 렌더링 진행
+    for (const auto& Pair : m_mapDomainGameObject)
+    {
+        for (const Ptr<GameObject>& GameObject : Pair.second)
+            GameObject->Render();
+        
+        if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
+            CFlipbookRender::FlushInstancing();
+        
+        if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT_EFFECT)
+            CFlipbookRender::FlushInstancing();
+    }
+    
+    CFlipbookRender::FlushInstancing();
+    
+}
+
+/*void CCamera::Render()
 {
     g_Trans.matView = m_matView;
     g_Trans.matProj = m_matProj;
@@ -160,4 +215,4 @@ void CCamera::Render()
     }
     
     CFlipbookRender::FlushInstancing();
-}
+}*/

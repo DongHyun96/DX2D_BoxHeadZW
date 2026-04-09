@@ -28,7 +28,7 @@ void CColliderRect::FinalTick()
     // row-vector 기준: T(-Pivot) * S * T(Pivot)
     GetWorldMat() = matPivotToOrigin * matScale * matPivotBack * matTranslation * Transform()->GetWorldMatrix();
     
-        
+    // 이 정보를 사용해서 Collision 계산을 행할 수 있을 듯? (두 번 계산처리되는 중)
     static const Vec3 kLocalCorners[4] = 
     {
         Vec3(-0.5f,  0.5f, 0.f), // LT
