@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Source/Scripts/StatScript/CCharacterStat.h"
+#include "Source/Scripts/CharacterScript/CharacterStat/CCharacterStat.h"
 
 class CEnemyStat : public CCharacterStat
 {

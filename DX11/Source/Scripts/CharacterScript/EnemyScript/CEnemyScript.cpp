@@ -3,12 +3,8 @@
 
 #include "EnemyWalkStrategy/EnemyWalkStrategy.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
-#include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "PerceptionHandler/CPerceptionHandler.h"
 #include "Source/ScriptMgr.h"
-#include "Source/AStar/AStarPathFinder.h"
-#include "Source/Manager/GameManager.h"
-#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
@@ -79,20 +75,14 @@ void CEnemyScript::Move()
     
     switch (m_MainState)
     {
-    case ENEMY_MAINSTATE::ATTACK:
-    {
-        if (!IsValid(m_TargetObject)) m_MainState = ENEMY_MAINSTATE::WALK;
-    }
-        
-        break;
     case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
-        
+    case ENEMY_MAINSTATE::ATTACK:
+        if (!IsValid(m_TargetObject)) m_MainState = ENEMY_MAINSTATE::WALK;
+        return;
     case ENEMY_MAINSTATE::WALK:
-    {
         s_mapWalkingStrategies[m_CurrentWalkType]->UseWalkStrategy(this);
-    }
-        break;
-    case ENEMY_MAINSTATE::PUSHED_OUT: MovePushedOut(); break;
+        return;
+    case ENEMY_MAINSTATE::PUSHED_OUT: MovePushedOut(); return;
     }
 }
 

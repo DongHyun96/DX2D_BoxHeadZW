@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "CStatScript.h"
+
+#include "Source/Scripts/StatScript/CStatScript.h"
 
 class CCharacterStat : public CStatScript
 {

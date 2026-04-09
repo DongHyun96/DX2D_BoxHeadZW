@@ -1,6 +1,5 @@
 ﻿#pragma once
-#include "Source/Scripts/StatScript/CCharacterStat.h"
-#include "Source/Scripts/StatScript/CStatScript.h"
+#include "Source/Scripts/CharacterScript/CharacterStat/CCharacterStat.h"
 
 class CPlayerStat : public CCharacterStat
 {

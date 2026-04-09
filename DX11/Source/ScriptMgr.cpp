@@ -11,6 +11,9 @@
 #include "Source/Scripts/CharacterScript\AnimHandler\EnemyAnimHandler\CEnemyAnimHandler.h"
 #include "Source/Scripts/CharacterScript\AnimHandler\PlayerAnimHandler\CPlayerAnimHandler.h"
 #include "Source/Scripts/CharacterScript\CCharacterScript.h"
+#include "Source/Scripts/CharacterScript\CharacterStat\CCharacterStat.h"
+#include "Source/Scripts/CharacterScript\CharacterStat\EnemyStat\CEnemyStat.h"
+#include "Source/Scripts/CharacterScript\CharacterStat\PlayerStat\CPlayerStat.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\CEnemyScript.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\Devil\CDevil.h"
 #include "Source/Scripts/CharacterScript\EnemyScript\EnemySpawnHandler\CEnemySpawnHandler.h"
@@ -38,14 +41,11 @@
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/ProjectileScript\CGrenade.h"
 #include "Source/Scripts/ProjectileScript\CRocketProjectile.h"
-#include "Source/Scripts/StatScript\CCharacterStat.h"
 #include "Source/Scripts/StatScript\CStatScript.h"
-#include "Source/Scripts/StatScript\CStructureStat.h"
-#include "Source/Scripts/StatScript\EnemyStat\CEnemyStat.h"
-#include "Source/Scripts/StatScript\PlayerStat\CPlayerStat.h"
 #include "Source/Scripts/Structure\CBarrel.h"
 #include "Source/Scripts/Structure\CStructure.h"
 #include "Source/Scripts/Structure\CTurret.h"
+#include "Source/Scripts/Structure\StructureStat\CStructureStat.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
@@ -57,6 +57,9 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CCamMoveScript");
 	_vec.push_back(L"CEnemyAnimHandler");
 	_vec.push_back(L"CPlayerAnimHandler");
+	_vec.push_back(L"CCharacterStat");
+	_vec.push_back(L"CEnemyStat");
+	_vec.push_back(L"CPlayerStat");
 	_vec.push_back(L"CEnemyScript");
 	_vec.push_back(L"CDevil");
 	_vec.push_back(L"CEnemySpawnHandler");
@@ -83,14 +86,11 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CGrenade");
 	_vec.push_back(L"CRocketProjectile");
-	_vec.push_back(L"CCharacterStat");
 	_vec.push_back(L"CStatScript");
-	_vec.push_back(L"CStructureStat");
-	_vec.push_back(L"CEnemyStat");
-	_vec.push_back(L"CPlayerStat");
 	_vec.push_back(L"CBarrel");
 	_vec.push_back(L"CStructure");
 	_vec.push_back(L"CTurret");
+	_vec.push_back(L"CStructureStat");
 }
 
 CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
@@ -115,6 +115,12 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CPlayerAnimHandler;
 	if (L"CCharacterScript" == _strScriptName)
 		return nullptr;
+	if (L"CCharacterStat" == _strScriptName)
+		return new CCharacterStat;
+	if (L"CEnemyStat" == _strScriptName)
+		return new CEnemyStat;
+	if (L"CPlayerStat" == _strScriptName)
+		return new CPlayerStat;
 	if (L"CEnemyScript" == _strScriptName)
 		return new CEnemyScript;
 	if (L"CDevil" == _strScriptName)
@@ -169,22 +175,16 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CGrenade;
 	if (L"CRocketProjectile" == _strScriptName)
 		return new CRocketProjectile;
-	if (L"CCharacterStat" == _strScriptName)
-		return new CCharacterStat;
 	if (L"CStatScript" == _strScriptName)
 		return new CStatScript;
-	if (L"CStructureStat" == _strScriptName)
-		return new CStructureStat;
-	if (L"CEnemyStat" == _strScriptName)
-		return new CEnemyStat;
-	if (L"CPlayerStat" == _strScriptName)
-		return new CPlayerStat;
 	if (L"CBarrel" == _strScriptName)
 		return new CBarrel;
 	if (L"CStructure" == _strScriptName)
 		return new CStructure;
 	if (L"CTurret" == _strScriptName)
 		return new CTurret;
+	if (L"CStructureStat" == _strScriptName)
+		return new CStructureStat;
 	return nullptr;
 }
 
@@ -212,6 +212,12 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CPlayerAnimHandler;
 	case (UINT)SCRIPT_TYPE::CHARACTERSCRIPT:
 		return nullptr;
+	case (UINT)SCRIPT_TYPE::CHARACTERSTAT:
+		return new CCharacterStat;
+	case (UINT)SCRIPT_TYPE::ENEMYSTAT:
+		return new CEnemyStat;
+	case (UINT)SCRIPT_TYPE::PLAYERSTAT:
+		return new CPlayerStat;
 	case (UINT)SCRIPT_TYPE::ENEMYSCRIPT:
 		return new CEnemyScript;
 	case (UINT)SCRIPT_TYPE::DEVIL:
@@ -266,22 +272,16 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CGrenade;
 	case (UINT)SCRIPT_TYPE::ROCKETPROJECTILE:
 		return new CRocketProjectile;
-	case (UINT)SCRIPT_TYPE::CHARACTERSTAT:
-		return new CCharacterStat;
 	case (UINT)SCRIPT_TYPE::STATSCRIPT:
 		return new CStatScript;
-	case (UINT)SCRIPT_TYPE::STRUCTURESTAT:
-		return new CStructureStat;
-	case (UINT)SCRIPT_TYPE::ENEMYSTAT:
-		return new CEnemyStat;
-	case (UINT)SCRIPT_TYPE::PLAYERSTAT:
-		return new CPlayerStat;
 	case (UINT)SCRIPT_TYPE::BARREL:
 		return new CBarrel;
 	case (UINT)SCRIPT_TYPE::STRUCTURE:
 		return new CStructure;
 	case (UINT)SCRIPT_TYPE::TURRET:
 		return new CTurret;
+	case (UINT)SCRIPT_TYPE::STRUCTURESTAT:
+		return new CStructureStat;
 	}
 	return nullptr;
 }
@@ -310,6 +310,12 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CPlayerAnimHandler";
 	case SCRIPT_TYPE::CHARACTERSCRIPT:
 		return L"CCharacterScript";
+	case SCRIPT_TYPE::CHARACTERSTAT:
+		return L"CCharacterStat";
+	case SCRIPT_TYPE::ENEMYSTAT:
+		return L"CEnemyStat";
+	case SCRIPT_TYPE::PLAYERSTAT:
+		return L"CPlayerStat";
 	case SCRIPT_TYPE::ENEMYSCRIPT:
 		return L"CEnemyScript";
 	case SCRIPT_TYPE::DEVIL:
@@ -364,22 +370,16 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CGrenade";
 	case SCRIPT_TYPE::ROCKETPROJECTILE:
 		return L"CRocketProjectile";
-	case SCRIPT_TYPE::CHARACTERSTAT:
-		return L"CCharacterStat";
 	case SCRIPT_TYPE::STATSCRIPT:
 		return L"CStatScript";
-	case SCRIPT_TYPE::STRUCTURESTAT:
-		return L"CStructureStat";
-	case SCRIPT_TYPE::ENEMYSTAT:
-		return L"CEnemyStat";
-	case SCRIPT_TYPE::PLAYERSTAT:
-		return L"CPlayerStat";
 	case SCRIPT_TYPE::BARREL:
 		return L"CBarrel";
 	case SCRIPT_TYPE::STRUCTURE:
 		return L"CStructure";
 	case SCRIPT_TYPE::TURRET:
 		return L"CTurret";
+	case SCRIPT_TYPE::STRUCTURESTAT:
+		return L"CStructureStat";
 	}
 	return nullptr;
 }
