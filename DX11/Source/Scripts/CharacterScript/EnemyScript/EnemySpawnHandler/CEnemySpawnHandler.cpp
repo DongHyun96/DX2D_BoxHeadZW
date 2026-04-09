@@ -53,7 +53,7 @@ GameObject* CEnemySpawnHandler::SpawnEnemy(ENEMY_TYPE _EnemyType, const CellCoor
     if (PlayerCellCoord.x - 1 <= _CellCoord.x && _CellCoord.x <= PlayerCellCoord.x + 1) return nullptr;
     if (PlayerCellCoord.y - 1 <= _CellCoord.y && _CellCoord.y <= PlayerCellCoord.y + 1) return nullptr;
     
-    GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(ToVec3(GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_CellCoord)), false);
+    GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(ToVec3(GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_CellCoord)));
     if (SpawnedEnemy)
     {
         if (const Ptr<CPerceptionHandler>& PHandler = SpawnedEnemy->GetScriptComponent<CPerceptionHandler>())
