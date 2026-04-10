@@ -4,6 +4,8 @@
 class PoolUI : public ComponentUI
 {
 private:
+
+    friend class CPoolComponent;
     
 public:
     

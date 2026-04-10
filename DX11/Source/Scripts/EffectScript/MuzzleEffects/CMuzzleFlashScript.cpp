@@ -18,35 +18,53 @@ CMuzzleFlashScript::~CMuzzleFlashScript()
 {
 }
 
+void CMuzzleFlashScript::Init()
+{
+    CFlipbookEffectScript::Init();
+    AddScriptParam(SCRIPT_PARAM::INT, &m_bIsPlayerWeaponMuzzle, L"IsPlayerWeaponMuzzle?");
+}
+
 void CMuzzleFlashScript::Begin()
 {
     CFlipbookEffectScript::Begin();
     
-    GetOwner()->AddDeactivateDelegate(bind(&CMuzzleFlashScript::OnDeactivate, this, placeholders::_1));
+    if (m_bIsPlayerWeaponMuzzle)
+    {
+        m_WeaponHandler = GM->GetPlayerObject()->GetScriptComponent<CPlayerWeaponHandler>().Get();
+    }
 }
+
+void CMuzzleFlashScript::AfterLevelBegin()
+{
+    // 여기서 GM에 FlipbookEffectPooler type 종류로 PoolComponent를 등록 처리한다 -> 이거 하지 말고 개인이 들고 있도록 처리
+    // CFlipbookEffectScript::AfterLevelBegin();
+    
+    // 자기 자식으로 들어가게끔 처리
+    // 문제점 -> Turret의 경우, CreateObject 처리가 되기 때문에 여기로 호출 처리가 안됨
+    
+    // 구현부는 놔둬야, GM PoolComponent에 등록처리를 하지 않음 -> 안전처리로 그냥 놔둠
+}
+
+
 
 void CMuzzleFlashScript::Tick()
 {
     CFlipbookEffectScript::Tick();
 
-    if (m_bIsPlayerWeaponMuzzle)
+    // 자기 자신의 Relative 위치를 Player의 Anim 회전과 동일한 방향으로 업데이트 처리해주어야 한다.5
+    // & 회전 또한 처리를 매 프레임 해주어야 함
+    if (m_WeaponHandler) // Player Muzzle effect인 경우
     {
-        // 자기 자신의 Relative 위치를 Player의 Anim 회전과 동일한 방향으로 업데이트 처리해주어야 한다.5
-        // & 회전 또한 처리를 매 프레임 해주어야 함
-        Ptr<CPlayerWeaponHandler> WeaponHandler = GM->GetPlayerObject()->GetScriptComponent<CPlayerWeaponHandler>().Get();    
+        const Vec2& CurrentOffset = m_WeaponHandler->GetCurrentMuzzleOffset() * s_OffsetFactorFromMuzzle;
+        Transform()->SetRelativePosX(CurrentOffset.x);
+        Transform()->SetRelativePosY(CurrentOffset.y);
         
-        if (WeaponHandler)
-        {
-            const Vec2& CurrentOffset = WeaponHandler->GetCurrentMuzzleOffset() * s_OffsetFactorFromMuzzle;
-            Transform()->SetRelativePosX(CurrentOffset.x);
-            Transform()->SetRelativePosY(CurrentOffset.y);
-            
-            const EDIRECTION PlayerDirection = GM->GetMainPlayerScript()->GetCurrentFacedDirection();
-            const float Angle = GetEightDirectionToAngle(PlayerDirection);
-            Transform()->SetRelativeRotZ(Angle);
-        }
+        const EDIRECTION PlayerDirection = GM->GetMainPlayerScript()->GetCurrentFacedDirection();
+        const float Angle = GetEightDirectionToAngle(PlayerDirection);
+        Transform()->SetRelativeRotZ(Angle);
         return;
     }
+        
     
     // Target Muzzle인 경우 (Owner가 TurretScript를 들고있음)
     // GetOwner의 GetParent가 Turret 게임 오브젝트
@@ -58,7 +76,15 @@ void CMuzzleFlashScript::Tick()
     }
 }
 
-void CMuzzleFlashScript::OnDeactivate(const Ptr<GameObject>& _Owner)
+void CMuzzleFlashScript::SaveToLevelFile(FILE* _File)
 {
-    m_bIsPlayerWeaponMuzzle = true;
+    CFlipbookEffectScript::SaveToLevelFile(_File);
+    fwrite(&m_bIsPlayerWeaponMuzzle, sizeof(bool), 1, _File);
+}
+
+void CMuzzleFlashScript::LoadFromLevelFile(FILE* _File)
+{
+    CFlipbookEffectScript::LoadFromLevelFile(_File);
+    fread(&m_bIsPlayerWeaponMuzzle, sizeof(bool), 1, _File);
+    
 }

@@ -11,6 +11,10 @@ private:
     UINT                    m_PoolCount{};
     Ptr<APrefab>            m_PrefabToPool{}; // -> Layer Default GameObject는 Pooling 하지 말것 -> PoolComponent GameObject와 다른 Layer여야 Begin 처리 시에 Layer GameObject iterator가 정상 동작함
     queue<Ptr<GameObject>>  m_SpawningPool{}; // 스폰 가능한 GameObject들 (IsActive가 꺼져있는 게임오브젝트들을 담는다)
+
+private:
+    
+    bool m_AttachToSelfObject{}; // 자기자신이 PoolComponent임과 동시에, Pooling한 오브젝트를 본인의 자식으로 처리를 해야하면 체크 (주의, 본인과 다른 Layer를 쓰는 오브젝트여야한다)
     
 public:
 

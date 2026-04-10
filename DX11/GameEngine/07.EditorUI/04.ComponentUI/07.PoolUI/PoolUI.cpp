@@ -54,4 +54,10 @@ void PoolUI::Tick_UI()
     int PoolCount = PoolComponent->m_PoolCount;
     if (ImGui::InputInt("##Pool Count", &PoolCount))
         if (PoolCount >= 0) PoolComponent->m_PoolCount = PoolCount;
+
+    bool Temp = PoolComponent->m_AttachToSelfObject;
+    if (ImGui::Checkbox("PoolingObject to my child", &Temp))
+    {
+        PoolComponent->m_AttachToSelfObject = Temp;
+    }
 }

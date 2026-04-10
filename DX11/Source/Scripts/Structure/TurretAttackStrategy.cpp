@@ -58,13 +58,10 @@ bool Turret_MGAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _T
     
     /////////// Muzzle Effect ///////////
     
-    GameObject* SpawnedFlashEffect = GM->GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE::TURRET_MUZZLE_FLASH_POOLER)->SpawnObject(ToVec3(MuzzlePos2D)); 
+    GameObject* SpawnedFlashEffect = _Turret->PoolComponent()->SpawnObject(ToVec3(MuzzlePos2D)); 
     if (SpawnedFlashEffect)
     {
-        _Turret->GetOwner()->AddChild(SpawnedFlashEffect);
-        SpawnedFlashEffect->GetScriptComponent<CMuzzleFlashScript>()->SetIsPlayerWeaponMuzzle(false); // 실질적인 MuzzleFlash의 위치나 회전은 본인의 Tick에서 실시간 처리를 함 (Turret 또한 계속 돌기 때문)
         SpawnedFlashEffect->FlipbookRender()->Play(0, 15.f, 1);
-        
     }
 
     // 3회 사격이 끝나면 이번 턴 공격 종료

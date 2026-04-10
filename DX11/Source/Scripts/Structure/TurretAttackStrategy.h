@@ -30,7 +30,6 @@ private:
     float        m_BurstFireTimer = s_BurstInterval; // 바로 사격 가능하도록 처리
     int          m_FireCount{}; // 3발 사격이 끝났는지 체크하기 위함
     
-    
 public:
     
     Turret_MGAttackStrategy() = default;

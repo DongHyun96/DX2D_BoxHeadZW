@@ -12,6 +12,8 @@ private:
     // Player Muzzle인지 체크 (false라면, Turret Muzzle) -> CONTINUE
     bool m_bIsPlayerWeaponMuzzle = true;
     
+    class CPlayerWeaponHandler* m_WeaponHandler{};
+    
 public:
     
     CMuzzleFlashScript();
@@ -20,15 +22,18 @@ public:
 
 public:
 
+    virtual void Init() override;
     virtual void Begin() override;
+    virtual void AfterLevelBegin() override;
     virtual void Tick() override;
     
 public:
     
     void SetIsPlayerWeaponMuzzle(bool _PlayerMuzzleEffect) { m_bIsPlayerWeaponMuzzle = _PlayerMuzzleEffect; } 
     
-private:
+public:
     
-    void OnDeactivate(const Ptr<GameObject>& _Owner);
+    virtual void SaveToLevelFile(FILE* _File) override;
+    virtual void LoadFromLevelFile(FILE* _File) override;
 
 };

@@ -81,7 +81,7 @@ ASound::ASound(bool _EngineRes)
 
 ASound::~ASound()
 {
-	if (nullptr != m_Sound)
+	if (m_Sound)
 	{
 		FMOD_RESULT result = m_Sound->release();
 		m_Sound = nullptr;

@@ -16,6 +16,7 @@ CPoolComponent::CPoolComponent(const CPoolComponent& _Origin)
     : Component(_Origin)
     , m_PoolCount(_Origin.m_PoolCount)
     , m_PrefabToPool(_Origin.m_PrefabToPool)
+    , m_AttachToSelfObject(_Origin.m_AttachToSelfObject)
 {
     // SpawningPool의 경우, Init() 및 LevelState Play일 경우에만 초기화 처리되도록 한다.
 }
@@ -65,6 +66,9 @@ void CPoolComponent::Begin()
 
         // 여기서 Layer의 모든 GameObject를 순회할 때, 동일한 Layer에 집어넣는 경우라면 문제가 될 수 있음 -> iterator 순회하는 벡터에 새로운 요소를 추가해서 UB로 빠지는 중
         LevelMgr::GetInst()->GetCurLevel()->AddObject(CreatedObject->GetLayerIdx(), CreatedObject);
+        
+        if (m_AttachToSelfObject) GetOwner()->AddChild(CreatedObject);
+        
         CreatedObject->SetActive(false);
         
         // SetActive(false) Callback 처리이기 때문에 SetActive(false) 이후로 두어야한다
@@ -129,6 +133,8 @@ void CPoolComponent::SaveToLevelFile(FILE* _File)
     SaveAssetRef(_File, m_PrefabToPool.Get());
     
     // Object의 경우, Prefab을 통해 초기화 처리를 한다
+    
+    fwrite(&m_AttachToSelfObject, sizeof(bool), 1, _File);
 }
 
 void CPoolComponent::LoadFromLevelFile(FILE* _File)
@@ -138,4 +144,6 @@ void CPoolComponent::LoadFromLevelFile(FILE* _File)
 
     // Pooling해둘 GameObject의 APrefab 정보 불러오기
     m_PrefabToPool = LoadAssetRef<APrefab>(_File);
+    
+    fread(&m_AttachToSelfObject, sizeof(bool), 1, _File);
 }

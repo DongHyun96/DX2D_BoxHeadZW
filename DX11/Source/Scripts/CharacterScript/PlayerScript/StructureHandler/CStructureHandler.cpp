@@ -207,7 +207,7 @@ void CStructureHandler::CreateStructureHoldingPreviewIfNecessary()
 void CStructureHandler::UpdatePreviewStructureObject(const Vec2& _PreviewPos, bool _Available)
 {
     GameObject* PreviewObject = m_mapStructureTypePreviewObjects[m_CurrentStructureHolding];
-    PreviewObject->SetActive(true);
+    PreviewObject->SetActive(true, false);
     
     Vec3 Pos = ToVec3(_PreviewPos, -3500.f); 
     PreviewObject->Transform()->SetRelativePos(Pos);
