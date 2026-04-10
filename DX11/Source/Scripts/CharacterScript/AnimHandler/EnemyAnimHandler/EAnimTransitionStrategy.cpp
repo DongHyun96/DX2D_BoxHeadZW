@@ -14,7 +14,7 @@ void CommonEnemyTransitionStrategy::UseWalkStateTransitionStrategy(CEnemyAnimHan
     const wstring& AnimCategory         = mapEnemyMainStateAnimCategory.at(CurrentMainState);
     const int FlipBookIndexByDirection = static_cast<int>(CurrentDirection);
 
-    // 이동하고 있지 않은 상태 -> 이 상태 자체가 없긴 함 Enemy의 경우 (있을 수도?)
+    // 이동하고 있지 않은 상태
     if (CurrentVelocity.LengthSquared() == 0.f)
     {
         // 해당 방향으로 자연스럽게 멈춤

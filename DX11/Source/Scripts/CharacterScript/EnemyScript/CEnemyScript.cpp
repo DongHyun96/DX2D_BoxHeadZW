@@ -69,9 +69,6 @@ void CEnemyScript::AfterLevelBegin()
 
 void CEnemyScript::Tick()
 {
-    if (m_PathReplanCooldown > 0.f)
-        m_PathReplanCooldown = max(m_PathReplanCooldown - DT, 0.f);
-    
     HandleStateTransition();
     CCharacterScript::Tick(); // Handling Move & UpdateCurrentFacedDirection involved
     HandleFadeOut();
@@ -219,7 +216,9 @@ void CEnemyScript::InitSpawn()
     m_TargetObject    = nullptr;
     
     stack<CellCoord>().swap(m_CellPath);
-    m_PathReplanCooldown = 0.f;
+    m_PathReplanTimer = 0.f;
+    m_PathReplanInterval = GetRandom(1.5f, 6.5f);
+    
 
     m_CurrentWalkType     = ENEMY_WALK_TYPE::CELL_PATH;
     m_AttackFlipbookCount = 0;
@@ -271,6 +270,16 @@ void CEnemyScript::BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollider
     if (_OtherCollider->GetOwner()->GetScriptComponent<CPlayerScript>())
     {
         Transform()->UpdateTransformToPrevRelativePos();
+    }
+}
+
+void CEnemyScript::SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType)
+{
+    m_CurrentWalkType = _WalkType;
+    if (_WalkType == ENEMY_WALK_TYPE::CELL_PATH)
+    {
+        m_PathReplanInterval = GetRandom(1.5f, 4.5f);
+        m_PathReplanTimer = 0.f;
     }
 }
 

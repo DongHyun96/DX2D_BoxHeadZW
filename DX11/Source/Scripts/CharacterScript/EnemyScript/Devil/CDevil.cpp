@@ -68,7 +68,7 @@ void CDevil::AfterPushedOutFin()
 {
     CEnemyScript::AfterPushedOutFin();
     
-    // Die 상태가 아니라면 80%의 확률로 새로운 Target 지정해서 공격 처리를 시도한다
+    // Die 상태가 아니라면 80%의 확률로 피격을 준 Target으로 지정해서 공격 처리를 시도한다
     if (m_MainState != ENEMY_MAINSTATE::DIE)
     {
         if (IsValid(m_LastDamageCauser))
@@ -102,7 +102,7 @@ void CDevil::HandleStateTransition()
             if (m_SameCoordStayTime > BlockedTimeWaitTotal) // 넘어가면 막혔다고 판단, 새로운 Target 지정해서 바로 공격 시도
             {
                 GameObject* NewTarget = EnemyWalkStrategy::FindNearestTargetFromAllObjects(this);
-                SetTargetObject(NewTarget);
+                SetTargetObject(NewTarget); // 여기서 Attack 처리를 TargetObject 쪽으로 하는 것이 아닌, 현재 이동 방면으로 처리하면 좋음
                 SetMainState(ENEMY_MAINSTATE::ATTACK);
             }
             
@@ -149,7 +149,7 @@ void CDevil::SetMainState(ENEMY_MAINSTATE _MainState)
     // 이전 상태가 Walk였고 Attack으로 넘어가는 시점이라면, Walk 상태에서의 사용하는 변수 초기화를 해둔다
     if (PrevMainState == ENEMY_MAINSTATE::WALK && _MainState == ENEMY_MAINSTATE::ATTACK) 
     {
-        m_SameCoordStayTime = 0.f;
+        m_SameCoordStayTime        = 0.f;
         m_TransitionToAttackTimer  = 0.f;
         m_AttackTransitionWaitTime = GetRandom(2.f, 5.f); // 다음 공격용    
     }

@@ -36,17 +36,18 @@ GameObject* EnemyWalkStrategy::FindNearestTargetFromAllObjects(CEnemyScript* _En
 
 void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
 {
-    if (!_Enemy) return;
+    _Enemy->m_Velocity = Vec3::Zero;
     
     CBackgroundTile* const BackgroundCellManager = GM->GetBackgroundCellManager();
-    if (!BackgroundCellManager) return;
-    
     Vec3 EnemyPos = _Enemy->Transform()->GetRelativePos();
     
     // 이미 해당 이동방법으로 이동을 끝낸 상황이거나, 이동하려했던 Target이 죽은 상황
     if (_Enemy->m_CellPath.empty() || !IsValid(_Enemy->m_TargetObject))
     {
-        if (_Enemy->m_PathReplanCooldown > 0.f) return;
+        _Enemy->m_PathReplanTimer += DT;
+        
+        if (_Enemy->m_PathReplanTimer < _Enemy->m_PathReplanInterval) return;
+        _Enemy->m_PathReplanTimer = 0.f;
         
         // 새로운 Target 찾기
         GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy);
@@ -61,7 +62,7 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
         
         // Target 지정
         _Enemy->m_TargetObject = TargetSelected;
-        _Enemy->m_PathReplanCooldown = CEnemyScript::PATH_REPLAN_INTERVAL;
+        _Enemy->m_PathReplanTimer = _Enemy->m_PathReplanInterval;
     }
 
     // 새로운 경로를 받았음에도 empty일 경우가 있음 (이때는 처리 x)
@@ -70,8 +71,6 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     {
         return;
     }
-    
-    _Enemy->m_Velocity = Vec3::Zero;
     
     const Vec2 Destination = BackgroundCellManager->GetCellCoordToWorldPos(_Enemy->m_CellPath.top()); 
     const Vec2 Direction = Destination - ToVec2(EnemyPos);
@@ -82,6 +81,7 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     // 이번 이동 거리보다 남은 거리가 작다면 도착한 것으로 판정
     if (DistToDest <= MoveDistThisFrame) 
     {
+        _Enemy->m_Velocity = ToVec3(Direction * MoveDistThisFrame); // 멈춰보이지 않게끔 Dummy Velocity 부여 (AnimHandler에서 Velocity 길이 0이면 멈춘 모션이 나와버림)
         _Enemy->Transform()->SetRelativePos(ToVec3(Destination, Destination.y)); // Dest로 위치보정 처리
         _Enemy->m_CellPath.pop(); 
         return;        

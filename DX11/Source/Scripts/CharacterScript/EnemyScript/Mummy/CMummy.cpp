@@ -72,7 +72,10 @@ void CMummy::OnFadeOutEnd()
     {
         // PoolCount 때문에 제대로 Spawn 안될 수도 있음
         if (GameObject* Object = GM->GetEnemySpawnHandler()->SpawnEnemy(m_EnemyType, AvailableCells[i]))
+        {
             Object->GetScriptComponent<CMummy>()->m_SpawnedByMummy = true;
+            
+        }
     }
         
 }

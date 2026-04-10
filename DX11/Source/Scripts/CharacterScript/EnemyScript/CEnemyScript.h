@@ -46,8 +46,8 @@ private:
 private: // AStar Path 및 Walk 관련
     
     stack<CellCoord> m_CellPath{}; // AStar로 찾은 CellPath
-    float            m_PathReplanCooldown{};
-    static constexpr float PATH_REPLAN_INTERVAL = 3.f;
+    float            m_PathReplanTimer{};
+    float            m_PathReplanInterval = 3.f;
     
     static map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> s_mapWalkingStrategies;
     ENEMY_WALK_TYPE m_CurrentWalkType{};
@@ -151,7 +151,7 @@ public:
 
     // Runner의 경우, WALK_TYPE에 따른 속력이 바뀜
     // Vampire의 경우, CellPath Walk setting 시 setting할 값들이 있음
-    virtual void SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType) { m_CurrentWalkType = _WalkType; }
+    virtual void SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType);
     ENEMY_WALK_TYPE GetCurrentWalkType() const { return m_CurrentWalkType; }
     
     float GetAttackDamage() const { return m_AttackDamage; }
