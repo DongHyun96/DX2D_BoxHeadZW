@@ -12,7 +12,7 @@
 
 GameObject* EnemyWalkStrategy::FindNearestTargetFromAllObjects(CEnemyScript* _Enemy)
 {
-    /*const Vec3 EnemyPos     = _Enemy->Transform()->GetRelativePos();
+    const Vec3 EnemyPos     = _Enemy->Transform()->GetRelativePos();
     const Vec2 PlayerPos    = GM->GetPlayerObject()->Transform()->GetWorldPos2D();
         
     float MinDist               = Vec2::DistanceSquared(ToVec2(EnemyPos), PlayerPos);
@@ -31,8 +31,7 @@ GameObject* EnemyWalkStrategy::FindNearestTargetFromAllObjects(CEnemyScript* _En
         }
     }
     
-    return TargetSelected;*/
-    return nullptr;
+    return TargetSelected;
 }
 
 GameObject* EnemyWalkStrategy::GetRandomTargetFromAllObjects(CEnemyScript* _Enemy)
@@ -62,15 +61,20 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
         _Enemy->m_PathReplanTimer = 0.f;
         
         // 새로운 Target 찾기
-        // GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy); // TODO : 이거 쓰지 않기 -> 여기서 성능이 많이 잡아먹는 것 같음
-        GameObject* TargetSelected = GetRandomTargetFromAllObjects(_Enemy);
+        GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy); // TODO : 이거 쓰지 않기 -> 여기서 성능이 많이 잡아먹는 것 같음
+        // GameObject* TargetSelected = GetRandomTargetFromAllObjects(_Enemy);
         if (!TargetSelected) return; // 맵에 고를 Target이 없는 상황
 
         // Target을 향한 새로운 경로 지정
-        const CellCoord CurrentCellCoord    = BackgroundCellManager->GetWorldPosToCellCoord(ToVec2(EnemyPos));
-        const CellCoord destCellCoord       = BackgroundCellManager->GetWorldPosToCellCoord(TargetSelected->Transform()->GetWorldPos2D());
+        const CellCoord CurrentCellCoord = BackgroundCellManager->GetWorldPosToCellCoord(ToVec2(EnemyPos));
         
-        if (CurrentCellCoord != destCellCoord)
+        // DestCoord의 경우, AvailableCell이 아니라면 -> Adjacent한 Cell로 다시금 조정(Structure 위치의 경우, 그 자체가 Available하지 않음)
+        const CellCoord ExactDestCoord = BackgroundCellManager->GetWorldPosToCellCoord(TargetSelected->Transform()->GetWorldPos2D());
+        
+        // Structure 자체의 경우, AvailableCell이 아니기 때문에 인접한 Cell로 잡아본다
+        const CellCoord destCellCoord = (TargetSelected == GM->GetPlayerObject()) ? ExactDestCoord : ExactDestCoord.GetRandomAdjacentCellCoord(); 
+        
+        if (CurrentCellCoord != destCellCoord && GM->GetBackgroundCellManager()->IsCellAvailable(destCellCoord))
             AStarPathFinder::GetInst()->GetPath(CurrentCellCoord, destCellCoord, _Enemy->m_CellPath);
         
         // Target 지정
@@ -79,11 +83,7 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     }
 
     // 새로운 경로를 받았음에도 empty일 경우가 있음 (이때는 처리 x)
-    // 플레이어가 죽었고, 설치물이 모두 파괴되었을 때 여기로 들어옴 (거의 들어올 일 없음)
-    if (_Enemy->m_CellPath.empty())
-    {
-        return;
-    }
+    if (_Enemy->m_CellPath.empty()) return;
     
     const Vec2 Destination = BackgroundCellManager->GetCellCoordToWorldPos(_Enemy->m_CellPath.top()); 
     const Vec2 Direction = Destination - ToVec2(EnemyPos);

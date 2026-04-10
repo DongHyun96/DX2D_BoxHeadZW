@@ -1,4 +1,6 @@
-﻿#pragma once
+#pragma once
+
+#include <unordered_map>
 
 #define INF INT_MAX	// 거리 무한대 defined
 
@@ -29,6 +31,29 @@ struct CompareNode
     }
 };
 
+// 경로 캐시 키 구조체
+struct PathCacheKey
+{
+    CellCoord Start;
+    CellCoord Dest;
+
+    bool operator==(const PathCacheKey& other) const
+    {
+        return Start.x == other.Start.x && Start.y == other.Start.y &&
+               Dest.x == other.Dest.x && Dest.y == other.Dest.y;
+    }
+};
+
+// 경로 캐시 키 해시 함수
+struct PathCacheKeyHash
+{
+    size_t operator()(const PathCacheKey& key) const
+    {
+        return ((static_cast<size_t>(key.Start.x) << 24) | (static_cast<size_t>(key.Start.y) << 16) |
+                (static_cast<size_t>(key.Dest.x) << 8) | static_cast<size_t>(key.Dest.y));
+    }
+};
+
 class AStarPathFinder : public Singleton<AStarPathFinder>
 {
     
@@ -39,6 +64,8 @@ private:
     /* Game field 각 cell 위치에 해당하는 ASNode들 */
     static ASNode* m_FieldNodes[CELL_ROW_COUNT][CELL_ROW_COUNT];
     static UINT m_CurrentEpoch; // 현재 길찾기 회차 ID
+    static unordered_map<PathCacheKey, stack<CellCoord>, PathCacheKeyHash> m_PathCache; // 경로 캐시
+    static const UINT MAX_CACHE_SIZE; // 캐시 최대 크기
     
 public:
     /// <summary>
@@ -48,7 +75,7 @@ public:
     /// <param name="dest"> : 도착점 </param>
     /// <param name="_OutPath"> : 구한 경로 push(구하지 못했다면 empty) </param>
     /// <returns> : 해당 경로가 존재하지 않으면 return false </returns>
-    static bool GetPath(const CellCoord& start, const CellCoord& dest, stack<CellCoord>& _OutPath); // TODO : Tick에 걸쳐서 계속 호출처리되면 부하가 일어남    
+    static bool GetPath(const CellCoord& start, const CellCoord& dest, stack<CellCoord>& _OutPath);    
     
 public:
     

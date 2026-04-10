@@ -34,6 +34,20 @@ struct CellCoord
         if (this->x != other.x) return this->x < other.x;
         return this->y < other.y;
     }
+
+    // 인접한 8칸 중 랜덤한 지점 구하기
+    CellCoord GetRandomAdjacentCellCoord() const
+    {
+        static vector<CellCoord> Directions = 
+        {
+            {-1, -1}, {0, -1}, {1, -1},
+            {-1,  0},          {1,  0},
+            {-1,  1}, {0,  1}, {1,  1}
+        };
+        
+        const CellCoord& Picked = Directions.at(GetRandom(0, static_cast<int>(Directions.size() - 1)));
+        return *this + Picked;        
+    }
 };
 
 struct ExplosionSpawnDesc
@@ -149,5 +163,15 @@ public:
         values.clear();
         valToIndex.clear();
     }
+    
+    // 일반 iterator (데이터 수정 가능)
+    using iterator = vector<T>::iterator;
+    iterator begin() { return values.begin(); }
+    iterator end() { return values.end(); }
+
+    // const iterator (const 객체에서 호출 시 사용됨, 데이터 수정 불가)
+    using const_iterator = vector<T>::const_iterator;
+    const_iterator begin() const { return values.begin(); }
+    const_iterator end() const { return values.end(); }
 };
 
