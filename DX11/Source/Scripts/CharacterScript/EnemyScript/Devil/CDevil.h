@@ -42,6 +42,8 @@ public:
     
 private:
 
+    virtual void InitSpawn() override;
+    
     virtual void OnTakeDamage(GameObject* _DamageCauser) override;
     
     virtual void AfterPushedOutFin() override;

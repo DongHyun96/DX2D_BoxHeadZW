@@ -109,6 +109,11 @@ private:
 public:
     
     /// <summary>
+    /// Spawn 처리할 때 Init 처리해야하는 부분들 
+    /// </summary>
+    virtual void InitSpawn();
+    
+    /// <summary>
     /// 죽기 시작했을 떄의 처리 (Collider 꺼주기 등)  
     /// </summary>
     void OnDieStart();

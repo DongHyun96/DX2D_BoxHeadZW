@@ -46,6 +46,18 @@ void CDevil::Tick()
     CEnemyScript::Tick();
 }
 
+void CDevil::InitSpawn()
+{
+    CEnemyScript::InitSpawn();
+    m_SameCoordStayTime = 0.f;
+
+    m_FlameLineHandler->InitWaitState();
+
+    m_AttackTransitionWaitTime = 0.f;
+    m_TransitionToAttackTimer  = 0.f;
+    m_LastDamageCauser         = nullptr;
+}
+
 void CDevil::OnTakeDamage(GameObject* _DamageCauser)
 {
     // if (GetRandom(0, 1)) SetTargetObject()

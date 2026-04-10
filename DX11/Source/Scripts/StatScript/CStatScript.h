@@ -28,6 +28,13 @@ public:
     virtual void Init() override;
     virtual void Begin() override;
     virtual void Tick() override;
+
+public:
+    
+    /// <summary>
+    /// 스폰 시, 초기화 처리해야할 목록들
+    /// </summary>
+    virtual void InitSpawn();
     
 public:
     

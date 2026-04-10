@@ -30,6 +30,7 @@ public:
 
 public:
 
+    
     // 공격 대기 시간으로 전환 시, 초기화할 변수 처리
     void InitWaitState();
     

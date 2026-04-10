@@ -19,18 +19,15 @@ CPerceptionHandler::~CPerceptionHandler()
 
 void CPerceptionHandler::Begin()
 {
-    // 자신의 자식 오브젝트 중, Attack Collider 오브젝트 저장
     m_AttackColliderObject = GetOwner()->GetChildByName(L"AttackColliderObject").Get();
+    m_AttackRangeDetector  = GetOwner()->GetChildByName(L"AttackRangeDetectionObject").Get();
+    m_MoveStraightDetector = GetOwner()->GetChildByName(L"MoveStraightDetectionObject").Get();
     
-    Ptr<GameObject> AttackRangeObj = GetOwner()->GetChildByName(L"AttackRangeDetectionObject");
+    m_AttackRangeDetector->GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnAttackAreaColliderBeginOverlap));
+    m_AttackRangeDetector->GetCollider2D()->AddDynamicEndOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnAttackAreaColliderEndOverlap));
     
-    AttackRangeObj->GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnAttackAreaColliderBeginOverlap));
-    AttackRangeObj->GetCollider2D()->AddDynamicEndOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnAttackAreaColliderEndOverlap));
-    
-    Ptr<GameObject> MoveStraightDetectionObj = GetOwner()->GetChildByName(L"MoveStraightDetectionObject");
-    
-    MoveStraightDetectionObj->GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnStraightThroughColliderBeginOverlap));
-    MoveStraightDetectionObj->GetCollider2D()->AddDynamicEndOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnStraightThroughColliderEndOverlap));
+    m_MoveStraightDetector->GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnStraightThroughColliderBeginOverlap));
+    m_MoveStraightDetector->GetCollider2D()->AddDynamicEndOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnStraightThroughColliderEndOverlap));
     
     m_AttackColliderObject->GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CPerceptionHandler::OnAttackDamageColliderBeginOverlap));
     
@@ -77,20 +74,12 @@ void CPerceptionHandler::Tick()
 
 GameObject* CPerceptionHandler::ResolvePerceptionTarget(CCollider2D* _OtherCollider) const
 {
-    if (!_OtherCollider) return nullptr;
-    
     GameObject* OtherOwner = _OtherCollider->GetOwner();
-    if (!OtherOwner) return nullptr;
-
-    if (OtherOwner->HasScript(SCRIPT_TYPE::PLAYERSCRIPT))
-        return OtherOwner;
-
-    if (!OtherOwner->HasScript(SCRIPT_TYPE::STRUCTURE))
-        return nullptr;
+    if (OtherOwner->HasScript(SCRIPT_TYPE::PLAYERSCRIPT)) return OtherOwner; // Player인 경우
+    if (!OtherOwner->HasScript(SCRIPT_TYPE::STRUCTURE)) return nullptr;
 
     CStructure* Structure = OtherOwner->GetScriptComponent<CStructure>().Get();
-    if (!Structure || Structure->GetIsPreviewObject())
-        return nullptr;
+    if (!Structure || Structure->GetIsPreviewObject()) return nullptr;
 
     return OtherOwner;
 }
@@ -118,6 +107,17 @@ GameObject* CPerceptionHandler::GetNearestStraightThroughDetectionEnteredObject(
         }
     }
     return Object;
+}
+
+void CPerceptionHandler::InitSpawn()
+{
+    m_AttackColliderObject->SetActive(false, false);
+    m_AttackRangeDetector->SetActive(true, false);
+    m_MoveStraightDetector->SetActive(true, false);
+    
+    m_AlreadyDamaged.clear();
+    m_setAttackAreaEnteredObjects.clear();
+    m_setStraightThroughDetectionEnteredObjects.clear();
 }
 
 void CPerceptionHandler::ToggleDamagingCollider(bool _Enabled, float _RotationAngle)

@@ -69,6 +69,8 @@ void CTurret::Tick()
     
     if (GetIsPreviewObject()) return;
 
+    DebugUtil::SetPermanentDebugLog("adsf", "Turret Overlapped : " + to_string(m_setAttackRangeEnteredEnemies.size()), DEF_COLOR_CYAN);
+    
     switch (m_CurrentTurretState)
     {
     case TURRET_STATE::IDLE: // 새로운 TargetObject 찾아보기

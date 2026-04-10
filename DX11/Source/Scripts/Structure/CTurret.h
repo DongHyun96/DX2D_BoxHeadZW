@@ -64,7 +64,7 @@ public:
     virtual void Init() override;
     virtual void Begin() override;
     virtual void Tick() override;
-    
+
 private: // 자식 GameObject의 AttackCollide callback 관련
 
     void AttackColliderBeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);

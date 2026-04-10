@@ -13,6 +13,12 @@ private:
 
     // 실질적인 피격 처리 Collider를 들고 있는 게임 오브젝트
     GameObject* m_AttackColliderObject{};
+    
+    // 피격 반경 감지기 오브젝트
+    GameObject* m_AttackRangeDetector{};
+    
+    // Straight 이동 감지기 오브젝트
+    GameObject* m_MoveStraightDetector{};
 
     // 피격 판정이 이번 공격에 들어갔는지 체킹
     unordered_set<CCollider2D*> m_AlreadyDamaged{};
@@ -43,6 +49,11 @@ public:
     
     bool IsStraightThroughDetectionSetContainObject(GameObject* _Object) const { return m_setStraightThroughDetectionEnteredObjects.contains(_Object); }
 
+    /// <summary>
+    /// Spawn시의 초기값으로 되돌리기
+    /// </summary>
+    void InitSpawn();
+    
     /// <summary>
     /// DamagingCollider 켜고 끄기
     /// </summary>

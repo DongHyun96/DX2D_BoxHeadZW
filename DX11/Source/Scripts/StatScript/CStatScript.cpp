@@ -33,6 +33,11 @@ void CStatScript::Tick()
 {
 }
 
+void CStatScript::InitSpawn()
+{
+    m_HP = m_HPMax;
+}
+
 bool CStatScript::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
 {
     if (IsDead()) return false; // 이미 사망처리된 오브젝트

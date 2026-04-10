@@ -64,15 +64,13 @@ GameObject* CEnemySpawnHandler::SpawnEnemy(ENEMY_TYPE _EnemyType, const CellCoor
     if (PlayerCellCoord.x - 1 <= _CellCoord.x && _CellCoord.x <= PlayerCellCoord.x + 1) return nullptr;
     if (PlayerCellCoord.y - 1 <= _CellCoord.y && _CellCoord.y <= PlayerCellCoord.y + 1) return nullptr;
     
-    GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(ToVec3(GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_CellCoord)));
+    GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(ToVec3(GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_CellCoord)), false);
     if (SpawnedEnemy)
     {
-        // TODO : 여기서 Spawn 처리 시, 초기화시킬 멤버변수들 처리를 해주어야 좋음
+        CEnemyScript* Enemy = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
+        Enemy->InitSpawn();
 
-        if (const Ptr<CPerceptionHandler>& PHandler = SpawnedEnemy->GetScriptComponent<CPerceptionHandler>())
-            PHandler->GetDamageColliderObject()->SetActive(false);
-        
-        if (const Ptr<CMummy>& Mummy = SpawnedEnemy->GetScriptComponent<CMummy>())
+        if (CMummy* Mummy = dynamic_cast<CMummy*>(Enemy))
             Mummy->SetSpawnedByMummy(false);
     }
     

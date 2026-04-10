@@ -31,7 +31,11 @@ void CMummy::Tick()
 
 void CMummy::OnFadeOutEnd()
 {
-    if (m_SpawnedByMummy) return;
+    if (m_SpawnedByMummy)
+    {
+        m_SpawnedByMummy = false; // Mummy한테서 태어난 다른 Mummy는 죽기 직전에 여기서 마킹을 풀어주어야 정상적으로 동작함
+        return;
+    }
     
     // 주위에 다른 Mummy Spawn 처리
     

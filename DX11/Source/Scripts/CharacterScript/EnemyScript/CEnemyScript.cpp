@@ -206,6 +206,29 @@ void CEnemyScript::HandleStateTransition()
     }
 }
 
+void CEnemyScript::InitSpawn()
+{
+    m_MainState= ENEMY_MAINSTATE::WALK;
+
+    if (m_PerceptionHandler) m_PerceptionHandler->InitSpawn();
+    
+    m_StatScript->InitSpawn();
+    m_HasFadeInStart  = false;
+    m_HasFadeOutStart = false;
+    m_FadeInOutTime   = 0.f;
+    m_TargetObject    = nullptr;
+    
+    stack<CellCoord>().swap(m_CellPath);
+    m_PathReplanCooldown = 0.f;
+
+    m_CurrentWalkType     = ENEMY_WALK_TYPE::CELL_PATH;
+    m_AttackFlipbookCount = 0;
+    
+    // Tint Color 원상복구
+    Ptr<AMaterial> DynamicMtrl = GetRenderCom()->CreateDynamicMaterial();
+    DynamicMtrl->SetScalar(VEC4_0, DEF_COLOR_WHITE);
+}
+
 void CEnemyScript::OnDieStart()
 {
     // Attack Collider 바로끄기

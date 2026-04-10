@@ -37,6 +37,11 @@ public:
     virtual void Begin() override;
     virtual void Tick() override;
 
+public:
+
+    // 구조물 같은 경우 아예 CreateObject 처리로 새로 만드는 중이다
+    // virtual void InitSpawn() {}
+    
 private:
     
     void BodyColliderBeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider);

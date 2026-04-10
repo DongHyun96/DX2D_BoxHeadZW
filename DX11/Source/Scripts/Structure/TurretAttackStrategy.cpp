@@ -100,7 +100,7 @@ bool Turret_MortarAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject
         0,              
         ThrowSpeedXY, 
         UpwardSpeed, 
-        true, 
+        false, 
         false
     );
     
