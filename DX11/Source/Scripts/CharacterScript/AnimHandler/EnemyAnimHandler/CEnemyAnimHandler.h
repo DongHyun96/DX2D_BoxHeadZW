@@ -26,7 +26,10 @@ private:
 private:
     
     ENEMY_MAINSTATE m_PrevMainState = ENEMY_MAINSTATE::END;
-    EDIRECTION m_PrevAnimDirection = EDIRECTION::END;
+    
+private:
+    
+    float m_AttackAnimFPS = 8.f;
     
 public:
 
@@ -43,6 +46,11 @@ private:
     
     virtual void UpdateAnimTransition() override;
 
+public:
+    
+    ENEMY_MAINSTATE GetPrevMainState() const { return m_PrevMainState; }
+    
+    void SetAttackAnimFPS(float _FPS) { m_AttackAnimFPS = _FPS; }
     
 public:
     

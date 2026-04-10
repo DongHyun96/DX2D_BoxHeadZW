@@ -82,7 +82,7 @@ void CEnemyScript::Move()
     {
     case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
     case ENEMY_MAINSTATE::ATTACK:
-        if (!IsValid(m_TargetObject)) m_MainState = ENEMY_MAINSTATE::WALK;
+        if (!IsValid(m_TargetObject)) SetMainState(ENEMY_MAINSTATE::WALK);
         return;
     case ENEMY_MAINSTATE::WALK:
         if (auto iter = s_mapWalkingStrategies.find(m_CurrentWalkType); iter != s_mapWalkingStrategies.end())
@@ -205,7 +205,7 @@ void CEnemyScript::HandleStateTransition()
 
 void CEnemyScript::InitSpawn()
 {
-    m_MainState= ENEMY_MAINSTATE::WALK;
+    m_MainState = ENEMY_MAINSTATE::WALK;
 
     if (m_PerceptionHandler) m_PerceptionHandler->InitSpawn();
     
@@ -252,7 +252,7 @@ void CEnemyScript::OnAttackFlipbookEndNotify()
     if (m_MainState == ENEMY_MAINSTATE::DIE || m_MainState == ENEMY_MAINSTATE::PUSHED_OUT) return;
 
     // 다시금 IDLE 상태격인 Walk로 돌아감
-    m_MainState = ENEMY_MAINSTATE::WALK;
+    SetMainState(ENEMY_MAINSTATE::WALK);
 }
 
 void CEnemyScript::OnAttackNotify()

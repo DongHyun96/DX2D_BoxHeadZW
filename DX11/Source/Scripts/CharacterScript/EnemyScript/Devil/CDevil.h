@@ -18,6 +18,7 @@ private:
 private:
     
     class CFlameLineHandler* m_FlameLineHandler{};
+    class CEnemyAnimHandler* m_AnimHandler{};
     
 private:
 
@@ -27,6 +28,11 @@ private:
     Ptr<ASound> m_AttackSound{};
     
     GameObject* m_LastDamageCauser{};
+    
+private:
+
+    // 이동 중간에 Path 경로에 장애물이 새로 생겨서 이동을 못하는 상황 -> 이 때에는 바라보는 방면으로 공격처리를 한다
+    bool m_Blocked{};
     
 public:
     
@@ -39,6 +45,10 @@ public:
     virtual void Init() override;
     virtual void Begin() override;
     virtual void Tick() override;
+
+private:
+    
+    virtual void UpdateCurrentFacedDirection() override;
     
 private:
 
@@ -60,6 +70,19 @@ private:
 private:
 
     virtual void SetMainState(ENEMY_MAINSTATE _MainState) override;
+
+public:
+    
+    /// <summary>
+    /// 현재 Block 상태인지 확인을 하고, true였으면 false로 되돌림 
+    /// </summary>
+    bool GetBlockedAndConsumeState()
+    {
+        bool Blocked = m_Blocked;
+        m_Blocked = false;
+        return Blocked;
+    }
+    
     
 public:
     

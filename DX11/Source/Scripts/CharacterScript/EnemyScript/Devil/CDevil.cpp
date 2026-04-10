@@ -6,6 +6,8 @@
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
+#include "Source/Scripts/CharacterScript/AnimHandler/CCharacterAnimHandler.h"
+#include "Source/Scripts/CharacterScript/AnimHandler/EnemyAnimHandler/CEnemyAnimHandler.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/EnemyWalkStrategy/EnemyWalkStrategy.h"
 
 CDevil::CDevil()
@@ -28,6 +30,8 @@ void CDevil::Begin()
     CEnemyScript::Begin();
 
     m_FlameLineHandler = GetOwner()->GetChild(0)->GetScriptComponent<CFlameLineHandler>().Get();
+    m_AnimHandler = GetOwner()->GetScriptComponent<CEnemyAnimHandler>().Get();
+    m_AnimHandler->SetAttackAnimFPS(5.f);
     
     for (int i = 0; i < 8; ++i)
     {
@@ -44,6 +48,60 @@ void CDevil::Begin()
 void CDevil::Tick()
 {
     CEnemyScript::Tick();
+
+    switch (m_MainState)
+    {
+    case ENEMY_MAINSTATE::WALK: DebugUtil::SetPermanentDebugLog("DevilLog", "Devil State : WALK", DEF_COLOR_WHITE);
+        break;
+    case ENEMY_MAINSTATE::ATTACK: DebugUtil::SetPermanentDebugLog("DevilLog", "Devil State : ATTACK", DEF_COLOR_WHITE);
+        break;
+    case ENEMY_MAINSTATE::PUSHED_OUT: DebugUtil::SetPermanentDebugLog("DevilLog", "Devil State : PUSHED_OUT", DEF_COLOR_WHITE);
+        break;
+    case ENEMY_MAINSTATE::DIE: DebugUtil::SetPermanentDebugLog("DevilLog", "Devil State : DIE", DEF_COLOR_WHITE);
+        break;
+    }
+    
+    
+}
+
+void CDevil::UpdateCurrentFacedDirection()
+{
+    // PushedOut과 Die의 경우, Flipbook 관련 방향 처리가 다르기 때문에 FacedDirection Update 필요 없이 따로 처리
+    
+    if (m_MainState == ENEMY_MAINSTATE::WALK)
+    {
+        EDIRECTION NextDirection = GetEightDirection(m_Velocity);
+    
+        // 속력이 0인 멈춰있는 상황
+        if (NextDirection == EDIRECTION::END)
+        {
+            // 만약 이전에도 END였으면, 맨 처음으로 들어오는 Update tick -> 기본 방향인 Down으로 맞춰춘다.
+            if (m_CurrentFacedDirection == EDIRECTION::END) m_CurrentFacedDirection = EDIRECTION::DOWN;
+            return; // 이전에 바라봤던 방향으로 처리
+        }
+    
+        m_CurrentFacedDirection = NextDirection;
+        return;
+    }
+    
+    
+    
+    
+    if (m_MainState == ENEMY_MAINSTATE::ATTACK)
+    {
+        if (m_AnimHandler->GetPrevMainState() == ENEMY_MAINSTATE::ATTACK) return; // 첫 FacedDirection 업데이트 처리가 아님
+        
+        if (!m_Blocked)
+        {
+            const Vec2 ToTarget = GetTargetObject()->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
+            m_CurrentFacedDirection = GetEightDirection(ToTarget.Normalized());
+        }
+        else
+        {
+            // Blocked 상태에서의 공격처리는 바라보는 방면으로 바로 처리되게끔 처리 // 여기서 다른 방향으로 세팅이 될 때 Attack Flipbook이 다른 방향 Flipbook으로 새로이 재생되면서 AttackEndNotify가 호출되어버림
+            m_CurrentFacedDirection = m_AnimHandler->GetPrevAnimDirection(); 
+        }
+    }
 }
 
 void CDevil::InitSpawn()
@@ -101,8 +159,11 @@ void CDevil::HandleStateTransition()
             
             if (m_SameCoordStayTime > BlockedTimeWaitTotal) // 넘어가면 막혔다고 판단, 새로운 Target 지정해서 바로 공격 시도
             {
-                GameObject* NewTarget = EnemyWalkStrategy::FindNearestTargetFromAllObjects(this);
-                SetTargetObject(NewTarget); // 여기서 Attack 처리를 TargetObject 쪽으로 하는 것이 아닌, 현재 이동 방면으로 처리하면 좋음
+                // GameObject* NewTarget = EnemyWalkStrategy::FindNearestTargetFromAllObjects(this);
+                // SetTargetObject(NewTarget); // 여기서 Attack 처리를 TargetObject 쪽으로 하는 것이 아닌, 현재 이동 방면으로 처리하면 좋음
+                // Attack으로 상태 바로 넘기고, Block되었다고 처리를 해야할듯?
+                m_SameCoordStayTime = 0.f;
+                m_Blocked = true;
                 SetMainState(ENEMY_MAINSTATE::ATTACK);
             }
             
@@ -130,10 +191,19 @@ void CDevil::OnAttackFlipbookEndNotify()
 
 void CDevil::OnAttackAnimStart()
 {
-    const Vec2 ToTarget = GetTargetObject()->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
+    // Blocked 된 상태라면, 현재 바라보는 방면으로 공격 처리
+
+    float DirectAngle{};
+    if (GetBlockedAndConsumeState()) 
+        DirectAngle = GetEightDirectionToAngle(m_CurrentFacedDirection);
+    else
+    {
+        const Vec2 AttackDirection = GetTargetObject()->Transform()->GetRelativePosXY() - Transform()->GetRelativePosXY();
+        DirectAngle = GetVectorAngle(AttackDirection);
+    }
+    
     
     // 70%의 확률로 정방향 공격
-    const float DirectAngle = GetVectorAngle(ToTarget);
     if (GetRandom(0.f, 1.f) > 0.3f)
         m_FlameLineHandler->MakeFlameLine(DirectAngle, 75.f);
     else m_FlameLineHandler->MakeFlameLine(DirectAngle + GetRandom(-XM_PIDIV4 * 0.5f, XM_PIDIV4 * 0.5f), 75.f); // 나머지 50%의 확률로 살짝 어긋난 방향으로 공격 시도

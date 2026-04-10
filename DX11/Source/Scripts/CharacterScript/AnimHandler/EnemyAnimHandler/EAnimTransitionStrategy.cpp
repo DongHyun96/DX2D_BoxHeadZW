@@ -43,7 +43,7 @@ void CommonEnemyTransitionStrategy::UseAttackStateTransitionStrategy(CEnemyAnimH
         // 같은 방향에 같은 모션인데, 해당 모션 재생이 모두 끝난 경우, 다시 재생시켜주어야 한다
         if (_AnimHandler->FlipbookRender()->GetIsStopped())
         {
-            _AnimHandler->FlipbookRender()->Play(L"Attack", FlipBookIndexByDirection, 8.f, 1); // Attack 모션 시작
+            _AnimHandler->FlipbookRender()->Play(L"Attack", FlipBookIndexByDirection, _AnimHandler->m_AttackAnimFPS, 1); // Attack 모션 시작
         }
         return;
     }

@@ -26,10 +26,10 @@ void CFlameLineHandler::Tick()
 {
     if (!ColliderRect()->GetActive()) return;
     
-    static constexpr float TotalAttackTime              = 1.25f;
-    static constexpr float FirePillarIntervalTime       = 0.065f; // 이 간격으로 ColliderRect의 오른쪽 모서리 위치에 FirePillar 스폰 처리
+    static constexpr float TotalAttackTime              = 0.75f;
+    static constexpr float FirePillarIntervalTime       = 0.055f; // 이 간격으로 ColliderRect의 오른쪽 모서리 위치에 FirePillar 스폰 처리
     static constexpr float FirePillarSpawnDownOffsetY   = 18.f; // 우측 변 중앙에서 아래로 내릴 오프셋
-    static constexpr float AttackColliderScaleDest      = 8.5f; // 얼만큼 AttackCollider 늘릴것인지
+    static constexpr float AttackColliderScaleDest      = 9.5f; // 얼만큼 AttackCollider 늘릴것인지
     
     
     m_AttackColliderScaleTimer += DT;

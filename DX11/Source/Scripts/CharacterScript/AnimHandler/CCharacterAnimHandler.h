@@ -34,6 +34,8 @@ private:
 public:
 
     void RewindPushedOut(const Vec2& _PushedOutFaceDirection);
+    
+    EDIRECTION GetPrevAnimDirection() const { return m_PrevAnimDirection; }
 
 protected:
     
