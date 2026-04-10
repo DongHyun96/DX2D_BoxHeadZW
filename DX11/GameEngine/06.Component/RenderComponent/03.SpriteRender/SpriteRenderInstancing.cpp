@@ -78,7 +78,7 @@ namespace
     }
 }
 
-void SpriteRenderInstancing::BeginFrame()
+void SpriteRenderInstancing::BeginInstancing()
 {
     g_SpriteDepthBuckets.clear();
 }
@@ -119,7 +119,7 @@ void SpriteRenderInstancing::Submit
     iter->second.Instances.push_back(data);
 }
 
-void SpriteRenderInstancing::Flush()
+void SpriteRenderInstancing::FlushInstancing()
 {
     if (g_SpriteDepthBuckets.empty()) return;
 

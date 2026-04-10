@@ -53,10 +53,6 @@ public:
 
     CLONE(CFlipbookRender)
 
-public:
-    
-    static void BeginInstancing();
-    static void FlushInstancing();
     
 public:
     

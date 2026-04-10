@@ -82,7 +82,7 @@ namespace
     }
 }
 
-void FlipbookRenderInstancing::BeginFrame()
+void FlipbookRenderInstancing::BeginInstancing()
 {
     g_FlipbookDepthBuckets.clear();
 }
@@ -127,7 +127,7 @@ void FlipbookRenderInstancing::Submit
     iter->second.Instances.push_back(data);
 }
 
-void FlipbookRenderInstancing::Flush()
+void FlipbookRenderInstancing::FlushInstancing()
 {
     if (g_FlipbookDepthBuckets.empty()) return;
 

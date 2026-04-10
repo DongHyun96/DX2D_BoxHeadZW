@@ -47,7 +47,7 @@ private: // AStar Path 및 Walk 관련
     
     stack<CellCoord> m_CellPath{}; // AStar로 찾은 CellPath
     float            m_PathReplanCooldown{};
-    static constexpr float PATH_REPLAN_INTERVAL = 0.12f;
+    static constexpr float PATH_REPLAN_INTERVAL = 3.f;
     
     static map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> s_mapWalkingStrategies;
     ENEMY_WALK_TYPE m_CurrentWalkType{};
@@ -108,6 +108,11 @@ private:
 
 public:
     
+    /// <summary>
+    /// 죽기 시작했을 떄의 처리 (Collider 꺼주기 등)  
+    /// </summary>
+    void OnDieStart();
+
     /// <summary>
     /// Die Animation 이후로 호출 처리될 함수, FadeOut 및 Pool에 다시 들어갈 준비
     /// </summary>

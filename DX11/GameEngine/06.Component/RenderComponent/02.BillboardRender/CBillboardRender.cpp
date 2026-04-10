@@ -56,16 +56,6 @@ void CBillboardRender::CreateMaterial()
     SetMaterial(pMtrl);   
 }
 
-void CBillboardRender::BeginInstancing()
-{
-    BillboardRenderInstancing::BeginFrame();
-}
-
-void CBillboardRender::FlushInstancing()
-{
-    BillboardRenderInstancing::Flush();
-}
-
 void CBillboardRender::SaveToLevelFile(FILE* _File)
 {
     CRenderComponent::SaveToLevelFile(_File);

@@ -170,9 +170,10 @@ void GameObject::Render()
 		Transform()->Binding();
 		m_RenderCom->Render();	
 	}
-	
-	for (const Ptr<GameObject>& child : m_vecChild)
-		child->Render();
+
+	// 카메라에서 전체 오브젝트에 대한 렌더링 처리를 함
+	/*for (const Ptr<GameObject>& child : m_vecChild)
+		child->Render();*/
 }
 
 bool GameObject::RemoveComponent(COMPONENT_TYPE _Type)

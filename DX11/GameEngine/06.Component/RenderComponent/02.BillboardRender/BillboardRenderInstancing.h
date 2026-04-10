@@ -6,8 +6,8 @@ class ATexture;
 
 namespace BillboardRenderInstancing
 {
-    void BeginFrame();
-    void Flush();
+    void BeginInstancing();
+    void FlushInstancing();
     
     void Submit
     (

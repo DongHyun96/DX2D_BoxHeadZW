@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "CEnemyScript.h"
 
+#include <algorithm>
+
 #include "EnemyWalkStrategy/EnemyWalkStrategy.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "PerceptionHandler/CPerceptionHandler.h"
@@ -68,11 +70,7 @@ void CEnemyScript::AfterLevelBegin()
 void CEnemyScript::Tick()
 {
     if (m_PathReplanCooldown > 0.f)
-    {
-        m_PathReplanCooldown -= DT;
-        if (m_PathReplanCooldown < 0.f)
-            m_PathReplanCooldown = 0.f;
-    }
+        m_PathReplanCooldown = max(m_PathReplanCooldown - DT, 0.f);
     
     HandleStateTransition();
     CCharacterScript::Tick(); // Handling Move & UpdateCurrentFacedDirection involved
@@ -208,6 +206,13 @@ void CEnemyScript::HandleStateTransition()
     }
 }
 
+void CEnemyScript::OnDieStart()
+{
+    // Attack Collider 바로끄기
+    // Devil의 경우(불길이라, AttackCollider가 살아있다면 불길이 꺼질때까지 살아있어야 해서 따로 handling x)
+    if (m_PerceptionHandler) m_PerceptionHandler->ToggleDamagingCollider(false);
+}
+
 void CEnemyScript::OnDieFlipbookEndNotify()
 {
     m_HasFadeInStart    = false;
@@ -220,8 +225,7 @@ void CEnemyScript::OnAttackFlipbookEndNotify()
     // 공격 모션이 정상 종료 또는 Interrupt 당했을 때 해당 함수로 Callback이 들어옴
     
     // Attack Collider Rotation 설정(방향 설정) / 끄기 처리
-    if (m_PerceptionHandler)
-        m_PerceptionHandler->ToggleDamagingCollider(false);
+    if (m_PerceptionHandler) m_PerceptionHandler->ToggleDamagingCollider(false);
 
     if (m_MainState == ENEMY_MAINSTATE::DIE || m_MainState == ENEMY_MAINSTATE::PUSHED_OUT) return;
 

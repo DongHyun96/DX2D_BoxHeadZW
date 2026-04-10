@@ -73,13 +73,3 @@ void CSpriteRender::CreateMaterial()
 
     SetMaterial(pMtrl);   
 }
-
-void CSpriteRender::BeginInstancing()
-{
-    SpriteRenderInstancing::BeginFrame();
-}
-
-void CSpriteRender::FlushInstancing()
-{
-    SpriteRenderInstancing::Flush();
-}

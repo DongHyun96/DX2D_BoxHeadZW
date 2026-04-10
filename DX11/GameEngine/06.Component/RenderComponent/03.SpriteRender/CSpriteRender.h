@@ -22,8 +22,7 @@ public:
 public:
     void FinalTick() override;
     void Render() override;
-    static void BeginInstancing();
-    static void FlushInstancing();
+    
 
 public:
 

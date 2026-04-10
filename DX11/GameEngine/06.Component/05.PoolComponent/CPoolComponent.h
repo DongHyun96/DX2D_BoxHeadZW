@@ -44,7 +44,10 @@ private:
     /// Pool에서 스폰된 Object들이 Deactivate 처리되었을 때(SetActive(false)) 처리되었을 때 호출됨
     /// 다시금 Pool에 돌아가는 처리
     /// </summary>
-    void OnDeactivateActiveObject(const Ptr<GameObject>& _GameObject) { m_SpawningPool.push(_GameObject); }
+    void OnDeactivateActiveObject(const Ptr<GameObject>& _GameObject)
+    {
+        m_SpawningPool.push(_GameObject);
+    }
 
 public:
     

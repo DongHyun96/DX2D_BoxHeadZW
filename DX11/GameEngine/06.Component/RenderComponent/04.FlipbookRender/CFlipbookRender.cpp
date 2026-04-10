@@ -15,16 +15,6 @@ CFlipbookRender::~CFlipbookRender()
 {
 }
 
-void CFlipbookRender::BeginInstancing()
-{
-    FlipbookRenderInstancing::BeginFrame();
-}
-
-void CFlipbookRender::FlushInstancing()
-{
-    FlipbookRenderInstancing::Flush();
-}
-
 void CFlipbookRender::CreateMaterial()
 {
     wstring MeshName    = L"RectMesh";

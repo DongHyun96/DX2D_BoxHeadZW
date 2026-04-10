@@ -78,7 +78,7 @@ namespace
     }
 }
 
-void BillboardRenderInstancing::BeginFrame()
+void BillboardRenderInstancing::BeginInstancing()
 {
     g_BillboardDepthBuckets.clear();
 }
@@ -117,7 +117,7 @@ void BillboardRenderInstancing::Submit
     iter->second.Instances.push_back(data);
 }
 
-void BillboardRenderInstancing::Flush()
+void BillboardRenderInstancing::FlushInstancing()
 {
     if (g_BillboardDepthBuckets.empty()) return;
 

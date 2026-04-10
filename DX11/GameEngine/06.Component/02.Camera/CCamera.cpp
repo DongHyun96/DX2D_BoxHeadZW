@@ -3,9 +3,11 @@
 
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/03.Manager/06.RenderMgr/RenderMgr.h"
-#include "GameEngine/06.Component/RenderComponent/04.FlipbookRender/CFlipbookRender.h"
-#include "GameEngine/06.Component/RenderComponent/02.BillboardRender/CBillboardRender.h"
+#include "GameEngine/06.Component/RenderComponent/02.BillboardRender/BillboardRenderInstancing.h"
+
 #include "GameEngine/06.Component/RenderComponent/03.SpriteRender/CSpriteRender.h"
+#include "GameEngine/06.Component/RenderComponent/03.SpriteRender/SpriteRenderInstancing.h"
+#include "GameEngine/06.Component/RenderComponent/04.FlipbookRender/FlipbookRenderInstancing.h"
 
 CCamera::CCamera()
     : Component(COMPONENT_TYPE::CAMERA)
@@ -155,9 +157,9 @@ void CCamera::Render(bool _bUseRenderDomainSort)
         Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
         if (!pCurLevel) return;
 
-        CFlipbookRender::BeginInstancing();
-        CBillboardRender::BeginInstancing();
-        CSpriteRender::BeginInstancing();
+        FlipbookRenderInstancing::BeginInstancing();
+        BillboardRenderInstancing::BeginInstancing();
+        SpriteRenderInstancing::BeginInstancing();
 
         for (UINT i = 0; i < MAX_LAYER; ++i)
         {
@@ -167,6 +169,7 @@ void CCamera::Render(bool _bUseRenderDomainSort)
             Layer* pLayer = pCurLevel->GetLayer(i);
             const vector<Ptr<GameObject>>& vecObjects = pLayer->GetAllObjects();
 
+            COMPONENT_TYPE ComType = COMPONENT_TYPE::END;
             for (const Ptr<GameObject>& object : vecObjects)
             {
                 // 오브젝틀가 렌더링을 할 수 있는 상태인지 확인
@@ -175,24 +178,25 @@ void CCamera::Render(bool _bUseRenderDomainSort)
 
                 object->Render();
 
-                if (object->GetRenderCom()->GetMaterial()->GetDomain() == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
+                /*if (object->GetRenderCom()->GetMaterial()->GetDomain() == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
                 {
                     CFlipbookRender::FlushInstancing();
                     CBillboardRender::FlushInstancing();
                     CSpriteRender::FlushInstancing();
-                }
+                }*/
             }
         }
-        CFlipbookRender::FlushInstancing();
-        CBillboardRender::FlushInstancing();
-        CSpriteRender::FlushInstancing();
+        
+        FlipbookRenderInstancing::FlushInstancing();
+        BillboardRenderInstancing::FlushInstancing();
+        SpriteRenderInstancing::FlushInstancing();
         return;
     }
 
     // SortObject();
-    CFlipbookRender::BeginInstancing();
-    CBillboardRender::BeginInstancing();
-    CSpriteRender::BeginInstancing();
+    FlipbookRenderInstancing::BeginInstancing();
+    BillboardRenderInstancing::BeginInstancing();
+    SpriteRenderInstancing::BeginInstancing();
 
     // Domain 순서대로 렌더링 진행
     for (const auto& Pair : RenderMgr::GetInst()->GetDomainGameObjects())
@@ -200,7 +204,7 @@ void CCamera::Render(bool _bUseRenderDomainSort)
         for (const Ptr<GameObject>& GameObject : Pair.second)
             GameObject->Render();
 
-        if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
+        /*if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
         {
             CFlipbookRender::FlushInstancing();
             CBillboardRender::FlushInstancing();
@@ -212,12 +216,12 @@ void CCamera::Render(bool _bUseRenderDomainSort)
             CFlipbookRender::FlushInstancing();
             CBillboardRender::FlushInstancing();
             CSpriteRender::FlushInstancing();
-        }
+        }*/
     }
 
-    CFlipbookRender::FlushInstancing();
-    CBillboardRender::FlushInstancing();
-    CSpriteRender::FlushInstancing();
+    FlipbookRenderInstancing::FlushInstancing();
+    BillboardRenderInstancing::FlushInstancing();
+    SpriteRenderInstancing::FlushInstancing();
 
 }
 

@@ -18,8 +18,7 @@ public:
     void FinalTick() override;
     void Render() override;
     void CreateMaterial() override;
-    static void BeginInstancing();
-    static void FlushInstancing();
+    
 
 public:
 

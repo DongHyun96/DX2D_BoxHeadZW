@@ -58,7 +58,7 @@ GameObject* CEnemySpawnHandler::SpawnEnemy(ENEMY_TYPE _EnemyType, const CellCoor
     if (!GM->GetBackgroundCellManager()->IsCellAvailable(_CellCoord)) return nullptr;    
     
     // Player와 Adjacent한 Cell인지 조사
-    const Vec2 PlayerPos = GM->GetPlayerObject()->Transform()->GetRelativePosXY();
+    const Vec2 PlayerPos      = GM->GetPlayerObject()->Transform()->GetRelativePosXY();
     CellCoord PlayerCellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(PlayerPos);
     
     if (PlayerCellCoord.x - 1 <= _CellCoord.x && _CellCoord.x <= PlayerCellCoord.x + 1) return nullptr;

@@ -17,16 +17,17 @@ bool CEnemyStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
 {
     if (!CCharacterStat::TakeDamage(_DamageAmount, _DamageCauser)) return false;
 
-    // 사망 체크할 것
-    // TODO : 사망 시 사망 Animation 재생 및 사망 끝 처리 EndEvent에 다시 Pool로 돌아가게끔 처리할 것 -> 이거를 Dead Flipbook 이후
-    // EndEvent Callback으로 걸어주어야 함
-    
-    const ENEMY_MAINSTATE NextState = IsDead() ? ENEMY_MAINSTATE::DIE : ENEMY_MAINSTATE::PUSHED_OUT;
     const Ptr<CEnemyScript>& MainEnemyScript = GetOwner()->GetScriptComponent<CEnemyScript>();
     
-    MainEnemyScript->SetMainState(NextState);
+    // 사망 체크
+    if (IsDead())
+    {
+        MainEnemyScript->SetMainState(ENEMY_MAINSTATE::DIE);
+        MainEnemyScript->OnDieStart();
+    }
+    else
+        MainEnemyScript->SetMainState(ENEMY_MAINSTATE::PUSHED_OUT);
     
-    GetOwner()->GetScriptComponent<CEnemyScript>()->OnTakeDamage(_DamageCauser);
-    
+    MainEnemyScript->OnTakeDamage(_DamageCauser);
     return true;
 }
