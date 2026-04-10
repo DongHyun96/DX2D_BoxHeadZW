@@ -169,7 +169,6 @@
     <ClInclude Include="GameEngine\03.Manager\10.FontMgr\FontMgr.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\CCharacterScript.h" />
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
-    <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.h" />
     <ClInclude Include="GameEngine\04.Asset\10.Sound\ASound.h" />
@@ -177,8 +176,6 @@
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\07.PoolUI\PoolUI.h" />
     <ClInclude Include="Source\Scripts\AirStrike\CAirStrike.h" />
     <ClInclude Include="Source\Scripts\BackgroundTile\CBackgroundTile.h" />
-    <ClInclude Include="Source\Scripts\CharacterScript\CCharacterAnimHandler.h" />
-    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CEquipmentScript.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CInvenScript.h" />
@@ -196,15 +193,33 @@
     <ClInclude Include="Source\Scripts\ExplosionDome\CExplosionDome.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CGrenade.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CRocketProjectile.h" />
-    <ClInclude Include="Source\Scripts\StatScript\CCharacterStat.h" />
     <ClInclude Include="Source\Scripts\StatScript\CStatScript.h" />
-    <ClInclude Include="Source\Scripts\StatScript\CStructureStat.h" />
-    <ClInclude Include="Source\Scripts\StatScript\EnemyStat\CEnemyStat.h" />
-    <ClInclude Include="Source\Scripts\StatScript\PlayerStat\CPlayerStat.h" />
     <ClInclude Include="Source\Scripts\Structure\CBarrel.h" />
     <ClInclude Include="Source\Scripts\Structure\CStructure.h" />
     <ClInclude Include="Source\Scripts\Structure\CTurret.h" />
     <ClInclude Include="Source\Scripts\Structure\TurretAttackStrategy.h" />
+    <ClInclude Include="Source\AStar\AStarPathFinder.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\AnimHandler\CCharacterAnimHandler.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\AnimHandler\EnemyAnimHandler\CEnemyAnimHandler.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\AnimHandler\EnemyAnimHandler\EAnimTransitionStrategy.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\AnimHandler\PlayerAnimHandler\CPlayerAnimHandler.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\CharacterStat\CCharacterStat.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\CharacterStat\EnemyStat\CEnemyStat.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\CharacterStat\PlayerStat\CPlayerStat.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\Devil\CDevil.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\Devil\CFlameLineHandler.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\EnemySpawnHandler\CEnemySpawnHandler.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\EnemyWalkStrategy\EnemyWalkStrategy.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\Mummy\CMummy.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\PerceptionHandler\CPerceptionHandler.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\Runner\CRunner.h" />
+    <ClInclude Include="Source\Scripts\CharacterScript\EnemyScript\Vampire\CVampire.h" />
+    <ClInclude Include="Source\Scripts\ExplosionDome\CFirePillarHandler.h" />
+    <ClInclude Include="Source\Scripts\RoundHandler\CRoundHandler.h" />
+    <ClInclude Include="Source\Scripts\Structure\StructureStat\CStructureStat.h" />
+    <ClInclude Include="Source\UserHeader\userStruct.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\BillboardRenderInstancing.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\SpriteRenderInstancing.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Default\DX11.ico">
@@ -328,7 +343,6 @@
     <ClCompile Include="GameEngine\03.Manager\10.FontMgr\FontMgr.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\CCharacterScript.cpp" />
     <ClCompile Include="Source\Scripts\Obstacle\CObstacle.cpp" />
-    <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerAnimHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerScript.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyScript.cpp" />
     <ClCompile Include="GameEngine\04.Asset\10.Sound\ASound.cpp" />
@@ -336,8 +350,6 @@
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\07.PoolUI\PoolUI.cpp" />
     <ClCompile Include="Source\Scripts\AirStrike\CAirStrike.cpp" />
     <ClCompile Include="Source\Scripts\BackgroundTile\CBackgroundTile.cpp" />
-    <ClCompile Include="Source\Scripts\CharacterScript\CCharacterAnimHandler.cpp" />
-    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\CEnemyAnimHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\CPlayerWeaponHandler.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CEquipmentScript.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\PlayerScript\InvenScript\CInvenScript.cpp" />
@@ -355,15 +367,33 @@
     <ClCompile Include="Source\Scripts\ExplosionDome\CExplosionDome.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CGrenade.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CRocketProjectile.cpp" />
-    <ClCompile Include="Source\Scripts\StatScript\CCharacterStat.cpp" />
     <ClCompile Include="Source\Scripts\StatScript\CStatScript.cpp" />
-    <ClCompile Include="Source\Scripts\StatScript\CStructureStat.cpp" />
-    <ClCompile Include="Source\Scripts\StatScript\EnemyStat\CEnemyStat.cpp" />
-    <ClCompile Include="Source\Scripts\StatScript\PlayerStat\CPlayerStat.cpp" />
     <ClCompile Include="Source\Scripts\Structure\CBarrel.cpp" />
     <ClCompile Include="Source\Scripts\Structure\CStructure.cpp" />
     <ClCompile Include="Source\Scripts\Structure\CTurret.cpp" />
     <ClCompile Include="Source\Scripts\Structure\TurretAttackStrategy.cpp" />
+    <ClCompile Include="Source\AStar\AStarPathFinder.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\AnimHandler\CCharacterAnimHandler.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\AnimHandler\EnemyAnimHandler\CEnemyAnimHandler.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\AnimHandler\EnemyAnimHandler\EAnimTransitionStrategy.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\AnimHandler\PlayerAnimHandler\CPlayerAnimHandler.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\CharacterStat\CCharacterStat.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\CharacterStat\EnemyStat\CEnemyStat.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\CharacterStat\PlayerStat\CPlayerStat.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\Devil\CDevil.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\Devil\CFlameLineHandler.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\EnemySpawnHandler\CEnemySpawnHandler.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\EnemyWalkStrategy\EnemyWalkStrategy.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\Mummy\CMummy.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\PerceptionHandler\CPerceptionHandler.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\Runner\CRunner.cpp" />
+    <ClCompile Include="Source\Scripts\CharacterScript\EnemyScript\Vampire\CVampire.cpp" />
+    <ClCompile Include="Source\Scripts\ExplosionDome\CFirePillarHandler.cpp" />
+    <ClCompile Include="Source\Scripts\RoundHandler\CRoundHandler.cpp" />
+    <ClCompile Include="Source\Scripts\Structure\StructureStat\CStructureStat.cpp" />
+    <ClCompile Include="Source\UserHeader\userStruct.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\BillboardRenderInstancing.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\SpriteRenderInstancing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Default\DX11.rc">
@@ -377,19 +407,16 @@
     <FxCompile Include="HLSL\value.fx">
       <Filter>HLSL\1.Header</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\std2d.fx">
-      <Filter>HLSL\2.Render\2.2D</Filter>
-    </FxCompile>
-    <FxCompile Include="HLSL\billboard.fx">
-      <Filter>HLSL\2.Render\2.2D</Filter>
-    </FxCompile>
     <FxCompile Include="HLSL\dbg.fx">
       <Filter>HLSL\2.Render</Filter>
     </FxCompile>
-    <FxCompile Include="HLSL\sprite.fx" />
     <FxCompile Include="HLSL\func.fx" />
     <FxCompile Include="HLSL\struct.fx" />
     <FxCompile Include="HLSL\tile.fx" />
     <FxCompile Include="HLSL\flipbook.fx" />
+    <FxCompile Include="HLSL\flipbookeffect.fx" />
+    <FxCompile Include="HLSL\sprite.fx" />
+    <FxCompile Include="HLSL\billboard.fx" />
+    <FxCompile Include="HLSL\std2d.fx" />
   </ItemGroup>
 </Project>

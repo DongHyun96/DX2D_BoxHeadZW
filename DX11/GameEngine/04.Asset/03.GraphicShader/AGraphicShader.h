@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "GameEngine/04.Asset/Asset.h"
 
 /// <summary>

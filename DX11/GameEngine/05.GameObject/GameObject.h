@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "GameEngine/04.Asset/Entity.h"
 #include "GameEngine/06.Component/Script/CScript.h"

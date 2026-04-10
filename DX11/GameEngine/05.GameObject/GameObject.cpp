@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "GameObject.h"
 
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
@@ -114,10 +114,10 @@ void GameObject::Tick()
 void GameObject::FinalTick()
 {
 	ScopedObjectDeltaTimeContext dtContext(m_IgnoreGlobalTimeScale);
-	
+
 	for (const Ptr<Component>& component : m_Components)
 		if (component) component->FinalTick();
-	
+
 	/*for (const Ptr<CScript>& script : m_vecScripts)
 		if (script) script->FinalTick();*/
 

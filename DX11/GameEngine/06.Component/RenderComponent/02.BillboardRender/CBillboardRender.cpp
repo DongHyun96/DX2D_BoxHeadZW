@@ -1,5 +1,6 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "CBillboardRender.h"
+#include "BillboardRenderInstancing.h"
 
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 
@@ -21,23 +22,23 @@ void CBillboardRender::Render()
 {
     if (!GetMesh() || !GetMaterial()) return;
 
-    
-    GetMaterial()->SetScalar(VEC2_0, m_BillboardScale);
-    ApplyRenderTransformConst();
-    GetMaterial()->Binding();
-    GetMesh()->Render();
-    
-    GetMaterial()->Clear();
+    BillboardRenderInstancing::Submit(
+        GetMesh().Get(),
+        GetMaterial()->GetShader().Get(),
+        GetMaterial()->GetTexture(TEX_0).Get(),
+        GetOwner()->Transform()->GetWorldMatrix(),
+        m_BillboardScale
+    );
 }
 
 void CBillboardRender::CreateMaterial()
 {
     // RectMesh 설정
     SetMesh(AssetMgr::GetInst()->Find<AMesh>(L"RectMesh"));
-    
+
     // 빌보드 전용 재질 생성
     Ptr<AMaterial> pMtrl = AssetMgr::GetInst()->Find<AMaterial>(L"BillboardMtrl");
-    
+
     // 찾는 재질이 없으면 생성한다
     if (!pMtrl)
     {
@@ -45,7 +46,7 @@ void CBillboardRender::CreateMaterial()
         pMtrl = new AMaterial;
         pMtrl->SetName(L"BillboardMtrl");
         AssetMgr::GetInst()->AddAsset(pMtrl->GetName(), pMtrl.Get()); // 쉐이더를 찾아서 재질에 새팅해준다.
-        
+
         Ptr<AGraphicShader> pShader = AssetMgr::GetInst()->Find<AGraphicShader>(L"BillboardShader");
         pMtrl->SetShader(pShader);
         pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_OPAQUE);
@@ -53,6 +54,16 @@ void CBillboardRender::CreateMaterial()
     }
 
     SetMaterial(pMtrl);   
+}
+
+void CBillboardRender::BeginInstancing()
+{
+    BillboardRenderInstancing::BeginFrame();
+}
+
+void CBillboardRender::FlushInstancing()
+{
+    BillboardRenderInstancing::Flush();
 }
 
 void CBillboardRender::SaveToLevelFile(FILE* _File)

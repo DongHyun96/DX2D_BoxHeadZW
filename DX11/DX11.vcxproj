@@ -193,8 +193,10 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\06.Component\04.Light2D\CLight2D.h" />
     <ClInclude Include="GameEngine\06.Component\05.PoolComponent\CPoolComponent.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\01.MeshRender\CMeshRender.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\BillboardRenderInstancing.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\CBillboardRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\CSpriteRender.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\SpriteRenderInstancing.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.h" />
@@ -520,8 +522,10 @@ CodeGen.exe</Command>
       <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\BillboardRenderInstancing.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\CBillboardRender.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\CSpriteRender.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\SpriteRenderInstancing.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.cpp" />
@@ -1811,16 +1815,10 @@ CodeGen.exe</Command>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="HLSL\billboard.fx">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Billboard</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Billboard</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
     </FxCompile>
     <FxCompile Include="HLSL\dbg.fx">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
@@ -1852,20 +1850,15 @@ CodeGen.exe</Command>
     </FxCompile>
     <FxCompile Include="HLSL\sprite.fx">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Sprite</EntryPointName>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Sprite</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Sprite</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
     </FxCompile>
     <FxCompile Include="HLSL\std2d.fx">
-      <ObjectFileOutput>D:\AssortRock\AssortRockDXLec\Game\Bin\%(Filename).cso</ObjectFileOutput>
-      <TrackerLogDirectory>x64\Debug\GameClient.tlog\</TrackerLogDirectory>
-      <EntryPointName>VS_Std2D</EntryPointName>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ShaderModel>5.0</ShaderModel>
-      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
-      <DisableOptimizations>true</DisableOptimizations>
-      <EnableDebuggingInformation>true</EnableDebuggingInformation>
-      <ShaderType>Effect</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Std2D</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Std2D</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
     </FxCompile>
     <FxCompile Include="HLSL\struct.fx">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>

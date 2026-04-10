@@ -1,9 +1,11 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "CCamera.h"
 
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/03.Manager/06.RenderMgr/RenderMgr.h"
 #include "GameEngine/06.Component/RenderComponent/04.FlipbookRender/CFlipbookRender.h"
+#include "GameEngine/06.Component/RenderComponent/02.BillboardRender/CBillboardRender.h"
+#include "GameEngine/06.Component/RenderComponent/03.SpriteRender/CSpriteRender.h"
 
 CCamera::CCamera()
     : Component(COMPONENT_TYPE::CAMERA)
@@ -154,6 +156,9 @@ void CCamera::Render(bool _bUseRenderDomainSort)
         if (!pCurLevel) return;
 
         CFlipbookRender::BeginInstancing();
+        CBillboardRender::BeginInstancing();
+        CSpriteRender::BeginInstancing();
+
         for (UINT i = 0; i < MAX_LAYER; ++i)
         {
             if (false == (m_LayerCheck & (1 << i))) continue;
@@ -167,35 +172,53 @@ void CCamera::Render(bool _bUseRenderDomainSort)
                 // 오브젝틀가 렌더링을 할 수 있는 상태인지 확인
                 if (!object->GetRenderCom() || !object->GetRenderCom()->GetMesh() || !object->GetRenderCom()->GetMaterial())
                     continue;
-                
+
                 object->Render();
-                
+
                 if (object->GetRenderCom()->GetMaterial()->GetDomain() == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
+                {
                     CFlipbookRender::FlushInstancing();
+                    CBillboardRender::FlushInstancing();
+                    CSpriteRender::FlushInstancing();
+                }
             }
         }
         CFlipbookRender::FlushInstancing();
+        CBillboardRender::FlushInstancing();
+        CSpriteRender::FlushInstancing();
         return;
     }
-    
+
     // SortObject();
     CFlipbookRender::BeginInstancing();
-    
+    CBillboardRender::BeginInstancing();
+    CSpriteRender::BeginInstancing();
+
     // Domain 순서대로 렌더링 진행
     for (const auto& Pair : RenderMgr::GetInst()->GetDomainGameObjects())
     {
         for (const Ptr<GameObject>& GameObject : Pair.second)
             GameObject->Render();
-        
+
         if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
+        {
             CFlipbookRender::FlushInstancing();
-        
+            CBillboardRender::FlushInstancing();
+            CSpriteRender::FlushInstancing();
+        }
+
         if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT_EFFECT)
+        {
             CFlipbookRender::FlushInstancing();
+            CBillboardRender::FlushInstancing();
+            CSpriteRender::FlushInstancing();
+        }
     }
-    
+
     CFlipbookRender::FlushInstancing();
-    
+    CBillboardRender::FlushInstancing();
+    CSpriteRender::FlushInstancing();
+
 }
 
 /*void CCamera::Render()

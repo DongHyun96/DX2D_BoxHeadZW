@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "CEnemySpawnHandler.h"
 
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
@@ -37,11 +37,13 @@ void CEnemySpawnHandler::Tick()
 {
     if (KEY_TAP(KEY::MRB))
     {
-        for (int i = 0; i < 50; ++i)
+        /*for (int i = 0; i < 50; ++i)
         {
             ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, 3));
             SpawnEnemy(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
-        }
+        }*/
+        for (int i = 0; i < 5; ++i)
+			SpawnEnemy(ENEMY_TYPE::MUMMY, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
     }
 }
 

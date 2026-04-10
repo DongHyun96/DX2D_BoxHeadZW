@@ -57,7 +57,7 @@ int APIENTRY wWinMain
 
     // LevelMgr::GetInst()->LoadTestLevel();
     ChangeLevel(L"Level\\NightSceneLevel.lv", true);
-    // ChangeLevelState(LEVEL_STATE::PLAY);
+    //ChangeLevelState(LEVEL_STATE::PLAY);
     // CreateTestLevel();
     
     // 단축키 테이블 정보 핸들 받음
