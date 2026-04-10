@@ -46,8 +46,8 @@ void LevelMgr::Progress()
     m_CurLevel->FinalTick();
 
     // 충돌 검사 진행
-    /*if (m_LevelState == LEVEL_STATE::PLAY)
-        CollisionMgr::GetInst()->Progress(m_CurLevel);*/
+    if (m_LevelState == LEVEL_STATE::PLAY)
+        CollisionMgr::GetInst()->Progress(m_CurLevel);
 }
 
 void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)

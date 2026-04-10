@@ -58,8 +58,7 @@ void CollisionMgr::BuildLayerColliderCache(const Ptr<ALevel>& _Level)
             vecLayerColliders.push_back(pCollider);
             m_mapColliderByID[pCollider->GetEntityInstID()] = pCollider;
 
-            if (!object->GetActive() || object->IsObjectDestroyed() || !pCollider->GetActive())
-                continue;
+            if (!object->GetActive() || object->IsObjectDestroyed() || !pCollider->GetActive()) continue;
 
             Vec2 vMin{}, vMax{};
             if (!TryGetColliderAABB(pCollider, vMin, vMax))
@@ -161,21 +160,21 @@ void CollisionMgr::CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx)
         return;
     }
 
-    const CellBuckets& leftBuckets = m_arrLayerBuckets[_LeftLayerIdx];
+    const CellBuckets& leftBuckets  = m_arrLayerBuckets[_LeftLayerIdx];
     const CellBuckets& rightBuckets = m_arrLayerBuckets[_RightLayerIdx];
 
     if (leftBuckets.empty() || rightBuckets.empty())
         return;
-    
-    const CellBuckets* pIterBuckets = &leftBuckets;
+
+    const CellBuckets* pIterBuckets  = &leftBuckets;
     const CellBuckets* pOtherBuckets = &rightBuckets;
-    bool bIterIsLeft = true;
+    bool bIterIsLeft                 = true;
     
     if (leftBuckets.size() > rightBuckets.size())
     {
-        pIterBuckets = &rightBuckets;
+        pIterBuckets  = &rightBuckets;
         pOtherBuckets = &leftBuckets;
-        bIterIsLeft = false;
+        bIterIsLeft   = false;
     }
 
     unordered_set<ULONGLONG> setCandidatePairs{};
@@ -191,17 +190,17 @@ void CollisionMgr::CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx)
         {
             for (UINT idB : vecB)
             {
-                const UINT leftID = bIterIsLeft ? idA : idB;
-                const UINT rightID = bIterIsLeft ? idB : idA;
+                const UINT leftID       = bIterIsLeft ? idA : idB;
+                const UINT rightID      = bIterIsLeft ? idB : idA;
                 const ULONGLONG pairKey = MakePairKey(leftID, rightID);
 
                 if (!setCandidatePairs.insert(pairKey).second)
                     continue;
 
-                const auto iterLeftCol = m_mapColliderByID.find(leftID);
+                const auto iterLeftCol  = m_mapColliderByID.find(leftID);
                 const auto iterRightCol = m_mapColliderByID.find(rightID);
-                if (iterLeftCol == m_mapColliderByID.end() || iterRightCol == m_mapColliderByID.end())
-                    continue;
+                
+                if (iterLeftCol == m_mapColliderByID.end() || iterRightCol == m_mapColliderByID.end()) continue;
 
                 CheckCollisionAndNotify(iterLeftCol->second, iterRightCol->second);
             }
@@ -245,12 +244,12 @@ void CollisionMgr::CollisionBtwSameLayer(UINT _LayerIdx)
 void CollisionMgr::CheckCollisionAndNotify(const Ptr<CCollider2D>& _LeftCol, const Ptr<CCollider2D>& _RightCol)
 {
     if (!_LeftCol || !_RightCol) return;
-    
-    const UINT leftID = _LeftCol->GetEntityInstID();
-    const UINT rightID = _RightCol->GetEntityInstID();
-    const UINT normalizedLeftID = (leftID < rightID) ? leftID : rightID;
+
+    const UINT leftID            = _LeftCol->GetEntityInstID();
+    const UINT rightID           = _RightCol->GetEntityInstID();
+    const UINT normalizedLeftID  = (leftID < rightID) ? leftID : rightID;
     const UINT normalizedRightID = (leftID < rightID) ? rightID : leftID;
-    const ULONGLONG pairKey = MakePairKey(leftID, rightID);
+    const ULONGLONG pairKey      = MakePairKey(leftID, rightID);
 
     auto [iterState, bInserted] = m_mapColState.try_emplace(pairKey, CollisionPairState{});
     CollisionPairState& pairState = iterState->second;
