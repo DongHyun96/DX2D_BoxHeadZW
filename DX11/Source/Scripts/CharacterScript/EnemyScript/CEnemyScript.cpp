@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "CEnemyScript.h"
 
 #include <algorithm>
@@ -134,8 +134,8 @@ void CEnemyScript::AfterPushedOutFin()
 
 void CEnemyScript::HandleFadeOut()
 {
-    if (!m_HasFadeOutStart) return;
-    
+    if (!m_HasFadeOutStart || m_MainState != ENEMY_MAINSTATE::DIE) return;
+
     m_FadeInOutTime += DT;
 
     // Tint Color를 수정함으로써, FadeOut 처리 해준다
@@ -145,9 +145,9 @@ void CEnemyScript::HandleFadeOut()
 
     Ptr<AMaterial> DynamicMtrl = GetRenderCom()->CreateDynamicMaterial();
     DynamicMtrl->SetScalar(VEC4_0, TintColor);
-    
+
     if (m_FadeInOutTime < m_FadeInOutTotalTime) return; // 아직 시간이 남음
-    
+
     m_HasFadeOutStart = false;
     m_FadeInOutTime = 0.f;
     

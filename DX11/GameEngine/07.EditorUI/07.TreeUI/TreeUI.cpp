@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "TreeUI.h"
 
 // ==========================================
@@ -473,7 +473,7 @@ int TreeUI::GetOrderedIndex(const TreeNode* _Node) const
 
 void TreeUI::NotifyDoubleClicked()
 {
-    if (m_DoubleClickedInst)
+    if (m_DoubleClickedInst && m_Selected)
         (m_DoubleClickedInst->*m_DoubleClickedInstMemFunc)(m_Selected->Data);
 }
 

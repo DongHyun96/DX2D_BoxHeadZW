@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "Outliner.h"
 
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
@@ -40,11 +40,19 @@ void Outliner::Tick_UI()
     DeleteObjectTick();
     DuplicateObjectTick();
     ChangeObjectNameTick();
-    
+
+    bool bPrevShowOnlyActive = m_bShowOnlyActiveObjects;
+    ImGui::Checkbox("Show Only Active", &m_bShowOnlyActiveObjects);
+
+    if (bPrevShowOnlyActive != m_bShowOnlyActiveObjects)
+    {
+        ReNew();
+    }
+
     Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
 
     DebugUtil::SetPermanentDebugLog("ParentObjectCount", "Parent Object Count : " + to_string(m_Tree->GetNodeCount()), DEF_COLOR_YELLOW);
-    
+
     if (pCurLevel && pCurLevel->HasChanged())
         ReNew(); // 복원 실패 시, inspector clear 까지 처리
 }
@@ -257,12 +265,19 @@ void Outliner::ReNew()
 
 void Outliner::AddGameObject(const Ptr<TreeNode>& _ParentNode, const Ptr<GameObject>& _Object)
 {
+    // 필터 옵션: Active한 오브젝트만 표시 옵션이 활성화되었고, 현재 오브젝트가 비활성이면 스킵
+    if (m_bShowOnlyActiveObjects && !_Object->GetActive())
+    {
+        RegisterActiveStateDelegate(_Object);
+        return;
+    }
+
     const string ObjectNameStr = _Object->GetName().empty() ? "UnNamed" : string(_Object->GetName().begin(), _Object->GetName().end()); 
-    
+
     Ptr<TreeNode> ParentNode = m_Tree->AddItem(_ParentNode, ObjectNameStr, reinterpret_cast<DWORD_PTR>(_Object.Get()));
     ParentNode->SetTextDimmed(!_Object->GetActive());
     RegisterActiveStateDelegate(_Object);
-    
+
     for (const Ptr<GameObject>& ChildObject : _Object->GetChildren())
         AddGameObject(ParentNode, ChildObject);
 }
@@ -290,6 +305,13 @@ void Outliner::RegisterActiveStateDelegate(const Ptr<GameObject>& _Object)
 void Outliner::OnGameObjectActiveChanged(const Ptr<GameObject>& _Object)
 {
     if (!_Object) return;
+
+    // 필터 옵션이 활성화되었으면 트리를 갱신하여 Active 상태 변화를 반영
+    if (m_bShowOnlyActiveObjects)
+    {
+        ReNew();
+        return;
+    }
 
     Ptr<TreeNode> node = m_Tree->FindNodeByData(reinterpret_cast<DWORD_PTR>(_Object.Get()));
     if (!node) return;

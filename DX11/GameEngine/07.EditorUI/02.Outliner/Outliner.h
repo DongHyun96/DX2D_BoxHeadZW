@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <unordered_set>
 #include "GameEngine/07.EditorUI/EditorUI.h"
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
@@ -7,12 +7,14 @@
 class Outliner : public EditorUI
 {
 private:
-    
+
     Ptr<TreeUI> m_Tree{};
 
     unordered_set<DWORD_PTR> m_ActiveDelegateRegisteredObjects{}; // Active 콜백 등록된 GameObject 주소
     unordered_set<DWORD_PTR> m_CurrentObjectDataInTree{};         // 현재 Tree에 존재하는 GameObject 주소
-    
+
+    bool m_bShowOnlyActiveObjects{};  // Active한 오브젝트만 표시 옵션
+
 private:
     
     Ptr<GameObject>         m_GizmoSelectedObject{};    // Gizmo 처리 SelectedObject

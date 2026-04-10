@@ -43,7 +43,7 @@ void CEnemySpawnHandler::Tick()
             SpawnEnemy(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
         }*/
         for (int i = 0; i < 5; ++i)
-			SpawnEnemy(ENEMY_TYPE::MUMMY, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
+			SpawnEnemy(ENEMY_TYPE::ZOMBIE, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
     }
 }
 
@@ -67,6 +67,8 @@ GameObject* CEnemySpawnHandler::SpawnEnemy(ENEMY_TYPE _EnemyType, const CellCoor
     GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(ToVec3(GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_CellCoord)));
     if (SpawnedEnemy)
     {
+        // TODO : 여기서 Spawn 처리 시, 초기화시킬 멤버변수들 처리를 해주어야 좋음
+
         if (const Ptr<CPerceptionHandler>& PHandler = SpawnedEnemy->GetScriptComponent<CPerceptionHandler>())
             PHandler->GetDamageColliderObject()->SetActive(false);
         
