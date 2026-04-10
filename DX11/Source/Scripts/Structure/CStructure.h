@@ -70,8 +70,8 @@ public:
 public:
     
     static void ClearInstalledInfo() { s_setInstalledStructures.clear(); }
-    static void AddInstalledStructure(CStructure* _Structure) { s_setInstalledStructures.insert(_Structure); }
-    static void RemoveInstalledStructure(CStructure* Structure) { s_setInstalledStructures.remove(Structure); }
+    static void AddInstalledStructure(CStructure* _Structure);
+    static void RemoveInstalledStructure(CStructure* _Structure);
     static const RandomizedSet<CStructure*>& GetInstalledStructures() { return s_setInstalledStructures; }
     
     

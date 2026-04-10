@@ -7,7 +7,7 @@
 ASNode* AStarPathFinder::m_FieldNodes[CELL_ROW_COUNT][CELL_ROW_COUNT];
 UINT AStarPathFinder::m_CurrentEpoch{};
 unordered_map<PathCacheKey, stack<CellCoord>, PathCacheKeyHash> AStarPathFinder::m_PathCache;
-const UINT AStarPathFinder::MAX_CACHE_SIZE = 256; // 최대 256개 경로 캐시
+const UINT AStarPathFinder::MAX_CACHE_SIZE = 5000;
 
 AStarPathFinder::AStarPathFinder()
 {

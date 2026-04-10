@@ -4,6 +4,7 @@
 #include "Source/ScriptMgr.h"
 #include "Source/Scripts/CharacterScript/CCharacterScript.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "Source/AStar/AStarPathFinder.h"
 #include "Source/Manager/GameManager.h"
 
 RandomizedSet<CStructure*> CStructure::s_setInstalledStructures{};
@@ -89,6 +90,18 @@ bool CStructure::BlockCharacterCollider(CCollider2D* _OtherCollider)
 
     _OtherCollider->Transform()->UpdateTransformToPrevRelativePos();
     return true;
+}
+
+void CStructure::AddInstalledStructure(CStructure* _Structure)
+{
+    s_setInstalledStructures.insert(_Structure);
+    AStarPathFinder::ClearPathCache();
+}
+
+void CStructure::RemoveInstalledStructure(CStructure* _Structure)
+{
+    s_setInstalledStructures.remove(_Structure);
+    AStarPathFinder::ClearPathCache();
 }
 
 void CStructure::SaveToLevelFile(FILE* _File)

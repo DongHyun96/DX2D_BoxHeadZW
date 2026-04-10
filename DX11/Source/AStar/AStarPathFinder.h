@@ -80,6 +80,7 @@ public:
 public:
     
     static void Init();
+    static void ClearPathCache() { m_PathCache.clear(); }
 
     /// <summary>
     /// AStar 알고리즘 내에서 사용할 거리 측정 함수 
