@@ -43,7 +43,7 @@ void CEnemySpawnHandler::Tick()
             SpawnEnemy(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
         }*/
         for (int i = 0; i < 5; ++i)
-			SpawnEnemy(ENEMY_TYPE::MUMMY, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
+			SpawnEnemy(ENEMY_TYPE::DEVIL, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
     }
 }
 

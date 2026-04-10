@@ -67,6 +67,8 @@ void CStructureHandler::Begin()
 
 void CStructureHandler::Tick()
 {
+    DebugUtil::SetPermanentDebugLog("StructureCount", "StructureCount : " + to_string(CStructure::GetInstalledStructures().size()), DEF_COLOR_CYAN);
+    
     CreateStructureHoldingPreviewIfNecessary();
     
     if (

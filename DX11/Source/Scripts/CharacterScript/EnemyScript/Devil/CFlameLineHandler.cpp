@@ -55,11 +55,17 @@ void CFlameLineHandler::Tick()
     }
 }
 
+void CFlameLineHandler::InitSpawn()
+{
+    GetOwner()->SetActive(true);
+    InitWaitState();
+}
+
 void CFlameLineHandler::InitWaitState()
 {
     m_AttackColliderScaleTimer = 0.f;
-    m_PillarIntervalTimer = 0.f;
-    m_PlayerDamagedCount = 0;
+    m_PillarIntervalTimer      = 0.f;
+    m_PlayerDamagedCount       = 0;
 }
 
 void CFlameLineHandler::MakeFlameLine(float _Angle, float _Damage)

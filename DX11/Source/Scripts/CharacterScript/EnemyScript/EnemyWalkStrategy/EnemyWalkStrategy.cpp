@@ -50,7 +50,7 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
         _Enemy->m_PathReplanTimer = 0.f;
         
         // 새로운 Target 찾기
-        GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy);
+        GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy); // TODO : 이거 쓰지 않기 -> 여기서 성능이 많이 잡아먹는 것 같음
         if (!TargetSelected) return; // 맵에 고를 Target이 없는 상황
 
         // Target을 향한 새로운 경로 지정
