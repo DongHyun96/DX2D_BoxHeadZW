@@ -12,7 +12,7 @@
 
 GameObject* EnemyWalkStrategy::FindNearestTargetFromAllObjects(CEnemyScript* _Enemy)
 {
-    const Vec3 EnemyPos     = _Enemy->Transform()->GetRelativePos();
+    /*const Vec3 EnemyPos     = _Enemy->Transform()->GetRelativePos();
     const Vec2 PlayerPos    = GM->GetPlayerObject()->Transform()->GetWorldPos2D();
         
     float MinDist               = Vec2::DistanceSquared(ToVec2(EnemyPos), PlayerPos);
@@ -31,7 +31,19 @@ GameObject* EnemyWalkStrategy::FindNearestTargetFromAllObjects(CEnemyScript* _En
         }
     }
     
-    return TargetSelected;
+    return TargetSelected;*/
+    return nullptr;
+}
+
+GameObject* EnemyWalkStrategy::GetRandomTargetFromAllObjects(CEnemyScript* _Enemy)
+{
+    if (GetRandom(0.f, 1.f) < 0.4f) return GM->GetPlayerObject();
+    
+    if (CStructure::GetInstalledStructures().empty()) return nullptr;
+    if (CStructure* script = CStructure::GetInstalledStructures().getRandom())
+    {
+        return script->GetOwner();
+    }
 }
 
 void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
@@ -50,7 +62,8 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
         _Enemy->m_PathReplanTimer = 0.f;
         
         // 새로운 Target 찾기
-        GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy); // TODO : 이거 쓰지 않기 -> 여기서 성능이 많이 잡아먹는 것 같음
+        // GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy); // TODO : 이거 쓰지 않기 -> 여기서 성능이 많이 잡아먹는 것 같음
+        GameObject* TargetSelected = GetRandomTargetFromAllObjects(_Enemy);
         if (!TargetSelected) return; // 맵에 고를 Target이 없는 상황
 
         // Target을 향한 새로운 경로 지정
@@ -98,7 +111,7 @@ void EnemyWalkStraightStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     // Target Object가 valid하지 않은 상황, 새로운 TargetObject 찾아서 지정
     if (!IsValid(_Enemy->m_TargetObject))
     {
-        GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy); // 여기를 사실, 전체 물체탐색을 할게 아니라, perception에 들어온 Target에 대한 setting으로 변경처리를 해주어야 더 좋을 듯 -> 이걸 한 번 처리를 함
+        GameObject* TargetSelected = GetRandomTargetFromAllObjects(_Enemy); // 여기를 사실, 전체 물체탐색을 할게 아니라, perception에 들어온 Target에 대한 setting으로 변경처리를 해주어야 더 좋을 듯 -> 이걸 한 번 처리를 함
         _Enemy->m_TargetObject = TargetSelected;
     }
 

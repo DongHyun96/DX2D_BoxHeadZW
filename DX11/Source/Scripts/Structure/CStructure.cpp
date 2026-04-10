@@ -6,7 +6,7 @@
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "Source/Manager/GameManager.h"
 
-set<CStructure*> CStructure::s_setInstalledStructures{};
+RandomizedSet<CStructure*> CStructure::s_setInstalledStructures{};
 
 
 CStructure::CStructure()

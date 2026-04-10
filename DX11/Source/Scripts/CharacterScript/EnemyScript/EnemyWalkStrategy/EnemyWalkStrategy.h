@@ -20,6 +20,8 @@ public:
     /// </summary>
     static GameObject* FindNearestTargetFromAllObjects(CEnemyScript* _Enemy);
     
+    static GameObject* GetRandomTargetFromAllObjects(CEnemyScript* _Enemy);
+    
 };
 
 

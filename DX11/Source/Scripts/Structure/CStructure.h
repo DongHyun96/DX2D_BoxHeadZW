@@ -9,7 +9,8 @@ private:
     
     // 맵에 현재 설치된 Structure들을 저장
     // Enemy의 Target setting을 할 때에, 사용을 할 수 있도록 한다
-    static set<CStructure*> s_setInstalledStructures;
+    // static set<CStructure*> s_setInstalledStructures;
+    static RandomizedSet<CStructure*> s_setInstalledStructures;
     
 private:
 
@@ -70,8 +71,8 @@ public:
     
     static void ClearInstalledInfo() { s_setInstalledStructures.clear(); }
     static void AddInstalledStructure(CStructure* _Structure) { s_setInstalledStructures.insert(_Structure); }
-    static void RemoveInstalledStructure(CStructure* Structure) { s_setInstalledStructures.erase(Structure); }
-    static const set<CStructure*>& GetInstalledStructures() { return s_setInstalledStructures; }
+    static void RemoveInstalledStructure(CStructure* Structure) { s_setInstalledStructures.remove(Structure); }
+    static const RandomizedSet<CStructure*>& GetInstalledStructures() { return s_setInstalledStructures; }
     
     
 public:
