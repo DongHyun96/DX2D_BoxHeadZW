@@ -7,6 +7,7 @@
 #include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/Mummy/CMummy.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/PerceptionHandler/CPerceptionHandler.h"
+#include "Source/Scripts/FirstSpawnLocManager/CFirstSpawnLocManager.h"
 
 
 CEnemySpawnHandler::CEnemySpawnHandler()
@@ -40,21 +41,53 @@ void CEnemySpawnHandler::Tick()
         for (int i = 0; i < 50; ++i)
         {
             ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, 4));
-            SpawnEnemy(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
+            SpawnEnemyOnAvailableCell(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
         }
         /*for (int i = 0; i < 5; ++i)
 			    SpawnEnemy(ENEMY_TYPE::ZOMBIE, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));*/
     }
 }
 
-GameObject* CEnemySpawnHandler::SpawnEnemy(ENEMY_TYPE _EnemyType, const Vec2& _SpawnPos)
+GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType, FIRST_SPAWN_LOC _SpawnLoc)
 {
-    return SpawnEnemy(_EnemyType, GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(_SpawnPos));
+    if (_SpawnLoc == FIRST_SPAWN_LOC_END) return nullptr;
+    if (!m_mapEnemyPoolers[_EnemyType]->CanSpawnObject()) return nullptr;
+
+    GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(false);
+    if (!SpawnedEnemy) return nullptr;
+
+    const Vec2 EnemyTransformScale = SpawnedEnemy->Transform()->GetRelativeScaleXY();
+    const Vec2 EnemyColliderScale  = SpawnedEnemy->ColliderRect()->GetScale();
+    const Vec2 EnemyBodySize = EnemyTransformScale * EnemyColliderScale;
+    
+    
+    // Spawn Area에서의 랜덤한 영역 뽑기
+    CTransform* SpawnAreaTransform = GM->GetFirstSpawnLocManager()->GetFirstSpawnAreaTransform(_SpawnLoc);
+    const Vec2 AreaPos             = SpawnAreaTransform->GetRelativePosXY();
+    const Vec2 SpawnPossibleSize   = SpawnAreaTransform->GetRelativeScaleXY() - EnemyBodySize * 0.5f;
+    
+    const Vec2 PickedPos = AreaPos + Vec2(GetRandom(-SpawnPossibleSize.x, SpawnPossibleSize.x),
+                                          GetRandom(-SpawnPossibleSize.y, SpawnPossibleSize.y));
+
+    SpawnedEnemy->Transform()->SetRelativePosXY(PickedPos);
+    CEnemyScript* EnemyScript = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
+    
+    EnemyScript->SetIsCurrentlyFirstSpawnWalking(true);
+    
+    
+    TryInitSpawnedEnemy(EnemyScript);
+    
+    return SpawnedEnemy;
 }
 
-GameObject* CEnemySpawnHandler::SpawnEnemy(ENEMY_TYPE _EnemyType, const CellCoord& _CellCoord)
+GameObject* CEnemySpawnHandler::SpawnEnemyOnAvailableCell(ENEMY_TYPE _EnemyType, const Vec2& _SpawnPos)
 {
-    // Available Cell인지 조사 TODO : (근데 맨 처음 시작 시에는, 맵 밖에서 출발을 해야 함) -> 이거는 초반에 Tick에서 처리를 좀 해야할듯
+    return SpawnEnemyOnAvailableCell(_EnemyType, GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(_SpawnPos));
+}
+
+GameObject* CEnemySpawnHandler::SpawnEnemyOnAvailableCell(ENEMY_TYPE _EnemyType, const CellCoord& _CellCoord)
+{
+    // Available Cell인지 조사
     if (!GM->GetBackgroundCellManager()->IsCellAvailable(_CellCoord)) return nullptr;    
     
     // Player와 Adjacent한 Cell인지 조사
@@ -65,14 +98,21 @@ GameObject* CEnemySpawnHandler::SpawnEnemy(ENEMY_TYPE _EnemyType, const CellCoor
     if (PlayerCellCoord.y - 1 <= _CellCoord.y && _CellCoord.y <= PlayerCellCoord.y + 1) return nullptr;
     
     GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(ToVec3(GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_CellCoord)), false);
-    if (SpawnedEnemy)
-    {
-        CEnemyScript* Enemy = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
-        Enemy->InitSpawn();
-
-        if (CMummy* Mummy = dynamic_cast<CMummy*>(Enemy))
-            Mummy->SetSpawnedByMummy(false);
-    }
+    TryInitSpawnedEnemy(SpawnedEnemy);
     
     return SpawnedEnemy; 
+}
+
+void CEnemySpawnHandler::TryInitSpawnedEnemy(GameObject* EnemyObject)
+{
+    if (EnemyObject) TryInitSpawnedEnemy(EnemyObject->GetScriptComponent<CEnemyScript>().Get());
+}
+
+void CEnemySpawnHandler::TryInitSpawnedEnemy(CEnemyScript* _EnemyScript)
+{
+    if (!_EnemyScript) return;
+    _EnemyScript->InitSpawn();
+
+    if (CMummy* Mummy = dynamic_cast<CMummy*>(_EnemyScript))
+        Mummy->SetSpawnedByMummy(false);
 }

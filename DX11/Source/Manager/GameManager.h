@@ -39,6 +39,10 @@ private: // Poolers
     
     class CEnemySpawnHandler* m_EnemySpawnHandler{}; 
     class CFirePillarHandler* m_FirePillarHandler{};
+
+private:
+    
+    class CFirstSpawnLocManager* m_FirstSpawnLocManager{};
     
 public:
     
@@ -74,6 +78,9 @@ public:
     
     void SetFirePillarHandler(CFirePillarHandler* _FirePillarHandler) { m_FirePillarHandler = _FirePillarHandler; }
     CFirePillarHandler* GetFirePillarHandler() const { return m_FirePillarHandler; }
+
+    void SetFirstSpawnLocManager(CFirstSpawnLocManager* _FirstSpawnLocManager) { m_FirstSpawnLocManager = _FirstSpawnLocManager; }
+    CFirstSpawnLocManager* GetFirstSpawnLocManager() const { return m_FirstSpawnLocManager; }
     
 public: // Effect Spawn 관련
 

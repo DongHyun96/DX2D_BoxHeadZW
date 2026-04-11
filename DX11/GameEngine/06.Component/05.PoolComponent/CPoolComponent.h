@@ -43,6 +43,8 @@ public:
     /// <returns> : 스폰된 GameObject, 제대로 Spawn되지 않았다면 nullptr </returns>
     GameObject* SpawnObject(const Vec3& _SpawnPosition, bool _SetActiveHierarchy = true);
     
+    bool CanSpawnObject() const { return !m_SpawningPool.empty(); }
+    
 public:
     
     /// <summary>

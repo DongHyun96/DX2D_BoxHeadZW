@@ -10,6 +10,7 @@ enum class ENEMY_WALK_TYPE
 {
     CELL_PATH,
     STRAIGHT,
+    FIRST_SPAWN_WALK, // Valid한 Cell까지 이동
 };
 
 class CEnemyScript : public CCharacterScript
@@ -24,6 +25,12 @@ protected:
     ENEMY_TYPE      m_EnemyType{};
     ENEMY_MAINSTATE m_MainState{};
 
+private:
+
+    // 현재, First Spawn pos에서 태어나서 Valid한 Cell로 이동처리를 해야하는 Enemy인지
+    bool m_IsCurrentlyFirstSpawnWalking{};
+    Vec2 m_FirstSpawnMoveDestination{};
+    
 private:
     
     float m_AttackDamage{}; // 공격 Damage량 (Devil의 경우, 불쏘시개 하나 당 damage)
@@ -102,7 +109,6 @@ private:
 
     /// <summary>
     /// Perception의 Sight에 들어온 Enemy들 및, 현 State / TargetObject 상태에 따른 State Transition 처리 담당
-    /// TODO : Devil의 경우 이 함수 override해서 처리해야할듯?
     /// </summary>
     virtual void HandleStateTransition();
 
@@ -155,6 +161,11 @@ public:
     ENEMY_WALK_TYPE GetCurrentWalkType() const { return m_CurrentWalkType; }
     
     float GetAttackDamage() const { return m_AttackDamage; }
+    
+    void SetIsCurrentlyFirstSpawnWalking(bool _IsFirstSpawnWalking) { m_IsCurrentlyFirstSpawnWalking = _IsFirstSpawnWalking; }
+    // bool GetIsCurrentlyFirstSpawnWalking() const { return m_IsCurrentlyFirstSpawnWalking; }
+    
+    void SetFirstSpawnMoveDestination(const Vec2& _MoveDestination) { m_FirstSpawnMoveDestination = _MoveDestination; }
 
 public:
     

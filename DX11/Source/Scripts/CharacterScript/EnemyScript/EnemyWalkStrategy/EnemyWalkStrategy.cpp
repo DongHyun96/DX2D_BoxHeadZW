@@ -131,3 +131,9 @@ void EnemyWalkStraightStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     const Vec3 NewPos = _Enemy->Transform()->GetRelativePos() + _Enemy->m_Velocity * DT;
     _Enemy->Transform()->SetRelativePos(NewPos);
 }
+
+
+void EnemyFirstSpawnWalkStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
+{
+    
+}

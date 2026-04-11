@@ -54,3 +54,21 @@ private:
     virtual void UseWalkStrategy(CEnemyScript* _Enemy) override;
     
 };
+
+/// <summary>
+/// 첫 스폰 처리되고, Valid한 Cell까지 이동해야할 때, 이 WalkStrategy를 사용한다
+/// </summary>
+class EnemyFirstSpawnWalkStrategy : public EnemyWalkStrategy
+{
+private:
+    
+public:
+    
+    EnemyFirstSpawnWalkStrategy() = default;
+    virtual ~EnemyFirstSpawnWalkStrategy() override = default;
+    
+private:
+
+    virtual void UseWalkStrategy(CEnemyScript* _Enemy) override;
+    
+};

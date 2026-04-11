@@ -33,6 +33,7 @@ void GameManager::OnLevelBegin()
     m_BackgroundCellManager     = nullptr;
     m_EnemySpawnHandler         = nullptr;    
     m_FirePillarHandler         = nullptr;
+    m_FirstSpawnLocManager      = nullptr;
     
     CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
@@ -50,6 +51,7 @@ void GameManager::OnLevelPlayToStop()
     m_BackgroundCellManager     = nullptr;
     m_EnemySpawnHandler         = nullptr;
     m_FirePillarHandler         = nullptr;
+    m_FirstSpawnLocManager      = nullptr;
     
     CStructure::ClearInstalledInfo();
 }
