@@ -51,7 +51,7 @@ private:
     
     void AddGameObject(const Ptr<TreeNode>& _ParentNode, const Ptr<GameObject>& _Object);
     void RegisterActiveStateDelegate(const Ptr<GameObject>& _Object);
-    void OnGameObjectActiveChanged(const Ptr<GameObject>& _Object);
+    void OnGameObjectActiveChanged(GameObject* _Object);
     void CleanupInactiveDelegateRegistrations();
 
     /// <summary>

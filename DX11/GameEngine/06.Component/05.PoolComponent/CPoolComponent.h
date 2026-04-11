@@ -9,9 +9,9 @@ class CPoolComponent : public Component
     
 private:
 
-    UINT                    m_PoolCount{};
-    Ptr<APrefab>            m_PrefabToPool{}; // -> Layer Default GameObject는 Pooling 하지 말것 -> PoolComponent GameObject와 다른 Layer여야 Begin 처리 시에 Layer GameObject iterator가 정상 동작함
-    queue<Ptr<GameObject>>  m_SpawningPool{}; // 스폰 가능한 GameObject들 (IsActive가 꺼져있는 게임오브젝트들을 담는다)
+    UINT                        m_PoolCount{};
+    Ptr<APrefab>                m_PrefabToPool{}; // -> Layer Default GameObject는 Pooling 하지 말것 -> PoolComponent GameObject와 다른 Layer여야 Begin 처리 시에 Layer GameObject iterator가 정상 동작함
+    deque<GameObject*>          m_SpawningPool{}; // 스폰 가능한 GameObject들 (IsActive가 꺼져있는 게임오브젝트들을 담는다)
 
 private:
     
@@ -56,9 +56,9 @@ private:
     /// Pool에서 스폰된 Object들이 Deactivate 처리되었을 때(SetActive(false)) 처리되었을 때 호출됨
     /// 다시금 Pool에 돌아가는 처리
     /// </summary>
-    void OnDeactivateActiveObject(const Ptr<GameObject>& _GameObject)
+    void OnDeactivateActiveObject(GameObject* _GameObject)
     {
-        m_SpawningPool.push(_GameObject);
+        m_SpawningPool.push_front(_GameObject);
     }
 
 public:

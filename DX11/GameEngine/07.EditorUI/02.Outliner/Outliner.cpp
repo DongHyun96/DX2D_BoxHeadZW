@@ -291,18 +291,18 @@ void Outliner::RegisterActiveStateDelegate(const Ptr<GameObject>& _Object)
 
     if (!m_ActiveDelegateRegisteredObjects.insert(objectData).second) return;
 
-    _Object->AddActivateDelegate([this](const Ptr<GameObject>& changedObject)
+    _Object->AddActivateDelegate([this](GameObject* changedObject)
     {
         OnGameObjectActiveChanged(changedObject);
     });
 
-    _Object->AddDeactivateDelegate([this](const Ptr<GameObject>& changedObject)
+    _Object->AddDeactivateDelegate([this](GameObject* changedObject)
     {
         OnGameObjectActiveChanged(changedObject);
     });
 }
 
-void Outliner::OnGameObjectActiveChanged(const Ptr<GameObject>& _Object)
+void Outliner::OnGameObjectActiveChanged(GameObject* _Object)
 {
     if (!_Object) return;
 
@@ -313,7 +313,7 @@ void Outliner::OnGameObjectActiveChanged(const Ptr<GameObject>& _Object)
         return;
     }
 
-    Ptr<TreeNode> node = m_Tree->FindNodeByData(reinterpret_cast<DWORD_PTR>(_Object.Get()));
+    Ptr<TreeNode> node = m_Tree->FindNodeByData(reinterpret_cast<DWORD_PTR>(_Object));
     if (!node) return;
 
     node->SetTextDimmed(!_Object->GetActive());

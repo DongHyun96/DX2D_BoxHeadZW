@@ -51,8 +51,7 @@ void TaskMgr::Progress()
             // 부모가 비활성 상태여도 다음 프레임에 계층 FinalTick이 한 번은 돌도록 보장한다.
             // (자식 제거 + Collision EndOverlap/OverlapCount 정리를 위해 필요)
             GameObject* rootObject = gObject.Get();
-            while (rootObject->GetParent())
-                rootObject = rootObject->GetParent();
+            while (rootObject->GetParent()) rootObject = rootObject->GetParent();
             rootObject->m_ObjectMarkedDeactivated = true;
             
             // 자식 오브젝트 중, 오브젝트 pooling 처리된 자식이 존재하는 경우 해당 자식의 Parent를 nullptr로 세팅하고

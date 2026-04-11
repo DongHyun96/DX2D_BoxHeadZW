@@ -353,12 +353,12 @@ void GameObject::SetActive(bool _Active, bool _SetActiveHierarchy)
 		m_ObjectMarkedDeactivated = true;
 		
 		// PoolingObject의 OnDeactivate 대리자 호출
-		for (const function<void(const Ptr<GameObject>&)>& OnDeactivate : m_vecDelegateOnDeactivate)
+		for (const function<void(GameObject*)>& OnDeactivate : m_vecDelegateOnDeactivate)
 			OnDeactivate(this);
 	}
 	else
 	{
-		for (const function<void(const Ptr<GameObject>&)>& OnActivate : m_vecDelegateOnActivate)
+		for (const function<void(GameObject*)>& OnActivate : m_vecDelegateOnActivate)
 			OnActivate(this);
 	}
 
@@ -410,11 +410,25 @@ void GameObject::RegisterLayer()
 void GameObject::Destroy()
 {
 	if (m_ObjectDestroyed) return; // 이미 삭제 요청이 들어갔었던 Object
-	if (m_OwnerPoolComponent) return; // Pooling된 Object에 대한 삭제요청은 허용 x
-	
-	// RenderComponent를 들고 있던 경우, Render domain에서 제거
-	if (m_RenderCom) m_RenderCom->DeregisterFromRenderDomain();
+	if (m_OwnerPoolComponent) return; // Pooling된 Object에 대한 직접적인 삭제요청은 허용 x
     
+	// RenderComponent를 들고 있던 경우, Render domain에서 제거
+	// 자식의 RenderComponent 또한 존재했다면 도메인에서 없앤다
+	{
+		queue<GameObject*> q{};
+		q.push(this);
+		while (!q.empty())
+		{
+			GameObject* Current = q.front(); q.pop();
+			
+			if (Current->m_RenderCom) 
+				Current->m_RenderCom->DeregisterFromRenderDomain();
+
+			for (const Ptr<GameObject>& NextChild : Current->m_vecChild)
+				q.push(NextChild.Get());
+		}
+	}
+	
 	TaskInfo info = {};
     
 	info.Type       = TASK_TYPE::DESTROY_OBJECT;

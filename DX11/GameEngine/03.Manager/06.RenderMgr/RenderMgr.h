@@ -5,6 +5,7 @@
 #include "GameEngine/05.GameObject/GameObject.h"
 #include "GameEngine/06.Component/02.Camera/CCamera.h"
 #include "GameEngine/06.Component/04.Light2D/CLight2D.h"
+#include "Source/UserHeader/userStruct.h"
 
 
 class RenderMgr : public Singleton<RenderMgr>
@@ -26,7 +27,7 @@ private:
     
     bool                    m_bDebugRender = true;  // 디버그 랜더 기능 on / off
     
-    map<RENDER_DOMAIN, list<GameObject*>> m_mapDomainGameObject = 
+    map<RENDER_DOMAIN, RandomizedSet<GameObject*>> m_mapDomainGameObject = 
     {
         {RENDER_DOMAIN::DOMAIN_OPAQUE,      {}},
         {RENDER_DOMAIN::DOMAIN_MASKED,      {}},
@@ -37,7 +38,7 @@ private:
     
 private:
     
-    float                   m_ScreenResolDiagLength = sqrtf(RESOL_X * RESOL_X + RESOL_Y * RESOL_Y);
+    float m_ScreenResolDiagLength = sqrtf(RESOL_X * RESOL_X + RESOL_Y * RESOL_Y);
     
 public:
     
@@ -63,7 +64,7 @@ private:
     
 public:
 
-    void AddGameObjectToRenderDomain(RENDER_DOMAIN _Domain, GameObject* _GameObject) { m_mapDomainGameObject[_Domain].push_back(_GameObject); }
+    void AddGameObjectToRenderDomain(RENDER_DOMAIN _Domain, GameObject* _GameObject) { m_mapDomainGameObject[_Domain].insert(_GameObject); }
     void RemoveGameObjectFromRenderDomain(RENDER_DOMAIN _Domain, GameObject* _GameObject) { m_mapDomainGameObject[_Domain].remove(_GameObject); }
     
     void RegisterMainCamera(const Ptr<CCamera>& _Cam) { m_MainCam = _Cam; }
@@ -83,6 +84,6 @@ public:
 
 public:
     
-    const map<RENDER_DOMAIN, list<GameObject*>>& GetDomainGameObjects() const { return m_mapDomainGameObject; }
+    const map<RENDER_DOMAIN, RandomizedSet<GameObject*>>& GetDomainGameObjects() const { return m_mapDomainGameObject; }
     
 };
