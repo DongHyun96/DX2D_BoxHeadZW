@@ -130,16 +130,12 @@ void CDevil::HandleStateTransition()
     case ENEMY_MAINSTATE::WALK:
     {
         // 첫 스폰상태 Walking 처리
-        if (m_IsCurrentlyFirstSpawnWalking)
+        if (GetCurrentWalkType() == ENEMY_WALK_TYPE::FIRST_SPAWN_WALK || GetCurrentWalkType() == ENEMY_WALK_TYPE::PUSHED_OUT_TO_INVALID_CELL)
         {
-            if (GetCurrentWalkType() != ENEMY_WALK_TYPE::FIRST_SPAWN_WALK)
-                SetCurrentWalkType(ENEMY_WALK_TYPE::FIRST_SPAWN_WALK);
-
             // 여기서 Available cell에 도착했는지 안했는지 체킹도 필요함
             CellCoord CurCell = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(Transform()->GetRelativePosXY());
             if (GM->GetBackgroundCellManager()->IsCellAvailable(CurCell)) // 도착 지점에 도착했다고 판단, CurrentlyFirstSpawning 마킹을 풀어줌
             {
-                m_IsCurrentlyFirstSpawnWalking = false;
                 SetCurrentWalkType(ENEMY_WALK_TYPE::CELL_PATH); // Default 값인 CellPath로 지정
             }
             

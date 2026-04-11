@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include "EnemySpawnHandler/CEnemySpawnHandler.h"
 #include "EnemyWalkStrategy/EnemyWalkStrategy.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "PerceptionHandler/CPerceptionHandler.h"
@@ -17,7 +18,8 @@ map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> CEnemyScript::s_mapWalkingStrategie
 {
     { ENEMY_WALK_TYPE::CELL_PATH,           new EnemyWalkThroughCellPathStrategy },
     { ENEMY_WALK_TYPE::STRAIGHT,            new EnemyWalkStraightStrategy },
-    { ENEMY_WALK_TYPE::FIRST_SPAWN_WALK,    new EnemyFirstSpawnWalkStrategy }
+    { ENEMY_WALK_TYPE::FIRST_SPAWN_WALK,    new EnemyFirstSpawnWalkStrategy },
+    { ENEMY_WALK_TYPE::PUSHED_OUT_TO_INVALID_CELL,    new EnemyPushedOutToInvalidCell },
 };
 
 CEnemyScript::CEnemyScript()
@@ -74,7 +76,7 @@ void CEnemyScript::AfterLevelBegin()
 void CEnemyScript::Tick()
 {
     // HP가 0인데 아직 DIE 상태가 아니라면 즉시 사망 처리
-    if (m_StatScript && m_StatScript->IsDead() && m_MainState != ENEMY_MAINSTATE::DIE)
+    if (nullptr != m_StatScript && m_StatScript->IsDead() && ENEMY_MAINSTATE::DIE != m_MainState)
     {
         SetMainState(ENEMY_MAINSTATE::DIE);
         OnDieStart();
@@ -142,9 +144,25 @@ void CEnemyScript::UpdateCurrentFacedDirection()
 
 void CEnemyScript::AfterPushedOutFin()
 {
-    ENEMY_MAINSTATE NextState = m_StatScript && m_StatScript->IsDead()
+    ENEMY_MAINSTATE NextState = (nullptr != m_StatScript && m_StatScript->IsDead())
                                          ? ENEMY_MAINSTATE::DIE : ENEMY_MAINSTATE::WALK;
-    SetMainState(NextState);
+
+    if (nullptr != m_StatScript && m_StatScript->IsDead())
+    {
+        SetMainState(ENEMY_MAINSTATE::DIE);
+        return;
+    }
+    
+    // 다시금 Idle 상태의 Walk상태로 되돌아간다
+    SetMainState(ENEMY_MAINSTATE::WALK);
+    
+    // PushedOut 된 이후로 AvailableCell 위치가 아닐 가능성이 있음
+    // 다시금 AvailableCell로 복귀해야 함
+    const CellCoord MyCellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(Transform()->GetRelativePosXY());
+    if (!GM->GetBackgroundCellManager()->IsCellAvailable(MyCellCoord))
+    {
+        SetCurrentWalkType(ENEMY_WALK_TYPE::PUSHED_OUT_TO_INVALID_CELL);
+    }
 }
 
 void CEnemyScript::HandleFadeOut()
@@ -169,6 +187,9 @@ void CEnemyScript::HandleFadeOut()
     // Pool 에 돌아가는 처리
     // Owner GameObject가 Pool에서 생성된 GameObject라면, IsActive 해제시, 자동적으로 들어간다
     GetOwner()->SetActive(false);
+
+    // 살아있는 Zombie count 하나 줄임
+    GM->GetEnemySpawnHandler()->ReduceSpawnedCount();
     
     OnFadeOutEnd();
 }
@@ -181,10 +202,12 @@ void CEnemyScript::HandleStateTransition()
      *  
      */
     
-    
     switch (m_MainState)
     {
-    case ENEMY_MAINSTATE::ATTACK: case ENEMY_MAINSTATE::PUSHED_OUT: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
+    case ENEMY_MAINSTATE::ATTACK: case ENEMY_MAINSTATE::PUSHED_OUT: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END:
+    {
+        return;
+    }
         
     case ENEMY_MAINSTATE::WALK:
     {
@@ -199,18 +222,16 @@ void CEnemyScript::HandleStateTransition()
         }
         
         // 나머지는 Walk 상태 지정 처리
-        // 현재 FirstSpawnPos에서 태어났고, 걸어가는 중
-        if (m_IsCurrentlyFirstSpawnWalking)
-        {
-            if (m_CurrentWalkType != ENEMY_WALK_TYPE::FIRST_SPAWN_WALK)
-                SetCurrentWalkType(ENEMY_WALK_TYPE::FIRST_SPAWN_WALK);
 
-            // First spawn walking이 정상적으로 끝났는지 체크(Available Cell에 도달했는지)
+        switch (m_CurrentWalkType)
+        {
+        case ENEMY_WALK_TYPE::FIRST_SPAWN_WALK: case ENEMY_WALK_TYPE::PUSHED_OUT_TO_INVALID_CELL: // 현재 FirstSpawnPos에서 태어났고, 걸어가는 중 || 또는 InvalidCell에 밀려 Valid한 Cell로 이동하는 중
+        {
+            // First spawn walking이 정상적으로 끝났는지 체크 && InvalidCell로 밀려 Valid한 Cell 이동 끝났는지 체크 -> Available Cell에 도달했는지 보면 된느걸로 동일
             CellCoord CurCell = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(Transform()->GetRelativePosXY());
             if (GM->GetBackgroundCellManager()->IsCellAvailable(CurCell)) 
             {
-                // 도착 지점에 도착했다고 판단, CurrentlyFirstSpawning 마킹을 풀어줌 & 다음 상태의 Walk Type transition 시도함 (return하지 않고)
-                m_IsCurrentlyFirstSpawnWalking = false;
+                // 도착 지점에 도착했다고 판단, m_CurrentWalkType을 다른 Type으로 전환함으로써 마킹을 풀어줌 & 다음 상태의 Walk Type transition 시도함 (return하지 않고)
                 
                 // StraightThrough 영역에 들어온 Object가 있다면, 해당 GameObject로 Target 세팅 및 Walk Strategy 세팅
                 if (GameObject* Object = m_PerceptionHandler->GetNearestStraightThroughDetectionEnteredObject())
@@ -228,13 +249,12 @@ void CEnemyScript::HandleStateTransition()
             
             return; // First spawn Walking 중 Walking Type transition 처리 x
         }
-
-        
+            
         /* 일반적인 walk case */
-        
-        // Straight -> CellPath 전환 시도
-        if (m_CurrentWalkType == ENEMY_WALK_TYPE::STRAIGHT)
+        case ENEMY_WALK_TYPE::STRAIGHT:
         {
+            // Straight -> CellPath 전환 시도
+            
             // TargetObject가 사망 또는 사라진 경우, 또는 현재 TargetObject가 Straight Walk 반경에서 벗어난 오브젝트인 경우
             if (!IsValid(m_TargetObject) || !m_PerceptionHandler->IsStraightThroughDetectionSetContainObject(m_TargetObject.Get()))
             {
@@ -243,9 +263,7 @@ void CEnemyScript::HandleStateTransition()
                 return;
             }
         }
-
-        // CellPath -> Straight 전환 시도
-        if (m_CurrentWalkType == ENEMY_WALK_TYPE::CELL_PATH)
+        case ENEMY_WALK_TYPE::CELL_PATH:
         {
             // StraightThrough 영역에 들어온 Object가 있다면, 해당 GameObject로 Target 세팅 및 Walk Strategy 세팅
             if (GameObject* Object = m_PerceptionHandler->GetNearestStraightThroughDetectionEnteredObject())
@@ -254,9 +272,10 @@ void CEnemyScript::HandleStateTransition()
                 SetCurrentWalkType(ENEMY_WALK_TYPE::STRAIGHT);
                 
             }
+            return;
+        }
         }
     }
-        return;
     }
 }
 
@@ -337,6 +356,35 @@ void CEnemyScript::SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType)
     {
         m_PathReplanInterval = GetRandom(1.5f, 4.5f);
         m_PathReplanTimer = 0.f;
+    }
+    
+    if (_WalkType == ENEMY_WALK_TYPE::PUSHED_OUT_TO_INVALID_CELL)
+    {
+        // 인접한 Cell에서 어디가 가장 가깜게 이동할 수 있는 Cell인지 조사해서 이동 처리
+        m_ValidCellFound = false;
+
+        const Vec2 vPos = Transform()->GetRelativePosXY();
+        CBackgroundTile* pTileMgr = GM->GetBackgroundCellManager();
+
+        const CellCoord centerCoord = pTileMgr->GetWorldPosToCellCoord(vPos);
+        float minDistance = FLT_MAX;
+
+        // 반경 2칸 이내의 Cell 중 가장 가까운 Available Cell을 찾는다.
+        for (int dy = -2; dy <= 2; ++dy) 
+            for (int dx = -2; dx <= 2; ++dx)
+        {
+            const CellCoord checkCoord = { centerCoord.x + dx, centerCoord.y + dy };
+            if (!pTileMgr->IsCellAvailable(checkCoord)) continue;
+
+            const Vec2 vCellPos = pTileMgr->GetCellCoordToWorldPos(checkCoord);
+            const float fDist = Vec2::Distance(vPos, vCellPos);
+
+            if (fDist >= minDistance) continue;
+
+            minDistance         = fDist;
+            m_FoundValidCellPos = vCellPos;
+            m_ValidCellFound    = true;
+        }
     }
 }
 

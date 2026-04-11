@@ -38,17 +38,18 @@ void CEnemySpawnHandler::Tick()
 {
     if (KEY_TAP(KEY::MRB))
     {
-        for (int i = 0; i < 75; ++i)
+        /*for (int i = 0; i < 75; ++i)
         {
             ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, static_cast<int>(ENEMY_TYPE::END) - 1));
             SpawnEnemyOnAvailableCell(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
-        }
-        /*for (int i = 0; i < 5; ++i)
+        }*/
+        
+        for (int i = 0; i < 5; ++i)
         {
             // TODO : First Spawn 처리 테스팅 스폰할 것
-            SpawnEnemyOnFirstSpawnArea(static_cast<ENEMY_TYPE>(GetRandom(0, 4)), FIRST_SPAWN_LOC1);
+            SpawnEnemyOnFirstSpawnArea(static_cast<ENEMY_TYPE>(GetRandom(0, 4)), FIRST_SPAWN_LOC2);
 			// SpawnEnemy(ENEMY_TYPE::ZOMBIE, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
-        }*/
+        }
     }
 }
 
@@ -59,6 +60,8 @@ GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType
 
     GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(false);
     if (!SpawnedEnemy) return nullptr;
+
+    ++m_SpawnedCount;
     
     CEnemyScript* EnemyScript = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
     
@@ -76,8 +79,9 @@ GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType
     const CellCoord& PickedRandomDestCellCoord = GM->GetBackgroundCellManager()->GetRandomFirstSpawnLocDestination(_SpawnLoc);
     
     TryInitSpawnedEnemy(EnemyScript);
-    EnemyScript->SetIsCurrentlyFirstSpawnWalking(true);
+    EnemyScript->SetCurrentWalkType(ENEMY_WALK_TYPE::FIRST_SPAWN_WALK);
     EnemyScript->SetFirstSpawnMoveDestination(PickedRandomDestCellCoord);
+    
     return SpawnedEnemy;
 }
 
@@ -104,7 +108,8 @@ GameObject* CEnemySpawnHandler::SpawnEnemyOnAvailableCell(ENEMY_TYPE _EnemyType,
     {
         CEnemyScript* EnemyScript = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
         TryInitSpawnedEnemy(EnemyScript);
-        EnemyScript->SetIsCurrentlyFirstSpawnWalking(false);
+        EnemyScript->SetCurrentWalkType(ENEMY_WALK_TYPE::FIRST_SPAWN_WALK);
+        ++m_SpawnedCount;
     }
     
     return SpawnedEnemy; 

@@ -5,6 +5,11 @@ class CEnemySpawnHandler : public CScript
 private:
 
     map<ENEMY_TYPE, CPoolComponent*> m_mapEnemyPoolers{};
+
+private:
+
+    // 현재 라운드에서 스폰되어 살아있는 총 좀비 수
+    int m_SpawnedCount{};
     
 public:
     
@@ -41,6 +46,9 @@ private:
     
     void TryInitSpawnedEnemy(class CEnemyScript* _EnemyScript);
     
+public:
+    
+    void ReduceSpawnedCount() { --m_SpawnedCount; }
     
 public:
     

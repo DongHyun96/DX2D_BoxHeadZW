@@ -18,7 +18,7 @@ bool CEnemyStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
     const Ptr<CEnemyScript>& MainEnemyScript = GetOwner()->GetScriptComponent<CEnemyScript>();
     
     // 만약 First Spawn 처리 중이고, 아직 Boundary를 넘지 못하였을 때 (적어도 맵에 들어온 뒤에야 피격 가능하도록 처리)
-    if (MainEnemyScript->GetIsCurrentlyFirstSpawnWalking() && MainEnemyScript->IsCurrentlyOutOfBound()) return false;
+    if (MainEnemyScript->GetCurrentWalkType() == ENEMY_WALK_TYPE::FIRST_SPAWN_WALK && MainEnemyScript->IsCurrentlyOutOfBound()) return false;
     
     if (!CCharacterStat::TakeDamage(_DamageAmount, _DamageCauser)) return false;
 

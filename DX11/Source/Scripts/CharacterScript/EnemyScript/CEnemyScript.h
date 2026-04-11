@@ -10,7 +10,8 @@ enum class ENEMY_WALK_TYPE
 {
     CELL_PATH,
     STRAIGHT,
-    FIRST_SPAWN_WALK, // Valid한 Cell까지 이동
+    FIRST_SPAWN_WALK, // 첫 Spawn region에서 spawn되었고, Valid한 Cell까지 이동
+    PUSHED_OUT_TO_INVALID_CELL, // PushedOut으로 인해 InavlidCell로 밀려난 경우, 해당 Walk Strategy 사용할 것
 };
 
 class CEnemyScript : public CCharacterScript
@@ -20,7 +21,8 @@ class CEnemyScript : public CCharacterScript
     friend class EnemyWalkThroughCellPathStrategy;
     friend class EnemyWalkStraightStrategy;
     friend class EnemyFirstSpawnWalkStrategy;
-
+    friend class EnemyPushedOutToInvalidCell;
+    
 protected:
 
     ENEMY_TYPE      m_EnemyType{};
@@ -28,10 +30,15 @@ protected:
 
 protected:
 
-    // 현재, First Spawn pos에서 태어나서 Valid한 Cell로 이동처리를 해야하는 Enemy인지
-    bool        m_IsCurrentlyFirstSpawnWalking{};
+    // 현재, First Spawn pos에서 태어나서 Valid한 Cell로 이동처리를 해야하는 Enemy일 때, 해당 멤버변수를 초기화 받아서 이동처리함
     Vec2        m_FirstSpawnMoveDestination{};
     CellCoord   m_FirstSpawnMoveDestCellCoord{};
+
+private: // PushedOut to invalid cell 관련
+    
+    // PushedOut으로 인해 invalid cell로 밀려난 경우, 해당 Cell에서 다시 Valid한 Cell로 이동할 때 사용할 Cell 좌표
+    bool m_ValidCellFound{};
+    Vec2 m_FoundValidCellPos{}; 
     
 private:
     
@@ -164,9 +171,6 @@ public:
     
     float GetAttackDamage() const { return m_AttackDamage; }
     
-    void SetIsCurrentlyFirstSpawnWalking(bool _IsFirstSpawnWalking) { m_IsCurrentlyFirstSpawnWalking = _IsFirstSpawnWalking; }
-    bool GetIsCurrentlyFirstSpawnWalking() const { return m_IsCurrentlyFirstSpawnWalking; }
-    
     // void SetFirstSpawnMoveDestination(const Vec2& _MoveDestination) { m_FirstSpawnMoveDestination = _MoveDestination; }
     void SetFirstSpawnMoveDestination(const CellCoord& _MoveDestinationCellCoord);
     
@@ -176,3 +180,4 @@ public:
     virtual void LoadFromLevelFile(FILE* _File) override;
     
 };
+ 

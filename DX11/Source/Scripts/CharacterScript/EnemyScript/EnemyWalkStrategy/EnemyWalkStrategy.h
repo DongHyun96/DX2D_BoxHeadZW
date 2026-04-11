@@ -72,3 +72,18 @@ private:
     virtual void UseWalkStrategy(CEnemyScript* _Enemy) override;
     
 };
+
+/// <summary>
+/// PushedOut 처리로 인해 Invalid Cell로 밀려났다면, 다시금 Valid한 Cell로 이동처리를 해야한다
+/// </summary>
+class EnemyPushedOutToInvalidCell : public EnemyWalkStrategy
+{
+    
+public:
+    
+    EnemyPushedOutToInvalidCell() = default;
+    virtual ~EnemyPushedOutToInvalidCell() override = default;
+    
+public:
+    void UseWalkStrategy(CEnemyScript* _Enemy) override;
+};

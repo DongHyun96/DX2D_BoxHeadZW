@@ -145,3 +145,16 @@ void EnemyFirstSpawnWalkStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     const Vec3 NewPos = _Enemy->Transform()->GetRelativePos() + _Enemy->m_Velocity * DT;
     _Enemy->Transform()->SetRelativePos(NewPos);
 }
+
+void EnemyPushedOutToInvalidCell::UseWalkStrategy(CEnemyScript* _Enemy)
+{
+    const Vec2 EnemyPos = _Enemy->Transform()->GetRelativePosXY();
+    
+    Vec2 Direction = _Enemy->m_ValidCellFound ? _Enemy->m_FoundValidCellPos - EnemyPos : _Enemy->GetPushedOutFaceDirection(); 
+    Direction.Normalize();
+
+    _Enemy->m_Velocity = ToVec3(Direction * _Enemy->m_MoveSpeedBase * _Enemy->m_MoveSpeedFactor);
+
+    const Vec3 NewPos = _Enemy->Transform()->GetRelativePos() + _Enemy->m_Velocity * DT;
+    _Enemy->Transform()->SetRelativePos(NewPos);
+}
