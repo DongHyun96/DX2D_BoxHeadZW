@@ -70,6 +70,18 @@ protected:
     {
         m_vecScriptParam.push_back(tScriptParam{ _Type , _Data, _Desc, _IsInput, _Step, _Enabled });
     }
+    
+    void RemoveScriptParam(SCRIPT_PARAM _Type, void* _Data, const wstring& _Desc)
+    {
+        for (auto& param : m_vecScriptParam)
+        {
+            if (param.Param == _Type && param.Data == _Data && param.Desc == _Desc)
+            {
+                erase(m_vecScriptParam, param);
+                return;
+            }
+        }       
+    }
 
     /// <summary>
     /// Prefab Instantiating
