@@ -34,6 +34,8 @@ public:
     GET_SET(Vec2, RenderOffset)
     GET_SET(Vec2, RenderScale)
     
+    bool IsInViewRect(const Vec2& _ViewMin, const Vec2& _ViewMax);
+    
 public:
 
     virtual void Init() override;

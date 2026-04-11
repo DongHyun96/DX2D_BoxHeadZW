@@ -112,6 +112,17 @@ void CCamera::FinalTick()
     // 투영(Projection) 행렬 계산
     m_matProj = (m_Type == PROJ_TYPE::ORTHOGRAPHIC) ? XMMatrixOrthographicLH(m_Width * m_OrthoScale, (m_Width / m_AspectRatio) * m_OrthoScale, 1.f, m_Far) :
                                                          XMMatrixPerspectiveFovLH(m_FOV, m_AspectRatio, 1.f, m_Far);
+
+    // 2D Frustum Culling용 ViewRect 계산
+    if (m_Type == PROJ_TYPE::ORTHOGRAPHIC)
+    {
+        Vec2 vPos = ToVec2(Transform()->GetWorldPos());
+        float fWidth = m_Width * m_OrthoScale;
+        float fHeight = (m_Width / m_AspectRatio) * m_OrthoScale;
+
+        m_ViewRectMin = Vec2(vPos.x - fWidth * 0.5f, vPos.y - fHeight * 0.5f);
+        m_ViewRectMax = Vec2(vPos.x + fWidth * 0.5f, vPos.y + fHeight * 0.5f);
+    }
 }
 
 /*void CCamera::SortObject()
@@ -176,6 +187,10 @@ void CCamera::Render(bool _bUseRenderDomainSort)
                 if (!object->GetRenderCom() || !object->GetRenderCom()->GetMesh() || !object->GetRenderCom()->GetMaterial())
                     continue;
 
+                // 2D Frustum Culling
+                if (m_Type == PROJ_TYPE::ORTHOGRAPHIC && !object->GetRenderCom()->IsInViewRect(m_ViewRectMin, m_ViewRectMax))
+                    continue;
+
                 object->Render();
 
                 /*if (object->GetRenderCom()->GetMaterial()->GetDomain() == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
@@ -202,7 +217,13 @@ void CCamera::Render(bool _bUseRenderDomainSort)
     for (const auto& Pair : RenderMgr::GetInst()->GetDomainGameObjects())
     {
         for (const Ptr<GameObject>& GameObject : Pair.second)
+        {
+            // 2D Frustum Culling (Domain 순회 시에도 동일하게 적용)
+            if (m_Type == PROJ_TYPE::ORTHOGRAPHIC && !GameObject->GetRenderCom()->IsInViewRect(m_ViewRectMin, m_ViewRectMax))
+                continue;
+
             GameObject->Render();
+        }
 
         /*if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
         {

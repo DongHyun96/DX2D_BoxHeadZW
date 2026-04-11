@@ -3,6 +3,7 @@
 
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
+#include "GameEngine/06.Component/01.Transform/CTransform.h"
 
 CRenderComponent::CRenderComponent(COMPONENT_TYPE _Type)
     : Component(_Type)
@@ -103,4 +104,26 @@ void CRenderComponent::LoadFromLevelFile(FILE* _File)
 
     fread(&m_RenderOffset, sizeof(Vec2), 1, _File);
     fread(&m_RenderScale, sizeof(Vec2), 1, _File);
+}
+
+bool CRenderComponent::IsInViewRect(const Vec2& _ViewMin, const Vec2& _ViewMax)
+{
+    Vec2 vWorldPos   = ToVec2(Transform()->GetWorldPos());
+    Vec2 vWorldScale = ToVec2(Transform()->GetWorldScale());
+
+    // Render Offset과 Render Scale 적용
+    // 최종 위치 = WorldPos + RenderOffset
+    // 최종 크기 = WorldScale * RenderScale
+
+    Vec2 vFinalPos   = vWorldPos + m_RenderOffset;
+    Vec2 vFinalScale = vWorldScale * m_RenderScale;
+
+    Vec2 vMin = vFinalPos - vFinalScale * 0.5f;
+    Vec2 vMax = vFinalPos + vFinalScale * 0.5f;
+
+    // AABB 충돌 체크
+    if (_ViewMax.x < vMin.x || vMax.x < _ViewMin.x) return false;
+    if (_ViewMax.y < vMin.y || vMax.y < _ViewMin.y) return false;
+
+    return true;
 }

@@ -22,6 +22,9 @@ private:
     
     float       m_OrthoScale = 1.f;     // 직교투영 배율
     
+    Vec2        m_ViewRectMin{};        // 2D Frustum culling용 ViewRectMin
+    Vec2        m_ViewRectMax{};        // 2D Frustum culling용 ViewRectMax
+
     Matrix      m_matView{};        // View 행렬
     Matrix      m_matProj{};        // Proj 행렬
 
