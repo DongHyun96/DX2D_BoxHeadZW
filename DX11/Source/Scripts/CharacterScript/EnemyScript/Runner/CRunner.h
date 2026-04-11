@@ -16,7 +16,6 @@ public:
 public:
     
     virtual void Begin() override;
-    virtual void Tick() override;
 
 private:
     

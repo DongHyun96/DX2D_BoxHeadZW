@@ -18,11 +18,6 @@ void CRunner::Begin()
     CEnemyScript::Begin();
 }
 
-void CRunner::Tick()
-{
-    CEnemyScript::Tick();
-}
-
 void CRunner::UpdateCurrentFacedDirection()
 {
     // PushedOut과 Die의 경우, Flipbook 관련 방향 처리가 다르기 때문에 FacedDirection Update 필요 없이 따로 처리

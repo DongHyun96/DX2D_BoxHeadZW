@@ -24,11 +24,6 @@ void CMummy::Begin()
     
 }
 
-void CMummy::Tick()
-{
-    CEnemyScript::Tick();
-}
-
 void CMummy::OnFadeOutEnd()
 {
     if (m_SpawnedByMummy)

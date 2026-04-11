@@ -69,6 +69,13 @@ void CEnemyScript::AfterLevelBegin()
 
 void CEnemyScript::Tick()
 {
+    // HP가 0인데 아직 DIE 상태가 아니라면 즉시 사망 처리
+    if (m_StatScript && m_StatScript->IsDead() && m_MainState != ENEMY_MAINSTATE::DIE)
+    {
+        SetMainState(ENEMY_MAINSTATE::DIE);
+        OnDieStart();
+    }
+    
     HandleStateTransition();
     CCharacterScript::Tick(); // Handling Move & UpdateCurrentFacedDirection involved
     HandleFadeOut();

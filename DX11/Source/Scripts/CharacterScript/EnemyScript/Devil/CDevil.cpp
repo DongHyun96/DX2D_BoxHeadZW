@@ -45,25 +45,6 @@ void CDevil::Begin()
     m_AttackTransitionWaitTime = GetRandom(10.f, 20.f);
 }
 
-void CDevil::Tick()
-{
-    CEnemyScript::Tick();
-
-    switch (m_MainState)
-    {
-    case ENEMY_MAINSTATE::WALK: DebugUtil::SetPermanentDebugLog("DevilLog", "Devil State : WALK", DEF_COLOR_WHITE);
-        break;
-    case ENEMY_MAINSTATE::ATTACK: DebugUtil::SetPermanentDebugLog("DevilLog", "Devil State : ATTACK", DEF_COLOR_WHITE);
-        break;
-    case ENEMY_MAINSTATE::PUSHED_OUT: DebugUtil::SetPermanentDebugLog("DevilLog", "Devil State : PUSHED_OUT", DEF_COLOR_WHITE);
-        break;
-    case ENEMY_MAINSTATE::DIE: DebugUtil::SetPermanentDebugLog("DevilLog", "Devil State : DIE", DEF_COLOR_WHITE);
-        break;
-    }
-    
-    
-}
-
 void CDevil::UpdateCurrentFacedDirection()
 {
     // PushedOut과 Die의 경우, Flipbook 관련 방향 처리가 다르기 때문에 FacedDirection Update 필요 없이 따로 처리
