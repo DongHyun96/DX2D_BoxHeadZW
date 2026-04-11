@@ -54,28 +54,24 @@ void CEnemySpawnHandler::Tick()
 
 GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType, FIRST_SPAWN_LOC _SpawnLoc)
 {
-    if (_SpawnLoc == FIRST_SPAWN_LOC_END) return nullptr;
+    if (_SpawnLoc == FIRST_SPAWN_LOC_END)                 return nullptr;
     if (!m_mapEnemyPoolers[_EnemyType]->CanSpawnObject()) return nullptr;
 
     GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(false);
     if (!SpawnedEnemy) return nullptr;
-
-    const Vec2 EnemyTransformScale = SpawnedEnemy->Transform()->GetRelativeScaleXY();
-    const Vec2 EnemyColliderScale  = SpawnedEnemy->ColliderRect()->GetScale();
-    const Vec2 EnemyBodySize = EnemyTransformScale * EnemyColliderScale;
     
+    CEnemyScript* EnemyScript = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
     
     // Spawn Area에서의 랜덤한 영역 뽑기
     CTransform* SpawnAreaTransform = GM->GetFirstSpawnLocManager()->GetFirstSpawnAreaTransform(_SpawnLoc);
+    
     const Vec2 AreaPos             = SpawnAreaTransform->GetRelativePosXY();
-    const Vec2 SpawnPossibleSize   = SpawnAreaTransform->GetRelativeScaleXY() - EnemyBodySize * 0.5f;
+    const Vec2 SpawnPossibleSize   = (SpawnAreaTransform->GetRelativeScaleXY() - EnemyScript->GetBodySize()) * 0.5f;
     
     const Vec2 PickedPos = AreaPos + Vec2(GetRandom(-SpawnPossibleSize.x, SpawnPossibleSize.x),
                                           GetRandom(-SpawnPossibleSize.y, SpawnPossibleSize.y));
 
     SpawnedEnemy->Transform()->SetRelativePosXY(PickedPos);
-    CEnemyScript* EnemyScript = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
-    
     
     const CellCoord& PickedRandomDestCellCoord = GM->GetBackgroundCellManager()->GetRandomFirstSpawnLocDestination(_SpawnLoc);
     

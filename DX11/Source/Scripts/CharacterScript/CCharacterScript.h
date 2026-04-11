@@ -76,7 +76,7 @@ public:
     const Vec2& GetPushedOutFaceDirection() const { return m_PushedOutFaceDirection; }
     void RewindPushedOut(const Vec2& _PushedOutDirection);
     
-protected:
+public:
 
     const Vec2& GetBodySize() const { return m_BodySize; }
     const Vec2& GetBodySizeHalf() const { return m_BodySizeHalf; }
