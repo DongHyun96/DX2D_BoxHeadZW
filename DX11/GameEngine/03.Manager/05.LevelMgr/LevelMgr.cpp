@@ -99,12 +99,14 @@ void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
 
 void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLevelStateToStop)
 {
-    GM->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
-    RenderMgr::GetInst()->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
-    AssetMgr::GetInst()->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
-    CollisionMgr::GetInst()->OnLevelChanged(m_SharedLevel.Get(), _NextLevel.Get());
+    ALevel* PrevLevel = m_CurLevel.Get();
     
     m_CurLevel = m_SharedLevel = _NextLevel;
+    
+    GM->OnLevelChanged(PrevLevel, _NextLevel.Get());
+    RenderMgr::GetInst()->OnLevelChanged(PrevLevel, _NextLevel.Get());
+    AssetMgr::GetInst()->OnLevelChanged(PrevLevel, _NextLevel.Get());
+    CollisionMgr::GetInst()->OnLevelChanged(PrevLevel, _NextLevel.Get());
     
     const wstring& FileName = GetFileNameWithoutExtension(m_CurLevel->GetKey());
     const string LevelNameStr = string(FileName.begin(), FileName.end());

@@ -34,25 +34,17 @@ void RenderMgr::Progress()
     // 렌더링 시작전에 할 일 처리
     Render_Start();
 
-    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY)
-    {
-        if (m_UICam && m_UICam->GetOwner()->GetActive())
-        {
-            // m_UICam->SortObject();
-            m_UICam->Render(true);
-        }
-    }
-    
     // Level의 상태가 Play 상태면, 등록된 MainCam으로 렌더링
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY)
     {
         // 카메라 기반 렌더링
         // 카메라가 세팅되어있지 않다면 rendering 불가
-        if (!m_MainCam) return;
-
-        // 카메라를 이용해서 Render 처리
-        // m_MainCam->SortObject(); // RenderDomain 별 정렬
-        m_MainCam->Render(true);
+        if (m_MainCam.Get())
+        {
+            // 카메라를 이용해서 Render 처리
+            // m_MainCam->SortObject(); // RenderDomain 별 정렬
+            m_MainCam->Render(true);
+        }
     }
     else // Level의 상태가 Pause, Stop, 상태면 등록된 EditorCam으로 렌더링
     {
@@ -63,7 +55,15 @@ void RenderMgr::Progress()
         // 카메라를 이용해서 Render 처리
         // m_EditorCam->SortObject(); // RenderDomain 별 정렬
         m_EditorCam->Render(false);
-    }    
+    }
+    
+    // UI 카메라 나중에 렌더링 (UI가 월드 위에 그려지도록)
+    if (m_UICam.Get() && m_UICam->GetOwner()->GetActive())
+    {
+        // m_UICam->SortObject();
+        m_UICam->Render(false);
+    }
+    
     
     // 디버그 렌더링 요청 처리
     if (m_bDebugRender) Render_Debug();
@@ -79,11 +79,22 @@ void RenderMgr::OnLevelBegin()
 void RenderMgr::OnLevelPlayToStop()
 {
     m_mapDomainGameObject.clear();
+    
+    // UICam 다시 찾아서 세팅하기 
+    GameObject* UICamObject = LevelMgr::GetInst()->GetCurLevel()->FindObjectByName(L"UICamera").Get();
+    if (UICamObject) m_UICam = UICamObject->Camera();
+    else m_UICam = nullptr;
 }
 
 void RenderMgr::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
 {
     m_mapDomainGameObject.clear();
+    
+    // UICam 다시 찾아서 세팅하기 
+    GameObject* UICamObject = LevelMgr::GetInst()->GetCurLevel()->FindObjectByName(L"UICamera").Get();
+    if (UICamObject) m_UICam = UICamObject->Camera();
+    else m_UICam = nullptr;
+    
 }
 
 void RenderMgr::Render_Start()
@@ -131,6 +142,14 @@ void RenderMgr::Render_End()
 
 void RenderMgr::Render_Debug()
 {
+    // POV 카메라의 행렬을 다시 세팅해준다.
+    Ptr<CCamera> pPOVCam = GetPOVCam();
+    if (pPOVCam.Get())
+    {
+        g_Trans.matView = pPOVCam->GetViewMat();
+        g_Trans.matProj = pPOVCam->GetProjMat();
+    }
+
     list<DebugInfo>::iterator iter = m_DbgInfoList.begin();
     while (iter != m_DbgInfoList.end())
     {

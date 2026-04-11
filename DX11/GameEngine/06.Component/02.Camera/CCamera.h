@@ -62,6 +62,9 @@ public:
     
     UINT GetLayerCheck() const { return m_LayerCheck; }
     
+    const Matrix& GetViewMat() const { return m_matView; }
+    const Matrix& GetProjMat() const { return m_matProj; }
+    
 public:
     
     void LayerCheckAll() { m_LayerCheck = 0xffffffff; } // 0xff 255 -> 8개의 비트를 모두 채워줌 

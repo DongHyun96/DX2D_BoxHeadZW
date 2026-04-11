@@ -53,8 +53,8 @@ void CCamera::Init()
     // Clipping Plane -> 1 ~ 10000
     // -2500 ~ 2500 -> 맵 z 범위 (또는 y 범위)
     // -5000 ~ 5000
-    if (GetOwner()->GetName() == L"UICamera")
-        RenderMgr::GetInst()->RegisterUICamera(this);
+    /*if (GetOwner()->GetName() == L"UICamera")
+        RenderMgr::GetInst()->RegisterUICamera(this);*/
     
     // RenderMgr에 카메라(본인)을 등록
     if (GetOwner()->GetName() == L"MainCamera")
@@ -218,6 +218,10 @@ void CCamera::Render(bool _bUseRenderDomainSort)
     {
         for (const Ptr<GameObject>& GameObject : Pair.second)
         {
+            // 레이어 체크
+            if (!(m_LayerCheck & (1 << GameObject->GetLayerIdx())))
+                continue;
+
             // 2D Frustum Culling (Domain 순회 시에도 동일하게 적용)
             if (m_Type == PROJ_TYPE::ORTHOGRAPHIC && !GameObject->GetRenderCom()->IsInViewRect(m_ViewRectMin, m_ViewRectMax))
                 continue;
