@@ -20,6 +20,10 @@ private:
 
     // (y, x) Cell 좌표 상의 Cell에 물체가 있는지 저장
     vector<vector<bool>> m_CellTaken{};
+
+    // 첫 스폰 시, Enemy 외곽에서 태어남 -> 처음 Round 시작 시 외곽에서 태어난 Enemy들의 각 Spawn Loc 영역에서
+    // Dest Location cell을 지정해둠 (처음은 직선으로 Available Cell에 도착할 때까지 앞으로 이동한다)
+    map<FIRST_SPAWN_LOC, set<CellCoord>> m_FirstSpawnDestinations{};
     
 public:
     

@@ -153,4 +153,14 @@ static const wstring& GetPlayerMainAnimCategory(PLAYER_MAINSTATE _PlayerState)
     return mapPlayerMainStateAnimCategory.at(_PlayerState);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 
+enum FIRST_SPAWN_LOC
+{
+    ESPAWN_LOC1,
+    ESPAWN_LOC2,
+    ESPAWN_LOC3,
+    ESPAWN_LOC4,
+    ESPAWN_LOC5,
+    ESPAWN_LOC6,
+};
