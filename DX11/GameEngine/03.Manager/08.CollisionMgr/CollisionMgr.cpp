@@ -431,3 +431,108 @@ bool CollisionMgr::IsCollisionDeprecated(const Ptr<CCollider2D>& _LeftCol, const
     
     return true;
 }
+
+GameObject* CollisionMgr::FindNearestObject(Vec2 _WorldPos, UINT _LayerMask, float* _OutMinDistSq)
+{
+    const int startX = WorldToCellCoord(_WorldPos.x);
+    const int startY = WorldToCellCoord(_WorldPos.y);
+
+    GameObject* nearestObject = nullptr;
+    float minDistSq = FLT_MAX;
+
+    // 이미 검사한 콜라이더 ID 추적 (여러 셀에 걸쳐 있는 콜라이더 중복 검사 방지)
+    static unordered_set<UINT> setChecked;
+    setChecked.clear();
+
+    bool foundAnyInRadius = false;
+    
+    // 격자 반경을 늘려가며 탐색 (Spiral Search)
+    // 맵 크기가 아주 클 수 있으므로 적절한 최대 반경 설정 (예: 50셀 = 9000 유닛)
+    const int maxRadius = 50; 
+    
+    for (int r = 0; r <= maxRadius; ++r)
+    {
+        bool foundInThisRadius = false;
+        
+        // 반경 r인 테두리 셀들을 검사
+        for (int y = startY - r; y <= startY + r; ++y)
+        {
+            for (int x = startX - r; x <= startX + r; ++x)
+            {
+                // 테두리만 검사 (r > 0 일 때)
+                if (r > 0 && abs(x - startX) < r && abs(y - startY) < r)
+                    continue;
+
+                const ULONGLONG cellKey = MakeCellKey(x, y);
+
+                for (UINT layerIdx = 0; layerIdx < MAX_LAYER; ++layerIdx)
+                {
+                    if (!(_LayerMask & (1 << layerIdx))) continue;
+
+                    auto it = m_arrLayerBuckets[layerIdx].find(cellKey);
+                    if (it == m_arrLayerBuckets[layerIdx].end()) continue;
+
+                    for (UINT colID : it->second)
+                    {
+                        if (setChecked.find(colID) != setChecked.end()) continue;
+                        setChecked.insert(colID);
+
+                        Ptr<CCollider2D> pCol = m_mapColliderByID[colID];
+                        if (!pCol || !pCol->GetActive() || pCol->GetOwner()->IsObjectDestroyed() || !pCol->GetOwner()->GetActive())
+                            continue;
+
+                        const float distSq = Vec2::DistanceSquared(_WorldPos, pCol->GetOwner()->Transform()->GetWorldPos2D());
+                        if (distSq < minDistSq)
+                        {
+                            minDistSq = distSq;
+                            nearestObject = pCol->GetOwner();
+                            foundInThisRadius = true;
+                            foundAnyInRadius = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 이번 반경에서 무언가를 찾았다면, 
+        // 현재까지 찾은 최단 거리가 다음 반경의 최소 거리보다 작다면 확정하고 종료
+        if (foundAnyInRadius)
+        {
+            // 다음 반경 (r+1)의 셀들까지의 최소 거리는 r * m_GridCellSize 이상임
+            // (정확히는 r * m_GridCellSize 보다 크지만 보수적으로 계산)
+            float nextRadiusMinDist = static_cast<float>(r) * m_GridCellSize;
+            if (minDistSq < nextRadiusMinDist * nextRadiusMinDist)
+            {
+                break;
+            }
+        }
+        
+        // 너무 많은 셀을 뒤지는 것을 방지 (어느 정도 찾았으면 종료)
+        if (r > 10 && foundAnyInRadius) break;
+    }
+
+    // 만약 격자 탐색으로 못 찾았다면 (격자 밖에 있거나 너무 멀리 있는 경우), 해당 레이어 전체 순회 (보조)
+    if (!nearestObject)
+    {
+        for (UINT layerIdx = 0; layerIdx < MAX_LAYER; ++layerIdx)
+        {
+            if (!(_LayerMask & (1 << layerIdx))) continue;
+
+            for (const auto& pCol : m_arrLayerColliders[layerIdx])
+            {
+                if (!pCol || !pCol->GetActive() || pCol->GetOwner()->IsObjectDestroyed() || !pCol->GetOwner()->GetActive())
+                    continue;
+
+                const float distSq = Vec2::DistanceSquared(_WorldPos, pCol->GetOwner()->Transform()->GetWorldPos2D());
+                if (distSq < minDistSq)
+                {
+                    minDistSq = distSq;
+                    nearestObject = pCol->GetOwner();
+                }
+            }
+        }
+    }
+
+    if (_OutMinDistSq) *_OutMinDistSq = minDistSq;
+    return nearestObject;
+}

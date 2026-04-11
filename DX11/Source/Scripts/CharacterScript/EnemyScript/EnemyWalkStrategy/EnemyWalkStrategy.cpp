@@ -8,30 +8,35 @@
 #include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 #include "Source/Scripts/Structure/CStructure.h"
+#include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
 
 
 GameObject* EnemyWalkStrategy::FindNearestTargetFromAllObjects(CEnemyScript* _Enemy)
 {
-    const Vec3 EnemyPos     = _Enemy->Transform()->GetRelativePos();
-    const Vec2 PlayerPos    = GM->GetPlayerObject()->Transform()->GetWorldPos2D();
-        
-    float MinDist               = Vec2::DistanceSquared(ToVec2(EnemyPos), PlayerPos);
-    GameObject* TargetSelected  = GM->GetPlayerObject();
-        
-    // Player 위치, CStructure의 위치 중 가장 근접한 위치를 찾음
-    for (CStructure* Structure : CStructure::GetInstalledStructures())
+    const Vec2 EnemyPos = _Enemy->Transform()->GetWorldPos2D();
+
+    // Player 레이어와 Structure 레이어를 포함한 마스크 생성
+    UINT targetMask = 0;
+
+    // Player
+    GameObject* pPlayer = GM->GetPlayerObject();
+    if (pPlayer) targetMask |= (1 << pPlayer->GetLayerIdx());
+
+    // Structure
+    const RandomizedSet<CStructure*>& structures = CStructure::GetInstalledStructures();
+    if (!structures.empty())
     {
-        const Vec2 StructurePos = Structure->Transform()->GetWorldPos2D();
-        float CurDist = Vec2::DistanceSquared(StructurePos, ToVec2(EnemyPos));
-            
-        if (CurDist < MinDist)
-        {
-            MinDist = CurDist;
-            TargetSelected = Structure->GetOwner();
-        }
+        // 첫 번째 구조물을 통해 해당 레이어를 알아냄
+        CStructure* pFirst = *structures.begin();
+        if (pFirst && pFirst->GetOwner())
+            targetMask |= (1 << pFirst->GetOwner()->GetLayerIdx());
     }
-    
-    return TargetSelected;
+
+    // CollisionMgr의 격자 기반 탐색 활용
+    GameObject* targetSelected = CollisionMgr::GetInst()->FindNearestObject(EnemyPos, targetMask);
+
+    // 아무것도 못 찾았다면 기본적으로 플레이어 반환
+    return targetSelected ? targetSelected : pPlayer;
 }
 
 GameObject* EnemyWalkStrategy::GetRandomTargetFromAllObjects(CEnemyScript* _Enemy)
@@ -40,9 +45,8 @@ GameObject* EnemyWalkStrategy::GetRandomTargetFromAllObjects(CEnemyScript* _Enem
     
     if (CStructure::GetInstalledStructures().empty()) return nullptr;
     if (CStructure* script = CStructure::GetInstalledStructures().getRandom())
-    {
         return script->GetOwner();
-    }
+    return nullptr;
 }
 
 void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
@@ -61,8 +65,9 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
         _Enemy->m_PathReplanTimer = 0.f;
         
         // 새로운 Target 찾기
-        GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy); // TODO : 이거 쓰지 않기 -> 여기서 성능이 많이 잡아먹는 것 같음
-        // GameObject* TargetSelected = GetRandomTargetFromAllObjects(_Enemy);
+        // GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy);
+        GameObject* TargetSelected = GetRandomTargetFromAllObjects(_Enemy);
+        
         if (!TargetSelected) return; // 맵에 고를 Target이 없는 상황
 
         // Target을 향한 새로운 경로 지정
@@ -111,7 +116,7 @@ void EnemyWalkStraightStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     // Target Object가 valid하지 않은 상황, 새로운 TargetObject 찾아서 지정
     if (!IsValid(_Enemy->m_TargetObject))
     {
-        GameObject* TargetSelected = GetRandomTargetFromAllObjects(_Enemy); // 여기를 사실, 전체 물체탐색을 할게 아니라, perception에 들어온 Target에 대한 setting으로 변경처리를 해주어야 더 좋을 듯 -> 이걸 한 번 처리를 함
+        GameObject* TargetSelected = FindNearestTargetFromAllObjects(_Enemy);
         _Enemy->m_TargetObject = TargetSelected;
     }
 

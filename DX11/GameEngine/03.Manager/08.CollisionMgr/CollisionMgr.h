@@ -173,6 +173,8 @@ public:
         const CCollider2D*  _Ignore = nullptr
     );
     
+    GameObject* FindNearestObject(Vec2 _WorldPos, UINT _LayerMask, float* _OutMinDistSq = nullptr);
+    
 private:
     /// <summary>
     /// TargetLayerMask에서의 Hit 했는지의 판정과, BestHit 찾기
@@ -222,7 +224,7 @@ private:
     bool RayVsRectOBB
     (
         const Ray2D&    _Ray,
-        const Matrix&   _RectWorldMat,
+        CColliderRect*  _Rect,
         float&          _OutT,
         Vec2&           _OutPoint,
         Vec2&           _OutNormal

@@ -6,6 +6,7 @@ class CColliderRect : public CCollider2D
     
     friend class CColliderCircle;
     friend class CColliderPoint;
+    friend class CollisionMgr;
     
 private:
 

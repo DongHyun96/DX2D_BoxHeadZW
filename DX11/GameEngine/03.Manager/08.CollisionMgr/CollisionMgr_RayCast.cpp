@@ -106,61 +106,114 @@ void CollisionMgr::RayCastFindBestHit
     const CCollider2D*  _Ignore
 )
 {
-    const vector<Ptr<GameObject>>& vecParentObjects = LevelMgr::GetInst()->GetCurLevel()->GetLayer(_TargetLayerMask)->GetParentObjects();
-    
-    for (const Ptr<GameObject>& Parent : vecParentObjects)
+    const CellBuckets& buckets = m_arrLayerBuckets[_TargetLayerMask];
+    if (buckets.empty()) return;
+
+    // DDA variables
+    float stepX = (_Ray.Direction.x > 0) ? 1.0f : -1.0f;
+    float stepY = (_Ray.Direction.y > 0) ? 1.0f : -1.0f;
+
+    int cellX = WorldToCellCoord(_Ray.Origin.x);
+    int cellY = WorldToCellCoord(_Ray.Origin.y);
+
+    // tDelta: 한 격자 크기만큼 이동할 때 t가 변하는 양
+    float tDeltaX = (fabsf(_Ray.Direction.x) > RAY_EPSILON) ? fabsf(m_GridCellSize / _Ray.Direction.x) : FLT_MAX;
+    float tDeltaY = (fabsf(_Ray.Direction.y) > RAY_EPSILON) ? fabsf(m_GridCellSize / _Ray.Direction.y) : FLT_MAX;
+
+    float tMaxX, tMaxY;
+    // 현재 셀에서의 tMax 계산
+    if (_Ray.Direction.x > 0)
+        tMaxX = (floorf(_Ray.Origin.x / m_GridCellSize + 1.f) * m_GridCellSize - _Ray.Origin.x) / _Ray.Direction.x;
+    else if (_Ray.Direction.x < 0)
+        tMaxX = (floorf(_Ray.Origin.x / m_GridCellSize) * m_GridCellSize - _Ray.Origin.x) / _Ray.Direction.x;
+    else
+        tMaxX = FLT_MAX;
+
+    if (_Ray.Direction.y > 0)
+        tMaxY = (floorf(_Ray.Origin.y / m_GridCellSize + 1.f) * m_GridCellSize - _Ray.Origin.y) / _Ray.Direction.y;
+    else if (_Ray.Direction.y < 0)
+        tMaxY = (floorf(_Ray.Origin.y / m_GridCellSize) * m_GridCellSize - _Ray.Origin.y) / _Ray.Direction.y;
+    else
+        tMaxY = FLT_MAX;
+
+    // 중복 검사 방환용 (동일 프레임 내에서 같은 콜라이더를 여러 격자에서 만날 수 있음)
+    static vector<UINT> vecCheckedIDs;
+    vecCheckedIDs.clear();
+
+    float currentT = 0.0f;
+    const float maxT = _Ray.MaxDistance;
+
+    // 루프 제한 (무한 루프 방지용 안전장치)
+    int maxSteps = 2000; 
+
+    while (currentT <= maxT && maxSteps-- > 0)
     {
-        queue<Ptr<GameObject>> q{};
-        q.push(Parent);
-        
-        while (!q.empty())
+        ULONGLONG key = MakeCellKey(cellX, cellY);
+        auto it = buckets.find(key);
+        if (it != buckets.end())
         {
-            Ptr<GameObject> Object = q.front(); q.pop();
-            
-            for (const Ptr<GameObject>& child : Object->GetChildren())
-                q.push(child);
-            
-            // 자식 오브젝트의 경우, 독립적인 LayerIdx(부모와 서로 다른 Collision 처리를 하기 위함)를 들고 있을 수 있음, 이 때는 RayCast 검사 자체도 넘어감
-            if (Object->GetLayerIdx() != _TargetLayerMask) continue;
-            
-            if 
-            (
-                !Object->GetActive() ||
-                !Object->GetCollider2D() ||
-                !Object->GetCollider2D()->GetActive() ||
-                Object->IsObjectDestroyed()
-            ) continue;
-
-            Ptr<CCollider2D> pCollider = Object->GetCollider2D();
-            if (pCollider.Get() == _Ignore)                                        continue;
-            if (pCollider->GetComponentType() == COMPONENT_TYPE::COLLIDER2D_POINT) continue;
-
-            bool bHit{};
-            float fDistance{};
-            Vec2 vPoint{}, vNormal{};
-
-            if (pCollider->GetComponentType() == COMPONENT_TYPE::COLLIDER2D_RECT)
+            for (UINT id : it->second)
             {
-                CColliderRect* pRect = static_cast<CColliderRect*>(pCollider.Get());
-                bHit = RayVsRectOBB(_Ray, pRect->GetWorldMat(), fDistance, vPoint, vNormal);
-            }
-            else if (pCollider->GetComponentType() == COMPONENT_TYPE::COLLIDER2D_CIRCLE)
-            {
-                CColliderCircle* pCircle = static_cast<CColliderCircle*>(pCollider.Get());
-                bHit = RayVsCircle(_Ray, pCircle, fDistance, vPoint, vNormal);
-            }
+                // 이미 검사했는지 확인
+                bool bAlreadyChecked = false;
+                for (size_t i = 0; i < vecCheckedIDs.size(); ++i) {
+                    if (vecCheckedIDs[i] == id) { bAlreadyChecked = true; break; }
+                }
+                if (bAlreadyChecked) continue;
+                vecCheckedIDs.push_back(id);
 
-            if (!bHit) continue;
-            if (fDistance < 0.f || fDistance > _Ray.MaxDistance) continue;
+                const auto iterCol = m_mapColliderByID.find(id);
+                if (iterCol == m_mapColliderByID.end()) continue;
+                
+                Ptr<CCollider2D> pCollider = iterCol->second;
+                if (!pCollider || !pCollider->GetActive() || pCollider.Get() == _Ignore) continue;
 
-            if (!_bOutFoundHit || fDistance < _OutBestHit.Distance)
-            {
-                _bOutFoundHit = true;
-                _OutBestHit.Collider    = pCollider;
-                _OutBestHit.Point       = vPoint;
-                _OutBestHit.Normal      = vNormal;
-                _OutBestHit.Distance    = fDistance;
+                bool bHit = false;
+                float fDist = 0.f;
+                Vec2 vPoint{}, vNormal{};
+
+                if (pCollider->GetComponentType() == COMPONENT_TYPE::COLLIDER2D_RECT)
+                {
+                    CColliderRect* pRect = static_cast<CColliderRect*>(pCollider.Get());
+                    bHit = RayVsRectOBB(_Ray, pRect, fDist, vPoint, vNormal);
+                }
+                else if (pCollider->GetComponentType() == COMPONENT_TYPE::COLLIDER2D_CIRCLE)
+                {
+                    CColliderCircle* pCircle = static_cast<CColliderCircle*>(pCollider.Get());
+                    bHit = RayVsCircle(_Ray, pCircle, fDist, vPoint, vNormal);
+                }
+
+                if (bHit && fDist >= 0.f && fDist <= maxT)
+                {
+                    if (!_bOutFoundHit || fDist < _OutBestHit.Distance)
+                    {
+                        _bOutFoundHit = true;
+                        _OutBestHit.Collider = pCollider;
+                        _OutBestHit.Point = vPoint;
+                        _OutBestHit.Normal = vNormal;
+                        _OutBestHit.Distance = fDist;
+                    }
+                }
             }
+        }
+
+        // 이번 격자(와 이전 격자들)에서 충돌이 발견되었고, 
+        // 그 충돌 지점이 다음 격자 경계(tMax)보다 가까우면 더 이상 검사할 필요 없음 (순서 보장)
+        if (_bOutFoundHit && _OutBestHit.Distance <= min(tMaxX, tMaxY))
+            break;
+
+        // 다음 격자로 이동
+        if (tMaxX < tMaxY)
+        {
+            currentT = tMaxX;
+            tMaxX += tDeltaX;
+            cellX += (int)stepX;
+        }
+        else
+        {
+            currentT = tMaxY;
+            tMaxY += tDeltaY;
+            cellY += (int)stepY;
         }
     }
 }
@@ -206,126 +259,89 @@ bool CollisionMgr::RayVsCircle(const Ray2D& _Ray, CColliderCircle* _Circle, floa
 bool CollisionMgr::RayVsRectOBB
 (
     const Ray2D&    _Ray,
-    const Matrix&   _RectWorldMat,
+    CColliderRect*  _Rect,
     float&          _OutT,
     Vec2&           _OutPoint,
     Vec2&           _OutNormal
 )
 {
-    constexpr float fMinX = -0.5f;
-    constexpr float fMaxX = 0.5f;
-    constexpr float fMinY = -0.5f;
-    constexpr float fMaxY = 0.5f;
-    
-    
-    // Z scale이 0인 경우 XMMatrixInverse 실패 가능 -> Vec2 역변환 사용
-    const Vec2 vCenter  = ToVec2(_RectWorldMat.Translation());
-    const Vec2 axisX    = Vec2(_RectWorldMat.Right().x, _RectWorldMat.Right().y);
-    const Vec2 axisY    = Vec2(_RectWorldMat.Up().x,    _RectWorldMat.Up().y);
+    // 로컬 좌표계로 변환 (OBB의 중심과 축 활용)
+    const Vec2 vCenter = ToVec2(_Rect->GetWorldPos());
+    const Vec2 axisX = ToVec2(_Rect->m_CachedRightAxis);
+    const Vec2 axisY = ToVec2(_Rect->m_CachedUpAxis);
+    const float fHalfW = _Rect->m_CachedHalfW;
+    const float fHalfH = _Rect->m_CachedHalfH;
 
-    const float fDet = axisX.x * axisY.y - axisX.y * axisY.x;
-    
-    if (fabsf(fDet) < RAY_EPSILON)
-        return false;
+    const Vec2 relOrigin = _Ray.Origin - vCenter;
 
-    const float invDet = 1.f / fDet;
-
-    // inv([axisX axisY]) (column basis)
-    const float inv00 = axisY.y * invDet;
-    const float inv01 = -axisY.x * invDet;
-    const float inv10 = -axisX.y * invDet;
-    const float inv11 = axisX.x * invDet;
-
-    const Vec2 relOrigin = Vec2(_Ray.Origin.x - vCenter.x, _Ray.Origin.y - vCenter.y);
-    const Vec2 rayDir2D = Vec2(_Ray.Direction.x, _Ray.Direction.y);
-
-    Vec3 vLocalOrigin{};
-    vLocalOrigin.x = inv00 * relOrigin.x + inv01 * relOrigin.y;
-    vLocalOrigin.y = inv10 * relOrigin.x + inv11 * relOrigin.y;
-
-    Vec3 vLocalDir{};
-    vLocalDir.x = inv00 * rayDir2D.x + inv01 * rayDir2D.y;
-    vLocalDir.y = inv10 * rayDir2D.x + inv11 * rayDir2D.y;
+    // 로컬 원점 및 방향 계산 (역행렬 대신 내적 사용)
+    Vec2 vLocalOrigin = Vec2(relOrigin.Dot(axisX), relOrigin.Dot(axisY));
+    Vec2 vLocalDir = Vec2(_Ray.Direction.Dot(axisX), _Ray.Direction.Dot(axisY));
 
     float tMin = 0.f;
     float tMax = _Ray.MaxDistance;
 
-    for (int axis = 0; axis < 2; ++axis)
+    // AABB vs Ray (Local Space)
+    float minB[2] = { -fHalfW, -fHalfH };
+    float maxB[2] = {  fHalfW,  fHalfH };
+    float origin[2] = { vLocalOrigin.x, vLocalOrigin.y };
+    float dir[2] = { vLocalDir.x, vLocalDir.y };
+
+    for (int i = 0; i < 2; ++i)
     {
-        const float origin = (axis == 0) ? vLocalOrigin.x : vLocalOrigin.y;
-        const float dir    = (axis == 0) ? vLocalDir.x    : vLocalDir.y;
-        const float minB   = (axis == 0) ? fMinX          : fMinY;
-        const float maxB   = (axis == 0) ? fMaxX          : fMaxY;
-
-        if (fabsf(dir) < RAY_EPSILON)
+        if (fabsf(dir[i]) < RAY_EPSILON)
         {
-            if (origin < minB || origin > maxB) return false;
-            continue;
+            if (origin[i] < minB[i] || origin[i] > maxB[i]) return false;
         }
-
-        float t1 = (minB - origin) / dir;
-        float t2 = (maxB - origin) / dir;
-
-        if (t1 > t2)
+        else
         {
-            const float temp = t1;
-            t1 = t2;
-            t2 = temp;
+            float t1 = (minB[i] - origin[i]) / dir[i];
+            float t2 = (maxB[i] - origin[i]) / dir[i];
+
+            if (t1 > t2) { float temp = t1; t1 = t2; t2 = temp; }
+            tMin = max(tMin, t1);
+            tMax = min(tMax, t2);
+
+            if (tMin > tMax) return false;
         }
-
-        tMin = max(t1, tMin);
-        tMax = min(t2, tMax);
-
-        if (tMin > tMax) return false;
     }
 
     float tHit = tMin;
     if (tHit < 0.f)
     {
         if (tMax < 0.f) return false;
-            
-
         tHit = tMax;
     }
 
-    if (tHit > _Ray.MaxDistance)
-        return false;
+    if (tHit > _Ray.MaxDistance) return false;
 
     _OutT = tHit;
     _OutPoint = _Ray.Origin + _Ray.Direction * tHit;
 
-    // 로컬 히트점을 이용해 면 노멀 결정
-    const Vec3 vLocalHit = vLocalOrigin + vLocalDir * tHit;
-    const float dxMin = fabsf(vLocalHit.x - fMinX);
-    const float dxMax = fabsf(vLocalHit.x - fMaxX);
-    const float dyMin = fabsf(vLocalHit.y - fMinY);
-    const float dyMax = fabsf(vLocalHit.y - fMaxY);
+    // Normal 결정
+    Vec2 vLocalHit = vLocalOrigin + vLocalDir * tHit;
+    float dxMin = fabsf(vLocalHit.x - minB[0]);
+    float dxMax = fabsf(vLocalHit.x - maxB[0]);
+    float dyMin = fabsf(vLocalHit.y - minB[1]);
+    float dyMax = fabsf(vLocalHit.y - maxB[1]);
 
-    Vec3 vLocalNormal = Vec3(1.f, 0.f, 0.f);
     float fBest = dxMax;
+    _OutNormal = axisX;
 
     if (dxMin < fBest)
     {
         fBest = dxMin;
-        vLocalNormal = Vec3(-1.f, 0.f, 0.f);
+        _OutNormal = -axisX;
     }
-
     if (dyMax < fBest)
     {
         fBest = dyMax;
-        vLocalNormal = Vec3(0.f, 1.f, 0.f);
+        _OutNormal = axisY;
     }
-
     if (dyMin < fBest)
     {
-        vLocalNormal = Vec3(0.f, -1.f, 0.f);
+        _OutNormal = -axisY;
     }
-    
-    _OutNormal = _RectWorldMat.Right() * vLocalNormal.x + _RectWorldMat.Up() * vLocalNormal.y;
-    if (_OutNormal.LengthSquared() > RAY_EPSILON * RAY_EPSILON)
-        _OutNormal.Normalize();
-    else
-        _OutNormal = -_Ray.Direction;
 
     return true;
 }
