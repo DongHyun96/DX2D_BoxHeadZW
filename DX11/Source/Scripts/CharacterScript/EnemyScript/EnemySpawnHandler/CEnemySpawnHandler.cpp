@@ -38,17 +38,17 @@ void CEnemySpawnHandler::Tick()
 {
     if (KEY_TAP(KEY::MRB))
     {
-        /*for (int i = 0; i < 50; ++i)
+        for (int i = 0; i < 75; ++i)
         {
-            ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, 4));
+            ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, static_cast<int>(ENEMY_TYPE::END) - 1));
             SpawnEnemyOnAvailableCell(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
-        }*/
-        for (int i = 0; i < 5; ++i)
+        }
+        /*for (int i = 0; i < 5; ++i)
         {
             // TODO : First Spawn 처리 테스팅 스폰할 것
             SpawnEnemyOnFirstSpawnArea(static_cast<ENEMY_TYPE>(GetRandom(0, 4)), FIRST_SPAWN_LOC1);
 			// SpawnEnemy(ENEMY_TYPE::ZOMBIE, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
-        }
+        }*/
     }
 }
 
@@ -99,9 +99,13 @@ GameObject* CEnemySpawnHandler::SpawnEnemyOnAvailableCell(ENEMY_TYPE _EnemyType,
     if (PlayerCellCoord.y - 1 <= _CellCoord.y && _CellCoord.y <= PlayerCellCoord.y + 1) return nullptr;
     
     GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(ToVec3(GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_CellCoord)), false);
-    CEnemyScript* EnemyScript = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
-    TryInitSpawnedEnemy(EnemyScript);
-    EnemyScript->SetIsCurrentlyFirstSpawnWalking(false);
+    
+    if (SpawnedEnemy)
+    {
+        CEnemyScript* EnemyScript = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
+        TryInitSpawnedEnemy(EnemyScript);
+        EnemyScript->SetIsCurrentlyFirstSpawnWalking(false);
+    }
     
     return SpawnedEnemy; 
 }
