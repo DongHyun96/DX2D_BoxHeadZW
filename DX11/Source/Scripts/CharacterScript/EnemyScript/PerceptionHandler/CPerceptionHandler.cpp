@@ -37,7 +37,7 @@ void CPerceptionHandler::Begin()
 
 void CPerceptionHandler::Tick()
 {
-    // 아직 First spawn walk 처리 중
+    /*// 아직 First spawn walk 처리 중
     if (m_MainEnemyScript->GetCurrentWalkType() == ENEMY_WALK_TYPE::FIRST_SPAWN_WALK) return;
     
     // Valid한 TargetObject가 없을 때, 여기서 Perception에 걸린 상태에 따른 TargetObject 및 State transition을 시도할 수 있다
@@ -72,7 +72,7 @@ void CPerceptionHandler::Tick()
             m_MainEnemyScript->SetTargetObject(Target);
             m_MainEnemyScript->SetCurrentWalkType(ENEMY_WALK_TYPE::STRAIGHT);
         }
-    }
+    }*/
 }
 
 GameObject* CPerceptionHandler::ResolvePerceptionTarget(CCollider2D* _OtherCollider) const
