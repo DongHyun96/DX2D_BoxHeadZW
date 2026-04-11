@@ -3,6 +3,7 @@
 
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
+#include "GameEngine/03.Manager/08.CollisionMgr/CollisionMgr.h"
 #include "Source/Manager/GameManager.h"
 
 ALevel::ALevel()
@@ -49,6 +50,8 @@ void ALevel::AfterLevelBegin()
 {
     for (Layer& layer : m_arrLayer)
         layer.AfterLevelBegin();
+    
+    CollisionMgr::GetInst()->CalculateOptimalGridCellSize(this);
 }
 
 void ALevel::Tick()

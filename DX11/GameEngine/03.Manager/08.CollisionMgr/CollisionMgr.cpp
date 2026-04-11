@@ -16,6 +16,87 @@ CollisionMgr::~CollisionMgr()
 {
 }
 
+void CollisionMgr::SetGridCellSize(float _Size)
+{
+    if (m_GridCellSize == _Size) return;
+
+    m_GridCellSize = _Size;
+
+    // 격자 크기가 변경되었으므로 모든 레이어의 버킷을 비우고, 
+    // 모든 콜라이더의 캐시를 무효화해야 합니다.
+    for (auto& bucket : m_arrLayerBuckets)
+    {
+        bucket.clear();
+    }
+
+    // 현재 등록된 모든 콜라이더들의 캐시 무효화
+    for (auto& [id, col] : m_mapColliderByID)
+    {
+        if (col) col->InvalidateCache();
+    }
+}
+
+void CollisionMgr::CalculateOptimalGridCellSize(const Ptr<ALevel>& _Level)
+{
+    if (!_Level) return;
+
+    vector<float> vecSizes;
+    vecSizes.reserve(1000);
+
+    for (UINT i = 0; i < MAX_LAYER; ++i)
+    {
+        const auto& vecParents = _Level->GetLayer(i)->GetParentObjects();
+        
+        // FinalTick() 호출 전에는 GetAllObjects()가 비어있으므로, 직접 모든 계층을 순회한다.
+        vector<Ptr<GameObject>> stack = vecParents;
+        while (!stack.empty())
+        {
+            Ptr<GameObject> obj = stack.back();
+            stack.pop_back();
+
+            if (!obj) continue;
+
+            Ptr<CCollider2D> pCol = obj->GetCollider2D();
+            if (pCol)
+            {
+                Vec2 vMin{}, vMax{};
+                if (TryGetColliderAABB(pCol, vMin, vMax))
+                {
+                    const float width = vMax.x - vMin.x;
+                    const float height = vMax.y - vMin.y;
+                    vecSizes.push_back(max(width, height));
+                }
+            }
+
+            const auto& vecChildren = obj->GetChildren();
+            for (const auto& child : vecChildren)
+            {
+                stack.push_back(child);
+            }
+        }
+    }
+
+    if (vecSizes.empty())
+    {
+        SetGridCellSize(200.f); // 기본값
+        return;
+    }
+
+    float totalSize = 0.f;
+    for (float s : vecSizes) totalSize += s;
+
+    float avgSize = totalSize / static_cast<float>(vecSizes.size());
+
+    // 최적의 격자 크기: 평균 크기의 약 1.5 ~ 2.0배가 적절함
+    // 너무 작으면 객체가 많은 셀에 걸치고, 너무 크면 한 셀에 객체가 너무 많아짐
+    float optimalSize = avgSize * 1.8f;
+
+    // 너무 작거나 큰 값이 나오지 않도록 보정 (예: 50 ~ 1000)
+    optimalSize = max(50.f, min(optimalSize, 1000.f));
+
+    SetGridCellSize(optimalSize);
+}
+
 void CollisionMgr::Progress(const Ptr<ALevel>& _Level)
 {
     ++m_FrameCounter;

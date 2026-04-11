@@ -56,6 +56,15 @@ private:
     const float RAY_EPSILON = 0.00001f;
     
 public:
+    void SetGridCellSize(float _Size);
+    float GetGridCellSize() const { return m_GridCellSize; }
+    
+    /// <summary>
+    /// 현재 레벨에 배치된 콜라이더들의 크기를 샘플링하여 최적의 격자 크기를 계산하고 설정
+    /// </summary>
+    /// <param name="_Level"></param>
+    void CalculateOptimalGridCellSize(const Ptr<ALevel>& _Level);
+
     void Progress(const Ptr<ALevel>& _Level);
     
     void OnLevelPlayToStop()

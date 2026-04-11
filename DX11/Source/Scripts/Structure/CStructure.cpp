@@ -49,8 +49,8 @@ void CStructure::Begin()
     // 설치 완료된 구조물의 경우, Movable을 false로 설정하여 충돌검사 최적화 대상에 포함시킨다
     if (!m_IsPreviewObject)
     {
-        Ptr<CCollider2D> Col = GetOwner()->GetCollider2D();
-        if (Col) Col->SetMovable(false);
+        if (Ptr<CCollider2D> Col = GetOwner()->GetCollider2D()) 
+            Col->SetMovable(false);
     }
 }
 
