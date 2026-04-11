@@ -157,10 +157,10 @@ static const wstring& GetPlayerMainAnimCategory(PLAYER_MAINSTATE _PlayerState)
 
 enum FIRST_SPAWN_LOC
 {
-    ESPAWN_LOC1,
-    ESPAWN_LOC2,
-    ESPAWN_LOC3,
-    ESPAWN_LOC4,
-    ESPAWN_LOC5,
-    ESPAWN_LOC6,
+    FIRST_SPAWN_LOC1,
+    FIRST_SPAWN_LOC2,
+    FIRST_SPAWN_LOC3,
+    FIRST_SPAWN_LOC4,
+    FIRST_SPAWN_LOC5,
+    FIRST_SPAWN_LOC6,
 };

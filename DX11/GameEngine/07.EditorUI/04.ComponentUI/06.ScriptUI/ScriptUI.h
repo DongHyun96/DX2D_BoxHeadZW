@@ -3,6 +3,15 @@
 
 class CBackgroundTile;
 
+enum class TILE_EDIT_BRUSH
+{
+	NONE,
+	CELL_TAKEN,
+	CELL_EMPTY,
+	SPAWN_ADD,
+	SPAWN_REMOVE,
+};
+
 class ScriptUI : public ComponentUI
 {
 private:
@@ -18,7 +27,8 @@ private: // BackgroundTile TakenCell Editing 관련
     
     static bool             s_BackgroundTileCellEditingEnabled;
     static CBackgroundTile* s_BackgroundTileEditingTarget;
-    static bool             s_BackgroundTileBrushTakenValue;
+    static TILE_EDIT_BRUSH  s_BackgroundTileBrush;
+    static FIRST_SPAWN_LOC  s_BackgroundTileSelectedSpawnLoc;
 
 public:
     ScriptUI();
@@ -53,7 +63,9 @@ public: // BackgroundTile TakenCell Editing 관련
     static bool             IsBackgroundTileCellEditingEnabled()                { return s_BackgroundTileCellEditingEnabled; }
     static void             SetBackgroundTileCellEditingEnabled(bool _Enabled)  { s_BackgroundTileCellEditingEnabled = _Enabled; }
     static CBackgroundTile* GetBackgroundTileEditingTarget()                    { return s_BackgroundTileEditingTarget; }
-    static bool             GetBackgroundTileBrushTakenValue()                  { return s_BackgroundTileBrushTakenValue; }
-    static void             SetBackgroundTileBrushTakenValue(bool _Taken)       { s_BackgroundTileBrushTakenValue = _Taken; }
+    static TILE_EDIT_BRUSH  GetBackgroundTileBrush()                    { return s_BackgroundTileBrush; }
+    static void             SetBackgroundTileBrush(TILE_EDIT_BRUSH _Brush)      { s_BackgroundTileBrush = _Brush; }
+    static FIRST_SPAWN_LOC  GetBackgroundTileSelectedSpawnLoc()                 { return s_BackgroundTileSelectedSpawnLoc; }
+    static void             SetBackgroundTileSelectedSpawnLoc(FIRST_SPAWN_LOC _Loc) { s_BackgroundTileSelectedSpawnLoc = _Loc; }
 
 };

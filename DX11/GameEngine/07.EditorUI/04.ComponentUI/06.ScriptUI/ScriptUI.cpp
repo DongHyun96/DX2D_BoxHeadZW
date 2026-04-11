@@ -52,7 +52,8 @@ namespace
 
 bool ScriptUI::s_BackgroundTileCellEditingEnabled = false;
 CBackgroundTile* ScriptUI::s_BackgroundTileEditingTarget = nullptr;
-bool ScriptUI::s_BackgroundTileBrushTakenValue = true;
+TILE_EDIT_BRUSH ScriptUI::s_BackgroundTileBrush = TILE_EDIT_BRUSH::NONE;
+FIRST_SPAWN_LOC ScriptUI::s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC1;
 
 
 ScriptUI::ScriptUI()
@@ -329,24 +330,54 @@ void ScriptUI::TickBackgroundTileEditingUI()
 
 	s_BackgroundTileEditingTarget = static_cast<CBackgroundTile*>(m_TargetScript.Get());
 
-	ImGui::SeparatorText("CBackgroundTile Editing");
+	ImGui::SeparatorText("BackgroundTile Brushes");
+	AddItemHeight();
+
+	TILE_EDIT_BRUSH currentBrush = s_BackgroundTileBrush;
+	if (ImGui::RadioButton("None", currentBrush == TILE_EDIT_BRUSH::NONE)) s_BackgroundTileBrush = TILE_EDIT_BRUSH::NONE;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Cell: Taken", currentBrush == TILE_EDIT_BRUSH::CELL_TAKEN)) s_BackgroundTileBrush = TILE_EDIT_BRUSH::CELL_TAKEN;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Cell: Empty", currentBrush == TILE_EDIT_BRUSH::CELL_EMPTY)) s_BackgroundTileBrush = TILE_EDIT_BRUSH::CELL_EMPTY;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Spawn: Add", currentBrush == TILE_EDIT_BRUSH::SPAWN_ADD)) s_BackgroundTileBrush = TILE_EDIT_BRUSH::SPAWN_ADD;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Spawn: Remove", currentBrush == TILE_EDIT_BRUSH::SPAWN_REMOVE)) s_BackgroundTileBrush = TILE_EDIT_BRUSH::SPAWN_REMOVE;
+	AddItemHeight();
+
+	ImGui::SeparatorText("Spawn Destinations Editing");
+	AddItemHeight();
+
+	int currentSpawnLoc = (int)s_BackgroundTileSelectedSpawnLoc;
+	if (ImGui::RadioButton("LOC1", currentSpawnLoc == FIRST_SPAWN_LOC1)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC1;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("LOC2", currentSpawnLoc == FIRST_SPAWN_LOC2)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC2;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("LOC3", currentSpawnLoc == FIRST_SPAWN_LOC3)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC3;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("LOC4", currentSpawnLoc == FIRST_SPAWN_LOC4)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC4;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("LOC5", currentSpawnLoc == FIRST_SPAWN_LOC5)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC5;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("LOC6", currentSpawnLoc == FIRST_SPAWN_LOC6)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC6;
+	AddItemHeight();
+
+	ImGui::Text("LMB Click / Drag: Paint with selected brush");
+	AddItemHeight();
+	ImGui::Text("RMB Click: Remove from Spawn Loc (Manual)");
 	AddItemHeight();
 
 	bool enabled = s_BackgroundTileCellEditingEnabled;
-	if (ImGui::Checkbox("Enable m_CellTaken editing in Main View", &enabled))
+	if (ImGui::Checkbox("Enable BackgroundTile editing in Main View", &enabled))
 		s_BackgroundTileCellEditingEnabled = enabled;
 	AddItemHeight();
 
-	bool paintTaken = s_BackgroundTileBrushTakenValue;
-	if (ImGui::RadioButton("Brush: Paint Taken (true)", paintTaken))
-		s_BackgroundTileBrushTakenValue = true;
-	AddItemHeight();
-	if (ImGui::RadioButton("Brush: Paint Empty (false)", !paintTaken))
-		s_BackgroundTileBrushTakenValue = false;
+	ImGui::Text("Spawn Dest Cells are displayed in MAGENTA");
 	AddItemHeight();
 
-	ImGui::Text("LMB Click / Drag: paint with selected brush value");
+	ImGui::Separator();
 	AddItemHeight();
+
 	ImGui::Text("Grid uses Render_Debug path (F9: debug render on/off)");
 	AddItemHeight();
 }

@@ -108,6 +108,15 @@ void CBackgroundTile::SaveToLevelFile(FILE* _File)
         for (const bool& Taken : ColVec)
             fwrite(&Taken, sizeof(bool), 1, _File);   
     }
+
+    for (const pair<const FIRST_SPAWN_LOC, set<CellCoord>>& Pair : m_FirstSpawnDestinations)
+    {
+        UINT SetSize = static_cast<UINT>(Pair.second.size());
+        fwrite(&SetSize, sizeof(UINT), 1, _File);
+
+        for (const CellCoord& cellCoord : Pair.second)
+            fwrite(&cellCoord, sizeof(CellCoord), 1, _File);
+    }
 }
 
 void CBackgroundTile::LoadFromLevelFile(FILE* _File)
@@ -123,6 +132,20 @@ void CBackgroundTile::LoadFromLevelFile(FILE* _File)
             bool Temp{};
             fread(&Temp, sizeof(bool), 1, _File);
             ColVec[i] = Temp;
+        }
+    }
+    
+    // TODO : 저장하면 이 밑에 주석 풀기
+    for (pair<const FIRST_SPAWN_LOC, set<CellCoord>>& Pair : m_FirstSpawnDestinations)
+    {
+        UINT SetSize{};
+        fread(&SetSize, sizeof(UINT), 1, _File);
+        
+        for (UINT i = 0; i < SetSize; i++)
+        {
+            CellCoord CellCoord{};
+            fread(&CellCoord, sizeof(CellCoord), 1, _File);
+            Pair.second.insert(CellCoord);
         }
     }
 }
