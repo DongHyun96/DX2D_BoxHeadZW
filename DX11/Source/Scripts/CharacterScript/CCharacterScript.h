@@ -11,6 +11,11 @@ protected:
     float m_MoveSpeedFactor     = 1.f;
     
     Vec3 m_Velocity{};
+
+private:
+    
+    Vec2 m_BodySize{};
+    Vec2 m_BodySizeHalf{};
     
 protected:
     
@@ -28,7 +33,8 @@ public:
     virtual ~CCharacterScript() override;
     
 public:
-    
+
+    virtual void Begin() override;
     virtual void Tick() override;
 
 private:
@@ -49,6 +55,14 @@ private:
 
 public:
     
+    bool IsCurrentlyOutOfBound() const;
+    
+protected:
+
+    void HandleBoundary();
+
+public:
+    
     virtual void SaveToLevelFile(FILE* _File) override {}
     virtual void LoadFromLevelFile(FILE* _File) override {}
     
@@ -61,5 +75,10 @@ public:
 
     const Vec2& GetPushedOutFaceDirection() const { return m_PushedOutFaceDirection; }
     void RewindPushedOut(const Vec2& _PushedOutDirection);
+    
+protected:
+
+    const Vec2& GetBodySize() const { return m_BodySize; }
+    const Vec2& GetBodySizeHalf() const { return m_BodySizeHalf; }
     
 };

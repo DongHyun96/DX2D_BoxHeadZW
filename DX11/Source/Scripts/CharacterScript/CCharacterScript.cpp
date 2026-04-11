@@ -3,6 +3,8 @@
 
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 CCharacterScript::CCharacterScript(enum SCRIPT_TYPE _ScriptType)
@@ -12,6 +14,15 @@ CCharacterScript::CCharacterScript(enum SCRIPT_TYPE _ScriptType)
 
 CCharacterScript::~CCharacterScript()
 {
+}
+
+void CCharacterScript::Begin()
+{
+    CScript::Begin();
+    
+    // Init BodySize
+    m_BodySize = Transform()->GetRelativeScaleXY() * ColliderRect()->GetScale();
+    m_BodySizeHalf = m_BodySize * 0.5f; 
 }
 
 void CCharacterScript::Tick()
@@ -57,6 +68,37 @@ void CCharacterScript::MovePushedOut()
     // 사망하였다면 Collider 꺼줌
     if (GetOwner()->GetScriptComponent<CStatScript>()->IsDead())
         GetCollider2D()->SetActive(false);
+}
+
+bool CCharacterScript::IsCurrentlyOutOfBound() const
+{
+    const Vec2 Pos = Transform()->GetRelativePosXY();
+    
+    return      Pos.x - m_BodySizeHalf.x  < -GM->GetBackgroundCellManager()->GetWorldSizeHalf() ||
+                Pos.x + m_BodySizeHalf.x > GM->GetBackgroundCellManager()->GetWorldSizeHalf()   ||
+                Pos.y - m_BodySizeHalf.y < -GM->GetBackgroundCellManager()->GetWorldSizeHalf()  ||
+                Pos.y + m_BodySizeHalf.y > GM->GetBackgroundCellManager()->GetWorldSizeHalf();
+}
+
+void CCharacterScript::HandleBoundary()
+{
+    CBackgroundTile* BackgroundCellMgr = GM->GetBackgroundCellManager();
+    
+    // if (Transform()->GetRelativePosX() - m_BodySizeHalf.x < -BackgroundCellMgr->GetWorldSizeHalf())
+
+    Vec2 Pos = Transform()->GetRelativePosXY();
+    
+    if (Pos.x - m_BodySizeHalf.x < -BackgroundCellMgr->GetWorldSizeHalf())
+        Pos.x = -BackgroundCellMgr->GetWorldSizeHalf() + m_BodySizeHalf.x;
+    else if (Pos.x + m_BodySizeHalf.x > BackgroundCellMgr->GetWorldSizeHalf())
+        Pos.x = BackgroundCellMgr->GetWorldSizeHalf() - m_BodySizeHalf.x;
+    
+    if (Pos.y - m_BodySizeHalf.y < -BackgroundCellMgr->GetWorldSizeHalf())
+        Pos.y = -BackgroundCellMgr->GetWorldSizeHalf() + m_BodySizeHalf.y;
+    else if (Pos.y + m_BodySizeHalf.y > BackgroundCellMgr->GetWorldSizeHalf())
+        Pos.y = BackgroundCellMgr->GetWorldSizeHalf() - m_BodySizeHalf.y;
+    
+    Transform()->SetRelativePosXY(Pos);
 }
 
 void CCharacterScript::RewindPushedOut(const Vec2& _PushedOutDirection)

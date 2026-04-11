@@ -57,10 +57,6 @@ void CPlayerScript::Begin()
     Collider2D()->AddDynamicEndOverlap  (this, static_cast<COLLISION_EVENT>(&CBulletScript::EndOverlap));*/
     ADD_DYNAMIC_BEGIN_OVERLAP(CPlayerScript::BodyColliderOverlapped);
     ADD_DYNAMIC_OVERLAP(CPlayerScript::BodyColliderOverlapped);
-    
-    // Init BodySize
-    m_BodySize = Transform()->GetRelativeScaleXY() * ColliderRect()->GetScale();
-    m_BodySizeHalf = m_BodySize * 0.5f; 
 }
 
 void CPlayerScript::AfterLevelBegin()
@@ -140,27 +136,6 @@ void CPlayerScript::AfterPushedOutFin()
     PLAYER_MAINSTATE NextState = GetOwner()->GetScriptComponent<CStatScript>()->IsDead()
                                          ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::IDLE;
     SetMainState(NextState);
-}
-
-void CPlayerScript::HandleBoundary()
-{
-    CBackgroundTile* BackgroundCellMgr = GM->GetBackgroundCellManager();
-    
-    // if (Transform()->GetRelativePosX() - m_BodySizeHalf.x < -BackgroundCellMgr->GetWorldSizeHalf())
-
-    Vec2 Pos = Transform()->GetRelativePosXY();
-    
-    if (Pos.x - m_BodySizeHalf.x < -BackgroundCellMgr->GetWorldSizeHalf())
-        Pos.x = -BackgroundCellMgr->GetWorldSizeHalf() + m_BodySizeHalf.x;
-    else if (Pos.x + m_BodySizeHalf.x > BackgroundCellMgr->GetWorldSizeHalf())
-        Pos.x = BackgroundCellMgr->GetWorldSizeHalf() - m_BodySizeHalf.x;
-    
-    if (Pos.y - m_BodySizeHalf.y < -BackgroundCellMgr->GetWorldSizeHalf())
-        Pos.y = -BackgroundCellMgr->GetWorldSizeHalf() + m_BodySizeHalf.y;
-    else if (Pos.y + m_BodySizeHalf.y > BackgroundCellMgr->GetWorldSizeHalf())
-        Pos.y = BackgroundCellMgr->GetWorldSizeHalf() - m_BodySizeHalf.y;
-    
-    Transform()->SetRelativePosXY(Pos);
 }
 
 PLAYER_HANDSTATE CPlayerScript::GetHandState() const

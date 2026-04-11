@@ -165,11 +165,11 @@ public:
     float GetAttackDamage() const { return m_AttackDamage; }
     
     void SetIsCurrentlyFirstSpawnWalking(bool _IsFirstSpawnWalking) { m_IsCurrentlyFirstSpawnWalking = _IsFirstSpawnWalking; }
-    // bool GetIsCurrentlyFirstSpawnWalking() const { return m_IsCurrentlyFirstSpawnWalking; }
+    bool GetIsCurrentlyFirstSpawnWalking() const { return m_IsCurrentlyFirstSpawnWalking; }
     
     // void SetFirstSpawnMoveDestination(const Vec2& _MoveDestination) { m_FirstSpawnMoveDestination = _MoveDestination; }
     void SetFirstSpawnMoveDestination(const CellCoord& _MoveDestinationCellCoord);
-
+    
 public:
     
     virtual void SaveToLevelFile(FILE* _File) override;

@@ -47,6 +47,7 @@ void CEnemyScript::Init()
 void CEnemyScript::Begin()
 {
     CCharacterScript::Begin();
+    
     m_PerceptionHandler = GetOwner()->GetScriptComponent<CPerceptionHandler>().Get();
     m_StatScript = GetOwner()->GetScriptComponent<CStatScript>().Get();
     
@@ -98,7 +99,14 @@ void CEnemyScript::Move()
         if (auto iter = s_mapWalkingStrategies.find(m_CurrentWalkType); iter != s_mapWalkingStrategies.end())
             iter->second->UseWalkStrategy(this);
         return;
-    case ENEMY_MAINSTATE::PUSHED_OUT: MovePushedOut(); return;
+    case ENEMY_MAINSTATE::PUSHED_OUT:
+    {
+        MovePushedOut();
+        
+        // PushedOut 이후, Boundary를 넘어갈 수 있음 (보정처리해줌)
+        HandleBoundary();
+        return;
+    }
     }
 }
 

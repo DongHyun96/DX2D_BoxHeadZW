@@ -18,11 +18,6 @@ private:
     
     PLAYER_MAINSTATE    m_PlayerMainState{};    // Player MainState
 
-private:
-    
-    Vec2 m_BodySize{};
-    Vec2 m_BodySizeHalf{};
-    
 public:
     
     CPlayerScript();
@@ -40,8 +35,6 @@ private:
     virtual void Move() override;
     virtual void UpdateCurrentFacedDirection() override;
     virtual void AfterPushedOutFin() override;
-    
-    void HandleBoundary();
     
 public:
     
