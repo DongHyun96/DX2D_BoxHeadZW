@@ -206,6 +206,7 @@ bool GameObject::RemoveScript(const Ptr<CScript>& _TargetScript)
 	{
 		if (*iter == _TargetScript)
 		{
+			(*iter)->m_Owner = nullptr;
 			m_vecScripts.erase(iter);
 			return true;
 		}

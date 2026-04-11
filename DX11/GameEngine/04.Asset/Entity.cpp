@@ -5,16 +5,16 @@ UINT Entity::g_NextID{};
 
 Entity::Entity()
     : m_InstID(g_NextID++)
-    , m_Name()
     , m_RefCount(0)
+    , m_Name()
     
 {
 }
 
 Entity::Entity(const Entity& _Other)
-    : m_InstID(++g_NextID)
-    , m_Name(_Other.m_Name)
+    : m_InstID(g_NextID++)
     , m_RefCount(0)
+    , m_Name(_Other.m_Name)
 {
 }
 

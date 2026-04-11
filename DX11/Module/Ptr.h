@@ -15,7 +15,7 @@ public:
 
 	Ptr& operator=(const Ptr& _Other)
 	{
-		if (&_Other == this) return *this; // 자기대입 처리 x
+		if (m_Ptr == _Other.m_Ptr) return *this; // 포인터가 동일한 경우, 조작 x
 
 		if (m_Ptr) m_Ptr->Release(); // 이전에 자신이 소유했던 ptr가 있었다면, 기존에 갖고 있었던 ptr Release 처리
 

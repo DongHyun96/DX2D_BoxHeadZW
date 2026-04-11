@@ -24,6 +24,9 @@ void CObstacle::Begin()
     ADD_DYNAMIC_OVERLAP(CObstacle::Overlap);
     // ADD_DYNAMIC_END_OVERLAP(CObstacle::EndOverlap);
     
+    // Obstacle은 움직이지 않는 오브젝트이므로 Collider를 Non-Movable로 설정
+    if (GetOwner()->GetCollider2D()) GetOwner()->GetCollider2D()->SetMovable(false);
+
     // Child Object(Collider Holder들)들의 Collider Callback 또한 Delegate 구독 처리
     for (const Ptr<GameObject>& _Child : GetOwner()->GetChildren())
     {
@@ -32,6 +35,9 @@ void CObstacle::Begin()
             _Child->GetCollider2D()->AddDynamicBeginOverlap(this, static_cast<COLLISION_EVENT>(&CObstacle::BeginOverlap));
             _Child->GetCollider2D()->AddDynamicOverlap(this, static_cast<COLLISION_EVENT>(&CObstacle::Overlap));
             // _Child->GetCollider2D()->AddDynamicEndOverlap(this, static_cast<COLLISION_EVENT>(&CObstacle::EndOverlap));
+            
+            // 자식 오브젝트의 Collider도 Non-Movable로 설정
+            _Child->GetCollider2D()->SetMovable(false);
         }
     }
 }

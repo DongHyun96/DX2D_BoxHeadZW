@@ -18,6 +18,12 @@ CColliderRect::~CColliderRect()
 
 void CColliderRect::FinalTick()
 {
+    if (!GetMovable() && IsCacheValid())
+    {
+        DrawDebugRect(GetWorldMat(), GetColor(), 0.f);
+        return;
+    }
+
     CCollider2D::FinalTick();
     
     Matrix matPivotToOrigin = XMMatrixTranslation(-m_PivotLocal.x, -m_PivotLocal.y, 0.f);
@@ -40,6 +46,14 @@ void CColliderRect::FinalTick()
     for (int i = 0; i < 4; ++i)
         m_CornersWorldPos[i] = XMVector3TransformCoord(kLocalCorners[i], GetWorldMat());
     
+    // Optimization: Pre-calculate normalized axes and half-lengths
+    m_CachedRightAxis = m_CornersWorldPos[1] - m_CornersWorldPos[0];
+    m_CachedUpAxis    = m_CornersWorldPos[3] - m_CornersWorldPos[0];
+    m_CachedHalfW     = m_CachedRightAxis.Length() * 0.5f;
+    m_CachedHalfH     = m_CachedUpAxis.Length() * 0.5f;
+    m_CachedRightAxis.Normalize();
+    m_CachedUpAxis.Normalize();
+
     // 각 변의 중점
     m_EdgeMid[0] = (m_CornersWorldPos[0] + m_CornersWorldPos[1]) * 0.5f; // Top
     m_EdgeMid[1] = (m_CornersWorldPos[1] + m_CornersWorldPos[2]) * 0.5f; // Right
@@ -130,27 +144,21 @@ bool CColliderRect::AABBCollision(CColliderPoint* _OtherPoint)
 
 bool CColliderRect::OBBCollision(CColliderRect* _OtherRect)
 {
-    // 두 Rect의 로컬 축 : RT-LT, LB-LT (FinalTick 코너 재활용)
-    // [0]=LT [1]=RT [2]=RB [3]=LB
-    Vec3 Axes[4];
-    Axes[0] = m_CornersWorldPos[1] - m_CornersWorldPos[0]; // this Right 축 (절반 포함)
-    Axes[1] = m_CornersWorldPos[3] - m_CornersWorldPos[0]; // this Up 축   (절반 포함)
-    Axes[2] = _OtherRect->m_CornersWorldPos[1] - _OtherRect->m_CornersWorldPos[0];
-    Axes[3] = _OtherRect->m_CornersWorldPos[3] - _OtherRect->m_CornersWorldPos[0];
+    Vec3 ProjAxes[4] = { m_CachedRightAxis, m_CachedUpAxis, _OtherRect->m_CachedRightAxis, _OtherRect->m_CachedUpAxis };
 
     const Vec3 vCenter = _OtherRect->GetWorldPos() - GetWorldPos();
 
     for (int i = 0; i < 4; ++i)
     {
-        Vec3 vProjAxis = Axes[i];
-        vProjAxis.Normalize();
+        const Vec3& vProjAxis = ProjAxes[i];
 
-        float fHalfSum = 0.f;
-        for (const Vec3& Ax : Axes)
-            fHalfSum += fabsf(vProjAxis.Dot(Ax));
-        fHalfSum *= 0.5f;
+        float rA = fabsf(vProjAxis.Dot(m_CachedRightAxis)) * m_CachedHalfW + 
+                   fabsf(vProjAxis.Dot(m_CachedUpAxis))    * m_CachedHalfH;
+                   
+        float rB = fabsf(vProjAxis.Dot(_OtherRect->m_CachedRightAxis)) * _OtherRect->m_CachedHalfW + 
+                   fabsf(vProjAxis.Dot(_OtherRect->m_CachedUpAxis))    * _OtherRect->m_CachedHalfH;
 
-        if (fabsf(vCenter.Dot(vProjAxis)) > fHalfSum)
+        if (fabsf(vCenter.Dot(vProjAxis)) > rA + rB)
             return false;
     }
 
@@ -159,17 +167,6 @@ bool CColliderRect::OBBCollision(CColliderRect* _OtherRect)
 
 bool CColliderRect::OBBCollision(CColliderCircle* _OtherCircle)
 {
-    // Axes는 정규화된 로컬 축
-    // m_CornersWorldPos에서 축 방향을 꺼낸 뒤 정규화
-    Vec3 vRight = m_CornersWorldPos[1] - m_CornersWorldPos[0];
-    Vec3 vUp    = m_CornersWorldPos[3] - m_CornersWorldPos[0];
-
-    const float halfW = vRight.Length() * 0.5f;
-    const float halfH = vUp.Length()    * 0.5f;
-
-    vRight.Normalize();
-    vUp.Normalize();
-
     Vec3 vDiff = _OtherCircle->GetWorldPos() - GetWorldPos();
     vDiff.z = 0.f;
 
@@ -177,13 +174,13 @@ bool CColliderRect::OBBCollision(CColliderCircle* _OtherCircle)
     m_CircleClosestPointContacted.z = 0.f;
 
     // 각 축에 투영 후 Clamp → Closest Point 계산
-    float distRight = vDiff.Dot(vRight);
-    distRight = min(max(distRight, -halfW), halfW);
-    m_CircleClosestPointContacted += vRight * distRight;
+    float distRight = vDiff.Dot(m_CachedRightAxis);
+    distRight = min(max(distRight, -m_CachedHalfW), m_CachedHalfW);
+    m_CircleClosestPointContacted += m_CachedRightAxis * distRight;
 
-    float distUp = vDiff.Dot(vUp);
-    distUp = min(max(distUp, -halfH), halfH);
-    m_CircleClosestPointContacted += vUp * distUp;
+    float distUp = vDiff.Dot(m_CachedUpAxis);
+    distUp = min(max(distUp, -m_CachedHalfH), m_CachedHalfH);
+    m_CircleClosestPointContacted += m_CachedUpAxis * distUp;
 
     Vec3 vDistVec = _OtherCircle->GetWorldPos() - m_CircleClosestPointContacted;
     vDistVec.z = 0.f;
@@ -194,20 +191,11 @@ bool CColliderRect::OBBCollision(CColliderCircle* _OtherCircle)
 
 bool CColliderRect::OBBCollision(CColliderPoint* _OtherPoint)
 {
-    Vec3 vRight = m_CornersWorldPos[1] - m_CornersWorldPos[0];
-    Vec3 vUp    = m_CornersWorldPos[3] - m_CornersWorldPos[0];
-
-    const float halfW = vRight.Length() * 0.5f;
-    const float halfH = vUp.Length()    * 0.5f;
-
-    vRight.Normalize();
-    vUp.Normalize();
-
     Vec3 vDiff = _OtherPoint->GetWorldPos() - GetWorldPos();
     vDiff.z = 0.f;
 
-    return fabsf(vDiff.Dot(vRight)) < halfW &&
-           fabsf(vDiff.Dot(vUp))    < halfH;
+    return fabsf(vDiff.Dot(m_CachedRightAxis)) < m_CachedHalfW &&
+           fabsf(vDiff.Dot(m_CachedUpAxis))    < m_CachedHalfH;
 }
 
 void CColliderRect::SaveToLevelFile(FILE* _File)

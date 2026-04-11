@@ -10,11 +10,11 @@ private:
 
 	static UINT g_NextID;
 	const UINT	m_InstID; // 객체마다 가지는 고유 ID 값
-
-	wstring		m_Name{}; // 객체마다 이름을 지정할 수 있다.
 	
 	int			m_RefCount; // 참조 카운팅
-
+	
+	wstring		m_Name{}; // 객체마다 이름을 지정할 수 있다.
+	
 private:
 
 	void AddRef() { ++m_RefCount; }

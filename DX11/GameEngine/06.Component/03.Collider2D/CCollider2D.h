@@ -21,6 +21,12 @@ class CCollider2D : public Component
 private:
     
     bool m_bIsActive = true;
+    bool m_Movable = true;
+    bool m_bCacheValid = false;
+    
+    Vec2 m_vCachedMin{};
+    Vec2 m_vCachedMax{};
+    vector<ULONGLONG> m_vecCachedCellKeys{};
     
 private:
     
@@ -61,8 +67,11 @@ protected:
     
 public:
     
-    GET_SET(Vec2, Offset)
-    GET_SET(Vec4, Color)
+    GET_SET(Vec2, Offset);
+    GET_SET(Vec4, Color);
+    GET_SET(bool, Movable);
+    void InvalidateCache() { m_bCacheValid = false; }
+    bool IsCacheValid() const { return m_bCacheValid; }
     Vec3 GetWorldPos() const { return m_matWorld.Translation(); }
 
     /// <summary>

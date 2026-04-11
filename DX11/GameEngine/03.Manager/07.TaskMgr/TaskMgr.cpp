@@ -67,9 +67,14 @@ void TaskMgr::Progress()
                 
                 if (CurrentChild->GetOwnerPoolComponent())
                 {
-                    // 최상위 parent로 해방
-                    CurrentChild->DisconnectWithParent(); 
-                    CurrentChild->RegisterAsParent();
+                    // 최상위 parent로 해방 처리
+                    // 만일 poolComponent를 소유한 GameObject의 자식이었다면, Pool로 다시 돌아가는 처리만 해줌
+
+                    if (!CurrentChild->GetOwnerPoolComponent()->IsPooledObjectAttachedToPooler())
+                    {
+                        CurrentChild->DisconnectWithParent(); 
+                        CurrentChild->RegisterAsParent();
+                    }
                     CurrentChild->SetActive(false); // Pool로 다시 돌아가는 처리
                 }
 

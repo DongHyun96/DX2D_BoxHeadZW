@@ -62,6 +62,7 @@ bool Turret_MGAttackStrategy::UseAttackStrategy(CTurret* _Turret, GameObject* _T
     if (SpawnedFlashEffect)
     {
         SpawnedFlashEffect->FlipbookRender()->Play(0, 15.f, 1);
+        // _Turret->GetOwner()->AddChild(SpawnedFlashEffect);
     }
 
     // 3회 사격이 끝나면 이번 턴 공격 종료

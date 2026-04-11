@@ -66,13 +66,17 @@ void CMuzzleFlashScript::Tick()
     }
         
     
-    // Target Muzzle인 경우 (Owner가 TurretScript를 들고있음)
+    // Target Muzzle인 경우 (Owner가 TurretScript를 들고있음) -> Turret이 Destroy당했을 수 있음
     // GetOwner의 GetParent가 Turret 게임 오브젝트
-    if (CTurret* Turret = GetOwner()->GetParent()->GetScriptComponent<CTurret>().Get())
+    GameObject* pParent = GetOwner()->GetParent();
+    if (pParent)
     {
-        const Vec3 PinPointWorldPos = Turret->FlipbookRender()->GetCurrentSpritePinPointToWorldPos();
-        Transform()->SetRelativePosFromWorldPos(PinPointWorldPos);
-        Transform()->SetRelativeRotZ(Turret->GetCurrentFacedAngle());
+        if (CTurret* Turret = pParent->GetScriptComponent<CTurret>().Get())
+        {
+            const Vec3 PinPointWorldPos = Turret->FlipbookRender()->GetCurrentSpritePinPointToWorldPos();
+            Transform()->SetRelativePosFromWorldPos(PinPointWorldPos);
+            Transform()->SetRelativeRotZ(Turret->GetCurrentFacedAngle());
+        }
     }
 }
 

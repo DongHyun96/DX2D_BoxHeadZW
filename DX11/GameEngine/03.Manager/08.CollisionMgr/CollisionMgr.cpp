@@ -60,6 +60,16 @@ void CollisionMgr::BuildLayerColliderCache(const Ptr<ALevel>& _Level)
 
             if (!object->GetActive() || object->IsObjectDestroyed() || !pCollider->GetActive()) continue;
 
+            // Optimization: If non-movable and cache is valid, reuse cell keys
+            if (!pCollider->GetMovable() && pCollider->m_bCacheValid && !pCollider->m_vecCachedCellKeys.empty())
+            {
+                for (ULONGLONG cellKey : pCollider->m_vecCachedCellKeys)
+                {
+                    layerBuckets[cellKey].push_back(pCollider->GetEntityInstID());
+                }
+                continue;
+            }
+
             Vec2 vMin{}, vMax{};
             if (!TryGetColliderAABB(pCollider, vMin, vMax))
                 continue;
@@ -69,13 +79,23 @@ void CollisionMgr::BuildLayerColliderCache(const Ptr<ALevel>& _Level)
             const int minCellY = WorldToCellCoord(vMin.y);
             const int maxCellY = WorldToCellCoord(vMax.y);
 
+            if (!pCollider->GetMovable())
+                pCollider->m_vecCachedCellKeys.clear();
+
             for (int y = minCellY; y <= maxCellY; ++y)
             {
                 for (int x = minCellX; x <= maxCellX; ++x)
                 {
-                    layerBuckets[MakeCellKey(x, y)].push_back(pCollider->GetEntityInstID());
+                    ULONGLONG cellKey = MakeCellKey(x, y);
+                    layerBuckets[cellKey].push_back(pCollider->GetEntityInstID());
+                    
+                    if (!pCollider->GetMovable())
+                        pCollider->m_vecCachedCellKeys.push_back(cellKey);
                 }
             }
+
+            if (!pCollider->GetMovable())
+                pCollider->m_bCacheValid = true;
         }
     }
 }
@@ -105,6 +125,14 @@ bool CollisionMgr::TryGetColliderAABB(const Ptr<CCollider2D>& _Collider, Vec2& _
 {
     if (!_Collider) return false;
 
+    if (!_Collider->GetMovable() && _Collider->m_bCacheValid)
+    {
+        _OutMin = _Collider->m_vCachedMin;
+        _OutMax = _Collider->m_vCachedMax;
+        return true;
+    }
+
+    bool bSuccess = false;
     switch (_Collider->GetComponentType())
     {
     case COMPONENT_TYPE::COLLIDER2D_RECT:
@@ -127,7 +155,8 @@ bool CollisionMgr::TryGetColliderAABB(const Ptr<CCollider2D>& _Collider, Vec2& _
 
         _OutMin = Vec2(minX, minY);
         _OutMax = Vec2(maxX, maxY);
-        return true;
+        bSuccess = true;
+        break;
     }
     case COMPONENT_TYPE::COLLIDER2D_CIRCLE:
     {
@@ -137,7 +166,8 @@ bool CollisionMgr::TryGetColliderAABB(const Ptr<CCollider2D>& _Collider, Vec2& _
         
         _OutMin = Vec2(vCenter.x - fRadius, vCenter.y - fRadius);
         _OutMax = Vec2(vCenter.x + fRadius, vCenter.y + fRadius);
-        return true;
+        bSuccess = true;
+        break;
     }
     case COMPONENT_TYPE::COLLIDER2D_POINT:
     {
@@ -145,11 +175,22 @@ bool CollisionMgr::TryGetColliderAABB(const Ptr<CCollider2D>& _Collider, Vec2& _
         const Vec3 vCenter = pPoint->GetWorldPos();
         _OutMin = Vec2(vCenter.x, vCenter.y);
         _OutMax = _OutMin;
-        return true;
+        bSuccess = true;
+        break;
     }
     default:
         return false;
     }
+
+    if (bSuccess)
+    {
+        _Collider->m_vCachedMin = _OutMin;
+        _Collider->m_vCachedMax = _OutMax;
+        // m_bCacheValid는 BuildLayerColliderCache에서 Cell Key까지 채운 후 true로 설정하거나, 여기서 일단 true로 할 수 있음.
+        // 하지만 Cell Key 캐시와 동기화하기 위해 BuildLayerColliderCache에서 관리하는 것이 나을 듯.
+    }
+
+    return bSuccess;
 }
 
 void CollisionMgr::CollisionBtwLayer(UINT _LeftLayerIdx, UINT _RightLayerIdx)
@@ -260,8 +301,19 @@ void CollisionMgr::CheckCollisionAndNotify(const Ptr<CCollider2D>& _LeftCol, con
     }
     
     pairState.LastSeenFrame = m_FrameCounter;
+
+    // Optimization: If both are non-movable and already have cached state, skip actual collision testing
+    bool bColliding = false;
+    if (!bInserted && !_LeftCol->GetMovable() && !_RightCol->GetMovable())
+    {
+        bColliding = pairState.IsColliding;
+    }
+    else
+    {
+        bColliding = _LeftCol->IsCollision(_RightCol);
+    }
     
-    if (_LeftCol->IsCollision(_RightCol))
+    if (bColliding)
     {
         if (pairState.IsColliding)
         {

@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include <functional>
 
 #include "GameEngine/04.Asset/Entity.h"
 #include "GameEngine/06.Component/Script/CScript.h"
@@ -62,7 +64,7 @@ public:
 
 public:
 	
-	CLONE(GameObject)
+	CLONE(GameObject);
 	
 public:
 	
@@ -219,3 +221,5 @@ Ptr<T> GameObject::GetScriptComponent() const
 
 bool IsValid(Ptr<GameObject>& _Object);
 bool IsValid(const Ptr<GameObject>& _Object);
+bool IsValid(GameObject* _Object);
+

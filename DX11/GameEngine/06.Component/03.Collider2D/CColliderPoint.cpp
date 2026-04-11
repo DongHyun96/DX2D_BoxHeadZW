@@ -15,6 +15,12 @@ CColliderPoint::~CColliderPoint()
 
 void CColliderPoint::FinalTick()
 {
+    if (!GetMovable() && IsCacheValid())
+    {
+        DrawDebugCircle(GetWorldPos(), 3.f, GetColor(), 0.f);
+        return;
+    }
+
     CCollider2D::FinalTick();
     
     const Matrix matTranslation = XMMatrixTranslation(GetOffset().x, GetOffset().y, 0.f);

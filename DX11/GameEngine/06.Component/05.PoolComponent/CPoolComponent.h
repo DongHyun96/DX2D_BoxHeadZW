@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <set>
 
 // TODO : PoolComponent UI 만들기
 class CPoolComponent : public Component
@@ -21,7 +22,7 @@ public:
     CPoolComponent();
     CPoolComponent(const CPoolComponent& _Origin);
     virtual ~CPoolComponent() override;
-    CLONE(CPoolComponent)
+    CLONE(CPoolComponent);
     
 public:
 
@@ -41,6 +42,13 @@ public:
     /// </summary>
     /// <returns> : 스폰된 GameObject, 제대로 Spawn되지 않았다면 nullptr </returns>
     GameObject* SpawnObject(const Vec3& _SpawnPosition, bool _SetActiveHierarchy = true);
+    
+public:
+    
+    /// <summary>
+    /// Pooler 오브젝트가 풀링한 오브젝트를 자식으로 두고 있는지의 여부 
+    /// </summary>
+    bool IsPooledObjectAttachedToPooler() const { return m_AttachToSelfObject; }
     
 private:
     

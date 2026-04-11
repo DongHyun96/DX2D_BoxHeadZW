@@ -10,6 +10,8 @@
 CCollider2D::CCollider2D(COMPONENT_TYPE _Type)
     : Component(_Type)
     , m_OverlapCount(0)
+    , m_Movable(true)
+    , m_bCacheValid(false)
 {
 }
 
@@ -18,6 +20,8 @@ CCollider2D::CCollider2D(const CCollider2D& _Origin)
     , m_Offset(_Origin.m_Offset)
     , m_Color(_Origin.m_Color)
     , m_bIsActive(_Origin.m_bIsActive)
+    , m_Movable(_Origin.m_Movable)
+    , m_bCacheValid(false)
     , m_OverlapCount(0)
     , m_vecBeginDelegates{}
     , m_vecOverlapDelegates{}
@@ -105,7 +109,7 @@ void CCollider2D::SaveToLevelFile(FILE* _File)
     fwrite(&m_Offset, sizeof(Vec3), 1, _File);
     fwrite(&m_Color, sizeof(Vec4), 1, _File);
     fwrite(&m_bIsActive, sizeof(bool), 1, _File);
-    
+    fwrite(&m_Movable, sizeof(bool), 1, _File);
 }
 
 void CCollider2D::LoadFromLevelFile(FILE* _File)
@@ -113,4 +117,5 @@ void CCollider2D::LoadFromLevelFile(FILE* _File)
     fread(&m_Offset, sizeof(Vec3), 1, _File);
     fread(&m_Color, sizeof(Vec4), 1, _File);
     fread(&m_bIsActive, sizeof(bool), 1, _File);
+    fread(&m_Movable, sizeof(bool), 1, _File);
 }
