@@ -59,9 +59,14 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
     // 이미 해당 이동방법으로 이동을 끝낸 상황이거나, 이동하려했던 Target이 죽은 상황
     if (_Enemy->m_CellPath.empty() || !IsValid(_Enemy->m_TargetObject))
     {
-        _Enemy->m_PathReplanTimer += DT;
+        // Target이 죽은 상황이라면, 가지고 있던 CellPath도 의미가 없으므로 비워준다.
+        if (!IsValid(_Enemy->m_TargetObject)) stack<CellCoord>().swap(_Enemy->m_CellPath);
         
+        _Enemy->m_PathReplanTimer += DT;
         if (_Enemy->m_PathReplanTimer < _Enemy->m_PathReplanInterval) return;
+
+        // Path replan interval time 종료
+        
         _Enemy->m_PathReplanTimer = 0.f;
         
         // 새로운 Target 찾기
@@ -88,26 +93,38 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
 
     // 새로운 경로를 받았음에도 empty일 경우가 있음 (이때는 처리 x)
     if (_Enemy->m_CellPath.empty()) return;
-    
-    const Vec2 Destination = BackgroundCellManager->GetCellCoordToWorldPos(_Enemy->m_CellPath.top()); 
-    const Vec2 Direction = Destination - ToVec2(EnemyPos);
-    
-    const float DistToDest = Direction.Length();
+
+    const Vec2 Destination = BackgroundCellManager->GetCellCoordToWorldPos(_Enemy->m_CellPath.top());
+    const Vec2 Direction   = Destination - ToVec2(EnemyPos);
+
+    const float DistToDest        = Direction.Length();
     const float MoveDistThisFrame = _Enemy->m_MoveSpeedBase * _Enemy->m_MoveSpeedFactor * DT;
     
-    // 이번 이동 거리보다 남은 거리가 작다면 도착한 것으로 판정
+    // 이번 이동 거리보다 남은 거리가 작다면 이번 이동 Cell 도착한 것으로 판정
     if (DistToDest <= MoveDistThisFrame) 
     {
-        _Enemy->m_Velocity = ToVec3(Direction * MoveDistThisFrame); // 멈춰보이지 않게끔 Dummy Velocity 부여 (AnimHandler에서 Velocity 길이 0이면 멈춘 모션이 나와버림)
+        // 멈춰보이지 않게끔 Dummy Velocity 부여 (AnimHandler에서 Velocity 길이 0이면 멈춘 모션이 나와버림)
+        // 만약 m_PrevCellPathVelocity가 0이라면(방금 출발한 경우 등), 현재 방향을 유지하도록 처리
+        if (_Enemy->m_PrevCellPathVelocity.LengthSquared() == 0.f)
+        {
+            _Enemy->m_Velocity = ToVec3(Direction / DistToDest) * _Enemy->m_MoveSpeedBase * _Enemy->m_MoveSpeedFactor;
+        }
+        else
+        {
+            _Enemy->m_Velocity = _Enemy->m_PrevCellPathVelocity;
+        }
+        
         _Enemy->Transform()->SetRelativePos(ToVec3(Destination, Destination.y)); // Dest로 위치보정 처리
         _Enemy->m_CellPath.pop(); 
         return;        
     }
     
-    _Enemy->m_Velocity = ToVec3(Direction / (DistToDest == 0.f ? FLT_EPSILON : DistToDest) ) *  _Enemy->m_MoveSpeedBase * _Enemy->m_MoveSpeedFactor;
+    _Enemy->m_Velocity = ToVec3(Direction / DistToDest) *  _Enemy->m_MoveSpeedBase * _Enemy->m_MoveSpeedFactor;
     EnemyPos += _Enemy->m_Velocity * DT;
     
     _Enemy->Transform()->SetRelativePos(EnemyPos);
+    
+    _Enemy->m_PrevCellPathVelocity = _Enemy->m_Velocity;
 }
 
 void EnemyWalkStraightStrategy::UseWalkStrategy(CEnemyScript* _Enemy)

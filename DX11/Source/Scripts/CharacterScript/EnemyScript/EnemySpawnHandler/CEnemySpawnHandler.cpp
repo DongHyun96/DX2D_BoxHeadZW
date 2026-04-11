@@ -51,6 +51,8 @@ void CEnemySpawnHandler::Tick()
 			// SpawnEnemy(ENEMY_TYPE::ZOMBIE, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
         }
     }
+    
+    DebugUtil::SetPermanentDebugLog("Zombie Count", "Zombie Alive Count : " + to_string(m_SpawnedCount), DEF_COLOR_CYAN);
 }
 
 GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType, FIRST_SPAWN_LOC _SpawnLoc)

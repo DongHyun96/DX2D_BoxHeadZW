@@ -71,6 +71,10 @@ private: // AStar Path 및 Walk 관련
 protected:
     UINT m_AttackFlipbookCount = 8;
     
+private:
+    
+    Vec3 m_PrevCellPathVelocity{};
+    
 public:
     
     CEnemyScript();

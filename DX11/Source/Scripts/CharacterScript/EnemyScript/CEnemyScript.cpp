@@ -240,10 +240,12 @@ void CEnemyScript::HandleStateTransition()
                     SetCurrentWalkType(ENEMY_WALK_TYPE::STRAIGHT);
                     return;
                 }
-                else
+                else // 여기서 경로 탐색 시간을 많이 단축해서 처리
                 {
                     SetTargetObject(nullptr);
                     SetCurrentWalkType(ENEMY_WALK_TYPE::CELL_PATH);
+                    m_PathReplanInterval = GetRandom(0.5f, 1.5f);
+                    return;
                 }
             }
             
@@ -286,10 +288,11 @@ void CEnemyScript::InitSpawn()
     if (m_PerceptionHandler) m_PerceptionHandler->InitSpawn();
     
     m_StatScript->InitSpawn();
-    m_HasFadeInStart  = false;
-    m_HasFadeOutStart = false;
-    m_FadeInOutTime   = 0.f;
-    m_TargetObject    = nullptr;
+    m_HasFadeInStart       = false;
+    m_HasFadeOutStart      = false;
+    m_FadeInOutTime        = 0.f;
+    m_TargetObject         = nullptr;
+    m_PrevCellPathVelocity = Vec3::Zero;
     
     stack<CellCoord>().swap(m_CellPath);
     m_PathReplanTimer = 0.f;

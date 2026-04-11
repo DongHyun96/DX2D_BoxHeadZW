@@ -25,7 +25,15 @@ void CommonEnemyTransitionStrategy::UseWalkStateTransitionStrategy(CEnemyAnimHan
     }
 
     // 이전 상태와 동일한 Animation이 재생중인 상태 -> 한 번 더 재생 처리 방지
-    if (CurrentDirection == _AnimHandler->m_PrevAnimDirection && CurrentMainState == _AnimHandler->m_PrevMainState) return;
+    // 같은 방향에 같은 모션인데, 해당 모션 재생이 Stop되어 있는 경우, 여기서 Play처리는 한 번 더 해주어야 함
+    if (CurrentDirection == _AnimHandler->m_PrevAnimDirection && CurrentMainState == _AnimHandler->m_PrevMainState)
+    {
+        if (_AnimHandler->FlipbookRender()->GetIsStopped())
+        {
+            _AnimHandler->FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 9, -1); // Walk
+        }
+        return;
+    }
 
     // FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 12, -1); // Walk
     _AnimHandler->FlipbookRender()->Play(AnimCategory, FlipBookIndexByDirection, 9, -1); // Walk
