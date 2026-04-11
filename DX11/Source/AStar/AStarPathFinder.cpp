@@ -32,9 +32,9 @@ bool AStarPathFinder::GetPath(const CellCoord& start, const CellCoord& dest, sta
 	// 이미 도달한 경로
 	if (start == dest) return true;
 
-	// dest 자체가 이동 불가능한 경로
+	// start나 dest 자체가 이동 불가능한 경로
 	CBackgroundTile* BackgroundCellManager = GM->GetBackgroundCellManager();
-	if (!BackgroundCellManager->IsCellAvailable(dest)) return false;
+	if (!BackgroundCellManager->IsCellAvailable(dest) || !BackgroundCellManager->IsCellAvailable(start)) return false;
 
 	// 캐시에서 경로 확인
 	PathCacheKey cacheKey{ start, dest };

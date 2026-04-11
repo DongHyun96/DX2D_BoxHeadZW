@@ -55,7 +55,7 @@ void CommonEnemyTransitionStrategy::UseAttackStateTransitionStrategy(CEnemyAnimH
 void RunnerTransitionStrategy::UseWalkStateTransitionStrategy(CEnemyAnimHandler* _AnimHandler)
 {
     // Use Common Walk Animation
-    if (m_Runner->GetCurrentWalkType() == ENEMY_WALK_TYPE::CELL_PATH)
+    if (m_Runner->GetCurrentWalkType() != ENEMY_WALK_TYPE::STRAIGHT) // Straight이 아닌 SpawnWalk 또는, CellPath인 경우 
     {
         CEnemyAnimHandler::s_mapAnimTransitionStrategies.at(ENEMY_ANIMTRANS_TYPE::COMMON)->UseWalkStateTransitionStrategy(_AnimHandler);
         return;

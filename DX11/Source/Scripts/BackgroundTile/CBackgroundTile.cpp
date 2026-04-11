@@ -101,6 +101,17 @@ bool CBackgroundTile::IsCellCoordOutOfBounds(const CellCoord& _CellCoord) const
     return _CellCoord.x < 0 || _CellCoord.x >= CELL_ROW_COUNT || _CellCoord.y < 0 || _CellCoord.y >= CELL_ROW_COUNT;
 }
 
+void CBackgroundTile::RemoveFirstSpawnDestination(FIRST_SPAWN_LOC _SpawnLoc, const CellCoord& _CellCoord)
+{
+    erase(m_FirstSpawnDestinations[_SpawnLoc], _CellCoord);
+}
+
+const CellCoord& CBackgroundTile::GetRandomFirstSpawnLocDestination(FIRST_SPAWN_LOC _SpawnLoc)
+{
+    if (m_FirstSpawnDestinations[_SpawnLoc].empty()) return CellCoord{};
+    return m_FirstSpawnDestinations[_SpawnLoc].at(GetRandom(0, static_cast<int>(m_FirstSpawnDestinations[_SpawnLoc].size() - 1)));   
+}
+
 void CBackgroundTile::SaveToLevelFile(FILE* _File)
 {
     for (const vector<bool>& ColVec : m_CellTaken)

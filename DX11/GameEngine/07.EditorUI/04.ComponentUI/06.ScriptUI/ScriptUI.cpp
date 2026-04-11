@@ -53,7 +53,7 @@ namespace
 bool ScriptUI::s_BackgroundTileCellEditingEnabled = false;
 CBackgroundTile* ScriptUI::s_BackgroundTileEditingTarget = nullptr;
 TILE_EDIT_BRUSH ScriptUI::s_BackgroundTileBrush = TILE_EDIT_BRUSH::NONE;
-FIRST_SPAWN_LOC ScriptUI::s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC_NONE;
+FIRST_SPAWN_LOC ScriptUI::s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC_END;
 
 
 ScriptUI::ScriptUI()
@@ -349,7 +349,7 @@ void ScriptUI::TickBackgroundTileEditingUI()
 	AddItemHeight();
 
 	int currentSpawnLoc = (int)s_BackgroundTileSelectedSpawnLoc;
-	if (ImGui::RadioButton("None##456", currentSpawnLoc == FIRST_SPAWN_LOC_NONE)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC_NONE;
+	if (ImGui::RadioButton("None##456", currentSpawnLoc == FIRST_SPAWN_LOC_END)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC_END;
 	ImGui::SameLine();
 	if (ImGui::RadioButton("LOC1", currentSpawnLoc == FIRST_SPAWN_LOC1)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC1;
 	ImGui::SameLine();

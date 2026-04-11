@@ -39,7 +39,6 @@ public:
     
 private:
     
-    void TryInitSpawnedEnemy(GameObject* EnemyObject);
     void TryInitSpawnedEnemy(class CEnemyScript* _EnemyScript);
     
     

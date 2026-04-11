@@ -19,17 +19,19 @@ class CEnemyScript : public CCharacterScript
     friend class EnemyWalkStrategy;
     friend class EnemyWalkThroughCellPathStrategy;
     friend class EnemyWalkStraightStrategy;
+    friend class EnemyFirstSpawnWalkStrategy;
 
 protected:
 
     ENEMY_TYPE      m_EnemyType{};
     ENEMY_MAINSTATE m_MainState{};
 
-private:
+protected:
 
     // 현재, First Spawn pos에서 태어나서 Valid한 Cell로 이동처리를 해야하는 Enemy인지
-    bool m_IsCurrentlyFirstSpawnWalking{};
-    Vec2 m_FirstSpawnMoveDestination{};
+    bool        m_IsCurrentlyFirstSpawnWalking{};
+    Vec2        m_FirstSpawnMoveDestination{};
+    CellCoord   m_FirstSpawnMoveDestCellCoord{};
     
 private:
     
@@ -165,7 +167,8 @@ public:
     void SetIsCurrentlyFirstSpawnWalking(bool _IsFirstSpawnWalking) { m_IsCurrentlyFirstSpawnWalking = _IsFirstSpawnWalking; }
     // bool GetIsCurrentlyFirstSpawnWalking() const { return m_IsCurrentlyFirstSpawnWalking; }
     
-    void SetFirstSpawnMoveDestination(const Vec2& _MoveDestination) { m_FirstSpawnMoveDestination = _MoveDestination; }
+    // void SetFirstSpawnMoveDestination(const Vec2& _MoveDestination) { m_FirstSpawnMoveDestination = _MoveDestination; }
+    void SetFirstSpawnMoveDestination(const CellCoord& _MoveDestinationCellCoord);
 
 public:
     

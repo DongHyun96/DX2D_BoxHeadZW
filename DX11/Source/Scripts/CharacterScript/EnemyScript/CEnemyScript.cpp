@@ -7,14 +7,17 @@
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "PerceptionHandler/CPerceptionHandler.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 
 map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> CEnemyScript::s_mapWalkingStrategies = 
 {
-    { ENEMY_WALK_TYPE::CELL_PATH, new EnemyWalkThroughCellPathStrategy },
-    { ENEMY_WALK_TYPE::STRAIGHT, new EnemyWalkStraightStrategy }
+    { ENEMY_WALK_TYPE::CELL_PATH,           new EnemyWalkThroughCellPathStrategy },
+    { ENEMY_WALK_TYPE::STRAIGHT,            new EnemyWalkStraightStrategy },
+    { ENEMY_WALK_TYPE::FIRST_SPAWN_WALK,    new EnemyFirstSpawnWalkStrategy }
 };
 
 CEnemyScript::CEnemyScript()
@@ -164,6 +167,13 @@ void CEnemyScript::HandleFadeOut()
 
 void CEnemyScript::HandleStateTransition()
 {
+    /* 
+     *  
+     *  Devil의 경우에 한해서만 Transition 전환을 완전히 다르게 처리하는 중
+     *  
+     */
+    
+    
     switch (m_MainState)
     {
     case ENEMY_MAINSTATE::ATTACK: case ENEMY_MAINSTATE::PUSHED_OUT: case ENEMY_MAINSTATE::DIE: case ENEMY_MAINSTATE::END: return;
@@ -175,13 +185,45 @@ void CEnemyScript::HandleStateTransition()
         // Attack 반경에 들어온 오브젝트가 있다면 Attack 시도
         if (m_PerceptionHandler->GetFirstAttackAreaObject())
         {
-            m_TargetObject = m_PerceptionHandler->GetFirstAttackAreaObject();
-            m_MainState = ENEMY_MAINSTATE::ATTACK;
+            SetTargetObject(m_PerceptionHandler->GetFirstAttackAreaObject());
+            SetMainState(ENEMY_MAINSTATE::ATTACK);
             return;
         }
         
         // 나머지는 Walk 상태 지정 처리
+        // 현재 FirstSpawnPos에서 태어났고, 걸어가는 중
+        if (m_IsCurrentlyFirstSpawnWalking)
+        {
+            if (m_CurrentWalkType != ENEMY_WALK_TYPE::FIRST_SPAWN_WALK)
+                SetCurrentWalkType(ENEMY_WALK_TYPE::FIRST_SPAWN_WALK);
 
+            // First spawn walking이 정상적으로 끝났는지 체크(Available Cell에 도달했는지)
+            CellCoord CurCell = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(Transform()->GetRelativePosXY());
+            if (GM->GetBackgroundCellManager()->IsCellAvailable(CurCell)) 
+            {
+                // 도착 지점에 도착했다고 판단, CurrentlyFirstSpawning 마킹을 풀어줌 & 다음 상태의 Walk Type transition 시도함 (return하지 않고)
+                m_IsCurrentlyFirstSpawnWalking = false;
+                
+                // StraightThrough 영역에 들어온 Object가 있다면, 해당 GameObject로 Target 세팅 및 Walk Strategy 세팅
+                if (GameObject* Object = m_PerceptionHandler->GetNearestStraightThroughDetectionEnteredObject())
+                {
+                    SetTargetObject(Object);
+                    SetCurrentWalkType(ENEMY_WALK_TYPE::STRAIGHT);
+                    return;
+                }
+                else
+                {
+                    SetTargetObject(nullptr);
+                    SetCurrentWalkType(ENEMY_WALK_TYPE::CELL_PATH);
+                }
+            }
+            
+            return; // First spawn Walking 중 Walking Type transition 처리 x
+        }
+
+        
+        /* 일반적인 walk case */
+        
         // Straight -> CellPath 전환 시도
         if (m_CurrentWalkType == ENEMY_WALK_TYPE::STRAIGHT)
         {
@@ -200,7 +242,7 @@ void CEnemyScript::HandleStateTransition()
             // StraightThrough 영역에 들어온 Object가 있다면, 해당 GameObject로 Target 세팅 및 Walk Strategy 세팅
             if (GameObject* Object = m_PerceptionHandler->GetNearestStraightThroughDetectionEnteredObject())
             {
-                m_TargetObject = Object;
+                SetTargetObject(Object);
                 SetCurrentWalkType(ENEMY_WALK_TYPE::STRAIGHT);
                 
             }
@@ -288,6 +330,12 @@ void CEnemyScript::SetCurrentWalkType(ENEMY_WALK_TYPE _WalkType)
         m_PathReplanInterval = GetRandom(1.5f, 4.5f);
         m_PathReplanTimer = 0.f;
     }
+}
+
+void CEnemyScript::SetFirstSpawnMoveDestination(const CellCoord& _MoveDestinationCellCoord)
+{
+    m_FirstSpawnMoveDestCellCoord = _MoveDestinationCellCoord;
+    m_FirstSpawnMoveDestination = GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_MoveDestinationCellCoord);
 }
 
 void CEnemyScript::SaveToLevelFile(FILE* _File)

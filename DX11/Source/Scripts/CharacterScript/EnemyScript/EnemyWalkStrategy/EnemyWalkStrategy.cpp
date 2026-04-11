@@ -78,13 +78,12 @@ void EnemyWalkThroughCellPathStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
         
         // Structure 자체의 경우, AvailableCell이 아니기 때문에 인접한 Cell로 잡아본다
         const CellCoord destCellCoord = (TargetSelected == GM->GetPlayerObject()) ? ExactDestCoord : ExactDestCoord.GetRandomAdjacentCellCoord(); 
-        
-        if (CurrentCellCoord != destCellCoord && GM->GetBackgroundCellManager()->IsCellAvailable(destCellCoord))
-            AStarPathFinder::GetInst()->GetPath(CurrentCellCoord, destCellCoord, _Enemy->m_CellPath);
+
+        AStarPathFinder::GetInst()->GetPath(CurrentCellCoord, destCellCoord, _Enemy->m_CellPath);
         
         // Target 지정
-        _Enemy->m_TargetObject = TargetSelected;
-        _Enemy->m_PathReplanTimer = _Enemy->m_PathReplanInterval;
+        _Enemy->m_TargetObject      = TargetSelected;
+        _Enemy->m_PathReplanTimer   = _Enemy->m_PathReplanInterval;
     }
 
     // 새로운 경로를 받았음에도 empty일 경우가 있음 (이때는 처리 x)
@@ -135,5 +134,14 @@ void EnemyWalkStraightStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
 
 void EnemyFirstSpawnWalkStrategy::UseWalkStrategy(CEnemyScript* _Enemy)
 {
+    Vec2 EnemyPos = _Enemy->Transform()->GetRelativePosXY();
+    _Enemy->m_Velocity = Vec3::Zero;
     
+    Vec2 Direction = _Enemy->m_FirstSpawnMoveDestination - EnemyPos;
+    Direction.Normalize();
+    
+    _Enemy->m_Velocity = ToVec3(Direction * _Enemy->m_MoveSpeedBase * _Enemy->m_MoveSpeedFactor);
+    
+    const Vec3 NewPos = _Enemy->Transform()->GetRelativePos() + _Enemy->m_Velocity * DT;
+    _Enemy->Transform()->SetRelativePos(NewPos);
 }

@@ -207,16 +207,16 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
         case TILE_EDIT_BRUSH::SPAWN_ADD:
         {
             FIRST_SPAWN_LOC curLoc = ScriptUI::GetBackgroundTileSelectedSpawnLoc();
-            if (curLoc == FIRST_SPAWN_LOC_NONE) return;
-            _BackgroundTile->GetFirstSpawnDestinations()[curLoc].insert(_TargetCoord);
+            if (curLoc == FIRST_SPAWN_LOC_END) return;
+            _BackgroundTile->AddFirstSpawnDestination(curLoc, _TargetCoord);
             changed = true;
             break;
         }
         case TILE_EDIT_BRUSH::SPAWN_REMOVE:
         {
             FIRST_SPAWN_LOC curLoc = ScriptUI::GetBackgroundTileSelectedSpawnLoc();
-            if (curLoc == FIRST_SPAWN_LOC_NONE) return;
-            _BackgroundTile->GetFirstSpawnDestinations()[curLoc].erase(_TargetCoord);
+            if (curLoc == FIRST_SPAWN_LOC_END) return;
+            _BackgroundTile->RemoveFirstSpawnDestination(curLoc, _TargetCoord);
             changed = true;
             break;
         }
@@ -257,10 +257,8 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
     if (hasHoveredCell && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
     {
         FIRST_SPAWN_LOC curLoc = ScriptUI::GetBackgroundTileSelectedSpawnLoc();
-        if (curLoc != FIRST_SPAWN_LOC_NONE)
-        {
-            _BackgroundTile->GetFirstSpawnDestinations()[curLoc].erase(hoveredCell);
-        }
+        if (curLoc != FIRST_SPAWN_LOC_END)
+            _BackgroundTile->RemoveFirstSpawnDestination(curLoc, hoveredCell);
     }
 
     // 3. 시각화 (데이터 렌더링)
@@ -285,12 +283,12 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
         }
     };
 
-    auto RenderSpawnDest = [&]() {
+    auto RenderSpawnDest = [&]() 
+    {
         FIRST_SPAWN_LOC curLoc = ScriptUI::GetBackgroundTileSelectedSpawnLoc();
-        if (curLoc == FIRST_SPAWN_LOC_NONE) return;
-        auto& spawnMap = _BackgroundTile->GetFirstSpawnDestinations();
-        auto it = spawnMap.find(curLoc);
-        if (it != spawnMap.end())
+        if (curLoc == FIRST_SPAWN_LOC_END) return;
+        auto it = _BackgroundTile->m_FirstSpawnDestinations.find(curLoc);
+        if (it != _BackgroundTile->m_FirstSpawnDestinations.end())
         {
             for (const auto& coord : it->second)
             {

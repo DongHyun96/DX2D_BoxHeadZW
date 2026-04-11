@@ -8,6 +8,9 @@
 /// </summary>
 class CBackgroundTile : public CScript
 {
+    
+    friend class MainWindowDropDetectorUI;
+    
 private:
 
     const float m_WorldSize     = 4500.f; // LevelWorldSize 가로세로 크기 (4500)
@@ -32,9 +35,6 @@ private:
         {FIRST_SPAWN_LOC5, {}},
         {FIRST_SPAWN_LOC6, {}}
     };
-    
-public:
-    map<FIRST_SPAWN_LOC, vector<CellCoord>>& GetFirstSpawnDestinations() { return m_FirstSpawnDestinations; }
     
 public:
     
@@ -104,6 +104,13 @@ public:
     bool IsWorldPosOutOfBounds(const Vec2& _WorldPos) const;
     
     bool IsCellCoordOutOfBounds(const CellCoord& _CellCoord) const;
+
+public:
+    
+    void AddFirstSpawnDestination(FIRST_SPAWN_LOC _SpawnLoc, const CellCoord& _CellCoord) { m_FirstSpawnDestinations[_SpawnLoc].push_back(_CellCoord); }
+    void RemoveFirstSpawnDestination(FIRST_SPAWN_LOC _SpawnLoc, const CellCoord& _CellCoord);
+    
+    const CellCoord& GetRandomFirstSpawnLocDestination(FIRST_SPAWN_LOC _SpawnLoc);
     
 public:
     

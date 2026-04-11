@@ -38,13 +38,17 @@ void CEnemySpawnHandler::Tick()
 {
     if (KEY_TAP(KEY::MRB))
     {
-        for (int i = 0; i < 50; ++i)
+        /*for (int i = 0; i < 50; ++i)
         {
             ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, 4));
             SpawnEnemyOnAvailableCell(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
+        }*/
+        for (int i = 0; i < 5; ++i)
+        {
+            // TODO : First Spawn 처리 테스팅 스폰할 것
+            SpawnEnemyOnFirstSpawnArea(static_cast<ENEMY_TYPE>(GetRandom(0, 4)), FIRST_SPAWN_LOC1);
+			// SpawnEnemy(ENEMY_TYPE::ZOMBIE, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
         }
-        /*for (int i = 0; i < 5; ++i)
-			    SpawnEnemy(ENEMY_TYPE::ZOMBIE, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));*/
     }
 }
 
@@ -72,11 +76,12 @@ GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType
     SpawnedEnemy->Transform()->SetRelativePosXY(PickedPos);
     CEnemyScript* EnemyScript = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
     
-    EnemyScript->SetIsCurrentlyFirstSpawnWalking(true);
     
+    const CellCoord& PickedRandomDestCellCoord = GM->GetBackgroundCellManager()->GetRandomFirstSpawnLocDestination(_SpawnLoc);
     
     TryInitSpawnedEnemy(EnemyScript);
-    
+    EnemyScript->SetIsCurrentlyFirstSpawnWalking(true);
+    EnemyScript->SetFirstSpawnMoveDestination(PickedRandomDestCellCoord);
     return SpawnedEnemy;
 }
 
@@ -98,15 +103,17 @@ GameObject* CEnemySpawnHandler::SpawnEnemyOnAvailableCell(ENEMY_TYPE _EnemyType,
     if (PlayerCellCoord.y - 1 <= _CellCoord.y && _CellCoord.y <= PlayerCellCoord.y + 1) return nullptr;
     
     GameObject* SpawnedEnemy = m_mapEnemyPoolers[_EnemyType]->SpawnObject(ToVec3(GM->GetBackgroundCellManager()->GetCellCoordToWorldPos(_CellCoord)), false);
-    TryInitSpawnedEnemy(SpawnedEnemy);
+    CEnemyScript* EnemyScript = SpawnedEnemy->GetScriptComponent<CEnemyScript>().Get();
+    TryInitSpawnedEnemy(EnemyScript);
+    EnemyScript->SetIsCurrentlyFirstSpawnWalking(false);
     
     return SpawnedEnemy; 
 }
 
-void CEnemySpawnHandler::TryInitSpawnedEnemy(GameObject* EnemyObject)
+/*void CEnemySpawnHandler::TryInitSpawnedEnemy(GameObject* EnemyObject)
 {
     if (EnemyObject) TryInitSpawnedEnemy(EnemyObject->GetScriptComponent<CEnemyScript>().Get());
-}
+}*/
 
 void CEnemySpawnHandler::TryInitSpawnedEnemy(CEnemyScript* _EnemyScript)
 {
