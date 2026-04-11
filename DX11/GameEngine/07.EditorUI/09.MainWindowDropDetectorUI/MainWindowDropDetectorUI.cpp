@@ -207,6 +207,7 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
         case TILE_EDIT_BRUSH::SPAWN_ADD:
         {
             FIRST_SPAWN_LOC curLoc = ScriptUI::GetBackgroundTileSelectedSpawnLoc();
+            if (curLoc == FIRST_SPAWN_LOC_NONE) return;
             _BackgroundTile->GetFirstSpawnDestinations()[curLoc].insert(_TargetCoord);
             changed = true;
             break;
@@ -214,6 +215,7 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
         case TILE_EDIT_BRUSH::SPAWN_REMOVE:
         {
             FIRST_SPAWN_LOC curLoc = ScriptUI::GetBackgroundTileSelectedSpawnLoc();
+            if (curLoc == FIRST_SPAWN_LOC_NONE) return;
             _BackgroundTile->GetFirstSpawnDestinations()[curLoc].erase(_TargetCoord);
             changed = true;
             break;
@@ -255,7 +257,10 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
     if (hasHoveredCell && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
     {
         FIRST_SPAWN_LOC curLoc = ScriptUI::GetBackgroundTileSelectedSpawnLoc();
-        _BackgroundTile->GetFirstSpawnDestinations()[curLoc].erase(hoveredCell);
+        if (curLoc != FIRST_SPAWN_LOC_NONE)
+        {
+            _BackgroundTile->GetFirstSpawnDestinations()[curLoc].erase(hoveredCell);
+        }
     }
 
     // 3. 시각화 (데이터 렌더링)
@@ -282,6 +287,7 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
 
     auto RenderSpawnDest = [&]() {
         FIRST_SPAWN_LOC curLoc = ScriptUI::GetBackgroundTileSelectedSpawnLoc();
+        if (curLoc == FIRST_SPAWN_LOC_NONE) return;
         auto& spawnMap = _BackgroundTile->GetFirstSpawnDestinations();
         auto it = spawnMap.find(curLoc);
         if (it != spawnMap.end())

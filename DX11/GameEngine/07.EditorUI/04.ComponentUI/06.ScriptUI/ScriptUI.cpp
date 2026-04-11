@@ -53,7 +53,7 @@ namespace
 bool ScriptUI::s_BackgroundTileCellEditingEnabled = false;
 CBackgroundTile* ScriptUI::s_BackgroundTileEditingTarget = nullptr;
 TILE_EDIT_BRUSH ScriptUI::s_BackgroundTileBrush = TILE_EDIT_BRUSH::NONE;
-FIRST_SPAWN_LOC ScriptUI::s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC1;
+FIRST_SPAWN_LOC ScriptUI::s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC_NONE;
 
 
 ScriptUI::ScriptUI()
@@ -334,7 +334,7 @@ void ScriptUI::TickBackgroundTileEditingUI()
 	AddItemHeight();
 
 	TILE_EDIT_BRUSH currentBrush = s_BackgroundTileBrush;
-	if (ImGui::RadioButton("None", currentBrush == TILE_EDIT_BRUSH::NONE)) s_BackgroundTileBrush = TILE_EDIT_BRUSH::NONE;
+	if (ImGui::RadioButton("None##123", currentBrush == TILE_EDIT_BRUSH::NONE)) s_BackgroundTileBrush = TILE_EDIT_BRUSH::NONE;
 	ImGui::SameLine();
 	if (ImGui::RadioButton("Cell: Taken", currentBrush == TILE_EDIT_BRUSH::CELL_TAKEN)) s_BackgroundTileBrush = TILE_EDIT_BRUSH::CELL_TAKEN;
 	ImGui::SameLine();
@@ -349,6 +349,8 @@ void ScriptUI::TickBackgroundTileEditingUI()
 	AddItemHeight();
 
 	int currentSpawnLoc = (int)s_BackgroundTileSelectedSpawnLoc;
+	if (ImGui::RadioButton("None##456", currentSpawnLoc == FIRST_SPAWN_LOC_NONE)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC_NONE;
+	ImGui::SameLine();
 	if (ImGui::RadioButton("LOC1", currentSpawnLoc == FIRST_SPAWN_LOC1)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC1;
 	ImGui::SameLine();
 	if (ImGui::RadioButton("LOC2", currentSpawnLoc == FIRST_SPAWN_LOC2)) s_BackgroundTileSelectedSpawnLoc = FIRST_SPAWN_LOC2;
