@@ -338,6 +338,32 @@ void GameObject::RegisterAsParent()
 	LevelMgr::GetInst()->GetCurLevel()->GetLayer(m_LayerIdx)->AddObject(this);
 }
 
+int GameObject::GetChildIdx(const Ptr<GameObject>& _Child)
+{
+	for (int i = 0; i < (int)m_vecChild.size(); ++i)
+	{
+		if (m_vecChild[i] == _Child) return i;
+	}
+	return -1;
+}
+
+void GameObject::MoveChildOrder(const Ptr<GameObject>& _Child, int _Dir)
+{
+	int idx = GetChildIdx(_Child);
+	if (idx == -1) return;
+
+	int targetIdx = idx + _Dir;
+	if (targetIdx < 0 || targetIdx >= (int)m_vecChild.size()) return;
+
+	// Swap
+	Ptr<GameObject> temp = m_vecChild[idx];
+	m_vecChild[idx] = m_vecChild[targetIdx];
+	m_vecChild[targetIdx] = temp;
+
+	if (m_bInLayer && LevelMgr::GetInst()->GetCurLevel())
+		LevelMgr::GetInst()->GetCurLevel()->SetChanged();
+}
+
 Ptr<GameObject> GameObject::GetChildByName(const wstring& _ObjectName) const
 {
 	for (const Ptr<GameObject>& Child : m_vecChild)

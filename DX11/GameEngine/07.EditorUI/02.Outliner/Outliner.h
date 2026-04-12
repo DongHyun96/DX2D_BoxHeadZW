@@ -40,6 +40,7 @@ private:
     
     void DeleteObjectTick();
     void DuplicateObjectTick();
+    void ReorderObjectTick();
     void ChangeObjectNameTick();
 
 public:

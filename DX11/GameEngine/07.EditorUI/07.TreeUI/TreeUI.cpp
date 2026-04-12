@@ -280,6 +280,13 @@ Ptr<TreeNode> TreeUI::FindNodeByData(DWORD_PTR _Data) const
 
 Ptr<TreeNode> TreeUI::AddItem(const Ptr<TreeNode>& _ParentNode, const string& _String, DWORD_PTR _Data)
 {
+    // 중복 체크 (Data가 0이 아닐 때만)
+    if (_Data != 0)
+    {
+        Ptr<TreeNode> pExistNode = FindNodeByData(_Data);
+        if (pExistNode) return pExistNode;
+    }
+
     Ptr<TreeNode> pNewNode  = new TreeNode;
     pNewNode->Str           = _String;
     pNewNode->m_Owner       = this;

@@ -39,6 +39,7 @@ void Outliner::Tick_UI()
 {
     DeleteObjectTick();
     DuplicateObjectTick();
+    ReorderObjectTick();
     ChangeObjectNameTick();
 
     bool bPrevShowOnlyActive = m_bShowOnlyActiveObjects;
@@ -122,6 +123,50 @@ void Outliner::DuplicateObjectTick()
         if (gameObject->GetParent()) gameObject->GetParent()->AddChild(ClonedObject); // 원본의 부모가 존재한다면, 원본의 부모 밑으로 들어가도록 처리
         else LevelMgr::GetInst()->GetCurLevel()->AddObject(ClonedObject->GetLayerIdx(), ClonedObject); // 최상위 부모 처리
     }
+    ReNew();
+}
+
+void Outliner::ReorderObjectTick()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.WantTextInput) return;
+
+    const ImGuiInputFlags flags = ImGuiInputFlags_RouteFocused;
+
+    // Ctrl + Shift + Alt + Up/Down
+    bool up = ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiMod_Alt | ImGuiKey_UpArrow, flags);
+    bool down = ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiMod_Alt | ImGuiKey_DownArrow, flags);
+
+    if (!up && !down) return;
+
+    // 단일 선택 상황인지 확인
+    if (m_Tree->GetSelectedNodes().size() != 1) return;
+
+    Ptr<TreeNode> selected = m_Tree->GetSelectedNodes()[0];
+    if (!selected || selected->Data == 0) return;
+
+    Ptr<GameObject> pObj = reinterpret_cast<GameObject*>(selected->Data);
+    if (!pObj) return;
+
+    int dir = up ? -1 : 1;
+
+    if (pObj->GetParent())
+    {
+        pObj->GetParent()->MoveChildOrder(pObj, dir);
+    }
+    else
+    {
+        Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
+        if (pCurLevel)
+        {
+            Layer* pLayer = pCurLevel->GetLayer(pObj->GetLayerIdx());
+            if (pLayer)
+            {
+                pLayer->MoveParentObjectOrder(pObj, dir);
+            }
+        }
+    }
+
     ReNew();
 }
 

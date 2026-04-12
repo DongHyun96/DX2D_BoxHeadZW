@@ -71,6 +71,32 @@ void Layer::DeregisterAsParent(const Ptr<GameObject>& _Object)
     assert(nullptr);
 }
 
+void Layer::MoveParentObjectOrder(const Ptr<GameObject>& _Object, int _Dir)
+{
+    int idx = -1;
+    for (int i = 0; i < (int)m_vecParents.size(); ++i)
+    {
+        if (m_vecParents[i] == _Object)
+        {
+            idx = i;
+            break;
+        }
+    }
+
+    if (idx == -1) return;
+
+    int targetIdx = idx + _Dir;
+    if (targetIdx < 0 || targetIdx >= (int)m_vecParents.size()) return;
+
+    // Swap
+    Ptr<GameObject> temp = m_vecParents[idx];
+    m_vecParents[idx] = m_vecParents[targetIdx];
+    m_vecParents[targetIdx] = temp;
+
+    if (m_OwnerLevel)
+        m_OwnerLevel->SetChanged();
+}
+
 void Layer::Tick()
 {
     for (const Ptr<GameObject>& gameObject : m_vecParents)

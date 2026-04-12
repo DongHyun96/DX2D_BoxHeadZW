@@ -199,6 +199,7 @@ void AssetMgr::CreateEngineShader()
     shader->SetDSType(DS_TYPE::LESS);
     
     // 2개의 Parameter
+    shader->AddShaderParam(SHADER_PARAM::INT, 0, L"UseAnisotropicSampling" );
     shader->AddShaderParam(SHADER_PARAM::VEC4, 0, L"TintColor");
     shader->AddShaderParam(SHADER_PARAM::TEX, 0, L"OutColor");
     shader->SetIsProvidedByEngine(true); 
@@ -306,6 +307,7 @@ void AssetMgr::CreateEngineMaterial()
     pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_MASKED);
     
     pMtrl->SetScalar(VEC4_0, Vec4(1.f, 1.f, 1.f, 1.f)); // Tint Color
+    pMtrl->SetScalar(INT_0, 0);
     
     pMtrl->SetIsProvidedByEngine(true);
     
@@ -320,10 +322,9 @@ void AssetMgr::CreateEngineMaterial()
     pMtrl->SetTexture(TEX_0, Find<ATexture>(L"Texture\\Fighter.bmp"));
     pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_MASKED);
 
-    pMtrl->SetScalar(INT_0, 10); // 컴파일러 타입 추론 개입 -> int로 추론
+    pMtrl->SetScalar(INT_0, 0); // 컴파일러 타입 추론 개입 -> int로 추론
     pMtrl->SetScalar(VEC4_0, Vec4(1.f, 1.f, 1.f, 1.f)); // Tint Color
     
-    // pMtrl->SetScalar<int>(INT_0, 10);
     pMtrl->SetIsProvidedByEngine(true);
     AddAsset(pMtrl->GetName(), pMtrl.Get());
     

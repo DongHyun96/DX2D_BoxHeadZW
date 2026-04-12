@@ -34,6 +34,7 @@ public:
     
     void AddObject(const Ptr<GameObject>& _Object);
     void DeregisterAsParent(const Ptr<GameObject>& _Object);
+    void MoveParentObjectOrder(const Ptr<GameObject>& _Object, int _Dir);
 
 public:
     

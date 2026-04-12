@@ -131,6 +131,9 @@ public:
 	void DisconnectWithParent();
 	void DeregisterAsRootParent();
 	void RegisterAsParent();
+	
+	int GetChildIdx(const Ptr<GameObject>& _Child);
+	void MoveChildOrder(const Ptr<GameObject>& _Child, int _Dir);
 
 public:
 	

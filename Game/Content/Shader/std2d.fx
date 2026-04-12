@@ -3,6 +3,8 @@
 
 #include "value.fx"
 
+#define bUseAnisotropicSampler g_int_0
+
 #define TintColor g_vec4_0
 
 #define RenderOffset g_vec4_3.xy
@@ -80,7 +82,11 @@ float4 PS_Std2D(VS_OUT _input) : SV_Target
 {
     float4 vColor = float4(1.f, 0.f, 1.f, 1.f);
     
-    if (g_btex_0) vColor = g_tex_0.Sample(g_sam_1, _input.vUV);
+    if (g_btex_0)
+    {
+        if (bUseAnisotropicSampler == 1) vColor = g_tex_0.Sample(g_sam_0, _input.vUV);
+        else                             vColor = g_tex_0.Sample(g_sam_1, _input.vUV);
+    }
     
     vColor *= TintColor;
     
