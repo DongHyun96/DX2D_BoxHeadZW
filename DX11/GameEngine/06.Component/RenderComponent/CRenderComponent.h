@@ -17,6 +17,7 @@ private:
     
     Vec2 m_RenderOffset{};
     Vec2 m_RenderScale =  Vec2::One;
+    Vec2 m_RenderPivot =  Vec2(0.5f, 0.5f);
     
 public:
     
@@ -27,12 +28,13 @@ public:
     
 public:
     
-    GET_SET(Ptr<AMesh>, Mesh)
-    GET(Ptr<AMaterial>, Material)
+    GET_SET(Ptr<AMesh>, Mesh);
+    GET(Ptr<AMaterial>, Material);
     void SetMaterial(const Ptr<AMaterial>& _Material) { m_Material = m_SharedMaterial = _Material; }
     
-    GET_SET(Vec2, RenderOffset)
-    GET_SET(Vec2, RenderScale)
+    GET_SET(Vec2, RenderOffset);
+    GET_SET(Vec2, RenderScale);
+    GET_SET(Vec2, RenderPivot);
     
     bool IsInViewRect(const Vec2& _ViewMin, const Vec2& _ViewMax);
     

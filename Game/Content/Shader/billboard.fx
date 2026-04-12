@@ -5,8 +5,9 @@
 
 #define BILLBOARD_SCALE g_vec2_0 // 빌보드의 가로세로 크기정보로 사용
 
-#define RenderOffset (g_vec4_3.xy)
-#define RenderScale  (g_vec4_3.zw)
+#define RenderOffset g_vec4_3.xy
+#define RenderScale  g_vec4_3.zw
+#define RenderPivot  g_vec4_2.xy
 
 struct VS_IN
 {
@@ -35,7 +36,7 @@ VS_OUT VS_Billboard(VS_IN _input)
     
     float4 vWorld = mul(float4(RenderOffset, 0.f, 1.f), g_matWorld);
     float4 vView  = mul(vWorld, g_matView);
-    vView.xy += (_input.vPos.xy * RenderScale) * BILLBOARD_SCALE;
+    vView.xy += ((_input.vPos.xy - (RenderPivot - float2(0.5f, 0.5f))) * RenderScale) * BILLBOARD_SCALE;
 
     float4 vProj = mul(vView, g_matProj);
  

@@ -7,6 +7,7 @@
 
 CRenderComponent::CRenderComponent(COMPONENT_TYPE _Type)
     : Component(_Type)
+    , m_RenderPivot(0.5f, 0.5f)
 {
 }
 
@@ -16,6 +17,7 @@ CRenderComponent::CRenderComponent(const CRenderComponent& _Origin)
     , m_SharedMaterial  (_Origin.m_SharedMaterial)
     , m_RenderOffset    (_Origin.m_RenderOffset)
     , m_RenderScale     (_Origin.m_RenderScale)
+    , m_RenderPivot     (_Origin.m_RenderPivot)
 {
     // 원본 렌더컴포넌트가 공유재질(에셋 매니저로부터 관리되는)을 사용하고 있다면
     if (_Origin.m_Material == _Origin.m_SharedMaterial)
@@ -78,6 +80,9 @@ void CRenderComponent::ApplyRenderTransformConst()
     m_Material->SetScalar(VEC4_3, Vec4(
         m_RenderOffset.x, m_RenderOffset.y,
         m_RenderScale.x,  m_RenderScale.y));
+
+    // Render 전용 Pivot 값 세팅
+    m_Material->SetScalar(VEC4_2, Vec4(m_RenderPivot.x, m_RenderPivot.y, 0.f, 0.f));
 }
 
 void CRenderComponent::DeregisterFromRenderDomain()
@@ -111,12 +116,18 @@ bool CRenderComponent::IsInViewRect(const Vec2& _ViewMin, const Vec2& _ViewMax)
     Vec2 vWorldPos   = ToVec2(Transform()->GetWorldPos());
     Vec2 vWorldScale = ToVec2(Transform()->GetWorldScale());
 
-    // Render Offset과 Render Scale 적용
-    // 최종 위치 = WorldPos + RenderOffset
-    // 최종 크기 = WorldScale * RenderScale
-
-    Vec2 vFinalPos   = vWorldPos + m_RenderOffset;
+    // Render Offset, Scale, Pivot 적용
+    // 최종 위치는 Transform WorldPos + RenderOffset 임을 가정하되,
+    // Pivot이 (0.5, 0.5)가 아닐 경우의 오프셋 보정이 필요함
+    
+    // Pivot을 고려한 최종 스케일
     Vec2 vFinalScale = vWorldScale * m_RenderScale;
+
+    // Pivot 보정: (Pivot - 0.5) * vFinalScale 만큼 이동해야 함
+    // (메쉬 로컬 좌표가 -0.5 ~ 0.5 이고 중심이 0,0 이므로)
+    Vec2 vPivotOffset = (m_RenderPivot - Vec2(0.5f, 0.5f)) * vFinalScale;
+    
+    Vec2 vFinalPos = vWorldPos + m_RenderOffset - vPivotOffset;
 
     Vec2 vMin = vFinalPos - vFinalScale * 0.5f;
     Vec2 vMax = vFinalPos + vFinalScale * 0.5f;

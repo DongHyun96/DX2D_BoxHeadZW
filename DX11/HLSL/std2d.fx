@@ -5,8 +5,9 @@
 
 #define TintColor g_vec4_0
 
-#define RenderOffset (g_vec4_3.xy)
-#define RenderScale  (g_vec4_3.zw)
+#define RenderOffset g_vec4_3.xy
+#define RenderScale  g_vec4_3.zw
+#define RenderPivot  g_vec4_2.xy
 
 struct VS_IN
 {
@@ -34,7 +35,7 @@ VS_OUT VS_Std2D(VS_IN _input)
     //                          (  Pos.x    Pos.y      Pos.x    1) 
     // 동차좌표가 1이나 0 이냐에 따라서, 곱하는 변환행렬의 4행 이동정보를 적용할지 말지가 결정된다
     
-    float2 localXY = _input.vPos.xy * RenderScale + RenderOffset;
+    float2 localXY = (_input.vPos.xy - (RenderPivot - float2(0.5f, 0.5f))) * RenderScale + RenderOffset;
     float4 vWorld  = mul(float4(localXY, _input.vPos.z, 1.f), g_matWorld);
     
     float4 vView    = mul(vWorld, g_matView);

@@ -9,6 +9,7 @@
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
 
 #include "Source/Scripts/RoundHandler/CRoundHandler.h"
+#include "Source/Scripts/UIScript/CProgressBar.h"
 
 namespace
 {
@@ -183,6 +184,23 @@ void ScriptUI::TickScriptParams()
 			AddItemHeight();
 		}
 		break;
+		case SCRIPT_PARAM::PROGRESS_BAR:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			ImGui::SameLine(120);
+
+			string Key = "##ProgressBar";
+			Key += ID + GetUIKey();
+
+			CProgressBar* Progressbar = static_cast<CProgressBar*>(vecParam[i].Data);
+			float Ratio = Progressbar->GetRatio();
+			
+			if (ImGui::InputFloat(Key.c_str(), &Ratio, vecParam[i].Step))
+				Progressbar->SetRatio(Ratio);
+			
+			AddItemHeight();
+		}
+			break;
 		case SCRIPT_PARAM::VEC2:
 		{
 			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());

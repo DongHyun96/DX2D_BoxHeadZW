@@ -13,11 +13,14 @@ public:
     CLONE(CProgressBar)
 
 public:
+
+    virtual void Init() override;
+    virtual void Begin() override;
     virtual void Tick() override;
     
 public:
     
-    void SetRatio(float _fRatio) { m_fRatio = _fRatio; }
+    void SetRatio(float _fRatio);
     float GetRatio() const { return m_fRatio; }
 
 };

@@ -7,8 +7,9 @@
 #define LeftTopUV   g_vec2_0
 #define SliceUV     g_vec2_1
 
-#define RenderOffset (g_vec4_3.xy)
-#define RenderScale (g_vec4_3.zw)
+#define RenderOffset g_vec4_3.xy
+#define RenderScale  g_vec4_3.zw
+#define RenderPivot  g_vec4_2.xy
 
 
 struct VS_IN
@@ -28,7 +29,7 @@ VS_OUT VS_Sprite(VS_IN _input)
 {
     VS_OUT output = (VS_OUT) 0.f;
     
-    float2 localXY = _input.vPos.xy * RenderScale + RenderOffset;
+    float2 localXY = (_input.vPos.xy - (RenderPivot - float2(0.5f, 0.5f))) * RenderScale + RenderOffset;
     float4 vWorld  = mul(float4(localXY, _input.vPos.z, 1.f), g_matWorld);
     
     float4 vView = mul(vWorld, g_matView);

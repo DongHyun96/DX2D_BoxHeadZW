@@ -18,8 +18,9 @@ StructuredBuffer<SpriteInfo> g_Buffer : register(t20);
 #define ROW         g_int_0
 #define COL         g_int_1
 
-#define RenderOffset (g_vec4_3.xy)
-#define RenderScale  (g_vec4_3.zw)
+#define RenderOffset g_vec4_3.xy
+#define RenderScale  g_vec4_3.zw
+#define RenderPivot  g_vec4_2.xy
 
 
 struct VS_IN
@@ -44,7 +45,7 @@ VS_OUT VS_Tile(VS_IN _input)
     // _input.vPos.xy += float2(0.5f, -0.5f);    
     
     // float2 baseXY  = _input.vPos.xy + float2(0.5f, -0.5f);
-    float2 localXY = _input.vPos.xy * RenderScale + RenderOffset;
+    float2 localXY = (_input.vPos.xy - (RenderPivot - float2(0.5f, 0.5f))) * RenderScale + RenderOffset;
     float4 vWorld  = mul(float4(localXY, _input.vPos.z, 1.f), g_matWorld);
     
     float4 vView = mul(vWorld, g_matView);

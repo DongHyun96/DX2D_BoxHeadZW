@@ -32,7 +32,7 @@ void CText::Init()
     
     AddScriptParam(SCRIPT_PARAM::WSTRING, &m_strText, L"Text");
     AddScriptParam(SCRIPT_PARAM::WSTRING, &m_FontStyle, L"FontStyle");
-    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_fFontSize, L"FontSize");
+    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_fFontSize, L"FontSize", false);
     AddScriptParam(SCRIPT_PARAM::COLOR, &m_Color, L"Color");
     
     GetOwner()->SetIsTextObject(true);
