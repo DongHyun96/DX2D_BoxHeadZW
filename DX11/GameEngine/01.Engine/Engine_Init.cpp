@@ -43,7 +43,9 @@ HRESULT Engine::Init(HINSTANCE _hInst, UINT _Width, UINT _Height, bool _EditorMo
     // popUp 모드로 타이틀 창 제거 가능
     
     UINT Style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-    m_hWnd = CreateWindowW(L"MyGame", L"MyGame", /*WS_POPUP*/ /*WS_OVERLAPPEDWINDOW*/ Style, CW_USEDEFAULT, 0, CW_USEDEFAULT,
+    if (!m_EditorMode) Style = WS_POPUP;
+
+    m_hWnd = CreateWindowW(L"MyGame", L"MyGame", Style, CW_USEDEFAULT, 0, CW_USEDEFAULT,
         0, nullptr, nullptr, m_hInst, nullptr);
     
     if (!m_hWnd) return E_FAIL;
@@ -57,7 +59,8 @@ HRESULT Engine::Init(HINSTANCE _hInst, UINT _Width, UINT _Height, bool _EditorMo
     RECT rt = {0, 0, static_cast<LONG>(m_Resolution.x), static_cast<LONG>(m_Resolution.y)};
 
     // 느낌표 두개는 bool type으로 맞추기 위함
-    AdjustWindowRect(&rt, Style, !!GetMenu(m_hWnd));
+    HMENU hMenu = GetMenu(m_hWnd);
+    AdjustWindowRect(&rt, Style, !!hMenu);
     
     // 윈도우 크기 및 위치 변경
     SetWindowPos(m_hWnd, nullptr, 0, 0, rt.right - rt.left, rt.bottom - rt.top, 0);

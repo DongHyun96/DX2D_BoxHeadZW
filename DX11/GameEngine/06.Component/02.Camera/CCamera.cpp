@@ -53,8 +53,8 @@ void CCamera::Init()
     // Clipping Plane -> 1 ~ 10000
     // -2500 ~ 2500 -> 맵 z 범위 (또는 y 범위)
     // -5000 ~ 5000
-    /*if (GetOwner()->GetName() == L"UICamera")
-        RenderMgr::GetInst()->RegisterUICamera(this);*/
+    if (GetOwner()->GetName() == L"UICamera")
+        RenderMgr::GetInst()->RegisterUICamera(this);
     
     // RenderMgr에 카메라(본인)을 등록
     if (GetOwner()->GetName() == L"MainCamera")
