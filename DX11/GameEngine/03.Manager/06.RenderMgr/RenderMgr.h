@@ -34,7 +34,9 @@ private:
         {RENDER_DOMAIN::DOMAIN_TRANSPARENT, {}},
         {RENDER_DOMAIN::DOMAIN_POSTPROCESS, {}}
     };
-    
+
+    // Script라 Level stop 상황에서 Text 렌더링 처리가 안됨
+    vector<class CText*> m_GameTexts{};
     
 private:
     
@@ -77,6 +79,8 @@ public:
     Ptr<CCamera> GetUICamera() const { return m_UICam; }
     
     void RegisterLight2D(const Ptr<CLight2D>& _Light2D) { m_vecLight2D.push_back(_Light2D); }
+
+    void RegisterGameText(CText* _Text) { m_GameTexts.push_back(_Text); }
     
 public:
     

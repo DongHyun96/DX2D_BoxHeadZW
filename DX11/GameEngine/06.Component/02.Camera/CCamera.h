@@ -83,6 +83,7 @@ public:
     virtual void FinalTick() override;
     
     void Render(bool _bUseRenderDomainSort = true);
+    void RenderGameUI();
     
 private:
     

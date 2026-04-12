@@ -52,6 +52,9 @@ void KeyMgr::Init()
 
 void KeyMgr::Tick()
 {
+    Vec2 Temp = GetMouseUIPos();
+    DebugUtil::SetPermanentDebugLog("MousePosForUI", "Mouse UI pos : " + to_string(Temp.x) + ", " + to_string(Temp.y), DEF_COLOR_GREEN);
+    
     // GetFocus() : 현재 포커싱 중인 윈도우 핸들 반환
     // 현재 ImGui에 Focus가 잡혔을 때
     if (Engine::GetInst()->IsEditorMode())
@@ -107,6 +110,42 @@ void KeyMgr::Tick()
     
     // 마우스 월드좌표 계산 (World 상의 2D좌표)
     CalculateMouseWorldPos();
+}
+
+Vec3 KeyMgr::GetMouseWorldPosByCamera(const Ptr<CCamera>& _Cam) const
+{
+    if (!_Cam) return Vec3::Zero;
+
+    RECT clientRect{};
+    GetClientRect(Engine::GetInst()->GetMainWndHwnd(), &clientRect);
+    const float clientWidth = static_cast<float>(clientRect.right - clientRect.left);
+    const float clientHeight = static_cast<float>(clientRect.bottom - clientRect.top);
+
+    if (clientWidth <= 0.f || clientHeight <= 0.f)
+        return Vec3::Zero;
+
+    // Client(0~해상도) -> NDC(-1~1)
+    const float ndcX = (m_MousePos.x / clientWidth) * 2.f - 1.f;
+    const float ndcY = 1.f - (m_MousePos.y / clientHeight) * 2.f;
+
+    const float worldW = _Cam->GetWidth() * _Cam->GetOrthoScale();
+    const float worldH = (_Cam->GetWidth() / _Cam->GetAspectRatio()) * _Cam->GetOrthoScale();
+
+    Vec3 vWorld = _Cam->Transform()->GetWorldPos();
+    vWorld += _Cam->Transform()->GetDir(DIR::RIGHT) * (ndcX * worldW * 0.5f);
+    vWorld += _Cam->Transform()->GetDir(DIR::UP) * (ndcY * worldH * 0.5f);
+    vWorld.z = 0.f;
+
+    return vWorld;
+}
+
+Vec2 KeyMgr::GetMouseUIPos() const
+{
+    Ptr<CCamera> pUICam = RenderMgr::GetInst()->GetUICamera();
+    if (!pUICam)
+        return GetMouseWorldPos2D();
+
+    return ToVec2(GetMouseWorldPosByCamera(pUICam));
 }
 
 Vec3 KeyMgr::GetMouseWorldPosByViewport(const Vec2& _LocalPos, const Vec2& _ViewportSize) const

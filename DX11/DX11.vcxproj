@@ -337,6 +337,10 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\Structure\CTurret.h" />
     <ClInclude Include="Source\Scripts\Structure\StructureStat\CStructureStat.h" />
     <ClInclude Include="Source\Scripts\Structure\TurretAttackStrategy.h" />
+    <ClInclude Include="Source\Scripts\UIScript\CButton.h" />
+    <ClInclude Include="Source\Scripts\UIScript\CGameUI.h" />
+    <ClInclude Include="Source\Scripts\UIScript\CProgressBar.h" />
+    <ClInclude Include="Source\Scripts\UIScript\CText.h" />
     <ClInclude Include="Source\UserHeader\userDefine.h" />
     <ClInclude Include="Source\UserHeader\userEnum.h" />
     <ClInclude Include="Source\UserHeader\userStruct.h" />
@@ -1803,6 +1807,10 @@ CodeGen.exe</Command>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Source\Scripts\Structure\TurretAttackStrategy.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\CButton.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\CGameUI.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\CProgressBar.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\CText.cpp" />
     <ClCompile Include="Source\UserHeader\userStruct.cpp" />
   </ItemGroup>
   <ItemGroup>

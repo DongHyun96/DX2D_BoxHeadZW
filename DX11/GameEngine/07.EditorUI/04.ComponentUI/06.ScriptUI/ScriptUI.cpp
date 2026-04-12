@@ -220,6 +220,23 @@ void ScriptUI::TickScriptParams()
 			
 		}
 			break;
+		case SCRIPT_PARAM::COLOR:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			ImGui::SameLine(120);
+
+			string Key = "##Color";
+			Key += ID + GetUIKey();
+
+			Vec4* ReceivedVecAddress = static_cast<Vec4*>(vecParam[i].Data);
+			
+			
+			static ImGuiColorEditFlags base_flags = ImGuiColorEditFlags_Float;
+			ImGui::ColorEdit4(Key.c_str(), *ReceivedVecAddress, base_flags);
+			AddItemHeight();
+			
+		}
+			break;
 		case SCRIPT_PARAM::WSTRING:
 		{
 			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());

@@ -93,8 +93,15 @@ public:
 public:
 	
 	KEY_STATE GetKeyState(KEY _Key) const { return m_vecKeys[static_cast<UINT>(_Key)].State; }
+
+	const Vec2& GetMousePos() const { return m_MousePos; }
+	Vec2 GetMouseUIPos() const;
 	
-	GET(Vec2, MousePos);
+	/// <summary>
+	/// 특정 카메라를 기준으로 마우스 월드좌표 계산
+	/// </summary>
+	Vec3 GetMouseWorldPosByCamera(const Ptr<CCamera>& _Cam) const;
+	
 	GET(Vec2, MousePrevPos);
 	GET(Vec2, MouseDir);
 
@@ -128,7 +135,7 @@ public:
 		m_Wheel = _Wheel / abs(_Wheel);
 	}
 	
-	GET_SET(bool, Active)
+	GET_SET(bool, Active);
 	
 };
 

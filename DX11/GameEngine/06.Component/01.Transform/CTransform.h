@@ -99,6 +99,8 @@ public:
     Vec3 GetWorldPos() const { return m_MatWorld.Translation(); }
     Vec2 GetWorldPos2D() const { return ToVec2(m_MatWorld.Translation()); }
     Vec3 GetWorldScale() const;
+    Vec2 GetWorldScale2D() const { return ToVec2(GetWorldScale()); }
+    
 
     Vec3 GetPivot() const { return m_Pivot; }
     void SetPivot(const Vec3& pivot) { this->m_Pivot = pivot; }

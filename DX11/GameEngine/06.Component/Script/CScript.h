@@ -15,6 +15,7 @@ enum class SCRIPT_PARAM
     VEC2,
     VEC3,
     VEC4,
+    COLOR,
     MATRIX,
     WSTRING,
     TEXTURE,
@@ -56,7 +57,7 @@ public:
     virtual void Tick() = 0;
     
     // final - 최종구현이며 자식 클래스에서 더 이상 구현할 수 없다
-    virtual void FinalTick() override final {};
+    virtual void FinalTick() override final {}
     
 public:
     

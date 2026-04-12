@@ -250,6 +250,50 @@ void CCamera::Render(bool _bUseRenderDomainSort)
 
 }
 
+void CCamera::RenderGameUI()
+{
+    g_Trans.matView = m_matView;
+    g_Trans.matProj = m_matProj;
+    
+    Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
+    if (!pCurLevel) return;
+
+    FlipbookRenderInstancing::BeginInstancing();
+    BillboardRenderInstancing::BeginInstancing();
+    SpriteRenderInstancing::BeginInstancing();
+
+    
+    // 레이어에 소속된 모든 오브젝트를 가져온다
+    Layer* pLayer = pCurLevel->GetLayer(MAX_LAYER - 1);
+    const vector<Ptr<GameObject>>& vecObjects = pLayer->GetAllObjects();
+
+    COMPONENT_TYPE ComType = COMPONENT_TYPE::END;
+    for (const Ptr<GameObject>& object : vecObjects)
+    {
+        // 오브젝틀가 렌더링을 할 수 있는 상태인지 확인
+        if (!object->GetRenderCom() || !object->GetRenderCom()->GetMesh() || !object->GetRenderCom()->GetMaterial())
+            continue;
+
+        // 2D Frustum Culling
+        if (m_Type == PROJ_TYPE::ORTHOGRAPHIC && !object->GetRenderCom()->IsInViewRect(m_ViewRectMin, m_ViewRectMax))
+            continue;
+
+        object->Render();
+
+        /*if (object->GetRenderCom()->GetMaterial()->GetDomain() == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
+        {
+            CFlipbookRender::FlushInstancing();
+            CBillboardRender::FlushInstancing();
+            CSpriteRender::FlushInstancing();
+        }*/
+    }
+        
+    FlipbookRenderInstancing::FlushInstancing();
+    BillboardRenderInstancing::FlushInstancing();
+    SpriteRenderInstancing::FlushInstancing();
+    
+}
+
 /*void CCamera::Render()
 {
     g_Trans.matView = m_matView;

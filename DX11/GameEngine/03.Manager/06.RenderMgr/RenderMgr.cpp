@@ -7,6 +7,7 @@
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/05.GameObject/GameObject.h"
+#include "Source/Scripts/UIScript/CText.h"
 
 RenderMgr::RenderMgr()
 {
@@ -34,8 +35,10 @@ void RenderMgr::Progress()
     // 렌더링 시작전에 할 일 처리
     Render_Start();
 
+    LEVEL_STATE CurrentLevelState = LevelMgr::GetInst()->GetLevelState();
+    
     // Level의 상태가 Play 상태면, 등록된 MainCam으로 렌더링
-    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY)
+    if (CurrentLevelState == LEVEL_STATE::PLAY)
     {
         // 카메라 기반 렌더링
         // 카메라가 세팅되어있지 않다면 rendering 불가
@@ -61,7 +64,16 @@ void RenderMgr::Progress()
     if (m_UICam.Get() && m_UICam->GetOwner()->GetActive())
     {
         // m_UICam->SortObject();
-        m_UICam->Render(false);
+        m_UICam->RenderGameUI();
+        
+        // 만일 Level 상태가 멈춰있다면
+        if (CurrentLevelState != LEVEL_STATE::PLAY)
+        {
+            for (CText* Text : m_GameTexts)
+            {
+                Text->Render();
+            }
+        }
     }
     
     
@@ -84,6 +96,8 @@ void RenderMgr::OnLevelPlayToStop()
     GameObject* UICamObject = LevelMgr::GetInst()->GetCurLevel()->FindObjectByName(L"UICamera").Get();
     if (UICamObject) m_UICam = UICamObject->Camera();
     else m_UICam = nullptr;
+    
+    m_GameTexts.clear();
 }
 
 void RenderMgr::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
@@ -95,6 +109,7 @@ void RenderMgr::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
     if (UICamObject) m_UICam = UICamObject->Camera();
     else m_UICam = nullptr;
     
+    m_GameTexts.clear();
 }
 
 void RenderMgr::Render_Start()
