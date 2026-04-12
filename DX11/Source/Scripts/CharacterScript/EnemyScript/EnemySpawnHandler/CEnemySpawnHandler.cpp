@@ -8,6 +8,8 @@
 #include "Source/Scripts/CharacterScript/EnemyScript/Mummy/CMummy.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/PerceptionHandler/CPerceptionHandler.h"
 #include "Source/Scripts/FirstSpawnLocManager/CFirstSpawnLocManager.h"
+#include "Source/Scripts/UIScript/CText.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 
 CEnemySpawnHandler::CEnemySpawnHandler()
@@ -36,23 +38,7 @@ void CEnemySpawnHandler::Begin()
 
 void CEnemySpawnHandler::Tick()
 {
-    /*if (KEY_TAP(KEY::MRB))
-    {
-        /*for (int i = 0; i < 75; ++i)
-        {
-            ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, static_cast<int>(ENEMY_TYPE::END) - 1));
-            SpawnEnemyOnAvailableCell(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
-        }#1#
-        
-        for (int i = 0; i < 5; ++i)
-        {
-            // TODO : First Spawn 처리 테스팅 스폰할 것
-            SpawnEnemyOnFirstSpawnArea(static_cast<ENEMY_TYPE>(GetRandom(0, 4)), FIRST_SPAWN_LOC2);
-			// SpawnEnemy(ENEMY_TYPE::ZOMBIE, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
-        }
-    }*/
-    
-    DebugUtil::SetPermanentDebugLog("Zombie Count", "Zombie Alive Count : " + to_string(m_SpawnedCount), DEF_COLOR_CYAN);
+    GM->GetIngameUIManager()->GetZombieAliveCount()->SetText(to_wstring(m_SpawnedCount));
 }
 
 GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType, FIRST_SPAWN_LOC _SpawnLoc)

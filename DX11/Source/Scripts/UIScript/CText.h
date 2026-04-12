@@ -30,6 +30,16 @@ public:
     void Render();
     
 public:
+    
+    void SetText(const wstring& _Text) { m_strText = _Text; }
+    void SetAlpha(float _Alpha) { m_Color.w = _Alpha; }
+    
+    /*void SetFontSize(float _FontSize) { m_fFontSize = _FontSize; }
+    void SetFontStyle(const wstring& _FontStyle) { m_FontStyle = _FontStyle; }
+    void SetColor(const Vec4& _Color) { m_Color = _Color; }
+    void SetAlign(FONT_ALIGN _Align) { m_Align = _Align; }*/
+    
+public:
 
     virtual void SaveToLevelFile(FILE* _File) override;
     virtual void LoadFromLevelFile(FILE* _File) override;

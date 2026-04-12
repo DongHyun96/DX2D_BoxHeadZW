@@ -17,6 +17,14 @@ struct AmmoCountUIArea
     GameObject*                             BulletIcon{};
     
     map<PLAYER_STRUCTURE_TYPE, GameObject*> StructureIcons{};
+    
+    class CProgressBar*                     HPBar{};
+};
+
+struct RoundIndicators
+{
+    CText* RoundText{};
+    CText* RoundTimeText{};
 };
 
 class CIngameUIManager : public CScript
@@ -24,6 +32,8 @@ class CIngameUIManager : public CScript
 private:
 
     AmmoCountUIArea m_AmmoCountUIArea{};
+    RoundIndicators m_RoundIndicators{};
+    CText*          m_ZombieAliveCount{};
     
 public:
     CIngameUIManager();
@@ -34,7 +44,17 @@ public:
 
     virtual void Begin() override;
     virtual void Tick() override;
+    
+public:
+    
+    AmmoCountUIArea& GetAmmoCountUIAreaRef()        { return m_AmmoCountUIArea; }
+    RoundIndicators& GetRoundIndicatorsRef()        { return m_RoundIndicators; }
+    CText*           GetZombieAliveCount() const    { return m_ZombieAliveCount; }
 
+private:
+
+    void InitMembers();
+    
 public:
     
     void SaveToLevelFile(FILE* _File) override {}

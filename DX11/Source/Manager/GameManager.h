@@ -44,6 +44,8 @@ private:
     
     class CFirstSpawnLocManager* m_FirstSpawnLocManager{};
     
+    class CIngameUIManager* m_InGameUIManager{};
+    
 public:
     
     /// <summary>
@@ -81,6 +83,9 @@ public:
 
     void SetFirstSpawnLocManager(CFirstSpawnLocManager* _FirstSpawnLocManager) { m_FirstSpawnLocManager = _FirstSpawnLocManager; }
     CFirstSpawnLocManager* GetFirstSpawnLocManager() const { return m_FirstSpawnLocManager; }
+    
+    void SetIngameUIManager(CIngameUIManager* _InGameUIManager) { m_InGameUIManager = _InGameUIManager; }
+    CIngameUIManager* GetIngameUIManager() const { return m_InGameUIManager; }
     
 public: // Effect Spawn 관련
 
