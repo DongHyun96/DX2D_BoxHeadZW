@@ -22,6 +22,7 @@ public:
 public:
 
     virtual bool TakeDamage(float _DamageAmount, GameObject* _DamageCauser) override;
+    virtual bool ApplyHeal(float _HealAmount) override;
     virtual bool ApplyBoost(float _BoostAmount);
     
 public:

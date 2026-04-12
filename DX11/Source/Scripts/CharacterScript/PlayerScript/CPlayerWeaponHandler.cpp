@@ -6,10 +6,12 @@
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/04.Asset/09.Prefab/APrefab.h"
 #include "InvenScript/CEquipmentScript.h"
+#include "InvenScript/CInvenScript.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/AirStrike/CAirStrike.h"
 #include "Source/Scripts/ProjectileScript/CGrenade.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 CPlayerWeaponHandler::CPlayerWeaponHandler()
     : CScript(SCRIPT_TYPE::PLAYERWEAPONHANDLER)
@@ -156,7 +158,8 @@ void CPlayerWeaponHandler::TickFireWeapon()
     if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
     {
         const Vec2 MousePos = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
-        Weapon->Fire(MuzzleWorldPos, MousePos - MuzzleWorldPos);
+        if (Weapon->Fire(MuzzleWorldPos, MousePos - MuzzleWorldPos))
+            m_PlayerMainScript->GetOwner()->GetScriptComponent<CInvenScript>()->ReduceCurrentAmmoCount(CurrentHandState);
         m_LastTickFired = true;
     }
 }
@@ -190,6 +193,11 @@ void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
         const float FireInterval = 60.f / BuffData.FireRPM;
         Weapon->SetFireIntervalTime(FireInterval);
         Weapon->SetDamageAmountPerRound(BuffData.DamageAmountPerRound);
+        
+        // UI 업데이트
+        CInvenScript* Inven = GM->GetPlayerObject()->GetScriptComponent<CInvenScript>().Get();
+        
+        GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().UpdateToGun(m_HandState, Inven->GetCurrentAmmoCount(_HandState));
     }
 }
 

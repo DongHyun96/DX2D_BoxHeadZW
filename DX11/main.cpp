@@ -55,9 +55,15 @@ int APIENTRY wWinMain
     if (FAILED(Engine::GetInst()->Init(hInstance, RESOL_X, RESOL_Y, true)))
         return 0;
 
-    // LevelMgr::GetInst()->LoadTestLevel();
+#ifdef _DEBUG
     ChangeLevel(L"Level\\NightSceneLevel.lv", true);
-    //ChangeLevelState(LEVEL_STATE::PLAY);
+#else
+    ChangeLevel(L"Level\\NightSceneLevel.lv", true);
+    ChangeLevelState(LEVEL_STATE::PLAY);
+#endif
+    
+    // LevelMgr::GetInst()->LoadTestLevel();
+    // ChangeLevelState(LEVEL_STATE::PLAY);
     // CreateTestLevel();
     
     // 단축키 테이블 정보 핸들 받음

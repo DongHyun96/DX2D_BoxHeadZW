@@ -33,6 +33,7 @@ public:
     
     void SetText(const wstring& _Text) { m_strText = _Text; }
     void SetAlpha(float _Alpha) { m_Color.w = _Alpha; }
+    float GetAlpha() const { return m_Color.w; }
     
     /*void SetFontSize(float _FontSize) { m_fFontSize = _FontSize; }
     void SetFontStyle(const wstring& _FontStyle) { m_FontStyle = _FontStyle; }

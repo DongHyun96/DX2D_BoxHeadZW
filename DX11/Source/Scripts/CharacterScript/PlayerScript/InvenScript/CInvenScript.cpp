@@ -2,6 +2,8 @@
 #include "CInvenScript.h"
 
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 CInvenScript::CInvenScript()
     : CScript(SCRIPT_TYPE::INVENSCRIPT)
@@ -14,14 +16,14 @@ CInvenScript::~CInvenScript()
 
 void CInvenScript::Begin()
 {
-    // For testing (나중에는 파밍해서 처리할 것)
+    // 초기값 부여
     m_mapStructureCount = 
     {
-        {PLAYER_STRUCTURE_TYPE::BARRICADE,          50},    
-        {PLAYER_STRUCTURE_TYPE::BARREL,             50},    
-        {PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN, 50},    
-        {PLAYER_STRUCTURE_TYPE::TURRET_MORTAR,      50},    
-        {PLAYER_STRUCTURE_TYPE::TURRET_ROCKET,      50},    
+        {PLAYER_STRUCTURE_TYPE::BARRICADE,          10},    
+        {PLAYER_STRUCTURE_TYPE::BARREL,             10},    
+        {PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN, 5},    
+        {PLAYER_STRUCTURE_TYPE::TURRET_MORTAR,      5},    
+        {PLAYER_STRUCTURE_TYPE::TURRET_ROCKET,      5},    
     };
     
 }
@@ -53,4 +55,20 @@ int CInvenScript::IncreaseCurrentStructureCount(PLAYER_STRUCTURE_TYPE _Structure
 {
     m_mapStructureCount[_StructureType] += _IncreaseAmount;
     return m_mapStructureCount[_StructureType];
+}
+
+int CInvenScript::GetStructureCount(PLAYER_STRUCTURE_TYPE _StructureType) const
+{
+    if (!m_mapStructureCount.contains(_StructureType)) return 0;
+    return m_mapStructureCount.at(_StructureType);
+}
+
+void CInvenScript::ReduceCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _ReduceAmount)
+{
+    if (!m_AmmoLeft.contains(_HandState)) return;
+    
+    m_AmmoLeft[_HandState] = max(m_AmmoLeft[_HandState] - _ReduceAmount, 0);
+    
+    if (_HandState != PLAYER_HANDSTATE::PISTOL)
+        GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().UpdateCurrentAmmoCount(m_AmmoLeft[_HandState]);   
 }

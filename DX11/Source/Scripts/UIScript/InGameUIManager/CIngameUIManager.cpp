@@ -97,7 +97,7 @@ void CIngameUIManager::InitMembers()
         else if (Name == L"PistolIcon")     m_AmmoCountUIArea.WeaponIcons[PLAYER_HANDSTATE::PISTOL] = Current.Get();
         else if (Name == L"UziIcon")        m_AmmoCountUIArea.WeaponIcons[PLAYER_HANDSTATE::UZI] = Current.Get();
         else if (Name == L"ShotgunIcon")    m_AmmoCountUIArea.WeaponIcons[PLAYER_HANDSTATE::SHOTGUN] = Current.Get();
-        else if (Name == L"MiniGunIcon")    m_AmmoCountUIArea.WeaponIcons[PLAYER_HANDSTATE::MINIGUN] = Current.Get();
+        else if (Name == L"MingunIcon")    m_AmmoCountUIArea.WeaponIcons[PLAYER_HANDSTATE::MINIGUN] = Current.Get();
         else if (Name == L"RocketIcon")     m_AmmoCountUIArea.WeaponIcons[PLAYER_HANDSTATE::ROCKET] = Current.Get();
 
         // Structure Icons

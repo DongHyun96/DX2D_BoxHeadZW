@@ -10,6 +10,7 @@
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/InvenScript/CInvenScript.h"
 #include "Source/Scripts/Structure/CStructure.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 set<UINT> CStructureHandler::s_setTurretHitScanLayers{};
 
@@ -113,6 +114,8 @@ void CStructureHandler::UpdateCurrentStructureHolding()
         UpdateToNextStructureTypeHolding();
     else if (KeyMgr::GetInst()->GetMouseWheel() == -1)
         UpdateToPrevStructureTypeHolding();
+    
+    GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().UpdateToStructure(m_CurrentStructureHolding, m_InvenScript->GetStructureCount(m_CurrentStructureHolding));
 
 }
 

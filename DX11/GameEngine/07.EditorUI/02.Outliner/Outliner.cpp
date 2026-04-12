@@ -45,8 +45,12 @@ void Outliner::Tick_UI()
     bool bPrevShowOnlyActive = m_bShowOnlyActiveObjects;
     ImGui::Checkbox("Show Only Active", &m_bShowOnlyActiveObjects);
 
-    if (bPrevShowOnlyActive != m_bShowOnlyActiveObjects)
+    ImGui::Text("Search : "); ImGui::SameLine();
+    ImGui::InputText("##GameObjectSearch", m_SearchBuf, sizeof(m_SearchBuf));
+
+    if (bPrevShowOnlyActive != m_bShowOnlyActiveObjects || strcmp(m_PrevSearchBuf, m_SearchBuf) != 0)
     {
+        strcpy_s(m_PrevSearchBuf, m_SearchBuf);
         ReNew();
     }
 
@@ -310,6 +314,20 @@ void Outliner::ReNew()
 
 void Outliner::AddGameObject(const Ptr<TreeNode>& _ParentNode, const Ptr<GameObject>& _Object)
 {
+    // Search Filter: 현재 노드 혹은 자식 노드 중 검색어와 일치하는 것이 없으면 스킵
+    if (m_SearchBuf[0] != '\0')
+    {
+        string searchStr = m_SearchBuf;
+        std::transform(searchStr.begin(), searchStr.end(), searchStr.begin(),
+            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+        if (!ShouldShowObject(_Object.Get(), searchStr))
+        {
+            RegisterActiveStateDelegate(_Object);
+            return;
+        }
+    }
+
     // 필터 옵션: Active한 오브젝트만 표시 옵션이 활성화되었고, 현재 오브젝트가 비활성이면 스킵
     if (m_bShowOnlyActiveObjects && !_Object->GetActive())
     {
@@ -323,8 +341,35 @@ void Outliner::AddGameObject(const Ptr<TreeNode>& _ParentNode, const Ptr<GameObj
     ParentNode->SetTextDimmed(!_Object->GetActive());
     RegisterActiveStateDelegate(_Object);
 
+    // 검색 중이면 노드를 열어서 매칭되는 자식을 보여줌
+    if (m_SearchBuf[0] != '\0')
+    {
+        ParentNode->RequestOpen();
+    }
+
     for (const Ptr<GameObject>& ChildObject : _Object->GetChildren())
         AddGameObject(ParentNode, ChildObject);
+}
+
+bool Outliner::ShouldShowObject(GameObject* _Object, const string& _SearchStr)
+{
+    // 현재 오브젝트 이름 체크
+    wstring wName = _Object->GetName();
+    string name(wName.begin(), wName.end());
+    std::transform(name.begin(), name.end(), name.begin(),
+        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+    if (name.find(_SearchStr) != string::npos)
+        return true;
+
+    // 자식들 중 하나라도 매칭되는게 있는지 재귀적으로 확인
+    for (const auto& child : _Object->GetChildren())
+    {
+        if (ShouldShowObject(child.Get(), _SearchStr))
+            return true;
+    }
+
+    return false;
 }
 
 void Outliner::RegisterActiveStateDelegate(const Ptr<GameObject>& _Object)

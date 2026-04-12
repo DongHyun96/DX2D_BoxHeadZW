@@ -5,6 +5,7 @@
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/EnemySpawnHandler/CEnemySpawnHandler.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 const float CRoundHandler::s_RoundWaitTime = 15.f;
 
@@ -32,38 +33,6 @@ void CRoundHandler::Tick()
     
     switch (m_RoundState)
     {
-    case ROUND_STATE::WAIT:
-    {
-        DebugUtil::SetPermanentDebugLog("RoundState", "RoundState : WAIT", DEF_COLOR_ORANGE);
-        DebugUtil::SetPermanentDebugLog("RoundTimer", "Round Wait Time : " + to_string(m_RoundWaitTimer), DEF_COLOR_ORANGE);
-    }
-        break;
-    case ROUND_STATE::ROUND_GOING:
-    {
-        DebugUtil::SetPermanentDebugLog("RoundState", "RoundState : ROUND_GOING", DEF_COLOR_ORANGE);
-        DebugUtil::SetPermanentDebugLog("RoundTimer", "Round Timer : " + to_string(m_CurrentRoundTimer), DEF_COLOR_ORANGE);
-
-        if (m_ThisRoundAdditionalSpawnLeft.contains(ENEMY_TYPE::ZOMBIE))
-            DebugUtil::SetPermanentDebugLog("ZombieAdditLeft", "ZombieAdditLeft : " + to_string(m_ThisRoundAdditionalSpawnLeft[ENEMY_TYPE::ZOMBIE]), DEF_COLOR_WHITE);
-        else DebugUtil::SetPermanentDebugLog("ZombieAdditLeft", "ZombieAdditLeft : " + to_string(0), DEF_COLOR_WHITE);
-        
-        if (m_ThisRoundAdditionalSpawnLeft.contains(ENEMY_TYPE::MUMMY))
-            DebugUtil::SetPermanentDebugLog("MummyAdditLeft", "MummyAdditLeft : " + to_string(m_ThisRoundAdditionalSpawnLeft[ENEMY_TYPE::MUMMY]), DEF_COLOR_WHITE);
-        else DebugUtil::SetPermanentDebugLog("MummyAdditLeft", "MummyAdditLeft : " + to_string(0), DEF_COLOR_WHITE);
-        
-        if (m_ThisRoundAdditionalSpawnLeft.contains(ENEMY_TYPE::RUNNER))
-            DebugUtil::SetPermanentDebugLog("RunnerAdditLeft", "RunnerAdditLeft : " + to_string(m_ThisRoundAdditionalSpawnLeft[ENEMY_TYPE::RUNNER]), DEF_COLOR_WHITE);
-        else DebugUtil::SetPermanentDebugLog("RunnerAdditLeft", "RunnerAdditLeft : " + to_string(0), DEF_COLOR_WHITE);
-        
-        if (m_ThisRoundAdditionalSpawnLeft.contains(ENEMY_TYPE::VAMPIRE))
-            DebugUtil::SetPermanentDebugLog("VampireAdditLeft", "VampireAdditLeft : " + to_string(m_ThisRoundAdditionalSpawnLeft[ENEMY_TYPE::VAMPIRE]), DEF_COLOR_WHITE);
-        else DebugUtil::SetPermanentDebugLog("VampireAdditLeft", "VampireAdditLeft : " + to_string(0), DEF_COLOR_WHITE);
-        
-        if (m_ThisRoundAdditionalSpawnLeft.contains(ENEMY_TYPE::DEVIL))
-            DebugUtil::SetPermanentDebugLog("DevilAdditLeft", "DevilAdditLeft : " + to_string(m_ThisRoundAdditionalSpawnLeft[ENEMY_TYPE::DEVIL]), DEF_COLOR_WHITE);
-        else DebugUtil::SetPermanentDebugLog("DevilAdditLeft", "DevilAdditLeft : " + to_string(0), DEF_COLOR_WHITE);
-    }
-        break;
     case ROUND_STATE::GAME_OVER: DebugUtil::SetPermanentDebugLog("RoundState", "RoundState : GAMEOVER", DEF_COLOR_ORANGE);
         break;
     }
@@ -76,6 +45,7 @@ void CRoundHandler::HandleTransition()
     case ROUND_STATE::WAIT:
     {
         m_RoundWaitTimer -= DT;
+        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnRoundWaiting(m_RoundWaitTimer);
         
         if (m_RoundWaitTimer > 0.f) return;
         
@@ -86,6 +56,8 @@ void CRoundHandler::HandleTransition()
     case ROUND_STATE::ROUND_GOING:
     {
         m_CurrentRoundTimer += DT;
+        
+        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnRounding();
         
         if (!m_ThisRoundAdditionalSpawnLeft.empty())
         {
@@ -161,6 +133,7 @@ void CRoundHandler::SetRoundState(ROUND_STATE _RoundState)
     case ROUND_STATE::WAIT:
     {
         m_RoundWaitTimer = s_RoundWaitTime;
+        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnRoundWaitStart();
         return;
     }
         
@@ -198,12 +171,14 @@ void CRoundHandler::SetRoundState(ROUND_STATE _RoundState)
         m_AdditionalSpawnTimer    = 0.f;
         m_AllDieCheckTimer        = 0.f;
         
+        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnRoundStart(m_CurrentRoundIdx + 1);
+        
         return;
     }
         
     case ROUND_STATE::GAME_OVER:
     {
-        
+        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnGameOver();
     }
         
     }

@@ -5,7 +5,7 @@
 /// </summary>
 class CStatScript : public CScript
 {
-private:
+protected:
 
     float   m_HPMax{};
     float   m_HP{};
@@ -51,6 +51,7 @@ public:
 public:
     
     float GetHP() const { return m_HP; }
+    float GetMaxHP() const { return m_HPMax; }
     bool IsFullHP() const { return m_HP >= m_HPMax; }
     bool IsDead() const { return m_HP <= 0.f; }
     

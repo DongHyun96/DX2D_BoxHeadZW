@@ -26,7 +26,13 @@ private: // Renaming 관련
     bool        m_RenameMode{};
     char        m_RenameBuf[128]{};
     DWORD_PTR   m_RenameTarget{};
-    
+
+private: // Search 관련
+    char        m_SearchBuf[128]{};
+    char        m_PrevSearchBuf[128]{};
+
+    bool ShouldShowObject(GameObject* _Object, const string& _SearchStr);
+
 public:
     
     Outliner();

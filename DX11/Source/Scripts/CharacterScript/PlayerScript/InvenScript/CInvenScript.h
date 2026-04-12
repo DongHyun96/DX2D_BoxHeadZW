@@ -17,6 +17,15 @@ private:
         {PLAYER_STRUCTURE_TYPE::TURRET_ROCKET,      0},    
     };
     
+    map<PLAYER_HANDSTATE, int> m_AmmoLeft = 
+    {
+        {PLAYER_HANDSTATE::PISTOL,  0}, // Infinite    
+        {PLAYER_HANDSTATE::UZI,     200},    
+        {PLAYER_HANDSTATE::SHOTGUN, 80},    
+        {PLAYER_HANDSTATE::MINIGUN, 400},    
+        {PLAYER_HANDSTATE::ROCKET,  20},    
+    };
+    
 public:
 
     CInvenScript();
@@ -58,6 +67,12 @@ public:
     /// </summary>
     /// <returns> : 늘린 뒤 개수 </returns>
     int IncreaseCurrentStructureCount(PLAYER_STRUCTURE_TYPE _StructureType, int _IncreaseAmount = 1);
+    
+    int GetStructureCount(PLAYER_STRUCTURE_TYPE _StructureType) const;
+    
+    int GetCurrentAmmoCount(PLAYER_HANDSTATE _HandState) const { return m_AmmoLeft.at(_HandState); }
+    void ReduceCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _ReduceAmount = 1);
+    void IncreaseCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _IncreaseAmount = 1) { m_AmmoLeft.at(_HandState) += _IncreaseAmount; }
     
 public:
     

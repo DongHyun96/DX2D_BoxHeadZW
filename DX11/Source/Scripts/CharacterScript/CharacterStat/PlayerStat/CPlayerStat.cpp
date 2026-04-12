@@ -2,7 +2,10 @@
 #include "CPlayerStat.h"
 
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
+#include "Source/Scripts/UIScript/CProgressBar.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 CPlayerStat::CPlayerStat()
     : CCharacterStat(SCRIPT_TYPE::PLAYERSTAT)
@@ -29,14 +32,22 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
     if (!CCharacterStat::TakeDamage(_DamageAmount, _DamageCauser)) return false;
     
     // TODO : 테스트 때문에 무적기 걸어둠
-    ApplyHeal(100.f);
-
+    m_HP = max(1.f, m_HP);
+    
     const PLAYER_MAINSTATE NextState = IsDead() ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::PUSHED_OUT;
     const Ptr<CPlayerScript>& MainPlayerScript = GetOwner()->GetScriptComponent<CPlayerScript>();
+    
 
     MainPlayerScript->SetMainState(NextState);
-
+    GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().HPBar->SetRatio(GetHP() / GetMaxHP());
     return true;
+}
+
+bool CPlayerStat::ApplyHeal(float _HealAmount)
+{
+    bool Result = CCharacterStat::ApplyHeal(_HealAmount);
+    GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().HPBar->SetRatio(GetHP() / GetMaxHP());
+    return Result;
 }
 
 bool CPlayerStat::ApplyBoost(float _BoostAmount)
