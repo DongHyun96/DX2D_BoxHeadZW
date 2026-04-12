@@ -3,6 +3,8 @@
 class CObstacle : public CScript
 {
 private:
+
+    bool m_bIsTree{};
     
 public:
     
@@ -10,7 +12,7 @@ public:
     virtual ~CObstacle() override;
 
     CLONE(CObstacle)
-    
+
 public:
 
     virtual void Begin() override;

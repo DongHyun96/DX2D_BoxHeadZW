@@ -17,6 +17,10 @@ private:
 private:    
     
     PLAYER_MAINSTATE    m_PlayerMainState{};    // Player MainState
+    
+private:
+    
+    class CPlayerStat* m_PlayerStat{};
 
 public:
     

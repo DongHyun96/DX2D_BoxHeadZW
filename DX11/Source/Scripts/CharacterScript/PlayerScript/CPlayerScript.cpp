@@ -13,6 +13,7 @@
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
+#include "Source/Scripts/CharacterScript/CharacterStat/PlayerStat/CPlayerStat.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 
@@ -57,6 +58,8 @@ void CPlayerScript::Begin()
     Collider2D()->AddDynamicEndOverlap  (this, static_cast<COLLISION_EVENT>(&CBulletScript::EndOverlap));*/
     ADD_DYNAMIC_BEGIN_OVERLAP(CPlayerScript::BodyColliderOverlapped);
     ADD_DYNAMIC_OVERLAP(CPlayerScript::BodyColliderOverlapped);
+    
+    m_PlayerStat = GetOwner()->GetScriptComponent<CPlayerStat>().Get();
 }
 
 void CPlayerScript::AfterLevelBegin()
@@ -147,7 +150,8 @@ void CPlayerScript::BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollide
 {
     if (_OtherCollider->GetOwner()->GetScriptComponent<CEnemyScript>())
     {
-        Transform()->UpdateTransformToPrevRelativePos();        
+        if (!m_PlayerStat->GetIsInvincible()) // 무적기 걸려있을 때에는 Block 처리 x
+            Transform()->UpdateTransformToPrevRelativePos();        
     }
 }
 

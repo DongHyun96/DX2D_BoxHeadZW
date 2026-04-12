@@ -40,6 +40,9 @@ void CObstacle::Begin()
             _Child->GetCollider2D()->SetMovable(false);
         }
     }
+    
+    // 자기 자신이 Tree인지 조사
+    m_bIsTree = GetOwner()->GetName().find(L"Tree") != wstring::npos;
 }
 
 void CObstacle::Tick()
@@ -68,7 +71,11 @@ bool CObstacle::BlockCharacterCollider(CCollider2D* _OtherCollider)
 {
     if (!_OtherCollider->GetOwner()->GetScriptComponent<CCharacterScript>()) return false;
 
+    // Enemy 와 나무와의 충돌은 무시 처리
+    if (_OtherCollider->GetOwner()->HasScript(SCRIPT_TYPE::ENEMYSCRIPT) && m_bIsTree) return false;
+    
     _OtherCollider->Transform()->UpdateTransformToPrevRelativePos();
+    
     return true;
 }
 
