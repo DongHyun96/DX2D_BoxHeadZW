@@ -2,8 +2,6 @@
 #include "CGameUI.h"
 #include <string>
 
-using std::wstring;
-
 class CText : public CGameUI
 {
 private:

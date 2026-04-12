@@ -29,11 +29,6 @@ void FontMgr::Init()
 	{
 		assert(nullptr);
 	}
-	
-	if (FAILED(m_FW1Factory->CreateFontWrapper(DEVICE, L"Agency FB", &m_FontWrapper)))
-	{
-		assert(nullptr);
-	}
 }
 
 void FontMgr::DrawFont(const wchar_t* _pStr, float _fPosX, float _fPosY, float _fFontSize, UINT _Color)

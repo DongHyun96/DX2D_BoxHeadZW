@@ -11,21 +11,19 @@
 CText::CText()
     : CGameUI(TEXT)
 {
-    RenderMgr::GetInst()->RegisterGameText(this);
 }
 
 CText::CText(const CText& _Origin)
     : CGameUI(_Origin)
     , m_strText(_Origin.m_strText)
+    , m_FontStyle(_Origin.m_FontStyle)
     , m_fFontSize(_Origin.m_fFontSize)
     , m_Color(_Origin.m_Color)
 {
-    RenderMgr::GetInst()->RegisterGameText(this);
 }
 
 CText::~CText()
 {
-    RenderMgr::GetInst()->DeregisterGameText(this);
 }
 
 void CText::Init()
@@ -36,37 +34,27 @@ void CText::Init()
     AddScriptParam(SCRIPT_PARAM::WSTRING, &m_FontStyle, L"FontStyle");
     AddScriptParam(SCRIPT_PARAM::FLOAT, &m_fFontSize, L"FontSize");
     AddScriptParam(SCRIPT_PARAM::COLOR, &m_Color, L"Color");
+    
+    GetOwner()->SetIsTextObject(true);
 }
 
 void CText::Tick()
 {
     CGameUI::Tick();
-    Render();    
 }
 
 void CText::Render()
 {
     const Vec2 vWorldPos = Transform()->GetWorldPos2D();
-    
-    // UI 카메라를 사용하여 월드 좌표를 화면 좌표로 변환
-    Ptr<CCamera> pUICam = RenderMgr::GetInst()->GetUICamera();
-    Vec2 vScreenPos = vWorldPos;
+    const Vec2 vResol    = Device::GetInst()->GetRenderResolution();
 
-    if (pUICam)
-    {
-        Matrix matView = pUICam->GetViewMat();
-        Matrix matProj = pUICam->GetProjMat();
-        
-        Vec3 vPos = Vec3(vWorldPos.x, vWorldPos.y, 0.f);
-        vPos = Vec3::Transform(vPos, matView);
-        vPos = Vec3::Transform(vPos, matProj);
-        
-        // vPos는 이제 NDC 좌표 (-1 ~ 1)
-        // 화면 해상도에 맞춰 픽셀 좌표(0 ~ Width, 0 ~ Height)로 변환
-        Vec2 vResol = Device::GetInst()->GetRenderResolution();
-        vScreenPos.x = (vPos.x + 1.f) * 0.5f * vResol.x;
-        vScreenPos.y = (1.f - vPos.y) * 0.5f * vResol.y;
-    }
+    // UI 카메라가 고정(0,0)되어 있고 회전/스케일이 없으므로 직접 계산
+    // 월드 좌표(중앙 0,0) -> 화면 좌표(좌상단 0,0)
+    // ScreenX = WorldX + (Width / 2)
+    // ScreenY = (Height / 2) - WorldY
+    Vec2 vScreenPos{};
+    vScreenPos.x = vWorldPos.x + (vResol.x * 0.5f);
+    vScreenPos.y = (vResol.y * 0.5f) - vWorldPos.y;
     
     // FontMgr를 사용하여 화면에 텍스트 출력
     FontMgr::GetInst()->DrawFont(m_strText.c_str(), m_FontStyle.c_str(), vScreenPos.x, vScreenPos.y, m_fFontSize, m_Color);

@@ -65,12 +65,7 @@ void RenderMgr::Progress()
     {
         // m_UICam->SortObject();
         m_UICam->RenderGameUI();
-        
-        // 만일 Level 상태가 멈춰있다면
-        if (CurrentLevelState != LEVEL_STATE::PLAY)
-            for (CText* Text : m_GameTexts) Text->Render();
     }
-    
     
     // 디버그 렌더링 요청 처리
     if (m_bDebugRender) Render_Debug();

@@ -142,8 +142,8 @@ Vec3 KeyMgr::GetMouseWorldPosByCamera(const Ptr<CCamera>& _Cam) const
 Vec2 KeyMgr::GetMouseUIPos() const
 {
     Ptr<CCamera> pUICam = RenderMgr::GetInst()->GetUICamera();
-    if (!pUICam)
-        return GetMouseWorldPos2D();
+    if (!pUICam) return GetMouseWorldPos2D();
+    
 
     return ToVec2(GetMouseWorldPosByCamera(pUICam));
 }

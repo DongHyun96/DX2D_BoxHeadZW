@@ -62,6 +62,9 @@ void ALevel::Tick()
 
 void ALevel::FinalTick()
 {
+    /*for (Layer& layer : m_arrLayer)
+        layer.DeregisterObjectsFromAllObjects();*/
+
     for (Layer& layer : m_arrLayer)
         layer.FinalTick();    
 }

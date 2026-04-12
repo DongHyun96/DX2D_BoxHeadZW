@@ -20,6 +20,11 @@ class GameObject : public Entity
 
 private:
 
+	// Text Object인지 여부 (Rendering 처리를 따로 해주어야 해서 체킹함)
+	bool m_bIsTextObject{};
+	
+private:
+
 	// SetActive(false) 시, 한 번은 다음 FinalTick()을 호출받아 vecAllObjects에 들어가 있어야 제대로 된 충돌검사 및 CallBack호출이 이루어지기 때문에
 	// SetActive(false) 조작 시, Pending 처리로 FinalTick 한번은 호출처리한다.
 	bool m_ObjectMarkedDeactivated{}; 
@@ -156,6 +161,11 @@ public:
 	
 	void SetVisible(bool _Visible) { m_IsVisible = _Visible; }
 	void SetIgnoreGlobalTimeScale(bool _Ignore) { m_IgnoreGlobalTimeScale = _Ignore; }
+	
+public:
+	
+	void SetIsTextObject(bool _IsTextObject) { m_bIsTextObject = _IsTextObject; }
+	bool GetIsTextObject() const { return m_bIsTextObject; }
 	
 public:
 	

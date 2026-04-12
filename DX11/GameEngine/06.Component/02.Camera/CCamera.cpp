@@ -263,16 +263,24 @@ void CCamera::RenderGameUI()
     SpriteRenderInstancing::BeginInstancing();
 
     
-    // 레이어에 소속된 모든 오브젝트를 가져온다
+    // UI 레이어에 소속된 모든 오브젝트를 가져온다
     Layer* pLayer = pCurLevel->GetLayer(MAX_LAYER - 1);
     const vector<Ptr<GameObject>>& vecObjects = pLayer->GetAllObjects();
 
     COMPONENT_TYPE ComType = COMPONENT_TYPE::END;
     for (const Ptr<GameObject>& object : vecObjects)
     {
-        // 오브젝틀가 렌더링을 할 수 있는 상태인지 확인
-        if (!object->GetRenderCom() || !object->GetRenderCom()->GetMesh() || !object->GetRenderCom()->GetMaterial())
+        // Text Object 인 경우
+        if (object->GetIsTextObject())
+        {
+            object->Render();
             continue;
+        }
+
+        // 일반적인 Renderer Rendering 처리 상황 
+        
+        // 오브젝트가 렌더링을 할 수 있는 상태인지 확인
+        if (!object->GetRenderCom() || !object->GetRenderCom()->GetMesh() || !object->GetRenderCom()->GetMaterial()) continue;
 
         // 2D Frustum Culling
         if (m_Type == PROJ_TYPE::ORTHOGRAPHIC && !object->GetRenderCom()->IsInViewRect(m_ViewRectMin, m_ViewRectMax))

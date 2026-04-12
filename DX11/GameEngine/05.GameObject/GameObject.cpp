@@ -11,6 +11,7 @@
 #include "GameEngine/06.Component/03.Collider2D/CColliderPoint.h"
 #include "GameEngine/06.Component/03.Collider2D/CColliderRect.h"
 #include "Source/ScriptMgr.h"
+#include "Source/Scripts/UIScript/CText.h"
 
 namespace
 {
@@ -168,8 +169,11 @@ void GameObject::Render()
 	{
 		// Transform 위치 정보를 constant buffer로 binding 처리한 뒤, MeshRenderer component가 그리기 처리
 		Transform()->Binding();
-		m_RenderCom->Render();	
+		m_RenderCom->Render();
+		return;
 	}
+	
+	if (m_bIsTextObject) GetScriptComponent<CText>()->Render();
 
 	// 카메라에서 전체 오브젝트에 대한 렌더링 처리를 함
 	/*for (const Ptr<GameObject>& child : m_vecChild)

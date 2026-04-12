@@ -35,9 +35,6 @@ private:
         {RENDER_DOMAIN::DOMAIN_POSTPROCESS, {}}
     };
 
-    // Script라 Level stop 상황에서 Text 렌더링 처리가 안됨
-    vector<class CText*> m_GameTexts{};
-    
 private:
     
     float m_ScreenResolDiagLength = sqrtf(RESOL_X * RESOL_X + RESOL_Y * RESOL_Y);
@@ -80,17 +77,6 @@ public:
     
     void RegisterLight2D(const Ptr<CLight2D>& _Light2D) { m_vecLight2D.push_back(_Light2D); }
 
-    void RegisterGameText(CText* _Text) 
-    { 
-        // if (ranges::find(m_GameTexts, _Text) == m_GameTexts.end())
-        m_GameTexts.push_back(_Text);
-    }
-    void DeregisterGameText(CText* _Text) 
-    { 
-        auto it = ranges::find(m_GameTexts, _Text);
-        if (it != m_GameTexts.end()) m_GameTexts.erase(it);
-    }
-    
 public:
     
     float GetScreenResolDiagLength() const { return m_ScreenResolDiagLength; }
