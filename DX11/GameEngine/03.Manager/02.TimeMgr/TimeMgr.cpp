@@ -121,6 +121,7 @@ void TimeMgr::Render()
     /*wchar_t buff[255];
     swprintf_s(buff, L"DT : %f ms | %d FPS", m_DeltaTime, m_FPS);
     FontMgr::GetInst()->DrawFont(buff, 10, 30, 24, FONT_RGBA(200, 20, 20, 255));*/
+    FontMgr::GetInst()->DrawFont(L"Wow", 10, 30, 24, Vec4(1.0f, 0.5f, 0.5f, 1.0f));
 }
 
 wstring TimeMgr::GetLocalTimeWString() const

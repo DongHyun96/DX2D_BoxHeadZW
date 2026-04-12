@@ -142,7 +142,7 @@ void RenderMgr::Render_End()
 
 void RenderMgr::Render_Debug()
 {
-    // POV 카메라의 행렬을 다시 세팅해준다.
+    // POV 카메라의 행렬을 기본으로 세팅해준다.
     Ptr<CCamera> pPOVCam = GetPOVCam();
     if (pPOVCam.Get())
     {
@@ -154,6 +154,19 @@ void RenderMgr::Render_Debug()
     while (iter != m_DbgInfoList.end())
     {
         DebugInfo& info = *iter;
+
+        // UICamera를 사용해야 하는 경우 처리
+        if (info.UseUICamera && m_UICam.Get())
+        {
+            g_Trans.matView = m_UICam->GetViewMat();
+            g_Trans.matProj = m_UICam->GetProjMat();
+        }
+        else if (pPOVCam.Get())
+        {
+            // 루프 내에서 다시 POVCam으로 돌려놓아야 함 (다른 디버그 정보들이 섞여있을 수 있으므로)
+            g_Trans.matView = pPOVCam->GetViewMat();
+            g_Trans.matProj = pPOVCam->GetProjMat();
+        }
 
         wstring MeshName{};
         

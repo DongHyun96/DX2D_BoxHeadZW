@@ -36,11 +36,13 @@ public:
 private:
     
     Vec3 GetMouseWorldPosInSceneRect(const ImVec2& _Min, const ImVec2& _Max);
+    Vec3 GetMouseWorldPosInSceneRect(const Ptr<CCamera>& _Cam, const ImVec2& _Min, const ImVec2& _Max);
     bool TryGetMouseCellCoord(CBackgroundTile* _BackgroundTile, const ImVec2& _Min, const ImVec2& _Max, int& _OutCellX, int& _OutCellY);
     void TickBackgroundTileCellEditing(CBackgroundTile* _BackgroundTile, const ImVec2& _Min, const ImVec2& _Max);
     
 public:
     
     Vec3 GetMouseWorldPosInSceneRect();
+    Vec3 GetMouseWorldPosInSceneRect(const Ptr<CCamera>& _Cam);
     
 };

@@ -163,7 +163,24 @@ void EditorMgr::UpdateGizmo()
         g_Gizmo.lastTargets = validTargets;
     }
 
-    Vec3 mouseWorld = m_MainWindowDropDetectorUI->GetMouseWorldPosInSceneRect();
+    bool isUILayer = false;
+    for (const Ptr<GameObject>& target : validTargets)
+    {
+        if (target->GetLayerIdx() == MAX_LAYER - 1)
+        {
+            isUILayer = true;
+            break;
+        }
+    }
+
+    Ptr<CCamera> targetCam = RenderMgr::GetInst()->GetEditorCam();
+    if (isUILayer)
+    {
+        Ptr<CCamera> uiCam = RenderMgr::GetInst()->GetUICamera();
+        if (uiCam) targetCam = uiCam;
+    }
+
+    Vec3 mouseWorld = m_MainWindowDropDetectorUI->GetMouseWorldPosInSceneRect(targetCam);
 
     Vec3 worldPos = Vec3::Zero;
     vector<Vec3> pivotWorldPoints{};
@@ -178,36 +195,36 @@ void EditorMgr::UpdateGizmo()
     worldPos.x *= targetCountInv;
     worldPos.y *= targetCountInv;
     worldPos.z *= targetCountInv;
-    const float EditorCamOrthoScale = RenderMgr::GetInst()->GetEditorCam()->Camera()->GetOrthoScale();
-    const float axisLen     = 100.f * EditorCamOrthoScale;
-    const float pickDist    = 16.f * EditorCamOrthoScale;
-    const float rotRadius   = 60.f * EditorCamOrthoScale;
-    const float scaleFactor = 0.5f * EditorCamOrthoScale;
-    const float pivotRadius = 5.f * EditorCamOrthoScale;
-    const float pivotPickDist = 12.f * EditorCamOrthoScale;
+    const float targetCamOrthoScale = targetCam->Camera()->GetOrthoScale();
+    const float axisLen     = 100.f * targetCamOrthoScale;
+    const float pickDist    = 16.f * targetCamOrthoScale;
+    const float rotRadius   = 60.f * targetCamOrthoScale;
+    const float scaleFactor = 0.5f * targetCamOrthoScale;
+    const float pivotRadius = 5.f * targetCamOrthoScale;
+    const float pivotPickDist = 12.f * targetCamOrthoScale;
 
     // ====== Draw Gizmo ======
     if (g_Gizmo.mode == GizmoMode::Translate)
     {
-        DrawDebugLine(worldPos, worldPos + Vec3(axisLen, 0, 0), Vec4(1,0,0,1), 0.f);
-        DrawDebugLine(worldPos, worldPos + Vec3(0, axisLen, 0), Vec4(0,1,0,1), 0.f);
+        DrawDebugLine(worldPos, worldPos + Vec3(axisLen, 0, 0), Vec4(1,0,0,1), 0.f, false, isUILayer);
+        DrawDebugLine(worldPos, worldPos + Vec3(0, axisLen, 0), Vec4(0,1,0,1), 0.f, false, isUILayer);
     }
     else if (g_Gizmo.mode == GizmoMode::Rotate)
     {
-        DrawDebugCircle(worldPos, rotRadius, Vec4(1,1,0,1), 0.f);
+        DrawDebugCircle(worldPos, rotRadius, Vec4(1,1,0,1), 0.f, false, isUILayer);
     }
     else if (g_Gizmo.mode == GizmoMode::Scale)
     {
-        DrawDebugLine(worldPos, worldPos + Vec3(axisLen, 0, 0), Vec4(0,0.7f,1,1), 0.f);
-        DrawDebugLine(worldPos, worldPos + Vec3(0, axisLen, 0), Vec4(0,0.7f,1,1), 0.f);
+        DrawDebugLine(worldPos, worldPos + Vec3(axisLen, 0, 0), Vec4(0,0.7f,1,1), 0.f, false, isUILayer);
+        DrawDebugLine(worldPos, worldPos + Vec3(0, axisLen, 0), Vec4(0,0.7f,1,1), 0.f, false, isUILayer);
 
-        DrawDebugRect(worldPos + Vec3(axisLen, 0, 0), Vec3(6.f, 6.f, 1.f), Vec3(0,0,0), Vec4(0,0.7f,1,1), 0.f);
-        DrawDebugRect(worldPos + Vec3(0, axisLen, 0), Vec3(6.f, 6.f, 1.f), Vec3(0,0,0), Vec4(0,0.7f,1,1), 0.f);
+        DrawDebugRect(worldPos + Vec3(axisLen, 0, 0), Vec3(6.f, 6.f, 1.f), Vec3(0,0,0), Vec4(0,0.7f,1,1), 0.f, false, isUILayer);
+        DrawDebugRect(worldPos + Vec3(0, axisLen, 0), Vec3(6.f, 6.f, 1.f), Vec3(0,0,0), Vec4(0,0.7f,1,1), 0.f, false, isUILayer);
     }
     else if (g_Gizmo.mode == GizmoMode::Pivot)
     {
         for (const Vec3& pivotWorld : pivotWorldPoints)
-            DrawDebugCircle(pivotWorld, pivotRadius, Vec4(1,1,0,1), 0.f);
+            DrawDebugCircle(pivotWorld, pivotRadius, Vec4(1,1,0,1), 0.f, false, isUILayer);
     }
 
     ImGuiIO& io = ImGui::GetIO();

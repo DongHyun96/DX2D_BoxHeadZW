@@ -69,7 +69,7 @@ void DestroyObject(GameObject* _Object)
     TaskMgr::GetInst()->AddTask(info);
 }
 
-void DrawDebugRect(const Vec3& _Pos, const Vec3& _Scale, const Vec3& _Rot, const Vec4& _Color, float _Duration, bool EnableDepthTest)
+void DrawDebugRect(const Vec3& _Pos, const Vec3& _Scale, const Vec3& _Rot, const Vec4& _Color, float _Duration, bool EnableDepthTest, bool UseUICamera)
 {
     DebugInfo info{};
     info.Shape      = DEBUG_SHAPE::RECT;
@@ -83,11 +83,12 @@ void DrawDebugRect(const Vec3& _Pos, const Vec3& _Scale, const Vec3& _Rot, const
     info.Life       = _Duration;
     info.Age        = 0.f;
     info.EnableDepthTest = EnableDepthTest;
+    info.UseUICamera = UseUICamera;
         
     RenderMgr::GetInst()->AddDebugInfo(info);
 }
 
-void DrawDebugRect(const Matrix& _matWorld, const Vec4& _Color, float _Duration, bool EnableDepthTest)
+void DrawDebugRect(const Matrix& _matWorld, const Vec4& _Color, float _Duration, bool EnableDepthTest, bool UseUICamera)
 {
     DebugInfo info{};
     info.Shape      = DEBUG_SHAPE::RECT;
@@ -99,11 +100,12 @@ void DrawDebugRect(const Matrix& _matWorld, const Vec4& _Color, float _Duration,
     info.Age        = 0.f;
 
     info.EnableDepthTest = EnableDepthTest;
+    info.UseUICamera = UseUICamera;
     
     RenderMgr::GetInst()->AddDebugInfo(info);
 }
 
-void DrawDebugCircle(const Vec3& _Pos, float _Radius, const Vec4& _Color, float _Duration, bool EnableDepthTest)
+void DrawDebugCircle(const Vec3& _Pos, float _Radius, const Vec4& _Color, float _Duration, bool EnableDepthTest, bool UseUICamera)
 {
     DebugInfo info{};
     info.Shape      = DEBUG_SHAPE::CIRCLE;
@@ -114,11 +116,12 @@ void DrawDebugCircle(const Vec3& _Pos, float _Radius, const Vec4& _Color, float 
     info.Age        = 0.f;
 
     info.EnableDepthTest = EnableDepthTest;
+    info.UseUICamera = UseUICamera;
     
     RenderMgr::GetInst()->AddDebugInfo(info);
 }
 
-void DrawDebugLine(const Vec3& _Start, const Vec3& _End, const Vec4& _Color, float _Duration, bool EnableDepthTest)
+void DrawDebugLine(const Vec3& _Start, const Vec3& _End, const Vec4& _Color, float _Duration, bool EnableDepthTest, bool UseUICamera)
 {
     Vec3 dir = _End - _Start;
     dir.z = 0.f;
@@ -140,6 +143,7 @@ void DrawDebugLine(const Vec3& _Start, const Vec3& _End, const Vec4& _Color, flo
     info.Life            = _Duration;
     info.Age             = 0.f;
     info.EnableDepthTest = EnableDepthTest;
+    info.UseUICamera     = UseUICamera;
 
     RenderMgr::GetInst()->AddDebugInfo(info);
 }

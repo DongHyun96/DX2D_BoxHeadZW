@@ -327,10 +327,9 @@ void MainWindowDropDetectorUI::TickBackgroundTileCellEditing(CBackgroundTile* _B
     }
 }
 
-Vec3 MainWindowDropDetectorUI::GetMouseWorldPosInSceneRect(const ImVec2& _Min, const ImVec2& _Max)
+Vec3 MainWindowDropDetectorUI::GetMouseWorldPosInSceneRect(const Ptr<CCamera>& _Cam, const ImVec2& _Min, const ImVec2& _Max)
 {
-    const Ptr<CCamera> pPOVCam = RenderMgr::GetInst()->GetPOVCam();
-    if (!pPOVCam) return Vec3::Zero;
+    if (!_Cam) return Vec3::Zero;
 
     ImVec2 mouse = ImGui::GetIO().MousePos;
     if (mouse.x < _Min.x || mouse.x > _Max.x || mouse.y < _Min.y || mouse.y > _Max.y)
@@ -345,15 +344,20 @@ Vec3 MainWindowDropDetectorUI::GetMouseWorldPosInSceneRect(const ImVec2& _Min, c
     const float ndcX = u * 2.f - 1.f;
     const float ndcY = 1.f - v * 2.f;
 
-    const float worldW = pPOVCam->GetWidth() * pPOVCam->GetOrthoScale();
-    const float worldH = (pPOVCam->GetWidth() / pPOVCam->GetAspectRatio()) * pPOVCam->GetOrthoScale();
+    const float worldW = _Cam->GetWidth() * _Cam->GetOrthoScale();
+    const float worldH = (_Cam->GetWidth() / _Cam->GetAspectRatio()) * _Cam->GetOrthoScale();
 
-    Vec3 vWorld = pPOVCam->Transform()->GetWorldPos();
-    vWorld += pPOVCam->Transform()->GetDir(DIR::RIGHT) * (ndcX * worldW * 0.5f);
-    vWorld += pPOVCam->Transform()->GetDir(DIR::UP) * (ndcY * worldH * 0.5f);
+    Vec3 vWorld = _Cam->Transform()->GetWorldPos();
+    vWorld += _Cam->Transform()->GetDir(DIR::RIGHT) * (ndcX * worldW * 0.5f);
+    vWorld += _Cam->Transform()->GetDir(DIR::UP) * (ndcY * worldH * 0.5f);
     vWorld.z = 0.f;
 
     return vWorld;
+}
+
+Vec3 MainWindowDropDetectorUI::GetMouseWorldPosInSceneRect(const ImVec2& _Min, const ImVec2& _Max)
+{
+    return GetMouseWorldPosInSceneRect(RenderMgr::GetInst()->GetPOVCam(), _Min, _Max);
 }
 
 Vec3 MainWindowDropDetectorUI::GetMouseWorldPosInSceneRect()
@@ -361,7 +365,15 @@ Vec3 MainWindowDropDetectorUI::GetMouseWorldPosInSceneRect()
     ImGuiViewport* vp = ImGui::GetMainViewport();
     ImVec2 _min = m_HasSceneRect ? m_SceneMin : vp->Pos;
     ImVec2 _max = m_HasSceneRect ? m_SceneMax : ImVec2(vp->Pos.x + vp->Size.x, vp->Pos.y + vp->Size.y);
-    return GetMouseWorldPosInSceneRect(_min, _max);
+    return GetMouseWorldPosInSceneRect(RenderMgr::GetInst()->GetPOVCam(), _min, _max);
+}
+
+Vec3 MainWindowDropDetectorUI::GetMouseWorldPosInSceneRect(const Ptr<CCamera>& _Cam)
+{
+    ImGuiViewport* vp = ImGui::GetMainViewport();
+    ImVec2 _min = m_HasSceneRect ? m_SceneMin : vp->Pos;
+    ImVec2 _max = m_HasSceneRect ? m_SceneMax : ImVec2(vp->Pos.x + vp->Size.x, vp->Pos.y + vp->Size.y);
+    return GetMouseWorldPosInSceneRect(_Cam, _min, _max);
 }
 
 bool MainWindowDropDetectorUI::TryGetMouseCellCoord(CBackgroundTile* _BackgroundTile, const ImVec2& _Min, const ImVec2& _Max, int& _OutCellX, int& _OutCellY)

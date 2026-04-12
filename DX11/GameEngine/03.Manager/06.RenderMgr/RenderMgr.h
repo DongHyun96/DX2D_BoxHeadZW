@@ -74,6 +74,7 @@ public:
     
     Ptr<CCamera> GetPOVCam() const; // 현재 바라보고 있는 카메라 (Play 중인 경우 MainCam, Editing 중인 경우 EditorCam)
     Ptr<CCamera> GetEditorCam() const { return m_EditorCam; }
+    Ptr<CCamera> GetUICamera() const { return m_UICam; }
     
     void RegisterLight2D(const Ptr<CLight2D>& _Light2D) { m_vecLight2D.push_back(_Light2D); }
     

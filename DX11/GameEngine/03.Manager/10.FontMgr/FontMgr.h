@@ -24,5 +24,11 @@ public:
 
     // _Color : FONT_RGBA 매크로
     void DrawFont(const wchar_t* _pStr, float _fPosX, float _fPosY, float _fFontSize, UINT _Color);
+    
+    void DrawFont(const wchar_t* _pStr, float _fPosX, float _fPosY, float _fFontSize, const Vec4& _Color);
+
+    void DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _fPosX, float _fPosY, float _fFontSize, UINT _Color);
+    void DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _fPosX, float _fPosY, float _fFontSize, const Vec4& _Color);
+    
 };
 

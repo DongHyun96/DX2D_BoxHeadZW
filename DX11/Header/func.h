@@ -13,7 +13,8 @@ void DrawDebugRect
     const Vec3& _Rot,
     const Vec4& _Color,
     float       _Duration,
-    bool        EnableDepthTest = false
+    bool        EnableDepthTest = false,
+    bool        UseUICamera = false
 );
 
 
@@ -22,7 +23,8 @@ void DrawDebugRect
     const Matrix&   _matWorld,
     const Vec4&     _Color,
     float           _Duration,
-    bool            EnableDepthTest = false
+    bool            EnableDepthTest = false,
+    bool            UseUICamera = false
 );
 
 
@@ -32,7 +34,8 @@ void DrawDebugCircle
     float       _Radius,
     const Vec4& _Color,
     float       _Duration,
-    bool        EnableDepthTest = false
+    bool        EnableDepthTest = false,
+    bool        UseUICamera = false
 );
 
 void DrawDebugLine
@@ -41,7 +44,8 @@ void DrawDebugLine
     const Vec3& _End,
     const Vec4& _Color,
     float       _Duration,
-    bool        EnableDepthTest = false
+    bool        EnableDepthTest = false,
+    bool        UseUICamera = false
 );
 
 

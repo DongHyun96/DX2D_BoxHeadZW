@@ -32,6 +32,7 @@ struct DebugInfo
     float       Life{}; // 총 최대수명 (초 단위)
     
     bool        EnableDepthTest{};
+    bool        UseUICamera{};
 };
 
 
