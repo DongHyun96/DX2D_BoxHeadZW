@@ -54,12 +54,12 @@ int APIENTRY wWinMain
     // ReleaseMode일 경우, EditorMode false 로 처리할 것
 
 #ifdef _DEBUG
-    /*if (FAILED(Engine::GetInst()->Init(hInstance, RESOL_X, RESOL_Y, true))) return 0;
-    ChangeLevel(L"Level\\NightSceneLevel.lv", true);*/
-
-    if (FAILED(Engine::GetInst()->Init(hInstance, RESOL_X, RESOL_Y, false))) return 0;
+    if (FAILED(Engine::GetInst()->Init(hInstance, RESOL_X, RESOL_Y, true))) return 0;
     ChangeLevel(L"Level\\NightSceneLevel.lv", true);
-    ChangeLevelState(LEVEL_STATE::PLAY);
+
+    /*if (FAILED(Engine::GetInst()->Init(hInstance, RESOL_X, RESOL_Y, false))) return 0;
+    ChangeLevel(L"Level\\NightSceneLevel.lv", true);
+    ChangeLevelState(LEVEL_STATE::PLAY);*/
     
 #else
     if (FAILED(Engine::GetInst()->Init(hInstance, RESOL_X, RESOL_Y, false))) return 0;

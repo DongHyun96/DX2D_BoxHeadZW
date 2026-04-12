@@ -220,6 +220,12 @@
     <ClInclude Include="Source\UserHeader\userStruct.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\BillboardRenderInstancing.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\SpriteRenderInstancing.h" />
+    <ClInclude Include="Source\Scripts\FirstSpawnLocManager\CFirstSpawnLocManager.h" />
+    <ClInclude Include="Source\Scripts\UIScript\CButton.h" />
+    <ClInclude Include="Source\Scripts\UIScript\CGameUI.h" />
+    <ClInclude Include="Source\Scripts\UIScript\CProgressBar.h" />
+    <ClInclude Include="Source\Scripts\UIScript\CText.h" />
+    <ClInclude Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Default\DX11.ico">
@@ -394,6 +400,12 @@
     <ClCompile Include="Source\UserHeader\userStruct.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\02.BillboardRender\BillboardRenderInstancing.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\03.SpriteRender\SpriteRenderInstancing.cpp" />
+    <ClCompile Include="Source\Scripts\FirstSpawnLocManager\CFirstSpawnLocManager.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\CButton.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\CGameUI.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\CProgressBar.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\CText.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Default\DX11.rc">
