@@ -39,6 +39,9 @@ void CEnemySpawnHandler::Begin()
 void CEnemySpawnHandler::Tick()
 {
     GM->GetIngameUIManager()->GetZombieAliveCount()->SetText(to_wstring(m_SpawnedCount));
+    
+    if (KEY_TAP(KEY::MRB))
+        SpawnEnemyOnRandomCell(ENEMY_TYPE::DEVIL);
 }
 
 GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType, FIRST_SPAWN_LOC _SpawnLoc)
