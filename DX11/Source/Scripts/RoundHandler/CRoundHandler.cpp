@@ -28,6 +28,8 @@ void CRoundHandler::Tick()
 {
     HandleTransition();
 
+    DebugUtil::SetPermanentDebugLog("CurrentRound", "CurrentRound : " + to_string(m_CurrentRoundIdx + 1), DEF_COLOR_ORANGE);
+    
     switch (m_RoundState)
     {
     case ROUND_STATE::WAIT:
