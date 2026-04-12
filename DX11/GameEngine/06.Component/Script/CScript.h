@@ -1,6 +1,12 @@
 ﻿#pragma once
 #include "GameEngine/06.Component/Component.h"
 
+#include <algorithm>
+#include <vector>
+#include <string>
+
+using namespace std;
+
 // 원하는 Type 추가 가능 -> ScriptUI에서 해당 ScriptParam에 대응되는 UI 제작
 enum class SCRIPT_PARAM
 {
@@ -13,7 +19,8 @@ enum class SCRIPT_PARAM
     WSTRING,
     TEXTURE,
     MATERIAL,
-    SOUND
+    SOUND,
+    ROUND_INFO_VECTOR
 };
 
 struct tScriptParam
@@ -73,14 +80,14 @@ protected:
     
     void RemoveScriptParam(SCRIPT_PARAM _Type, void* _Data, const wstring& _Desc)
     {
-        for (auto& param : m_vecScriptParam)
+        auto it = std::find_if(m_vecScriptParam.begin(), m_vecScriptParam.end(), [&](const tScriptParam& param) {
+            return param.Param == _Type && param.Data == _Data && param.Desc == _Desc;
+        });
+        
+        if (it != m_vecScriptParam.end())
         {
-            if (param.Param == _Type && param.Data == _Data && param.Desc == _Desc)
-            {
-                erase(m_vecScriptParam, param);
-                return;
-            }
-        }       
+            m_vecScriptParam.erase(it);
+        }
     }
 
     /// <summary>

@@ -36,13 +36,13 @@ void CEnemySpawnHandler::Begin()
 
 void CEnemySpawnHandler::Tick()
 {
-    if (KEY_TAP(KEY::MRB))
+    /*if (KEY_TAP(KEY::MRB))
     {
         /*for (int i = 0; i < 75; ++i)
         {
             ENEMY_TYPE Type = static_cast<ENEMY_TYPE>(GetRandom(0, static_cast<int>(ENEMY_TYPE::END) - 1));
             SpawnEnemyOnAvailableCell(Type, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
-        }*/
+        }#1#
         
         for (int i = 0; i < 5; ++i)
         {
@@ -50,7 +50,7 @@ void CEnemySpawnHandler::Tick()
             SpawnEnemyOnFirstSpawnArea(static_cast<ENEMY_TYPE>(GetRandom(0, 4)), FIRST_SPAWN_LOC2);
 			// SpawnEnemy(ENEMY_TYPE::ZOMBIE, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
         }
-    }
+    }*/
     
     DebugUtil::SetPermanentDebugLog("Zombie Count", "Zombie Alive Count : " + to_string(m_SpawnedCount), DEF_COLOR_CYAN);
 }
@@ -115,6 +115,11 @@ GameObject* CEnemySpawnHandler::SpawnEnemyOnAvailableCell(ENEMY_TYPE _EnemyType,
     }
     
     return SpawnedEnemy; 
+}
+
+GameObject* CEnemySpawnHandler::SpawnEnemyOnRandomCell(ENEMY_TYPE _EnemyType)
+{
+    return SpawnEnemyOnAvailableCell(_EnemyType, CellCoord(GetRandom(25, 55), GetRandom(25, 55)));
 }
 
 /*void CEnemySpawnHandler::TryInitSpawnedEnemy(GameObject* EnemyObject)

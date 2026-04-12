@@ -41,6 +41,13 @@ public:
     /// <returns> 제대로 Spawn되었다면 Spawn된 Enemy GameObject 반환 </returns>
     GameObject* SpawnEnemyOnAvailableCell(ENEMY_TYPE _EnemyType, const Vec2& _SpawnPos);
     GameObject* SpawnEnemyOnAvailableCell(ENEMY_TYPE _EnemyType, const CellCoord& _CellCoord);
+
+    
+    GameObject* SpawnEnemyOnRandomCell(ENEMY_TYPE _EnemyType);
+    
+public:
+    
+    int GetAliveEnemyCount() const { return m_SpawnedCount; }
     
 private:
     

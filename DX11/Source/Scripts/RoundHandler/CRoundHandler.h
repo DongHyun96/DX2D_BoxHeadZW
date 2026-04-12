@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "GameEngine/04.Asset/10.Sound/ASound.h"
 
 struct RoundInfo
 {
@@ -25,9 +26,12 @@ struct RoundInfo
 };
 
 
-
 class CRoundHandler : public CScript
 {
+private:
+    
+    Ptr<ASound> m_RoundStartSound{};
+    
 private:
 
     ROUND_STATE         m_RoundState{};
@@ -35,16 +39,25 @@ private:
     vector<RoundInfo>   m_vecRoundInfo{}; // 들어가져 있는 Info대로 라운드를 진행하다가, 더 이상 라운드 정보가 없는 라운드는 난이도 최대치로 continue
     UINT                m_CurrentRoundIdx = -1;
     
+    RoundInfo*          m_CurrentRoundInfo{};
+
+private:
+
+    // 이번 라운드 Additional 스폰 처리 남은 Enemy 수
+    map<ENEMY_TYPE, UINT> m_ThisRoundAdditionalSpawnLeft{};
+    
 private:
     
     static const float  s_RoundWaitTime;
-    float               m_RoundWaitTimer{};
+    float               m_RoundWaitTimer = s_RoundWaitTime;
     
-private:
+    
+    float m_AdditionalSpawnInterval{};
+    
+    float m_CurrentRoundTimer{}; // 현재 Round 진행 시간 측정
+    float m_AdditionalSpawnTimer{};
+    float m_AllDieCheckTimer{};
 
-    float               m_CurrentRoundTimer{}; // 현재 Round 진행 시간 측정
-    
-    
 public:
     
     CRoundHandler();

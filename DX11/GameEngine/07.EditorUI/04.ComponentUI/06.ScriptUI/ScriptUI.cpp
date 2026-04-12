@@ -8,6 +8,8 @@
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
 
+#include "Source/Scripts/RoundHandler/CRoundHandler.h"
+
 namespace
 {
 	string WStringToUtf8(const wstring& src)
@@ -83,8 +85,17 @@ void ScriptUI::SetScript(CScript* _Script)
 		s_BackgroundTileEditingTarget = nullptr;
 
 	m_TargetScript = _Script;
-	if (m_TargetScript && m_TargetScript->GetScriptType() == SCRIPT_TYPE::BACKGROUNDTILE)
-		s_BackgroundTileEditingTarget = static_cast<CBackgroundTile*>(m_TargetScript.Get());
+	// if (m_TargetScript && m_TargetScript->GetScriptType() == 12)
+	// 	s_BackgroundTileEditingTarget = static_cast<CBackgroundTile*>(m_TargetScript.Get());
+
+	if (m_TargetScript)
+	{
+		int type = m_TargetScript->GetScriptType();
+		if (type == 12) // BACKGROUNDTILE
+		{
+			s_BackgroundTileEditingTarget = (CBackgroundTile*)m_TargetScript.Get();
+		}
+	}
 
 	SetActive(m_TargetScript != nullptr);
 	SetTargetObject(m_TargetScript ? m_TargetScript->GetOwner() : nullptr);
@@ -317,6 +328,101 @@ void ScriptUI::TickScriptParams()
 			}
 		}
 			break;
+		case SCRIPT_PARAM::ROUND_INFO_VECTOR:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			
+			vector<RoundInfo>& vecRoundInfo = *static_cast<vector<RoundInfo>*>(vecParam[i].Data);
+
+			string AddKey = "Add Round##" + GetUIKey();
+			if (ImGui::Button(AddKey.c_str()))
+			{
+				vecRoundInfo.push_back(RoundInfo{});
+			}
+
+			for (size_t j = 0; j < vecRoundInfo.size(); ++j)
+			{
+				ImGui::PushID(static_cast<int>(j));
+				char roundHeader[64];
+				sprintf_s(roundHeader, "Round %d", (int)j);
+				
+				if (ImGui::TreeNode(roundHeader))
+				{
+					RoundInfo& info = vecRoundInfo[j];
+
+					ImGui::Text("First Spawn Settings");
+					for (auto& [type, countPair] : info.EachEnemyFirstSpawnCountMinMax)
+					{
+						string enemyName;
+						switch (type)
+						{
+						case ENEMY_TYPE::ZOMBIE: enemyName	= "Zombie"; break;
+						case ENEMY_TYPE::MUMMY: enemyName	= "Mummy"; break;
+						case ENEMY_TYPE::RUNNER: enemyName	= "Runner"; break;
+						case ENEMY_TYPE::VAMPIRE: enemyName = "Vampire"; break;
+						case ENEMY_TYPE::DEVIL: enemyName	= "Devil"; break;
+						default: enemyName					= "Unknown"; break;
+						}
+
+						ImGui::PushID((int)type);
+						ImGui::Text(enemyName.c_str());
+						ImGui::SameLine(100);
+						
+						int counts[2] = { (int)countPair.first, (int)countPair.second };
+						if (ImGui::DragInt2("##counts", counts, 0.1f, 0, 1000))
+						{
+							countPair.first = (UINT)counts[0];
+							countPair.second = (UINT)counts[1];
+						}
+						ImGui::PopID();
+					}
+
+					ImGui::Separator();
+					ImGui::Text("Additional Spawn Settings");
+					ImGui::DragFloat("Start Time", &info.AdditionalSpawnStartTime, 0.1f, 0.f, 1000.f);
+
+					for (auto& [type, countPair] : info.EachEnemyAdditionalSpawnCountMinMax)
+					{
+						string enemyName;
+						switch (type)
+						{
+						case ENEMY_TYPE::ZOMBIE: enemyName = "Zombie"; break;
+						case ENEMY_TYPE::MUMMY: enemyName = "Mummy"; break;
+						case ENEMY_TYPE::RUNNER: enemyName = "Runner"; break;
+						case ENEMY_TYPE::VAMPIRE: enemyName = "Vampire"; break;
+						case ENEMY_TYPE::DEVIL: enemyName = "Devil"; break;
+						default: enemyName = "Unknown"; break;
+						}
+
+						ImGui::PushID((int)type + 10); // Offset to avoid ID collision
+						ImGui::Text(enemyName.c_str());
+						ImGui::SameLine(100);
+
+						int counts[2] = { (int)countPair.first, (int)countPair.second };
+						if (ImGui::DragInt2("##counts_add", counts, 0.1f, 0, 1000))
+						{
+							countPair.first = (UINT)counts[0];
+							countPair.second = (UINT)counts[1];
+						}
+						ImGui::PopID();
+					}
+
+					if (ImGui::Button("Delete This Round"))
+					{
+						vecRoundInfo.erase(vecRoundInfo.begin() + j);
+						ImGui::TreePop();
+						ImGui::PopID();
+						AddItemHeight();
+						break; // List modified
+					}
+
+					ImGui::TreePop();
+				}
+				ImGui::PopID();
+				AddItemHeight();
+			}
+		}
+			break;
 		default:
 			break;
 		}
@@ -326,7 +432,8 @@ void ScriptUI::TickScriptParams()
 
 void ScriptUI::TickBackgroundTileEditingUI()
 {
-	if (m_TargetScript->GetScriptType() != SCRIPT_TYPE::BACKGROUNDTILE) return;
+	if (m_TargetScript->GetScriptType() != 12) return;
+	// return;
 
 	s_BackgroundTileEditingTarget = static_cast<CBackgroundTile*>(m_TargetScript.Get());
 
