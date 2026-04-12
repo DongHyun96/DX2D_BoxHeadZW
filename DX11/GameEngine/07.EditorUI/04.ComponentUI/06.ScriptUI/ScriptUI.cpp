@@ -432,8 +432,7 @@ void ScriptUI::TickScriptParams()
 
 void ScriptUI::TickBackgroundTileEditingUI()
 {
-	if (m_TargetScript->GetScriptType() != 12) return;
-	// return;
+	if (m_TargetScript->GetScriptType() != SCRIPT_TYPE::BACKGROUNDTILE) return;
 
 	s_BackgroundTileEditingTarget = static_cast<CBackgroundTile*>(m_TargetScript.Get());
 
