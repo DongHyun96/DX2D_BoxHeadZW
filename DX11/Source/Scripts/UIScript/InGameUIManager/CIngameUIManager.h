@@ -14,7 +14,7 @@ struct AmmoCountUIArea
     CText*                                  AirStrikeCount{};
 
     map<PLAYER_HANDSTATE, GameObject*>      WeaponIcons{}; 
-    GameObject*                             BulletIcon{};
+    GameObject*                             RoundAmmoIcon{};
     
     map<PLAYER_STRUCTURE_TYPE, GameObject*> StructureIcons{};
     
@@ -24,7 +24,8 @@ struct AmmoCountUIArea
 struct RoundIndicators
 {
     CText* RoundText{};
-    CText* RoundTimeText{};
+    CText* RoundWaitText{};
+    CText* RoundWaitTimeText{};
 };
 
 class CIngameUIManager : public CScript
