@@ -68,12 +68,7 @@ void RenderMgr::Progress()
         
         // 만일 Level 상태가 멈춰있다면
         if (CurrentLevelState != LEVEL_STATE::PLAY)
-        {
-            for (CText* Text : m_GameTexts)
-            {
-                Text->Render();
-            }
-        }
+            for (CText* Text : m_GameTexts) Text->Render();
     }
     
     
@@ -85,7 +80,6 @@ void RenderMgr::Progress()
 
 void RenderMgr::OnLevelBegin()
 {
-    m_mapDomainGameObject.clear();
 }
 
 void RenderMgr::OnLevelPlayToStop()
@@ -97,7 +91,6 @@ void RenderMgr::OnLevelPlayToStop()
     if (UICamObject) m_UICam = UICamObject->Camera();
     else m_UICam = nullptr;
     
-    m_GameTexts.clear();
 }
 
 void RenderMgr::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
@@ -108,8 +101,6 @@ void RenderMgr::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
     GameObject* UICamObject = LevelMgr::GetInst()->GetCurLevel()->FindObjectByName(L"UICamera").Get();
     if (UICamObject) m_UICam = UICamObject->Camera();
     else m_UICam = nullptr;
-    
-    m_GameTexts.clear();
 }
 
 void RenderMgr::Render_Start()

@@ -11,6 +11,7 @@
 CText::CText()
     : CGameUI(TEXT)
 {
+    RenderMgr::GetInst()->RegisterGameText(this);
 }
 
 CText::CText(const CText& _Origin)
@@ -19,10 +20,12 @@ CText::CText(const CText& _Origin)
     , m_fFontSize(_Origin.m_fFontSize)
     , m_Color(_Origin.m_Color)
 {
+    RenderMgr::GetInst()->RegisterGameText(this);
 }
 
 CText::~CText()
 {
+    RenderMgr::GetInst()->DeregisterGameText(this);
 }
 
 void CText::Init()
@@ -30,11 +33,9 @@ void CText::Init()
     CGameUI::Init();
     
     AddScriptParam(SCRIPT_PARAM::WSTRING, &m_strText, L"Text");
+    AddScriptParam(SCRIPT_PARAM::WSTRING, &m_FontStyle, L"FontStyle");
     AddScriptParam(SCRIPT_PARAM::FLOAT, &m_fFontSize, L"FontSize");
     AddScriptParam(SCRIPT_PARAM::COLOR, &m_Color, L"Color");
-    
-    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY)
-        RenderMgr::GetInst()->RegisterGameText(this);
 }
 
 void CText::Tick()
@@ -45,18 +46,13 @@ void CText::Tick()
 
 void CText::Render()
 {
-    Vec2 vWorldPos = Transform()->GetWorldPos2D();
-    
-    if (nullptr != GetRenderCom())
-    {
-        vWorldPos += GetRenderCom()->GetRenderOffset();
-    }
+    const Vec2 vWorldPos = Transform()->GetWorldPos2D();
     
     // UI 카메라를 사용하여 월드 좌표를 화면 좌표로 변환
     Ptr<CCamera> pUICam = RenderMgr::GetInst()->GetUICamera();
     Vec2 vScreenPos = vWorldPos;
 
-    if (pUICam != nullptr)
+    if (pUICam)
     {
         Matrix matView = pUICam->GetViewMat();
         Matrix matProj = pUICam->GetProjMat();
@@ -73,7 +69,7 @@ void CText::Render()
     }
     
     // FontMgr를 사용하여 화면에 텍스트 출력
-    FontMgr::GetInst()->DrawFont(m_strText.c_str(), vScreenPos.x, vScreenPos.y, m_fFontSize, m_Color);
+    FontMgr::GetInst()->DrawFont(m_strText.c_str(), m_FontStyle.c_str(), vScreenPos.x, vScreenPos.y, m_fFontSize, m_Color);
 }
 
 void CText::SaveToLevelFile(FILE* _File)
@@ -81,6 +77,7 @@ void CText::SaveToLevelFile(FILE* _File)
     CGameUI::SaveToLevelFile(_File);
     
     SaveWString(_File, m_strText);
+    SaveWString(_File, m_FontStyle);
     fwrite(&m_fFontSize, sizeof(float), 1, _File);
     fwrite(&m_Color, sizeof(Vec4), 1, _File);
 }
@@ -90,6 +87,7 @@ void CText::LoadFromLevelFile(FILE* _File)
     CGameUI::LoadFromLevelFile(_File);
     
     m_strText = LoadWString(_File);
+    m_FontStyle = LoadWString(_File);
     fread(&m_fFontSize, sizeof(float), 1, _File);
     fread(&m_Color, sizeof(Vec4), 1, _File);
 }
