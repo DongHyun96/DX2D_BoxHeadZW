@@ -21,7 +21,7 @@ CAirStrike::CAirStrike()
 {
     m_ExplosionSpawnDesc.SpawnPos                   = Vec3();
     m_ExplosionSpawnDesc.ExplosionSizeFactor        = 1.25f;
-    m_ExplosionSpawnDesc.FPS                        = 1500.f;
+    m_ExplosionSpawnDesc.FPS                        = 50.f;
     m_ExplosionSpawnDesc.DamageAmount               = 0.f;
     m_ExplosionSpawnDesc.SpawnedBy                  = nullptr;
     m_ExplosionSpawnDesc.UseCollisionForDamaging    = false;

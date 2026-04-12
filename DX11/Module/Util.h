@@ -13,9 +13,9 @@ namespace DebugUtil
     void SetPermanentDebugLog(const string& _LogKey, const string& _Msg, const Vec4& _Color);
     
 #else
-    void AddDebugLog(const wstring& _msg, const Vec4& _Color = Vec4(1.f, 1.f, 1.f, 1.f), float _TotalLifeTime = 3.f) {}
-    void AddDebugLog(const string& _msg, const Vec4& _Color = Vec4(1.f, 1.f, 1.f, 1.f), float _TotalLifeTime = 3.f) {}
-    void SetPermanentDebugLog(const string& _LogKey, const string& _Msg, const Vec4& _Color) {}
+    void AddDebugLog(const wstring& _msg, const Vec4& _Color = Vec4(1.f, 1.f, 1.f, 1.f), float _TotalLifeTime = 3.f);
+    void AddDebugLog(const string& _msg, const Vec4& _Color = Vec4(1.f, 1.f, 1.f, 1.f), float _TotalLifeTime = 3.f);
+    void SetPermanentDebugLog(const string& _LogKey, const string& _Msg, const Vec4& _Color);
 #endif
 }
 

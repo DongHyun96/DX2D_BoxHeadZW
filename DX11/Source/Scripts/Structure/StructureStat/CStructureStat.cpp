@@ -11,7 +11,7 @@ CStructureStat::CStructureStat()
 {
     m_BarrelExplosionDesc.SpawnPos                   = Vec3();
     m_BarrelExplosionDesc.ExplosionSizeFactor        = 1.f;
-    m_BarrelExplosionDesc.FPS                        = 1300.f;
+    m_BarrelExplosionDesc.FPS                        = 50.f;
     m_BarrelExplosionDesc.DamageAmount               = 50.f;
     m_BarrelExplosionDesc.SpawnedBy                  = nullptr;
     m_BarrelExplosionDesc.UseCollisionForDamaging    = true;

@@ -19,7 +19,7 @@ CRocketProjectile::CRocketProjectile()
 {
     m_ExplosionSpawnDesc.SpawnPos                   = Vec3();
     m_ExplosionSpawnDesc.ExplosionSizeFactor        = 1.f;
-    m_ExplosionSpawnDesc.FPS                        = 1450.f;
+    m_ExplosionSpawnDesc.FPS                        = 50.f;
     m_ExplosionSpawnDesc.DamageAmount               = 0.f;
     m_ExplosionSpawnDesc.SpawnedBy                  = this;
     m_ExplosionSpawnDesc.UseCollisionForDamaging    = true;

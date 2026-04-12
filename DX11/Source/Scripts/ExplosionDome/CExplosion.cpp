@@ -30,6 +30,12 @@ void CExplosion::Tick()
     CExplosionDome::Tick();
     m_Age += DT;
 
+    if (m_Age >= m_MaxLifeTime)
+    {
+        GetOwner()->SetActive(false);
+        return;
+    }
+
     TickDamagePulse();
     TickSecondaryBursts();
 
@@ -148,7 +154,8 @@ void CExplosion::SpawnSecondaryBurst(int _BurstIndex) const
     ExplosionSpawnDesc Desc{};
     Desc.SpawnPos                   = spawnPos;
     Desc.ExplosionSizeFactor        = secondarySizeFactor;
-    Desc.FPS                        = 1200.f;
+    Desc.FPS                        = 50.f;
+    // Desc.FPS                        = 1200.f;
     Desc.DamageAmount               = secondaryDamage;
     Desc.SpawnedBy                  = GetSpawnedBy();
     Desc.UseCollisionForDamaging    = true;

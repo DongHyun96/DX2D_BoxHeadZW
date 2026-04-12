@@ -29,8 +29,9 @@ HRESULT Device::Init(HWND _hwnd, Vec2 _Resolution)
 
     // DX 제공 스마트 포인터 ComPtr
 
+    UINT iFlag = 0;
 #ifdef _DEBUG
-    UINT iFlag = D3D11_CREATE_DEVICE_DEBUG;
+    iFlag = D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
     D3D_FEATURE_LEVEL* pLevel{};

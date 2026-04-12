@@ -15,7 +15,7 @@ CBarrel::CBarrel()
 {
     m_LateExplosionSpawnDesc.SpawnPos                   = Vec3();
     m_LateExplosionSpawnDesc.ExplosionSizeFactor        = 1.f;
-    m_LateExplosionSpawnDesc.FPS                        = 1300.f;
+    m_LateExplosionSpawnDesc.FPS                        = 50.f;
     m_LateExplosionSpawnDesc.DamageAmount               = 50.f;
     m_LateExplosionSpawnDesc.SpawnedBy                  = nullptr;
     m_LateExplosionSpawnDesc.UseCollisionForDamaging    = true;
@@ -106,8 +106,8 @@ void CBarrel::TryExplodeAdjacentCells()
         }
     }
 
-    for (CBarrel* WillExplode : CheckedExplosion)
-        RemoveSpawnedBarrelFromStaticMap(WillExplode);
+    for (auto iter = CheckedExplosion.begin(); iter != CheckedExplosion.end(); ++iter)
+        RemoveSpawnedBarrelFromStaticMap(*iter);
 }
 
 void CBarrel::ExecuteLateExplosion()

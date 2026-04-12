@@ -38,6 +38,9 @@ void TimeMgr::Tick()
     // 이전과 현재 카운팅 차이를 Frequency로 나눠서 1프레임동안 진행한 시간값을 구하기
     m_DeltaTime = static_cast<float>(m_Current.QuadPart - m_Prev.QuadPart) / static_cast<float>(m_Frequency.QuadPart);
 
+    // [Fix] 릴리즈 모드 및 프레임 드랍 시 DT 폭주 방지 (최대 0.1초로 제한)
+    if (m_DeltaTime > 0.1f) m_DeltaTime = 0.1f;
+
     // Prev 카운팅을 다시 현재카운팅으로 맞추기
     m_Prev = m_Current;
 

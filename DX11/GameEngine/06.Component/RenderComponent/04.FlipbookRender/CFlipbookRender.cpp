@@ -60,7 +60,8 @@ void CFlipbookRender::FinalTick()
     
     if (CheckFinish()) return;
 
-    const float frameTimeLimit = 1.f / m_FPS;
+    const float safeFPS = (m_FPS <= 0.1f) ? 0.1f : m_FPS;
+    const float frameTimeLimit = 1.f / safeFPS;
 
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) m_FrameTimer += E_DT;
     else // Play 중 
@@ -68,12 +69,17 @@ void CFlipbookRender::FinalTick()
         m_FrameTimer += DT;
     }
     
-    if (m_FrameTimer > frameTimeLimit) // 한 프레임 보여주기 시간 끝
+    if (m_FrameTimer >= frameTimeLimit) // 한 프레임 보여주기 시간 끝
     {
-        m_FrameTimer -= frameTimeLimit;
+        int frameAdvance = static_cast<int>(m_FrameTimer / frameTimeLimit);
+
+        // [Fix] 릴리즈 모드 등 고프레임 환경에서 프레임 스킵 튐 방지 (최대 10프레임 제한)
+        if (frameAdvance > 10) frameAdvance = 10;
         
-        if (!m_bPlayReverse) ++m_CurAnimatingSpriteIdx;
-        else                 --m_CurAnimatingSpriteIdx;
+        m_FrameTimer -= static_cast<float>(frameAdvance) * frameTimeLimit;
+        
+        if (!m_bPlayReverse) m_CurAnimatingSpriteIdx += frameAdvance;
+        else                 m_CurAnimatingSpriteIdx -= frameAdvance;
 
         if (m_CurAnimatingSpriteIdx < 0 ||
             m_CurAnimatingSpriteIdx >= vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx]->GetSpriteCount()) // 애니메이션 한 바퀴 순회 끝
@@ -81,11 +87,13 @@ void CFlipbookRender::FinalTick()
             m_bCurCycleFinished = true;
 
             // 나간 Idx에 대해 다시 Boundary로 들어오게끔 처리
-            if (!m_bPlayReverse) --m_CurAnimatingSpriteIdx;
-            else                 ++m_CurAnimatingSpriteIdx;
+            if (!m_bPlayReverse) m_CurAnimatingSpriteIdx = vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx]->GetSpriteCount() - 1;
+            else                 m_CurAnimatingSpriteIdx = 0;
         }
         
         // 특정 Idx Event가 있다면 해당 Event 호출 처리
+        // (참고: 프레임이 건너뛰어졌을 때 중간 프레임 이벤트를 호출할지는 설계 의도에 따라 다름. 
+        // 여기서는 현재 프레임 이벤트만 체크)
         const Ptr<AFlipbook>& CurrentFlipbook = vecCurSelectedCategoryFlipbooks[m_CurSelectedFlipbookIdx];
         if (m_OnSpriteIdxEvent.contains(CurrentFlipbook.Get()) &&
             m_OnSpriteIdxEvent[CurrentFlipbook.Get()].first == m_CurAnimatingSpriteIdx)
@@ -557,7 +565,7 @@ void CFlipbookRender::SaveToLevelFile(FILE* _File)
 
     fwrite(&m_CurSelectedFlipbookIdx, sizeof(int), 1, _File); // 카테고리 내에서 지정된 Flipbook Idx 저장
     fwrite(&m_CurAnimatingSpriteIdx, sizeof(int), 1, _File);
-    fwrite(&m_FPS, sizeof(int), 1, _File);
+    fwrite(&m_FPS, sizeof(float), 1, _File);
 }
 
 void CFlipbookRender::LoadFromLevelFile(FILE* _File)
@@ -590,6 +598,6 @@ void CFlipbookRender::LoadFromLevelFile(FILE* _File)
 
     fread(&m_CurSelectedFlipbookIdx, sizeof(int), 1, _File);
     fread(&m_CurAnimatingSpriteIdx, sizeof(int), 1, _File);
-    fread(&m_FPS, sizeof(int), 1, _File);
+    fread(&m_FPS, sizeof(float), 1, _File);
     
 }

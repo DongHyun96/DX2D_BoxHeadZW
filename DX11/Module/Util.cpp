@@ -3,35 +3,41 @@
 
 #include "GameEngine/07.EditorUI/12.DebugLogUI/DebugLogUI.h"
 
+namespace DebugUtil
+{
 #ifdef _DEBUG
-void DebugUtil::AddDebugLog(const wstring& _msg, const Vec4& _Color, float _TotalLifeTime)
-{
-    const wstring debugString = _msg + L"\n";
-    OutputDebugStringW(debugString.c_str());
-        
-    DebugLogUIData LogData{};
-    LogData.LogStr          = string(debugString.begin(), debugString.end());;
-    LogData.Color           = _Color;
-    LogData.TotalLifeTime   = _TotalLifeTime;
-        
-    DebugLogUI::AddDebugInfo(LogData);
-}
+    void AddDebugLog(const wstring& _msg, const Vec4& _Color, float _TotalLifeTime)
+    {
+        const wstring debugString = _msg + L"\n";
+        OutputDebugStringW(debugString.c_str());
 
-void DebugUtil::AddDebugLog(const string& _msg, const Vec4& _Color, float _TotalLifeTime)
-{
-    AddDebugLog(wstring(_msg.begin(), _msg.end()), _Color, _TotalLifeTime);
-}
+        DebugLogUIData LogData{};
+        LogData.LogStr = string(debugString.begin(), debugString.end());
+        LogData.Color = _Color;
+        LogData.TotalLifeTime = _TotalLifeTime;
 
-void DebugUtil::SetPermanentDebugLog(const string& _LogKey, const string& _Msg, const Vec4& _Color)
-{
-    DebugLogUIData LogData{};
-    LogData.LogStr = _Msg;
-    LogData.Color  = _Color;
-        
-    DebugLogUI::SetPermanentDebugInfo(_LogKey, LogData);
-}
+        DebugLogUI::AddDebugInfo(LogData);
+    }
+
+    void AddDebugLog(const string& _msg, const Vec4& _Color, float _TotalLifeTime)
+    {
+        AddDebugLog(wstring(_msg.begin(), _msg.end()), _Color, _TotalLifeTime);
+    }
+
+    void SetPermanentDebugLog(const string& _LogKey, const string& _Msg, const Vec4& _Color)
+    {
+        DebugLogUIData LogData{};
+        LogData.LogStr = _Msg;
+        LogData.Color = _Color;
+
+        DebugLogUI::SetPermanentDebugInfo(_LogKey, LogData);
+    }
 #else
+    void AddDebugLog(const wstring&, const Vec4&, float) {}
+    void AddDebugLog(const string&, const Vec4&, float) {}
+    void SetPermanentDebugLog(const string&, const string&, const Vec4&) {}
 #endif
+}
 
 Vec4 GetRandomColor(bool _bUseRandomAlpha)
 {

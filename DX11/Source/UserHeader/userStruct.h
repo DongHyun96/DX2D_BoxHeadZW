@@ -54,7 +54,8 @@ struct ExplosionSpawnDesc
 {
     Vec3        SpawnPos{};
     float       ExplosionSizeFactor              = 1.f;
-    float       FPS                              = 800.f;
+    float       FPS                              = 50.f;
+    // float       FPS                              = 800.f;
     float       DamageAmount                     = 75.f;
     CScript*    SpawnedBy                        = nullptr;
     bool        UseCollisionForDamaging          = true;
