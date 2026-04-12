@@ -43,6 +43,8 @@ public:
     
     AMaterial* Clone() const;
     
+    virtual Ptr<Asset> CreateNewAsset() override;
+    
 public:
     
     void Binding();

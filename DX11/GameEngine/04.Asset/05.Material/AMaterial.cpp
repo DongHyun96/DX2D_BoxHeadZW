@@ -103,6 +103,24 @@ AMaterial* AMaterial::Clone() const
     return new AMaterial(*this); // 복사생성으로 생성한 재질 객체 반환
 }
 
+Ptr<Asset> AMaterial::CreateNewAsset()
+{
+    const wstring FileNameWithoutExtension = GetFileNameWithoutExtension(GetKey());
+    Ptr<AMaterial> NewAsset = AssetMgr::GetInst()->CreateNewAsset<AMaterial>(FileNameWithoutExtension);
+    
+    // 나머지 멤버변수 복사 처리
+    NewAsset->m_Shader = this->m_Shader;
+    NewAsset->m_Const  = this->m_Const;
+    NewAsset->m_Domain = this->m_Domain;
+    
+    for (int i = 0; i < TEX_END; ++i)
+    {
+        NewAsset->m_Tex[i] = this->m_Tex[i];
+    }
+    
+    return NewAsset.Get();
+}
+
 void AMaterial::Binding()
 {
     m_Shader->Binding();
