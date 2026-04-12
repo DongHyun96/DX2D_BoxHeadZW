@@ -127,8 +127,39 @@ void CPlayerWeaponHandler::TickSwapWeapon()
                                         KEY_TAP(KEY::NUM_3) ? PLAYER_HANDSTATE::SHOTGUN :
                                         KEY_TAP(KEY::NUM_4) ? PLAYER_HANDSTATE::MINIGUN :
                                         KEY_TAP(KEY::NUM_5) ? PLAYER_HANDSTATE::ROCKET : PLAYER_HANDSTATE::END;
+
     
-    
+    if (m_HandState != PLAYER_HANDSTATE::UNARMED)
+    {
+        // 마우스 휠로 무기 전환 (PISTOL ~ ROCKET 범위) (설치물 상태에서는 x)
+        int wheel = KeyMgr::GetInst()->GetMouseWheel();
+        if (NextHandState == PLAYER_HANDSTATE::END && wheel != 0)
+        {
+            if (m_HandState == PLAYER_HANDSTATE::UNARMED)
+            {
+                // UNARMED 상태에서 휠을 돌리면 PISTOL로 진입
+                NextHandState = PLAYER_HANDSTATE::PISTOL;
+            }
+            else
+            {
+                int iCur = static_cast<int>(m_HandState);
+                int iStart = static_cast<int>(PLAYER_HANDSTATE::PISTOL);
+                int iEnd = static_cast<int>(PLAYER_HANDSTATE::ROCKET);
+
+                if (wheel > 0) // Wheel Up -> 다음 무기
+                {
+                    iCur++;
+                    if (iCur > iEnd) iCur = iStart;
+                }
+                else // Wheel Down -> 이전 무기
+                {
+                    iCur--;
+                    if (iCur < iStart) iCur = iEnd;
+                }
+                NextHandState = static_cast<PLAYER_HANDSTATE>(iCur);
+            }
+        }
+    }
     
     if (NextHandState == PLAYER_HANDSTATE::END) return; // 아무 무기 Swap 시도도 이루어지지 않음
     

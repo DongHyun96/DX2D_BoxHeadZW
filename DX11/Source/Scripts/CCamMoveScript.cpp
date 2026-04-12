@@ -44,7 +44,7 @@ void CCamMoveScript::Tick()
     m_CamLerpDestPos += ToVec3(ToMousePosDir.Normalized()) * MappingToNewRange(Length, 0.f, RESOL_DIAG_HALF_LENGTH, 0.f, 250.f);
     
     HandleCameraEffect();
-    // HandleBoundary();
+    HandleBoundary();
     
     Vec3 FinalPos = Vec3::Lerp(Transform()->GetRelativePos(), m_CamLerpDestPos, m_CamLerpAlphaSpeed * DT);
     Transform()->SetRelativePos(FinalPos);

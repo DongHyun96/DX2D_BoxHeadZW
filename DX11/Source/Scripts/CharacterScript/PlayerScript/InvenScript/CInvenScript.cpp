@@ -19,11 +19,11 @@ void CInvenScript::Begin()
     // 초기값 부여
     m_mapStructureCount = 
     {
-        {PLAYER_STRUCTURE_TYPE::BARRICADE,          10},    
-        {PLAYER_STRUCTURE_TYPE::BARREL,             10},    
-        {PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN, 5},    
-        {PLAYER_STRUCTURE_TYPE::TURRET_MORTAR,      5},    
-        {PLAYER_STRUCTURE_TYPE::TURRET_ROCKET,      5},    
+        {PLAYER_STRUCTURE_TYPE::BARRICADE,          30},    
+        {PLAYER_STRUCTURE_TYPE::BARREL,             30},    
+        {PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN, 30},    
+        {PLAYER_STRUCTURE_TYPE::TURRET_MORTAR,      30},    
+        {PLAYER_STRUCTURE_TYPE::TURRET_ROCKET,      30},    
     };
     
 }
