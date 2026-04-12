@@ -75,6 +75,8 @@ typedef SimpleMath::Matrix      Matrix;
 #include <filesystem>
 #include <functional>
 
+#include <dwrite_3.h>
+
 
 using namespace std;
 

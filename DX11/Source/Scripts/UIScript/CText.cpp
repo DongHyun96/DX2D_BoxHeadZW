@@ -31,7 +31,7 @@ void CText::Init()
     CGameUI::Init();
     
     AddScriptParam(SCRIPT_PARAM::WSTRING, &m_strText, L"Text");
-    AddScriptParam(SCRIPT_PARAM::WSTRING, &m_FontStyle, L"FontStyle");
+    AddScriptParam(SCRIPT_PARAM::FONT_STYLE, &m_FontStyle, L"FontStyle");
     AddScriptParam(SCRIPT_PARAM::FLOAT, &m_fFontSize, L"FontSize", false);
     AddScriptParam(SCRIPT_PARAM::COLOR, &m_Color, L"Color");
     
@@ -57,7 +57,14 @@ void CText::Render()
     vScreenPos.y = (vResol.y * 0.5f) - vWorldPos.y;
     
     // FontMgr를 사용하여 화면에 텍스트 출력
-    FontMgr::GetInst()->DrawFont(m_strText.c_str(), m_FontStyle.c_str(), vScreenPos.x, vScreenPos.y, m_fFontSize, m_Color);
+    if (m_FontStyle == L"None" || m_FontStyle.empty())
+    {
+        FontMgr::GetInst()->DrawFont(m_strText.c_str(), vScreenPos.x, vScreenPos.y, m_fFontSize, m_Color);
+    }
+    else
+    {
+        FontMgr::GetInst()->DrawFont(m_strText.c_str(), m_FontStyle.c_str(), vScreenPos.x, vScreenPos.y, m_fFontSize, m_Color);
+    }
 }
 
 void CText::SaveToLevelFile(FILE* _File)

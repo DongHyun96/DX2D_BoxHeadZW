@@ -22,7 +22,8 @@ enum class SCRIPT_PARAM
     MATERIAL,
     SOUND,
     ROUND_INFO_VECTOR,
-    PROGRESS_BAR
+    PROGRESS_BAR,
+    FONT_STYLE
 };
 
 struct tScriptParam

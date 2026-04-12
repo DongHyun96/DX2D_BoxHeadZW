@@ -10,6 +10,7 @@
 
 #include "Source/Scripts/RoundHandler/CRoundHandler.h"
 #include "Source/Scripts/UIScript/CProgressBar.h"
+#include "GameEngine/03.Manager/10.FontMgr/FontMgr.h"
 
 namespace
 {
@@ -291,6 +292,42 @@ void ScriptUI::TickScriptParams()
 			AddItemHeight();	
 		}
 			break;
+		case SCRIPT_PARAM::FONT_STYLE:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			ImGui::SameLine(120);
+
+			wstring* target = static_cast<wstring*>(vecParam[i].Data);
+			const vector<wstring>& vecFontName = FontMgr::GetInst()->GetFontNames();
+
+			string Key = "##FontSelection";
+			Key += ID + GetUIKey();
+
+			string currentStyle = WStringToUtf8(*target);
+			if (currentStyle.empty()) currentStyle = "None";
+
+			if (ImGui::BeginCombo(Key.c_str(), currentStyle.c_str()))
+			{
+				bool isNoneSelected = (*target == L"None" || target->empty());
+				if (ImGui::Selectable("None", isNoneSelected))
+				{
+					*target = L"None";
+				}
+
+				for (const auto& fontName : vecFontName)
+				{
+					string name = WStringToUtf8(fontName);
+					bool isSelected = (fontName == *target);
+					if (ImGui::Selectable(name.c_str(), isSelected))
+					{
+						*target = fontName;
+					}
+				}
+				ImGui::EndCombo();
+			}
+			AddItemHeight();
+		}
+		break;
 		case SCRIPT_PARAM::MATRIX:
 			break;
 		case SCRIPT_PARAM::TEXTURE:

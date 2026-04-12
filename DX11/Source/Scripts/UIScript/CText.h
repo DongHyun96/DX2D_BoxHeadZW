@@ -6,7 +6,7 @@ class CText : public CGameUI
 {
 private:
     wstring m_strText{};
-    wstring m_FontStyle = L"Arial";
+    wstring m_FontStyle = L"None";
     float   m_fFontSize = 20.f;
     Vec4    m_Color{};
 
