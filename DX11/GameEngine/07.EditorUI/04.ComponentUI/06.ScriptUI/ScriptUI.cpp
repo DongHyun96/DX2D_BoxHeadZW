@@ -14,24 +14,21 @@
 
 namespace
 {
-	string WStringToUtf8(const wstring& src)
-	{
-		if (src.empty()) return {};
-		const int size = WideCharToMultiByte(CP_UTF8, 0, src.c_str(), src.size(), nullptr, 0, nullptr, nullptr);
-		if (size <= 0) return {};
-		string out(size, '\0');
-		WideCharToMultiByte(CP_UTF8, 0, src.c_str(), src.size(), out.data(), size, nullptr, nullptr);
-		return out;
+	std::string WStringToUtf8(const std::wstring& wstr) {
+		if (wstr.empty()) return std::string();
+		int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), NULL, 0, NULL, NULL);
+		std::string result(size_needed, 0);
+		WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), &result[0], size_needed, NULL, NULL);
+		return result;
 	}
 
-	wstring Utf8ToWString(const string& src)
-	{
-		if (src.empty()) return {};
-		const int size = MultiByteToWideChar(CP_UTF8, 0, src.c_str(), src.size(), nullptr, 0);
-		if (size <= 0) return {};
-		wstring out(size, L'\0');
-		MultiByteToWideChar(CP_UTF8, 0, src.c_str(), src.size(), out.data(), size);
-		return out;
+	// UTF-8 -> WString 변환 예시 (Windows API 사용)
+	std::wstring Utf8ToWString(const std::string& str) {
+		if (str.empty()) return std::wstring();
+		int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.size(), NULL, 0);
+		std::wstring result(size_needed, 0);
+		MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.size(), &result[0], size_needed);
+		return result;
 	}
 
 	int ResizeInputBuffer(ImGuiInputTextCallbackData* data)
@@ -259,7 +256,6 @@ void ScriptUI::TickScriptParams()
 		case SCRIPT_PARAM::WSTRING:
 		{
 			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
-			// ImGui::SameLine(120);
 
 			wstring* target = static_cast<wstring*>(vecParam[i].Data);
 			if (!target)
@@ -274,22 +270,32 @@ void ScriptUI::TickScriptParams()
 			vector<char>& buffer = m_WStringInputBuffer[vecParam[i].Data];
 			const string sourceUtf8 = WStringToUtf8(*target);
 
-			if (buffer.empty() || string(buffer.data()) != sourceUtf8)
-			{
-				buffer.assign(sourceUtf8.begin(), sourceUtf8.end());
-				buffer.push_back('\0');
-				if (buffer.size() < 64) buffer.resize(64, '\0');
+			// C-Style 문자열 비교를 사용하여 실제 문자열 데이터만 비교
+			if (buffer.empty() || strcmp(buffer.data(), sourceUtf8.c_str()) != 0) {
+				buffer.clear();
+				// 변환된 UTF-8 데이터와 널 문자까지 포함하여 버퍼에 삽입
+				buffer.insert(buffer.end(), sourceUtf8.begin(), sourceUtf8.end());
+				buffer.push_back('\0'); 
+				// 고정 크기(64바이트)로 조정하는 로직은 제거합니다.
 			}
 
+			// 1. 기본 상태 (아무 옵션도 없는 0으로 초기화)
 			ImGuiInputTextFlags flags = 0;
-			if (!vecParam[i].IsInput) flags |= ImGuiInputTextFlags_ReadOnly;
 
-			if (InputTextDynamic(key.c_str(), buffer, flags))
+			// 2. 만약 해당 파라미터가 입력 가능한 상태(IsInput)가 아니라면,
+			if (!vecParam[i].IsInput) 
 			{
-				*target = Utf8ToWString(string(buffer.data())); // 원본 wstring 즉시 반영
+				// '읽기 전용' 속성을 덧붙입니다.
+				flags |= ImGuiInputTextFlags_ReadOnly; 
+			}
+			
+			if (InputTextDynamic(key.c_str(), buffer, flags)) 
+			{
+				// 버퍼 데이터를 WString으로 다시 변환하여 원본에 반영
+				*target = Utf8ToWString(buffer.data()); 
 			}
 
-			AddItemHeight();	
+			AddItemHeight();   
 		}
 			break;
 		case SCRIPT_PARAM::FONT_STYLE:
@@ -312,6 +318,9 @@ void ScriptUI::TickScriptParams()
 				if (ImGui::Selectable("None", isNoneSelected))
 				{
 					*target = L"None";
+					// [추가] 폰트가 바뀌면 해당 스크립트의 문자열 입력 버퍼를 강제로 동기화하도록 제거
+					// 다음 Tick에서 WSTRING 케이스가 새로운 target 값을 기준으로 버퍼를 다시 생성합니다.
+					m_WStringInputBuffer.erase(vecParam[i].Data);
 				}
 
 				for (const auto& fontName : vecFontName)
@@ -321,6 +330,9 @@ void ScriptUI::TickScriptParams()
 					if (ImGui::Selectable(name.c_str(), isSelected))
 					{
 						*target = fontName;
+						// [추가] 폰트가 바뀌면 해당 스크립트의 문자열 입력 버퍼를 강제로 동기화하도록 제거
+						// 다음 Tick에서 WSTRING 케이스가 새로운 target 값을 기준으로 버퍼를 다시 생성합니다.
+						m_WStringInputBuffer.erase(vecParam[i].Data);
 					}
 				}
 				ImGui::EndCombo();
@@ -328,6 +340,51 @@ void ScriptUI::TickScriptParams()
 			AddItemHeight();
 		}
 		break;
+		case SCRIPT_PARAM::FONT_ALIGN:
+		{
+			// 1. 라벨 출력 (기존 방식과 동일)
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			ImGui::SameLine(120);
+
+			// 2. 타겟 데이터 포인터 캐스팅
+			FONT_ALIGN* target = static_cast<FONT_ALIGN*>(vecParam[i].Data);
+
+			// 3. ImGui 고유 키 생성
+			string Key = "##FontAlignSelection";
+			Key += ID + GetUIKey();
+
+			// 4. 표시할 정렬 옵션 이름들
+			const char* alignNames[] = { "Left", "Center", "Right" };
+    
+			// 현재 선택된 정렬의 인덱스 추출 (enum class를 int로 변환)
+			int currentIdx = static_cast<int>(*target);
+    
+			// 안전 장치: 범위를 벗어나면 Left(0)로 고정
+			if (currentIdx < 0 || currentIdx > 2) currentIdx = 0;
+
+			// 5. 콤보 박스 그리기
+			if (ImGui::BeginCombo(Key.c_str(), alignNames[currentIdx]))
+			{
+				for (int n = 0; n < IM_ARRAYSIZE(alignNames); n++)
+				{
+					bool isSelected = (currentIdx == n);
+					if (ImGui::Selectable(alignNames[n], isSelected))
+					{
+						// 선택된 항목의 인덱스를 다시 FONT_ALIGN enum으로 캐스팅하여 저장
+						*target = static_cast<FONT_ALIGN>(n);
+					}
+
+					// 콤보 박스를 열었을 때 현재 선택된 항목으로 포커스 이동
+					if (isSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
+			}
+			AddItemHeight();
+		}
+			break;
 		case SCRIPT_PARAM::MATRIX:
 			break;
 		case SCRIPT_PARAM::TEXTURE:

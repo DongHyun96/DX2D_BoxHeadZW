@@ -10,12 +10,6 @@ CProgressBar::CProgressBar()
 {
 }
 
-CProgressBar::CProgressBar(const CProgressBar& _Origin)
-    : CGameUI(_Origin)
-    , m_fRatio(_Origin.m_fRatio)
-{
-}
-
 CProgressBar::~CProgressBar()
 {
 }

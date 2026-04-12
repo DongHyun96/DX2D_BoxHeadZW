@@ -8,7 +8,6 @@ private:
 
 public:
     CProgressBar();
-    CProgressBar(const CProgressBar& _Origin);
     virtual ~CProgressBar() override;
     CLONE(CProgressBar)
 

@@ -2,6 +2,8 @@
 #include "CGameUI.h"
 #include <string>
 
+#include "GameEngine/03.Manager/10.FontMgr/FontMgr.h"
+
 class CText : public CGameUI
 {
 private:
@@ -9,10 +11,14 @@ private:
     wstring m_FontStyle = L"None";
     float   m_fFontSize = 20.f;
     Vec4    m_Color{};
+    
+private:
+    
+    FONT_ALIGN m_Align = FONT_ALIGN::LEFT;
+    
 
 public:
     CText();
-    CText(const CText& _Origin);
     virtual ~CText() override;
     CLONE(CText);
 

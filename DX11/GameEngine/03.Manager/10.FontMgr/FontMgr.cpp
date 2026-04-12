@@ -381,27 +381,24 @@ void FontMgr::DrawFont(const wchar_t* _pStr, float _fPosX, float _fPosY, float _
 // ---------------------------------------------------------------------------------
 // [핵심 변경] 커스텀 컬렉션과 스타일을 적용한 DrawFont
 // ---------------------------------------------------------------------------------
-void FontMgr::DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _fPosX, float _fPosY, float _fFontSize, UINT _Color, DWRITE_FONT_WEIGHT _Weight, DWRITE_FONT_STYLE _Style)
+void FontMgr::DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _fPosX, float _fPosY, float _fFontSize, UINT _Color, DWRITE_FONT_WEIGHT _Weight, DWRITE_FONT_STYLE _Style, FONT_ALIGN _Align)
 {
     if (!m_pDWriteFactory5 || !m_pCustomCollection) return;
 
-    wstring keyName = _pFontName; // CText가 넘겨준 "Pretendard Bold"
+    wstring keyName = _pFontName;
     wstring targetFamily = _pFontName;
     DWRITE_FONT_WEIGHT targetWeight = DWRITE_FONT_WEIGHT_NORMAL;
     DWRITE_FONT_STYLE targetStyle = DWRITE_FONT_STYLE_NORMAL;
 
-    // 맵에서 매칭되는 정보가 있다면 추출
     auto iter = m_mapFontInfo.find(keyName);
     if (iter != m_mapFontInfo.end())
     {
-        targetFamily = iter->second.FamilyName; // 실제 DWrite 생성 시에는 Family Name 필요
+        targetFamily = iter->second.FamilyName;
         targetWeight = iter->second.Weight;
         targetStyle = iter->second.Style;
     }
 
-    // -----------------------------------------------------------
-    // 이후는 이전 답변에서 작성했던 '텍스트 포맷 캐싱 및 레이아웃' 로직과 완벽히 동일합니다.
-    // -----------------------------------------------------------
+    // 포맷 캐싱 키 생성
     wchar_t szFormatKey[256];
     swprintf_s(szFormatKey, L"%s_%.1f_%d_%d", targetFamily.c_str(), _fFontSize, targetWeight, targetStyle);
     wstring formatKey = szFormatKey;
@@ -415,7 +412,6 @@ void FontMgr::DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _f
     }
     else
     {
-        // 이때 패밀리 이름과 정확한 굵기/스타일을 적용
         HRESULT hr = m_pDWriteFactory5->CreateTextFormat(
             targetFamily.c_str(), 
             m_pCustomCollection,     
@@ -428,26 +424,49 @@ void FontMgr::DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _f
         );
 
         if (FAILED(hr)) return;
+
+        // [핵심 1] 텍스트가 잘리거나 강제 줄바꿈되지 않도록 No Wrap 설정
+        pTextFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+
         m_mapTextFormat[formatKey] = pTextFormat;
     }
 
-    // 레이아웃 렌더링
     IDWriteTextLayout* pTextLayout = nullptr;
     UINT32 textLen = (UINT32)wcslen(_pStr);
     
-    if (SUCCEEDED(m_pDWriteFactory5->CreateTextLayout(_pStr, textLen, pTextFormat, 4096.0f, 4096.0f, &pTextLayout)))
+    // [핵심 2] Layout의 최대 크기를 0.0f, 0.0f로 주어 텍스트에 핏(Fit)하게 만듭니다.
+    if (SUCCEEDED(m_pDWriteFactory5->CreateTextLayout(_pStr, textLen, pTextFormat, 0.0f, 0.0f, &pTextLayout)))
     {
-        m_FontWrapper->DrawTextLayout(CONTEXT, pTextLayout, _fPosX, _fPosY, _Color, FW1_RESTORESTATE);
+        float renderX = _fPosX;
+
+        // [핵심 3] 정렬 옵션에 따라 X 좌표를 이동시킵니다.
+        if (_Align != FONT_ALIGN::LEFT)
+        {
+            DWRITE_TEXT_METRICS metrics;
+            pTextLayout->GetMetrics(&metrics);
+
+            if (_Align == FONT_ALIGN::CENTER)
+            {
+                renderX -= (metrics.width / 2.0f);
+            }
+            else if (_Align == FONT_ALIGN::RIGHT)
+            {
+                renderX -= metrics.width;
+            }
+        }
+
+        // 보정된 renderX를 사용하여 렌더링
+        m_FontWrapper->DrawTextLayout(CONTEXT, pTextLayout, renderX, _fPosY, _Color, FW1_RESTORESTATE);
         pTextLayout->Release(); 
     }
 }
 
-void FontMgr::DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _fPosX, float _fPosY, float _fFontSize, const Vec4& _Color, DWRITE_FONT_WEIGHT _Weight, DWRITE_FONT_STYLE _Style)
+void FontMgr::DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _fPosX, float _fPosY, float _fFontSize, const Vec4& _Color, DWRITE_FONT_WEIGHT _Weight, DWRITE_FONT_STYLE _Style, FONT_ALIGN _Align)
 {
     DrawFont
     (
        _pStr, _pFontName, _fPosX, _fPosY, _fFontSize,
        FONT_RGBA((BYTE)(_Color.x * 255.f), (BYTE)(_Color.y * 255.f), (BYTE)(_Color.z * 255.f), (BYTE)(_Color.w * 255.f)),
-       _Weight, _Style
+       _Weight, _Style, _Align
     );
 }

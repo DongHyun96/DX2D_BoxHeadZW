@@ -13,6 +13,13 @@
 
 #define FONT_RGBA(r, g, b, a) (((((BYTE)a << 24 ) | (BYTE)b << 16) | (BYTE)g << 8) | (BYTE)r)
 
+enum class FONT_ALIGN
+{
+    LEFT,
+    CENTER,
+    RIGHT,
+};
+
 struct CustomFontInfo
 {
     wstring FamilyName;       // 예: "Pretendard"
@@ -52,12 +59,14 @@ public:
     void DrawFont(const wchar_t* _pStr, float _fPosX, float _fPosY, float _fFontSize, UINT _Color);
     void DrawFont(const wchar_t* _pStr, float _fPosX, float _fPosY, float _fFontSize, const Vec4& _Color);
 
-    // 폰트 스타일이 적용 가능한 확장 DrawFont
+    // 폰트 스타일 및 정렬이 적용 가능한 확장 DrawFont
     void DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _fPosX, float _fPosY, float _fFontSize, UINT _Color, 
-                  DWRITE_FONT_WEIGHT _Weight = DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE _Style = DWRITE_FONT_STYLE_NORMAL);
+                  DWRITE_FONT_WEIGHT _Weight = DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE _Style = DWRITE_FONT_STYLE_NORMAL,
+                  FONT_ALIGN _Align = FONT_ALIGN::LEFT);
     
     void DrawFont(const wchar_t* _pStr, const wchar_t* _pFontName, float _fPosX, float _fPosY, float _fFontSize, const Vec4& _Color, 
-                  DWRITE_FONT_WEIGHT _Weight = DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE _Style = DWRITE_FONT_STYLE_NORMAL);
+                  DWRITE_FONT_WEIGHT _Weight = DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE _Style = DWRITE_FONT_STYLE_NORMAL,
+                  FONT_ALIGN _Align = FONT_ALIGN::LEFT);
 
     const vector<wstring>& GetFontNames() const { return m_vecFontName; }
 };

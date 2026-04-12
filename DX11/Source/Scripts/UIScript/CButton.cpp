@@ -18,7 +18,7 @@ CButton::CButton(const CButton& _Origin)
     , m_IdleTex(_Origin.m_IdleTex)
     , m_HoverTex(_Origin.m_HoverTex)
     , m_ClickedTex(_Origin.m_ClickedTex)
-    , m_CallBackFunc(_Origin.m_CallBackFunc)
+    , m_CallBackFunc(nullptr)
     , m_bMouseOn(false)
     , m_bLBtnDown(false)
 {
