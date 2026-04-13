@@ -38,6 +38,9 @@ public:
     virtual bool ApplyHeal(float _HealAmount) override;
     virtual bool ApplyBoost(float _BoostAmount);
 
+    void ToggleDebugInvincible() { m_bDebugInvincible = !m_bDebugInvincible; }
+    bool IsDebugInvincible() const { return m_bDebugInvincible; }
+    
 public:
     
     bool GetIsInvincible() const { return m_IsInvincible; }

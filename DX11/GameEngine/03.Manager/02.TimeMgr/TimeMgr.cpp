@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
+#include "Source/Manager/GameManager.h"
+#include "Source/Scripts/CharacterScript/CharacterStat/PlayerStat/CPlayerStat.h"
 
 TimeMgr::TimeMgr()
     /*: m_Frequency{}
@@ -133,6 +135,14 @@ void TimeMgr::Render()
     }
     
     if (KEY_TAP(KEY::F1)) Flag = !Flag;
+
+    if (GM->GetPlayerObject())
+    {
+        Ptr<CPlayerStat> pStat = GM->GetPlayerObject()->GetScriptComponent<CPlayerStat>();
+        
+        if (pStat->IsDebugInvincible()) FontMgr::GetInst()->DrawFont(L"Player Invincible", 10, 60, 24, FONT_RGBA(200, 20, 20, 255));
+        if (KEY_TAP(KEY::SPACE)) pStat->ToggleDebugInvincible();
+    }
 }
 
 wstring TimeMgr::GetLocalTimeWString() const

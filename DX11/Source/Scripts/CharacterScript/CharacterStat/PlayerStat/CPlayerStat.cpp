@@ -11,6 +11,8 @@
 #include <algorithm>
 
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Module/Util.h"
 
 CPlayerStat::CPlayerStat()
@@ -52,7 +54,7 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
     m_HitHistory.push_back(currentTime);
 
     // 1초가 지난 기록은 제거
-    m_HitHistory.erase(std::remove_if(m_HitHistory.begin(), m_HitHistory.end(),
+    m_HitHistory.erase(remove_if(m_HitHistory.begin(), m_HitHistory.end(),
         [currentTime](float t) { return currentTime - t > 1.0f; }), m_HitHistory.end());
 
     // 1초 내에 3번 피격 시 무적 발동
@@ -71,6 +73,11 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
     const PLAYER_MAINSTATE NextState = IsDead() ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::PUSHED_OUT;
     const Ptr<CPlayerScript>& MainPlayerScript = GetOwner()->GetScriptComponent<CPlayerScript>();
     
+    if (IsDead())
+    {
+        Ptr<ASound> DieSound = FIND_ASSET(ASound, L"Sound\\PlayerDead.mp3"); 
+        DieSound->Play(1, 0.5f, false);
+    }
 
     MainPlayerScript->SetMainState(NextState);
     GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().HPBar->SetRatio(GetHP() / GetMaxHP());
