@@ -11,6 +11,7 @@
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/AirStrike/CAirStrike.h"
 #include "Source/Scripts/ProjectileScript/CGrenade.h"
+#include "Source/Scripts/UIScript/CCrossHair.h"
 #include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 CPlayerWeaponHandler::CPlayerWeaponHandler()
@@ -95,7 +96,11 @@ void CPlayerWeaponHandler::Tick()
         if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
         {
             int StateIdx = static_cast<int>(m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState);
-            if (--StateIdx >= 0) m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
+            if (--StateIdx >= 0)
+            {
+                m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
+                SetHandState(m_PlayerMainScript->GetHandState());   
+            }
         }
     }
     
@@ -104,7 +109,11 @@ void CPlayerWeaponHandler::Tick()
         if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
         {
             int StateIdx = static_cast<int>(m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState);
-            if (++StateIdx <= 2) m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
+            if (++StateIdx <= 2)
+            {
+                m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
+                SetHandState(m_PlayerMainScript->GetHandState());   
+            }
         }
     }
     
@@ -120,13 +129,29 @@ void CPlayerWeaponHandler::TickSwapWeapon()
     // 사격 중이라면 무기 교환 불가
     if (m_LastTickFired) return;
 
+    // KEY_TAP(KEY::E)     ? PLAYER_HANDSTATE::UNARMED :
+    static PLAYER_HANDSTATE PrevGunState{};
+    if (KEY_TAP(KEY::E))
+    {
+        if (m_HandState == PLAYER_HANDSTATE::UNARMED)
+        {
+            SetHandState(PrevGunState);
+        }
+        else
+        {
+            PrevGunState = m_HandState;
+            SetHandState(PLAYER_HANDSTATE::UNARMED);
+        }
+        return;   
+    }
+    
     // Numbering으로 무기 전환
-    PLAYER_HANDSTATE NextHandState =    KEY_TAP(KEY::TILDE) ? PLAYER_HANDSTATE::UNARMED :
-                                        KEY_TAP(KEY::NUM_1) ? PLAYER_HANDSTATE::PISTOL : 
+    PLAYER_HANDSTATE NextHandState =    KEY_TAP(KEY::NUM_1) ? PLAYER_HANDSTATE::PISTOL : 
                                         KEY_TAP(KEY::NUM_2) ? PLAYER_HANDSTATE::UZI :
                                         KEY_TAP(KEY::NUM_3) ? PLAYER_HANDSTATE::SHOTGUN :
                                         KEY_TAP(KEY::NUM_4) ? PLAYER_HANDSTATE::MINIGUN :
                                         KEY_TAP(KEY::NUM_5) ? PLAYER_HANDSTATE::ROCKET : PLAYER_HANDSTATE::END;
+                                        
 
     
     if (m_HandState != PLAYER_HANDSTATE::UNARMED)
@@ -197,7 +222,7 @@ void CPlayerWeaponHandler::TickFireWeapon()
 
 void CPlayerWeaponHandler::TickFireGrenade()
 {
-    if (KEY_TAP(KEY::F))
+    if (KEY_TAP(KEY::C))
         GM->SpawnGrenade(Transform()->GetWorldPos(), m_PlayerMainScript->GetPlayerToMousePos().Normalized(), 75.f, 3, 400.f, 300.f, true);
 }
 
@@ -214,6 +239,11 @@ void CPlayerWeaponHandler::TickDeployAirStrike()
 void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
 {
     m_HandState = _HandState;
+
+    if (m_HandState == PLAYER_HANDSTATE::UNARMED)
+    {
+        GM->GetIngameUIManager()->GetCrossHair()->GetOwner()->SetActive(false);
+    }
     
     // 해당 Slot에 무기가 존재한다면
     if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_HandState))
@@ -229,6 +259,7 @@ void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
         CInvenScript* Inven = GM->GetPlayerObject()->GetScriptComponent<CInvenScript>().Get();
         
         GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().UpdateToGun(m_HandState, Inven->GetCurrentAmmoCount(_HandState));
+        GM->GetIngameUIManager()->GetCrossHair()->GetOwner()->SetActive(true);
     }
 }
 

@@ -179,6 +179,8 @@ private:
     RoundIndicators m_RoundIndicators{};
     CText*          m_ZombieAliveCount{};
     
+    class CCrossHair* m_CrossHair{};
+    
 public:
     CIngameUIManager();
     virtual ~CIngameUIManager() override;
@@ -195,6 +197,9 @@ public:
     RoundIndicators& GetRoundIndicatorsRef()        { return m_RoundIndicators; }
     CText*           GetZombieAliveCount() const    { return m_ZombieAliveCount; }
 
+    CCrossHair* GetCrossHair() const { return m_CrossHair; }
+    void SetCrossHair(CCrossHair* _CrossHair) { m_CrossHair = _CrossHair; }
+    
 private:
 
     void InitMembers();

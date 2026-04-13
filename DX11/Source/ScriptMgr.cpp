@@ -51,6 +51,7 @@
 #include "Source/Scripts/Structure\CTurret.h"
 #include "Source/Scripts/Structure\StructureStat\CStructureStat.h"
 #include "Source/Scripts/UIScript\CButton.h"
+#include "Source/Scripts/UIScript\CCrossHair.h"
 #include "Source/Scripts/UIScript\CGameUI.h"
 #include "Source/Scripts/UIScript\CProgressBar.h"
 #include "Source/Scripts/UIScript\CText.h"
@@ -105,6 +106,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CTurret");
 	_vec.push_back(L"CStructureStat");
 	_vec.push_back(L"CButton");
+	_vec.push_back(L"CCrossHair");
 	_vec.push_back(L"CProgressBar");
 	_vec.push_back(L"CText");
 	_vec.push_back(L"CIngameUIManager");
@@ -212,6 +214,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CStructureStat;
 	if (L"CButton" == _strScriptName)
 		return new CButton;
+	if (L"CCrossHair" == _strScriptName)
+		return new CCrossHair;
 	if (L"CGameUI" == _strScriptName)
 		return nullptr;
 	if (L"CProgressBar" == _strScriptName)
@@ -327,6 +331,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CStructureStat;
 	case (UINT)SCRIPT_TYPE::BUTTON:
 		return new CButton;
+	case (UINT)SCRIPT_TYPE::CROSSHAIR:
+		return new CCrossHair;
 	case (UINT)SCRIPT_TYPE::GAMEUI:
 		return nullptr;
 	case (UINT)SCRIPT_TYPE::PROGRESSBAR:
@@ -443,6 +449,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CStructureStat";
 	case SCRIPT_TYPE::BUTTON:
 		return L"CButton";
+	case SCRIPT_TYPE::CROSSHAIR:
+		return L"CCrossHair";
 	case SCRIPT_TYPE::GAMEUI:
 		return L"CGameUI";
 	case SCRIPT_TYPE::PROGRESSBAR:
