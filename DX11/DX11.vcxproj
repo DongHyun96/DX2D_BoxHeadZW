@@ -327,6 +327,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\ExplosionDome\CExplosionDome.h" />
     <ClInclude Include="Source\Scripts\ExplosionDome\CFirePillarHandler.h" />
     <ClInclude Include="Source\Scripts\FirstSpawnLocManager\CFirstSpawnLocManager.h" />
+    <ClInclude Include="Source\Scripts\Item\CItem.h" />
     <ClInclude Include="Source\Scripts\Obstacle\CObstacle.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CGrenade.h" />
     <ClInclude Include="Source\Scripts\ProjectileScript\CRocketProjectile.h" />
@@ -520,6 +521,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\ExplosionDome\CExplosionDome.cpp" />
     <ClCompile Include="Source\Scripts\ExplosionDome\CFirePillarHandler.cpp" />
     <ClCompile Include="Source\Scripts\FirstSpawnLocManager\CFirstSpawnLocManager.cpp" />
+    <ClCompile Include="Source\Scripts\Item\CItem.cpp" />
     <ClCompile Include="Source\Scripts\Obstacle\CObstacle.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CGrenade.cpp" />
     <ClCompile Include="Source\Scripts\ProjectileScript\CRocketProjectile.cpp" />

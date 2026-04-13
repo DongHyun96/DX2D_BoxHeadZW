@@ -2,7 +2,9 @@
 #include "CEnemyStat.h"
 
 #include "Source/ScriptMgr.h"
+#include "Source/Manager/GameManager.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
+#include "Source/Scripts/Item/CItem.h"
 
 CEnemyStat::CEnemyStat()
     : CCharacterStat(SCRIPT_TYPE::ENEMYSTAT)
@@ -28,10 +30,23 @@ bool CEnemyStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
     {
         MainEnemyScript->SetMainState(ENEMY_MAINSTATE::DIE);
         MainEnemyScript->OnDieStart();
+        
+        if (GetRandom(0.f, 1.f) < 0.4f)
+        {
+            GameObject* Object = GM->GetItemPooler()->SpawnObject(GetOwner()->Transform()->GetRelativePos());
+            if (Object)
+            {
+                // 아이템이 확실히 보이도록 Default(0) 또는 Tile(2) 레이어로 설정 시도
+                // (프리팹 기본 설정이 잘못되어 있을 가능성 대비)
+                Object->SetLayerIdx(0); 
+            }
+        }
     }
     else
         MainEnemyScript->SetMainState(ENEMY_MAINSTATE::PUSHED_OUT);
     
     MainEnemyScript->OnTakeDamage(_DamageCauser);
+    
+    
     return true;
 }

@@ -11,6 +11,7 @@ enum class FLIPBOOK_EFFECT_POOLER_TYPE
     EXPLOSION_DOME_EFFECT_POOLER,
     EXPLOSION_EFFECT_POOLER,
     TURRET_MUZZLE_FLASH_POOLER,
+    SMOKE_VARIOUS_POOLER,
     END
 };
 
@@ -20,6 +21,10 @@ class GameManager : public Singleton<GameManager>
     SINGLE(GameManager);
 
     /// 주의 : 여기서 Ptr로 잡아둔 GameObject의 경우, Destroy 처리가 제대로 이루어지지 않는다 (Garbage를 비워도 여기에 Reference를 들고 있기 때문)
+
+private:
+    
+    bool m_bHasGameStart = false;
     
 private:
     
@@ -36,6 +41,8 @@ private: // Poolers
     
     CPoolComponent* m_RocketProjectilePooler{};
     CPoolComponent* m_GrenadePooler{};
+    
+    CPoolComponent* m_ItemPooler{};
     
     class CEnemySpawnHandler* m_EnemySpawnHandler{}; 
     class CFirePillarHandler* m_FirePillarHandler{};
@@ -86,6 +93,12 @@ public:
     
     void SetIngameUIManager(CIngameUIManager* _InGameUIManager) { m_InGameUIManager = _InGameUIManager; }
     CIngameUIManager* GetIngameUIManager() const { return m_InGameUIManager; }
+
+    bool GetIsGameStart() const { return m_bHasGameStart; }
+    void SetIsGameStart(bool _bHasGameStart) { m_bHasGameStart = _bHasGameStart; }
+    
+    void SetItemPooler(CPoolComponent* _PoolComponent) { m_ItemPooler = _PoolComponent; }
+    CPoolComponent* GetItemPooler() const { return m_ItemPooler; }
     
 public: // Effect Spawn 관련
 

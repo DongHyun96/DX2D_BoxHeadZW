@@ -6,6 +6,8 @@
 #include "GameEngine/03.Manager/10.FontMgr/FontMgr.h"
 #include <algorithm>
 
+#include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
+
 TimeMgr::TimeMgr()
     /*: m_Frequency{}
     , m_Prev{}
@@ -56,7 +58,8 @@ void TimeMgr::Tick()
     wchar_t buff[255];
     swprintf_s(buff, L"DT : %.3f ms | %u FPS", m_DeltaTime * 1000.f, m_FPS);
     SetWindowText(Engine::GetInst()->GetMainWndHwnd(), buff);
-    DebugUtil::SetPermanentDebugLog("FPS", "FPS : " + to_string(m_FPS), DEF_COLOR_GREEN);
+    // DebugUtil::SetPermanentDebugLog("FPS", "FPS : " + to_string(m_FPS), DEF_COLOR_GREEN);
+    
 
     if (m_FPSAccumTime >= 1.f)
     {
@@ -121,10 +124,15 @@ void TimeMgr::PopGameDeltaTimeContext(float _PrevDeltaTime)
 void TimeMgr::Render()
 {
     // 이거 지금 1초 간 쌓인 FPS 출력 형태로 되어있음
-    /*wchar_t buff[255];
-    swprintf_s(buff, L"DT : %f ms | %d FPS", m_DeltaTime, m_FPS);
-    FontMgr::GetInst()->DrawFont(buff, 10, 30, 24, FONT_RGBA(200, 20, 20, 255));*/
-    // FontMgr::GetInst()->DrawFont(L"Wow", L"Arial", 30, 60, 60, Vec4(1.0f, 0.5f, 0.5f, 1.0f));
+    static bool Flag{};
+    if (Flag)
+    {
+        wchar_t buff[255];
+        swprintf_s(buff, L"%d FPS", m_FPS);
+        FontMgr::GetInst()->DrawFont(buff, 10, 30, 24, FONT_RGBA(200, 20, 20, 255));
+    }
+    
+    if (KEY_TAP(KEY::F1)) Flag = !Flag;
 }
 
 wstring TimeMgr::GetLocalTimeWString() const

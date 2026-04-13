@@ -5,6 +5,10 @@
 class CPlayerStat : public CCharacterStat
 {
 private:
+    
+    bool m_bDebugInvincible = true;
+    
+private:
 
     const float m_BoostMax = 100.f;
     float m_Boost{};

@@ -41,6 +41,7 @@
 #include "Source/Scripts/ExplosionDome\CExplosionDome.h"
 #include "Source/Scripts/ExplosionDome\CFirePillarHandler.h"
 #include "Source/Scripts/FirstSpawnLocManager\CFirstSpawnLocManager.h"
+#include "Source/Scripts/Item\CItem.h"
 #include "Source/Scripts/Obstacle\CObstacle.h"
 #include "Source/Scripts/ProjectileScript\CGrenade.h"
 #include "Source/Scripts/ProjectileScript\CRocketProjectile.h"
@@ -96,6 +97,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CExplosionDome");
 	_vec.push_back(L"CFirePillarHandler");
 	_vec.push_back(L"CFirstSpawnLocManager");
+	_vec.push_back(L"CItem");
 	_vec.push_back(L"CObstacle");
 	_vec.push_back(L"CGrenade");
 	_vec.push_back(L"CRocketProjectile");
@@ -194,6 +196,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CFirePillarHandler;
 	if (L"CFirstSpawnLocManager" == _strScriptName)
 		return new CFirstSpawnLocManager;
+	if (L"CItem" == _strScriptName)
+		return new CItem;
 	if (L"CObstacle" == _strScriptName)
 		return new CObstacle;
 	if (L"CGrenade" == _strScriptName)
@@ -311,6 +315,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CFirePillarHandler;
 	case (UINT)SCRIPT_TYPE::FIRSTSPAWNLOCMANAGER:
 		return new CFirstSpawnLocManager;
+	case (UINT)SCRIPT_TYPE::ITEM:
+		return new CItem;
 	case (UINT)SCRIPT_TYPE::OBSTACLE:
 		return new CObstacle;
 	case (UINT)SCRIPT_TYPE::GRENADE:
@@ -429,6 +435,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CFirePillarHandler";
 	case SCRIPT_TYPE::FIRSTSPAWNLOCMANAGER:
 		return L"CFirstSpawnLocManager";
+	case SCRIPT_TYPE::ITEM:
+		return L"CItem";
 	case SCRIPT_TYPE::OBSTACLE:
 		return L"CObstacle";
 	case SCRIPT_TYPE::GRENADE:

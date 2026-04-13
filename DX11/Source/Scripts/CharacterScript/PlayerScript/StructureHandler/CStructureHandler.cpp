@@ -104,9 +104,9 @@ void CStructureHandler::Tick()
 
 void CStructureHandler::UpdateCurrentStructureHolding()
 {
-    // E키를 눌러 다음 Structure Type으로 넘어가거나, 현재 들고있는 StructureHolding의 개수가 모두 소진되었을 때에, 바로 다음 StructureType으로 넘어간다
-    /*if (KEY_TAP(KEY::E) || !m_InvenScript->HasStructure(m_CurrentStructureHolding))
-        UpdateToNextStructureTypeHolding();*/
+    // 현재 들고있는 StructureHolding의 개수가 모두 소진되었을 때에, 바로 다음 StructureType으로 넘어간다
+    if (!m_InvenScript->HasStructure(m_CurrentStructureHolding))
+        UpdateToNextStructureTypeHolding();
     
     // Wheel 로 조정
     if (KeyMgr::GetInst()->GetMouseWheel() == 1)

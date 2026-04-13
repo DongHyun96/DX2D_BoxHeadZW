@@ -67,6 +67,8 @@ public:
 public:
     
     virtual void Init() override;
+    virtual void Begin() override;
+    virtual void AfterLevelBegin() override;
     virtual void Tick() override;
 
 private:

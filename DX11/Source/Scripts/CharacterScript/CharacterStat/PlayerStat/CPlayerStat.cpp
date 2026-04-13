@@ -10,6 +10,9 @@
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include <algorithm>
 
+#include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
+#include "Module/Util.h"
+
 CPlayerStat::CPlayerStat()
     : CCharacterStat(SCRIPT_TYPE::PLAYERSTAT)
 {
@@ -55,14 +58,15 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
     // 1초 내에 3번 피격 시 무적 발동
     if (m_HitHistory.size() >= 3)
     {
-        m_IsInvincible = true;
+        m_IsInvincible    = true;
         m_InvincibleTimer = m_InvincibleDuration;
-        m_FlickerTimer = 0.f;
+        m_FlickerTimer    = 0.f;
         m_HitHistory.clear();
     }
     
-    // TODO : 테스트용 무적 코드 지우기
-    m_HP = max(1.f, m_HP);
+    // TODO : 테스트용 무적
+    if (m_bDebugInvincible)
+        m_HP = max(1.f, m_HP);
     
     const PLAYER_MAINSTATE NextState = IsDead() ? PLAYER_MAINSTATE::DIE : PLAYER_MAINSTATE::PUSHED_OUT;
     const Ptr<CPlayerScript>& MainPlayerScript = GetOwner()->GetScriptComponent<CPlayerScript>();

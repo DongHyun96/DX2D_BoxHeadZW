@@ -28,12 +28,13 @@ void GameManager::OnLevelBegin()
     
     m_mapFlipbookEffectPoolers.clear();
     
-    m_RocketProjectilePooler    = nullptr;
-    m_GrenadePooler             = nullptr;
-    m_BackgroundCellManager     = nullptr;
-    m_EnemySpawnHandler         = nullptr;    
-    m_FirePillarHandler         = nullptr;
-    m_FirstSpawnLocManager      = nullptr;
+    m_RocketProjectilePooler = nullptr;
+    m_GrenadePooler          = nullptr;
+    m_BackgroundCellManager  = nullptr;
+    m_EnemySpawnHandler      = nullptr;
+    m_FirePillarHandler      = nullptr;
+    m_FirstSpawnLocManager   = nullptr;
+    m_ItemPooler             = nullptr;
     
     CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
@@ -45,15 +46,18 @@ void GameManager::OnLevelPlayToStop()
     m_MainPlayerScript  = nullptr;
     
     m_mapFlipbookEffectPoolers.clear();
-    
-    m_RocketProjectilePooler    = nullptr;
-    m_GrenadePooler             = nullptr;
-    m_BackgroundCellManager     = nullptr;
-    m_EnemySpawnHandler         = nullptr;
-    m_FirePillarHandler         = nullptr;
-    m_FirstSpawnLocManager      = nullptr;
+
+    m_RocketProjectilePooler = nullptr;
+    m_GrenadePooler          = nullptr;
+    m_BackgroundCellManager  = nullptr;
+    m_EnemySpawnHandler      = nullptr;
+    m_FirePillarHandler      = nullptr;
+    m_FirstSpawnLocManager   = nullptr;
+    m_ItemPooler             = nullptr;
     
     CStructure::ClearInstalledInfo();
+    
+    m_bHasGameStart = false;
 }
 
 void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)

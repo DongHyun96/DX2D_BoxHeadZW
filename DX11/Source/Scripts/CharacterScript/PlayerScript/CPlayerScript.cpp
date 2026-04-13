@@ -71,6 +71,9 @@ void CPlayerScript::AfterLevelBegin()
 void CPlayerScript::Tick()
 {
     CCharacterScript::Tick();
+    
+    // For Testing
+    if (KEY_TAP(KEY::ENTER)) GM->SetIsGameStart(true);
 }
 
 void CPlayerScript::Move()
