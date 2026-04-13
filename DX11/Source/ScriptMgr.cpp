@@ -51,6 +51,7 @@
 #include "Source/Scripts/Structure\CStructure.h"
 #include "Source/Scripts/Structure\CTurret.h"
 #include "Source/Scripts/Structure\StructureStat\CStructureStat.h"
+#include "Source/Scripts/Temp\CAirStrikePreview.h"
 #include "Source/Scripts/UIScript\CButton.h"
 #include "Source/Scripts/UIScript\CCrossHair.h"
 #include "Source/Scripts/UIScript\CGameUI.h"
@@ -107,6 +108,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CStructure");
 	_vec.push_back(L"CTurret");
 	_vec.push_back(L"CStructureStat");
+	_vec.push_back(L"CAirStrikePreview");
 	_vec.push_back(L"CButton");
 	_vec.push_back(L"CCrossHair");
 	_vec.push_back(L"CProgressBar");
@@ -216,6 +218,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CTurret;
 	if (L"CStructureStat" == _strScriptName)
 		return new CStructureStat;
+	if (L"CAirStrikePreview" == _strScriptName)
+		return new CAirStrikePreview;
 	if (L"CButton" == _strScriptName)
 		return new CButton;
 	if (L"CCrossHair" == _strScriptName)
@@ -335,6 +339,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CTurret;
 	case (UINT)SCRIPT_TYPE::STRUCTURESTAT:
 		return new CStructureStat;
+	case (UINT)SCRIPT_TYPE::AIRSTRIKEPREVIEW:
+		return new CAirStrikePreview;
 	case (UINT)SCRIPT_TYPE::BUTTON:
 		return new CButton;
 	case (UINT)SCRIPT_TYPE::CROSSHAIR:
@@ -455,6 +461,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CTurret";
 	case SCRIPT_TYPE::STRUCTURESTAT:
 		return L"CStructureStat";
+	case SCRIPT_TYPE::AIRSTRIKEPREVIEW:
+		return L"CAirStrikePreview";
 	case SCRIPT_TYPE::BUTTON:
 		return L"CButton";
 	case SCRIPT_TYPE::CROSSHAIR:

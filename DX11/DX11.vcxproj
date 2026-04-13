@@ -338,6 +338,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\Structure\CTurret.h" />
     <ClInclude Include="Source\Scripts\Structure\StructureStat\CStructureStat.h" />
     <ClInclude Include="Source\Scripts\Structure\TurretAttackStrategy.h" />
+    <ClInclude Include="Source\Scripts\Temp\CAirStrikePreview.h" />
     <ClInclude Include="Source\Scripts\UIScript\CButton.h" />
     <ClInclude Include="Source\Scripts\UIScript\CCrossHair.h" />
     <ClInclude Include="Source\Scripts\UIScript\CGameUI.h" />
@@ -534,6 +535,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\Structure\StructureStat\CStructureStat.cpp">
     </ClCompile>
     <ClCompile Include="Source\Scripts\Structure\TurretAttackStrategy.cpp" />
+    <ClCompile Include="Source\Scripts\Temp\CAirStrikePreview.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\CButton.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\CCrossHair.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\CGameUI.cpp" />

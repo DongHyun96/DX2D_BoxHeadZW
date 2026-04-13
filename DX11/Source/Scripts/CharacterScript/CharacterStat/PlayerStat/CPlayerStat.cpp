@@ -77,6 +77,10 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
     {
         Ptr<ASound> DieSound = FIND_ASSET(ASound, L"Sound\\PlayerDead.mp3"); 
         DieSound->Play(1, 0.5f, false);
+
+        // 미니건을 쏘다가 죽으면 재생이 계속 되기 때문에 여기서 멈춰준다
+        Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\MinigunShotStart.wav");
+        pSound->Stop();
     }
 
     MainPlayerScript->SetMainState(NextState);

@@ -5,6 +5,7 @@
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/EnemySpawnHandler/CEnemySpawnHandler.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 #include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 const float CRoundHandler::s_RoundWaitTime = 15.f;
@@ -49,6 +50,8 @@ void CRoundHandler::Tick()
 
 void CRoundHandler::HandleTransition()
 {
+    if (GM->GetPlayerObject()->GetScriptComponent<CPlayerScript>()->GetMainState() == PLAYER_MAINSTATE::DIE) return;
+    
     switch (m_RoundState)
     {
     case ROUND_STATE::WAIT:
