@@ -26,6 +26,37 @@ void CIngameUIManager::Begin()
 
 void CIngameUIManager::Tick()
 {
+    bool bGameStart = GameManager::GetInst()->GetIsGameStart();
+
+    if (!bGameStart)
+    {
+        m_AccTime += DT;
+
+        if (m_RoundIndicators.RoundWaitText)
+        {
+            // 게임 시작 전이면 "Enterkey to start" 텍스트 표시 및 깜빡임 연출
+            m_RoundIndicators.RoundWaitText->SetText(L"EnterKey to start");
+            m_RoundIndicators.RoundWaitText->Transform()->SetRelativePosY(-150.f); // 화면 중앙보다 살짝 하단
+            
+            float Alpha = (sinf(m_AccTime * 5.f) + 1.f) * 0.5f;
+            m_RoundIndicators.RoundWaitText->SetAlpha(Alpha);
+        }
+    }
+    else
+    {
+        // 게임이 시작된 직후 한 번만 원래 상태로 복구 시도 (또는 라운드 시스템에 맡김)
+        if (!m_bPrevGameStart)
+        {
+            if (m_RoundIndicators.RoundWaitText)
+            {
+                m_RoundIndicators.RoundWaitText->SetText(L"Waiting for next round...");
+                m_RoundIndicators.RoundWaitText->SetAlpha(0.f);
+                // 위치는 OnRoundWaitStart 등에서 다시 잡힐 것이므로 굳이 여기서 초기화 안 해도 됨
+            }
+        }
+    }
+
+    m_bPrevGameStart = bGameStart;
 }
 
 void CIngameUIManager::InitMembers()

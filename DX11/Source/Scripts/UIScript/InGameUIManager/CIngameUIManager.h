@@ -181,6 +181,9 @@ private:
     
     class CCrossHair* m_CrossHair{};
     
+    float m_AccTime = 0.f;
+    bool  m_bPrevGameStart = false;
+
 public:
     CIngameUIManager();
     virtual ~CIngameUIManager() override;
