@@ -15,7 +15,7 @@ Device::~Device()
     /*if (m_Device) m_Device->Release();
     if (m_Context) m_Context->Release();*/
 }
-
+    
 HRESULT Device::Init(HWND _hwnd, Vec2 _Resolution)
 {
     m_hWnd          = _hwnd;
