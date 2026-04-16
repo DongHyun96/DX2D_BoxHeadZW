@@ -60,7 +60,7 @@ void RenderMgr::Progress()
         m_EditorCam->Render(false);
     }
     
-    // UI 카메라 나중에 렌더링 (UI가 월드 위에 그려지도록)
+    // UI 카메라 나중에 렌더링 (UI가 월드 위에 그려지도록) -> Play, Stop 상태 관련 없이 항상 존재하면 렌더링 처리 (Stop 상태에서 UI 편집을 해야하기 때문)
     if (m_UICam.Get() && m_UICam->GetOwner()->GetActive())
     {
         // m_UICam->SortObject();
@@ -81,7 +81,8 @@ void RenderMgr::OnLevelPlayToStop()
 {
     m_mapDomainGameObject.clear();
     
-    // UICam 다시 찾아서 세팅하기 
+    // UICam 다시 찾아서 세팅하기 (이미 다시 SharedLevel로 돌아온 상황)
+    RegisterUICamera(LevelMgr::GetInst()->GetCurLevel()->GetUICamera());
     GameObject* UICamObject = LevelMgr::GetInst()->GetCurLevel()->FindObjectByName(L"UICamera").Get();
     if (UICamObject) m_UICam = UICamObject->Camera();
     else m_UICam = nullptr;

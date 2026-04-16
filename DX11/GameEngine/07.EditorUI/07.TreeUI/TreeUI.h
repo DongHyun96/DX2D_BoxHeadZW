@@ -115,7 +115,8 @@ private:
 
 public:
 
-    GET_SET(string, DropKey)
+    const string& GetDropKey() const { return m_DropKey; }
+    void SetDropKey(const string& _Key) { m_DropKey = _Key; }
     
     Ptr<TreeNode> GetSelected() const { return m_Selected; }
     const vector<Ptr<TreeNode>>& GetSelectedNodes() const { return m_SelectedNodes; }

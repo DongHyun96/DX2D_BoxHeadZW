@@ -11,6 +11,9 @@
 
 class ALevel : public Asset
 {
+
+    friend class LevelUI;
+    
 private:
     
     Layer   m_arrLayer[MAX_LAYER]{};        // 하나의 레벨안에 총 32개의 레이어가 존재
@@ -24,6 +27,11 @@ private:
     /// 주의 : 중복된 LayerName이 존재하면 안된다. -> 중복 안되게끔 사전 처리 모두 해놓음
     /// </summary>
     map<wstring, UINT> m_mapLayerNameIndex{};
+
+private: // 이 레벨에서 사용될 FirstMainCamera와 UICamera 정보 (CCamera 컴포넌트 Init에서 자동 세팅 처리되게끔 처리함)
+    
+    CCamera* m_FirstMainCamera{};
+    CCamera* m_UICamera{};
     
 public:
     
@@ -86,6 +94,11 @@ public:
     Ptr<GameObject> FindObjectByName(const wstring& _Name);
 
     /// <summary>
+    /// 해당 GameObject 객체가 이 Level에 존재하는지 확인
+    /// </summary>
+    bool IsObjectInLevel(const Ptr<GameObject>& _Object);
+
+    /// <summary>
     /// <para> Level의 변경점이 있는지 확인 </para>
     /// <para> 변경점을 확인하면서, 동시에 변경점이 있었다고 체크된 상태였다면, 해당상태 다시 되돌려둠 </para>
     /// </summary>
@@ -101,4 +114,12 @@ public:
     /// </summary>
     void SetChanged() { m_Changed = true; }
     
+public:
+    
+    /// <summary>
+    /// 레벨 첫 시작 시, 첫 MainCamera로 지정될 MainCamera 지정 (Editor 기능 내에서 호출할 함수) 
+    /// </summary>
+    bool SetFirstMainCamera(CCamera* _Camera);
+    bool SetUICamera(CCamera* _Camera);
+    CCamera* GetUICamera() const { return m_UICamera; }
 };

@@ -10,6 +10,11 @@ enum class PROJ_TYPE
 class CCamera : public Component
 {
 private:
+    
+    bool        m_bIsFirstMainCamera{}; // Level 첫 시작 시, 첫 MainCamera로 잡힐 카메라 오브젝트인지 체크
+    bool        m_bIsUICamera{};        // Level 시작 시, 첫 UICamera로 잡힐 카메라 오브젝트인지 체크
+    
+private:
 
     UINT        m_LayerCheck{};     // 어떤 레이어만 화면에 렌더링 할 것인지 비트체크
     PROJ_TYPE   m_Type{};           // 투영방식
@@ -75,6 +80,14 @@ public:
     /// </summary>
     void LayerCheck(int _Idx);
     
+
+public: // Level Stop 상태에서 현재 Editor로 바라보는 중인 Level에서의 MainCamera 및 UICamera 지정 (Level Stop 상태에서만 동작을 한다)
+    
+    bool SetAsFirstMainCamera(bool _bAsMainCamera);
+    bool SetAsUICamera(bool _bAsUICamera);
+    
+    bool GetIsFirstMainCamera() const { return m_bIsFirstMainCamera; }
+    bool GetIsUICamera() const { return m_bIsUICamera; }
     
 public:
 

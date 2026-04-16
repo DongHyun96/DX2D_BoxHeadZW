@@ -226,6 +226,7 @@ bool GameObject::HasScript(SCRIPT_TYPE _ScriptType) const
 	return false;
 }
 
+        
 bool GameObject::AddComponent(const Ptr<Component>& _Com)
 {
 	if (CRenderComponent* RenderComponent = dynamic_cast<CRenderComponent*>(_Com.Get()))
