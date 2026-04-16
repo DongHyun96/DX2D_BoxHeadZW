@@ -36,9 +36,11 @@ class AGraphicShader : public Asset
 private:
 	
 	ComPtr<ID3DBlob>            	m_VSBlob{}; 										// HLSL로 작성한 VS 함수를 컴파일한 어셈블리코드를 저장시킬 버퍼 
+	ComPtr<ID3DBlob>				m_GSBlob{};											// HLSL로 작성한 GS 함수를 컴파일한 어셈블리코드를 저장시킬 버퍼
 	ComPtr<ID3DBlob>            	m_PSBlob{}; 										// HLSL로 작성한 PS 함수를 컴파일한 어셈블리코드를 저장시킬 버퍼
 	                            	
 	ComPtr<ID3D11VertexShader>  	m_VS{};
+	ComPtr<ID3D11GeometryShader>  	m_GS{};
 	ComPtr<ID3D11PixelShader>   	m_PS{};
 									
 	RS_TYPE							m_RSType{}; 										// 레스터라이저 컬링모드 
@@ -78,6 +80,8 @@ public:
 	/// <returns> : 제대로 생성되었다면 return HRESULT S_OK / 실패 시 E_FAIL </returns>
 	HRESULT CreateVertexShader(const wstring& _RelativeFilePath, const string& _FuncName);
 
+	HRESULT CreateGeometryShader(const wstring& _RelativeFilePath, const string& _FuncName);
+	
 	/// <summary>
 	/// PixelShader 생성
 	/// </summary>

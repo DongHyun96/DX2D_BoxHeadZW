@@ -226,6 +226,12 @@
     <ClInclude Include="Source\Scripts\UIScript\CProgressBar.h" />
     <ClInclude Include="Source\Scripts\UIScript\CText.h" />
     <ClInclude Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.h" />
+    <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\AComputeShader.h" />
+    <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\ParticleTickCS\AParticleTickCS.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\06.ParticleRender\CParticleRender.h" />
+    <ClInclude Include="Source\Scripts\Item\CItem.h" />
+    <ClInclude Include="Source\Scripts\Temp\CAirStrikePreview.h" />
+    <ClInclude Include="Source\Scripts\UIScript\CCrossHair.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Default\DX11.ico">
@@ -406,6 +412,12 @@
     <ClCompile Include="Source\Scripts\UIScript\CProgressBar.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\CText.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\AComputeShader.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\ParticleTickCS\AParticleTickCS.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\06.ParticleRender\CParticleRender.cpp" />
+    <ClCompile Include="Source\Scripts\Item\CItem.cpp" />
+    <ClCompile Include="Source\Scripts\Temp\CAirStrikePreview.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\CCrossHair.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Default\DX11.rc">
@@ -430,5 +442,8 @@
     <FxCompile Include="HLSL\sprite.fx" />
     <FxCompile Include="HLSL\billboard.fx" />
     <FxCompile Include="HLSL\std2d.fx" />
+    <FxCompile Include="HLSL\particle.fx" />
+    <FxCompile Include="HLSL\particle_func.fx" />
+    <FxCompile Include="HLSL\particle_tick.fx" />
   </ItemGroup>
 </Project>

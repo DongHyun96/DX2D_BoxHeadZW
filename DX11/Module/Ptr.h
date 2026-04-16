@@ -43,8 +43,8 @@ public:
 	bool operator==(T* _Ptr) const { return m_Ptr == _Ptr; }
 	bool operator==(const Ptr& _Ptr) const { return m_Ptr == _Ptr.m_Ptr; }
 
-	bool operator!=(T* _Ptr) const { return m_Ptr != _Ptr; }
-	bool operator!=(const Ptr& _Ptr) const { return m_Ptr != _Ptr.m_Ptr; }
+	/*bool operator!=(T* _Ptr) const { return m_Ptr != _Ptr; }
+	bool operator!=(const Ptr& _Ptr) const { return m_Ptr != _Ptr.m_Ptr; }*/
 	
 	explicit operator bool() const { return m_Ptr != nullptr; }
 

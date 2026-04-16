@@ -14,6 +14,7 @@
 
 #include "GameEngine/06.Component/RenderComponent/04.FlipbookRender/CFlipbookRender.h"
 #include "GameEngine/06.Component/RenderComponent/05.TileRender/CTileRender.h"
+#include "GameEngine/06.Component/RenderComponent/06.ParticleRender/CParticleRender.h"
 #include "GameEngine/06.Component/04.Light2D/CLight2D.h"
 
 #include "GameEngine/06.Component/05.PoolComponent/CPoolComponent.h"

@@ -135,6 +135,25 @@ void Device::OMSetTarget()
     m_Context->OMSetRenderTargets(1, m_RTV.GetAddressOf(), m_DSV.Get());
 }
 
+void Device::BindingSampler()
+{
+    // s0 레지스터에 바인딩 (모든 파이프라인 단계에서 사용 가능)
+    CONTEXT->VSSetSamplers(0, 1, m_arrSampler[0].GetAddressOf());
+    CONTEXT->HSSetSamplers(0, 1, m_arrSampler[0].GetAddressOf());
+    CONTEXT->DSSetSamplers(0, 1, m_arrSampler[0].GetAddressOf());
+    CONTEXT->GSSetSamplers(0, 1, m_arrSampler[0].GetAddressOf());
+    CONTEXT->PSSetSamplers(0, 1, m_arrSampler[0].GetAddressOf());
+    CONTEXT->CSSetSamplers(0, 1, m_arrSampler[0].GetAddressOf());
+
+    // s1 레지스터에 바인딩 (모든 파이프라인 단계에서 사용 가능)
+    CONTEXT->VSSetSamplers(1, 1, m_arrSampler[1].GetAddressOf());
+    CONTEXT->HSSetSamplers(1, 1, m_arrSampler[1].GetAddressOf());
+    CONTEXT->DSSetSamplers(1, 1, m_arrSampler[1].GetAddressOf());
+    CONTEXT->GSSetSamplers(1, 1, m_arrSampler[1].GetAddressOf());
+    CONTEXT->PSSetSamplers(1, 1, m_arrSampler[1].GetAddressOf());
+    CONTEXT->CSSetSamplers(1, 1, m_arrSampler[1].GetAddressOf());
+}
+
 HRESULT Device::CreateSwapChain()
 {
     DXGI_SWAP_CHAIN_DESC m_Desc{};
@@ -392,7 +411,6 @@ HRESULT Device::CreateDepthStencilState()
     if (FAILED(HR)) return E_FAIL;
 
     // LESS_WRITE
-    Desc = {};
     ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
     Desc.DepthEnable    = true;
     Desc.DepthFunc      = D3D11_COMPARISON_LESS;  // 작으면 통과
@@ -403,7 +421,6 @@ HRESULT Device::CreateDepthStencilState()
     if (FAILED(HR)) return E_FAIL;
 
     // NO_TEST
-    Desc = {};
     ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
     Desc.DepthEnable    = true;
     Desc.DepthFunc      = D3D11_COMPARISON_ALWAYS;      // 깊이판정은 항상 통과
@@ -412,9 +429,18 @@ HRESULT Device::CreateDepthStencilState()
     
     HR = DEVICE->CreateDepthStencilState(&Desc, m_DSState[static_cast<UINT>(DS_TYPE::NO_TEST)].GetAddressOf());
     if (FAILED(HR)) return E_FAIL;
+    
+    // NO_WRITE
+    ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+    Desc.DepthEnable    = true;
+    Desc.DepthFunc      = D3D11_COMPARISON_LESS; // 깊이판정은 LESS 로 비교
+    Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // 자신의 깊이를 기록하지 않음
+    Desc.StencilEnable  = false;
+
+    if (FAILED(DEVICE->CreateDepthStencilState(&Desc, m_DSState[(UINT)DS_TYPE::NO_WRITE].GetAddressOf())))
+        return E_FAIL;
 
     // LESS_NO_WRITE (투명 / 가산 혼합 이펙트용 필수 상태!)
-    Desc = {};
     ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
     Desc.DepthEnable    = true;                          // 깊이 판정은 한다 (벽이나 캐릭터 뒤에 정상적으로 가려지기 위함)
     Desc.DepthFunc      = D3D11_COMPARISON_LESS_EQUAL;   
@@ -425,7 +451,6 @@ HRESULT Device::CreateDepthStencilState()
     if (FAILED(HR)) return E_FAIL;
     
     // NO_TEST_NO_WRITE
-    Desc = {};
     ZeroMemory(&Desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
     Desc.DepthEnable    = false;
     

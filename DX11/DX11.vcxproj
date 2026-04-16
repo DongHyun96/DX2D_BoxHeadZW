@@ -185,6 +185,8 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\04.Asset\08.TileMap\ATileMap.h" />
     <ClInclude Include="GameEngine\04.Asset\09.Prefab\APrefab.h" />
     <ClInclude Include="GameEngine\04.Asset\10.Sound\ASound.h" />
+    <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\AComputeShader.h" />
+    <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\ParticleTickCS\AParticleTickCS.h" />
     <ClInclude Include="GameEngine\06.Component\01.Transform\CTransform.h" />
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CCollider2D.h" />
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.h" />
@@ -200,6 +202,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\06.ParticleRender\CParticleRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\CRenderComponent.h" />
     <ClInclude Include="GameEngine\06.Component\02.Camera\CCamera.h" />
     <ClInclude Include="GameEngine\06.Component\Component.h" />
@@ -371,6 +374,8 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\04.Asset\08.TileMap\ATileMap.cpp" />
     <ClCompile Include="GameEngine\04.Asset\09.Prefab\APrefab.cpp" />
     <ClCompile Include="GameEngine\04.Asset\10.Sound\ASound.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\AComputeShader.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\ParticleTickCS\AParticleTickCS.cpp" />
     <ClCompile Include="GameEngine\06.Component\01.Transform\CTransform.cpp" />
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CCollider2D.cpp" />
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.cpp" />
@@ -386,6 +391,7 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\06.ParticleRender\CParticleRender.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\CRenderComponent.cpp" />
     <ClCompile Include="GameEngine\06.Component\02.Camera\CCamera.cpp" />
     <ClCompile Include="GameEngine\06.Component\Component.cpp" />
@@ -588,6 +594,22 @@ CodeGen.exe</Command>
     </FxCompile>
     <FxCompile Include="HLSL\func.fx">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+    </FxCompile>
+    <FxCompile Include="HLSL\particle.fx">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Particle</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Particle</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="HLSL\particle_func.fx">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+    </FxCompile>
+    <FxCompile Include="HLSL\particle_tick.fx">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CS_ParticleTick</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CS_ParticleTick</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
     </FxCompile>
     <FxCompile Include="HLSL\sprite.fx">

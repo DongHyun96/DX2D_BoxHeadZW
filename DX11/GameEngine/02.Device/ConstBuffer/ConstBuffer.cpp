@@ -58,3 +58,8 @@ void ConstBuffer::Binding()
     
 }
 
+void ConstBuffer::Binding_CS()
+{
+    CONTEXT->CSSetConstantBuffers(static_cast<UINT>(m_Type), 1, m_CB.GetAddressOf());
+}
+

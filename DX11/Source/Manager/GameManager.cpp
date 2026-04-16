@@ -56,6 +56,7 @@ void GameManager::OnLevelPlayToStop()
     m_ItemPooler             = nullptr;
     
     CStructure::ClearInstalledInfo();
+    AStarPathFinder::Init();
     
     m_bHasGameStart = false;
 }

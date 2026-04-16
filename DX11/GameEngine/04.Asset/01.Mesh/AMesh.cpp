@@ -79,6 +79,12 @@ void AMesh::Render()
     CONTEXT->DrawIndexed(m_IdxCount, 0, 0); // 인덱스 버퍼까지 사용한 draw call   
 }
 
+void AMesh::Render_Particle(UINT _Count)
+{
+    Binding();
+    CONTEXT->DrawIndexedInstanced(m_IdxCount, _Count, 0, 0, 0);
+}
+
 void AMesh::RenderInstanced(UINT _InstanceCount)
 {
     if (0 == _InstanceCount) return;

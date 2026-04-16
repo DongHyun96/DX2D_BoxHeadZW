@@ -39,8 +39,7 @@ struct PathCacheKey
 
     bool operator==(const PathCacheKey& other) const
     {
-        return Start.x == other.Start.x && Start.y == other.Start.y &&
-               Dest.x == other.Dest.x && Dest.y == other.Dest.y;
+        return this->Start == other.Start && this->Dest == other.Dest;
     }
 };
 

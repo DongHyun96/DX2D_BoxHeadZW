@@ -238,6 +238,76 @@ void LevelMgr::CreateTestLevel()
     
     pLevel->AddObject(2, pTileObj);
     
+    // Paritlce Object
+	Ptr<GameObject> pParticle = new GameObject;
+	pParticle->SetName(L"Particle Object");
+
+	pParticle->AddComponent(new CTransform);
+	pParticle->AddComponent(new CParticleRender);
+
+	pParticle->Transform()->SetRelativePos(Vec3(0.f, 0.f, -100.f));
+
+
+	// 파티클 입자에 입힐 텍스쳐 설정
+	Ptr<CParticleRender> pRender = pParticle->ParticleRender();
+	Ptr<ATexture> pParticleTex = AssetMgr::GetInst()->Load<ATexture>(L"Particle", L"Texture\\FX_Flare.png");
+	pRender->SetParticleTex(pParticleTex);
+
+	// 스폰옵션 설정
+	pRender->SetSpawnRate(2.f);
+	pRender->SetSpawnShape(0);
+	pRender->SetSpawnShapeScale(Vec3(500.f, 500.f, 500.f)); // 파티클 생성 영역
+	pRender->SetMinLife(1.f);
+	pRender->SetMaxLife(3.f);
+	pRender->SetMinScale(Vec3(100.f, 30.f, 10.f));
+	pRender->SetMaxScale(Vec3(200.f, 60.f, 20.f));
+
+	// 파티클 시뮬레이션 좌표계 설정(Local or World)
+	pRender->SetSpaceType(0);
+
+	// AddVelocity 모듈 설정
+	pRender->SetModlue(PARTICLE_MODULE::ADD_VELOCITY, true);
+	pRender->SetAddVelocityType(3);
+	pRender->SetMinSpeed(1000.f);
+	pRender->SetMaxSpeed(1200.f);
+	pRender->SetFixedVelocity(Vec3(0.f, -1.f, 0.f));
+
+	// SpawnBurst 모듈 설정
+	pRender->SetModlue(PARTICLE_MODULE::SPAWN_BURST, true);
+	pRender->SetBurstParticleCount(200);
+	pRender->SetBurstRepeatCount(10);
+	pRender->SetBurstTerm(1.f);
+
+	// Scale 
+	pRender->SetModlue(PARTICLE_MODULE::SCALE, true);
+	pRender->SetStartScale(2.f);
+	pRender->SetEndScale(2.f);
+
+	// Drag : 감속
+	pRender->SetModlue(PARTICLE_MODULE::DRAG, false);
+	pRender->SetDragDestNormalizeAge(0.9f);  // 드래그 시작시점
+	pRender->SetDragLimitSpeed(0.f);		// 최종 속도 제한
+
+	// NoiseForce : 랜덤 힘
+	pRender->SetModlue(PARTICLE_MODULE::NOISE_FORCE, true);
+	pRender->SetNoiseForceTerm(0.2f);
+	pRender->SetNoiseForceScale(300.f);
+
+	// ===========
+	// Render 모듈
+	// ===========
+	pRender->SetModlue(PARTICLE_MODULE::RENDER, true);
+	pRender->SetStartColor(Vec4(0.8f, 0.2f, 0.44f, 1.f));
+	pRender->SetEndColor(Vec4(0.41f, 0.24f, 0.78f, 1.f));
+
+	pRender->SetFadeOut(false);
+	pRender->SetFadOutStartRatio(0.7f);
+
+	// 속도 정렬기능
+	pRender->SetVelocityAlignment(true, true);
+
+	pLevel->AddObject(0, pParticle);
+    
     
     /*// BulletMgr Object 추가
     Ptr<GameObject> BulletManager = new GameObject;

@@ -32,7 +32,8 @@ private:
         {RENDER_DOMAIN::DOMAIN_OPAQUE,      {}},
         {RENDER_DOMAIN::DOMAIN_MASKED,      {}},
         {RENDER_DOMAIN::DOMAIN_TRANSPARENT, {}},
-        {RENDER_DOMAIN::DOMAIN_POSTPROCESS, {}}
+        {RENDER_DOMAIN::DOMAIN_POSTPROCESS, {}},
+        {RENDER_DOMAIN::DOMAIN_PARTICLE,    {}}
     };
 
 private:

@@ -78,6 +78,22 @@ void AssetMgr::CreateEngineMesh()
     UINT arrIdx[6] = { 0, 2, 3, 0, 1, 2 };
 
     /***********************
+    * PointMesh      
+    ***********************/
+    Ptr<AMesh> pPointMesh = new AMesh;
+    Vtx vPoint;
+
+    vPoint.vPos   = Vec3(0.f, 0.f, 0.f);
+    vPoint.vUV    = Vec2(0.f, 0.f);
+    vPoint.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+    UINT Idx      = 0;
+
+    pPointMesh->Create(&vPoint, 1, &Idx, 1);
+    pPointMesh->SetIsProvidedByEngine(true);
+    AddAsset(L"PointMesh", pPointMesh.Get());
+    
+    
+    /***********************
     * 사각형 mesh 생성      
     ***********************/
     

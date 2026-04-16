@@ -20,12 +20,12 @@ CText::~CText()
 void CText::Init()
 {
     CGameUI::Init();
-    
-    AddScriptParam(SCRIPT_PARAM::WSTRING, &m_strText, L"Text");
-    AddScriptParam(SCRIPT_PARAM::FONT_STYLE, &m_FontStyle, L"FontStyle");
-    AddScriptParam(SCRIPT_PARAM::FLOAT, &m_fFontSize, L"FontSize", false);
-    AddScriptParam(SCRIPT_PARAM::COLOR, &m_Color, L"Color");
-    AddScriptParam(SCRIPT_PARAM::FONT_ALIGN, &m_Align, L"FontAlign");
+
+    AddScriptParam(SCRIPT_PARAM::WSTRING,       &m_strText,     L"Text");
+    AddScriptParam(SCRIPT_PARAM::FONT_STYLE,    &m_FontStyle,   L"FontStyle");
+    AddScriptParam(SCRIPT_PARAM::FLOAT,         &m_fFontSize,   L"FontSize", false);
+    AddScriptParam(SCRIPT_PARAM::COLOR,         &m_Color,       L"Color");
+    AddScriptParam(SCRIPT_PARAM::FONT_ALIGN,    &m_Align,       L"FontAlign");
     
     GetOwner()->SetIsTextObject(true);
 }

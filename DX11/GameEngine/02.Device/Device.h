@@ -43,9 +43,6 @@ public:
     
     HRESULT Init(HWND _hwnd, Vec2 _Resolution);
 
-    /// <summary> SwapChain present 처리 </summary>
-    void Present() const { m_SwapChain->Present(0, 0); }
-    
 public:
 
     Vec2 GetRenderResolution() const { return m_RenderResol; }
@@ -71,8 +68,12 @@ public:
     /// <para> Render() 과정의 가장 첫 단계에서 처리 </para>
     /// </summary>
     void ClearTarget();
-    
     void OMSetTarget();
+    
+    void BindingSampler();
+    
+    /// <summary> SwapChain present 처리 </summary>
+    void Present() const { m_SwapChain->Present(0, 0); }
 
 private:
     HRESULT CreateSwapChain();

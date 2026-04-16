@@ -27,5 +27,6 @@ public:
 	
 	void SetData(void* _SysMem, UINT _Size = 0);
 	void Binding();
+	void Binding_CS();
 
 };

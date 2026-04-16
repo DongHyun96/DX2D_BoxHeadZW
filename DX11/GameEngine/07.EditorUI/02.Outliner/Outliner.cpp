@@ -138,8 +138,8 @@ void Outliner::ReorderObjectTick()
     const ImGuiInputFlags flags = ImGuiInputFlags_RouteFocused;
 
     // Ctrl + Shift + Alt + Up/Down
-    bool up = ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiMod_Alt | ImGuiKey_UpArrow, flags);
-    bool down = ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiMod_Alt | ImGuiKey_DownArrow, flags);
+    bool up = ImGui::Shortcut(ImGuiMod_Ctrl     | ImGuiMod_Shift | ImGuiMod_Alt | ImGuiKey_UpArrow, flags);
+    bool down = ImGui::Shortcut(ImGuiMod_Ctrl   | ImGuiMod_Shift | ImGuiMod_Alt | ImGuiKey_DownArrow, flags);
 
     if (!up && !down) return;
 

@@ -242,7 +242,7 @@ ASSET_TYPE GetAssetType()
     else if constexpr (is_same_v<T, ALevel>)            return ASSET_TYPE::LEVEL;
     else if constexpr (is_same_v<T, APrefab>)           return ASSET_TYPE::PREFAB;
     else if constexpr (is_same_v<T, ASound>)            return ASSET_TYPE::SOUND;
-    
+    else if constexpr (is_same_v<T, AComputeShader>)    return ASSET_TYPE::COMPUTE_SHADER;
     
     return ASSET_TYPE::END;
 }
@@ -302,32 +302,33 @@ Ptr<T> AssetMgr::Load(const wstring& _Key, const wstring& _RelativePath)
     
     // 동일키로 로딩된 Asset이 있다면 반환
     if (pAsset) return pAsset;
-    
-    // DebugUtil::AddDebugLog(L"[AssetMgr::Load] Above not found msg is irrelevant");
 
-    // 에셋 객체 생성
-    pAsset = new T;
-    
-    // 입력된 경로로부터 에셋 로딩작업 진행
-    if (FAILED(pAsset->Load(CONTENT_PATH + _RelativePath)))
+    if constexpr( !std::is_same_v<T, AComputeShader>)
     {
-        DebugUtil::AddDebugLog(L"[AssetMgr::Load] Failed to load asset " + _Key);
-        return nullptr;
+        // 에셋 객체 생성
+        pAsset = new T;
+    
+        // 입력된 경로로부터 에셋 로딩작업 진행
+        if (FAILED(pAsset->Load(CONTENT_PATH + _RelativePath)))
+        {
+            DebugUtil::AddDebugLog(L"[AssetMgr::Load] Failed to load asset " + _Key);
+            return nullptr;
+        }
+
+        // T 타입에 해당하는 실제 AssetType 확인
+        ASSET_TYPE type = GetAssetType<T>();
+    
+        // 맵에 에셋등록
+        m_mapAsset[static_cast<UINT>(type)].insert(make_pair(_Key, pAsset.Get()));
+
+
+        // 에셋이 자신이 매니저에 등록될 때 사용된 Key 와, 
+        // 자신이 어떤 경로에 있는 파일로부터 로딩된 에셋인지 스스로 알 수 있도록 해줌
+        pAsset->SetKey(_Key);
+        pAsset->SetRelativePath(_RelativePath);
+    
+        m_Changed = true;
     }
-
-    // T 타입에 해당하는 실제 AssetType 확인
-    ASSET_TYPE type = GetAssetType<T>();
-    
-    // 맵에 에셋등록
-    m_mapAsset[static_cast<UINT>(type)].insert(make_pair(_Key, pAsset.Get()));
-
-
-    // 에셋이 자신이 매니저에 등록될 때 사용된 Key 와, 
-    // 자신이 어떤 경로에 있는 파일로부터 로딩된 에셋인지 스스로 알 수 있도록 해줌
-    pAsset->SetKey(_Key);
-    pAsset->SetRelativePath(_RelativePath);
-    
-    m_Changed = true;
     
     return pAsset;
 }

@@ -21,8 +21,11 @@ private:
 	ComPtr<ID3D11RenderTargetView> 		m_RTV{};
 	ComPtr<ID3D11DepthStencilView> 		m_DSV{};
 	ComPtr<ID3D11ShaderResourceView>	m_SRV{};
+	ComPtr<ID3D11UnorderedAccessView>	m_UAV{};
 
 	int									m_RecentRegisterNum = -1; // 가장 최근에 몇 번 register에 binding되었는지 저장(-1인 경우, binding된 적 없음)
+	int									m_RecentSRV_CS = -1;
+	int									m_RecentUAV_CS = -1;
 	
 public:
 	
@@ -35,6 +38,18 @@ public:
 	
 	// Binding 처리한 Texture Clear
 	void Clear();
+	
+	// ComputeShader 시점, t 레지스터 바인딩
+	void Binding_CS_SRV(UINT _RegisterNum);
+
+	// ComputeShader 시점, u 레지스터 바인딩
+	void Binding_CS_UAV(UINT _RegisterNum);
+
+	// ComputeShader 시점, t 레지스터 클리어
+	void Clear_CS_SRV(int _RegisterNum = -1);
+
+	// ComputeShader 시점, u 레지스터 클리어
+	void Clear_CS_UAV();
 	
 public:
 	
@@ -57,6 +72,10 @@ public:
 private:
 	
 	const ScratchImage& GetImage() const { return m_Image; }
+	
+public:
+	
+	HRESULT Create(UINT _Width, UINT _Height, DXGI_FORMAT _format, UINT _Flag, D3D11_USAGE _usage);
 	
 };
 

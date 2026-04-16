@@ -51,8 +51,10 @@ public:
     GET_OTHER_COMPONENT(SpriteRender);
     GET_OTHER_COMPONENT(FlipbookRender);
 	GET_OTHER_COMPONENT(TileRender);
+	GET_OTHER_COMPONENT(ParticleRender);
 	
 	GET_OTHER_COMPONENT(PoolComponent);
+	
 	
 	
 	class CCollider2D* GetCollider2D() const;

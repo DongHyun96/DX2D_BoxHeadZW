@@ -158,6 +158,32 @@ HRESULT AGraphicShader::CreateVertexShader(const wstring& _RelativeFilePath, con
     return S_OK;
 }
 
+HRESULT AGraphicShader::CreateGeometryShader(const wstring& _RelativeFilePath, const string& _FuncName)
+{
+    wstring Path = PathMgr::GetInst()->GetContentPath() + _RelativeFilePath;
+
+    // PixelShader
+    ComPtr<ID3DBlob> Err;
+    if (FAILED(D3DCompileFromFile(Path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
+        , _FuncName.c_str(), "gs_5_0", D3DCOMPILE_DEBUG, 0
+        , m_GSBlob.GetAddressOf(), Err.GetAddressOf())))
+    {
+        const char* pErrMsg = (const char*)Err->GetBufferPointer();
+        MessageBoxA(nullptr, pErrMsg, "쉐이더 생성 실패", MB_OK);
+        return E_FAIL;
+    }
+
+    // 컴파일한 Shader 코드로 PixelShader 만들기
+    if (FAILED(DEVICE->CreateGeometryShader(m_GSBlob->GetBufferPointer()
+        , m_GSBlob->GetBufferSize(), nullptr
+        , m_GS.GetAddressOf())))
+    {
+        return E_FAIL;
+    }
+
+    return S_OK;
+}
+
 HRESULT AGraphicShader::CreatePixelShader(const wstring& _RelativeFilePath, const string& _FuncName)
 {
     const wstring Path = CONTENT_PATH + _RelativeFilePath;
@@ -197,6 +223,9 @@ void AGraphicShader::Binding()
     // VS 
     CONTEXT->VSSetShader(m_VS.Get(), nullptr, 0);
 
+    // GeometryShader(함수) - 정점 당 수행, 정점의 개수를 변경할 수 있음
+    CONTEXT->GSSetShader(m_GS.Get(), nullptr, 0);
+    
     // RS
     CONTEXT->RSSetState(Device::GetInst()->GetRSState(m_RSType).Get()); // CULL_MODE : CULL_BACK, FILL_MODE : SOLID
     

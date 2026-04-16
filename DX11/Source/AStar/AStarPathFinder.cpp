@@ -4,9 +4,9 @@
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 
-ASNode* AStarPathFinder::m_FieldNodes[CELL_ROW_COUNT][CELL_ROW_COUNT];
+ASNode* AStarPathFinder::m_FieldNodes[CELL_ROW_COUNT][CELL_ROW_COUNT]{};
 UINT AStarPathFinder::m_CurrentEpoch{};
-unordered_map<PathCacheKey, stack<CellCoord>, PathCacheKeyHash> AStarPathFinder::m_PathCache;
+unordered_map<PathCacheKey, stack<CellCoord>, PathCacheKeyHash> AStarPathFinder::m_PathCache{};
 const UINT AStarPathFinder::MAX_CACHE_SIZE = 5000;
 
 AStarPathFinder::AStarPathFinder()

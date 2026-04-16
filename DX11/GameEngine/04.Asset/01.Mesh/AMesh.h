@@ -50,6 +50,8 @@ public:
     /// Binding 및 DrawCall 처리 
     /// </summary>
     void Render();
+    
+    void Render_Particle(UINT _Count);
 
     /// <summary>
     /// Binding 및 Instanced DrawCall 처리
