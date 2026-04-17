@@ -34,9 +34,14 @@ struct GS_OUT
     int InstID : FOG;
 };
 
+// GeometryShader 사용 이유
+// 정점을 생성하거나, 제거할 수 있는 단계
+// 1. 전체 버퍼가 전부 활성화된 파티클이 아닐 수 있기 때문에, 비활성화 된 파티클은 렌더링을 중도 스탑시킨다.
+// 2. Billboard 효과 구현 용이, 파티클은 점 하나를 GS 쉐이더에서 View 공간에서 사각형으로 분할 ==> 빌보드 효과
 [maxvertexcount(12)]
 void GS_Particle(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _Stream)
 {
+    // 이번 회차 파티클이 비활성화 상태면 파이프라인 중단
     uint InstID = (uint) _in[0].InstID;
     if (false == m_Buffer[InstID].Active)
         return;

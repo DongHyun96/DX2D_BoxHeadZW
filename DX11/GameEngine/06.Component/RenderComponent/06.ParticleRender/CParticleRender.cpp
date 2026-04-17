@@ -120,6 +120,8 @@ void CParticleRender::Render()
 	GetMaterial()->Binding();
 
 	// 파티클 렌더링(인스턴싱 기법 활용)
+	// 대량의 파티클을 렌더링할때, 필요한 데이터는 모두 파티클 버퍼안에 들어있기 때문에
+	// 한번에 1000개 가량의 파티클을 렌더링하고 종료하는것이 속도면에서 훨씬 이득
 	GetMesh()->Render_Particle(m_MaxParticle);
 
 	// 바인딩 했던 버퍼들 다시 해제(다음 프레임에, CS 쪽에서 사용해야하기 때문)
