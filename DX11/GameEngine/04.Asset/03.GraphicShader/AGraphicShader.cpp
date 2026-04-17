@@ -154,6 +154,8 @@ HRESULT AGraphicShader::CreateVertexShader(const wstring& _RelativeFilePath, con
     );
     
     if (FAILED(HR)) return E_FAIL;
+
+    SetIsProvidedByEngine(true);
     
     return S_OK;
 }
@@ -181,6 +183,7 @@ HRESULT AGraphicShader::CreateGeometryShader(const wstring& _RelativeFilePath, c
         return E_FAIL;
     }
 
+    SetIsProvidedByEngine(true);
     return S_OK;
 }
 
@@ -207,7 +210,8 @@ HRESULT AGraphicShader::CreatePixelShader(const wstring& _RelativeFilePath, cons
     
     if (FAILED(DEVICE->CreatePixelShader(m_PSBlob->GetBufferPointer(), m_PSBlob->GetBufferSize(), nullptr, m_PS.GetAddressOf())))
         return E_FAIL;
-    
+
+    SetIsProvidedByEngine(true);
     return S_OK;
 }
 

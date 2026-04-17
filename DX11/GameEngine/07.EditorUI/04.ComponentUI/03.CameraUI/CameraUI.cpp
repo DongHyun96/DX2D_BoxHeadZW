@@ -21,6 +21,14 @@ void CameraUI::Tick_UI()
     UINT        m_LayerCheck{};     // 어떤 레이어만 화면에 렌더링 할 것인지 비트체크
 
 
+    // 현재 레벨에서 유일한 UICam 및 FirstMainCamera인지 체킹
+    ImGui::BeginDisabled(true);
+    bool IsFirstMainCam = GetTargetObject()->Camera()->GetIsFirstMainCamera();
+    bool IsUICam        = GetTargetObject()->Camera()->GetIsUICamera();
+    ImGui::Checkbox("IsFirstMainCamera", &IsFirstMainCam);
+    ImGui::Checkbox("IsUICam", &IsUICam);
+    ImGui::EndDisabled();
+    
     // const char* items[] = { "AAAA", "BBBB", "CCCC" };
     // static int item_current = 0; // 선택한 Item에서의 Index 번호
     // ImGui::Combo("combo", &item_current, items, 3);

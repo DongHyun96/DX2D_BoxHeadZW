@@ -32,12 +32,9 @@ private:
     void ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLevelStateToStop);
     void ChangeCurLevelState(LEVEL_STATE _NextState);
     
-private:
-    
-    void CreateTestLevel();
     
 public:
     
-    void LoadTestLevel();
+    void CreateTestLevel();
     
 };

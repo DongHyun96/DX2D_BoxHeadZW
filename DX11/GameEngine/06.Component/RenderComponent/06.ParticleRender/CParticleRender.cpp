@@ -88,7 +88,7 @@ void CParticleRender::FinalTick()
 		m_TickCS->SetSpawnBuffer(m_SpawnBuffer);
 		m_TickCS->SetParticleBuffer(m_ParticleBuffer);
 		m_TickCS->SetModuleBuffer(m_ModuleBuffer);
-		m_TickCS->SetNoiseTex(AssetMgr::GetInst()->Load<ATexture>(L"Texture\\noise\\noise_03.jpg", L"Texture\\noise\\noise_03.jpg"));
+		m_TickCS->SetNoiseTex(FIND_ASSET(ATexture, L"Texture\\noise_03.jpg"));
 
 		// 마우스 오른쪽 버튼 누루고 있을때는 잠시 정지
 		if (KEY_PRESSED(KEY::MRB))

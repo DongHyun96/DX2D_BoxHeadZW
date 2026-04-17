@@ -69,7 +69,7 @@ int APIENTRY wWinMain
     
     // LevelMgr::GetInst()->LoadTestLevel();
     // ChangeLevelState(LEVEL_STATE::PLAY);
-    // CreateTestLevel();
+    LevelMgr::GetInst()->CreateTestLevel();
     
     // 단축키 테이블 정보 핸들 받음
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DX11));

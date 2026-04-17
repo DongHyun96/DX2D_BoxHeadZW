@@ -360,7 +360,10 @@ if (ImGui::BeginPopup("AddComponentPopup"))
                 pNew = pNewTransform;
             }
                 break;
-            case COMPONENT_TYPE::CAMERA:          pNew = new CCamera; break;
+            case COMPONENT_TYPE::CAMERA:
+                EnsureTransform();
+                pNew = new CCamera; 
+                break;
             case COMPONENT_TYPE::COLLIDER2D_RECT:
                 EnsureTransform();
                 pNew = new CColliderRect;
