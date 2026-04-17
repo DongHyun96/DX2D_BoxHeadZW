@@ -312,13 +312,15 @@ string RenderDomainTypeToString(RENDER_DOMAIN _RenderDomain)
 {
     switch (_RenderDomain)
     {
-    case RENDER_DOMAIN::DOMAIN_OPAQUE:      return "Domain Opaque";
-    case RENDER_DOMAIN::DOMAIN_MASKED:      return "Domain Masked";
-    case RENDER_DOMAIN::DOMAIN_TRANSPARENT: return "Domain Transparent";
-    case RENDER_DOMAIN::DOMAIN_TRANSPARENT_EFFECT:       return "Domain Transparent Effect";
-    case RENDER_DOMAIN::DOMAIN_POSTPROCESS: return "Domain PostProcess";
-    case RENDER_DOMAIN::DOMAIN_DEBUG:       return "Domain Debug";
-    case RENDER_DOMAIN::DOMAIN_NONE:        return "Domain None";
+    case RENDER_DOMAIN::DOMAIN_OPAQUE:             return "Domain Opaque";
+    case RENDER_DOMAIN::DOMAIN_MASKED:             return "Domain Masked";
+    case RENDER_DOMAIN::DOMAIN_PARTICLE:           return "Domain Particle";
+    case RENDER_DOMAIN::DOMAIN_TRANSPARENT:        return "Domain Transparent";
+    case RENDER_DOMAIN::DOMAIN_TRANSPARENT_EFFECT: return "Domain Transparent Effect";
+    case RENDER_DOMAIN::DOMAIN_POSTPROCESS:        return "Domain PostProcess";
+    case RENDER_DOMAIN::DOMAIN_DEBUG:              return "Domain Debug";
+    case RENDER_DOMAIN::DOMAIN_NONE:               return "Domain None";
+    default:                                       return "Default";
     }
 }
 
