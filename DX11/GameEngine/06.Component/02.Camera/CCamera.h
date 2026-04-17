@@ -83,8 +83,8 @@ public:
 
 public: // Level Stop 상태에서 현재 Editor로 바라보는 중인 Level에서의 MainCamera 및 UICamera 지정 (Level Stop 상태에서만 동작을 한다)
     
-    bool SetAsFirstMainCamera(bool _bAsMainCamera);
-    bool SetAsUICamera(bool _bAsUICamera);
+    void SetAsFirstMainCamera(bool _bAsMainCamera) { m_bIsFirstMainCamera = _bAsMainCamera; }
+    void SetAsUICamera(bool _bAsUICamera) { m_bIsUICamera = _bAsUICamera; }
     
     bool GetIsFirstMainCamera() const { return m_bIsFirstMainCamera; }
     bool GetIsUICamera() const { return m_bIsUICamera; }

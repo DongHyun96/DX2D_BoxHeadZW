@@ -54,46 +54,6 @@ void CCamera::LayerCheck(int _Idx)
     m_LayerCheck ^= (1 << _Idx);
 }
 
-bool CCamera::SetAsFirstMainCamera(bool _bAsMainCamera)
-{
-    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-
-    if (!_bAsMainCamera)
-    {
-        m_bIsFirstMainCamera = false;
-        return true;
-    }
-    
-    // MainCamera로 세팅하려는 상황
-    // 둘 중 하나의 상태로만 처리가 가능하다
-    m_bIsUICamera        = false;
-    m_bIsFirstMainCamera = true;
-    
-    return true;
-}
-
-bool CCamera::SetAsUICamera(bool _bAsUICamera)
-{
-    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-
-    if (!_bAsUICamera)
-    {
-        m_bIsUICamera = false;
-        if (RenderMgr::GetInst()->GetUICamera() == this)
-            RenderMgr::GetInst()->RegisterUICamera(nullptr); // 현재 UICamera가 이 객체였다면, UICamera 지우기
-        return true;
-    }
-    
-    // 둘 중 하나의 상태로만 처리가 가능하다
-    m_bIsUICamera        = true;
-    m_bIsFirstMainCamera = false;
-    
-    // MainCamera와 다르게, Stop 상황에서도 UI 카메라를 볼 수 있어야 UI 요소를 편집할 수 있기 때문에 UI 카메라 교체 시, 렌더매니저에도 등록을 바로 해준다.
-    RenderMgr::GetInst()->RegisterUICamera(this);
-    
-    return true;
-}
-
 void CCamera::Init()
 {
     // MainCamera 등록은 LevelBegin 때에 처리
@@ -102,11 +62,13 @@ void CCamera::Init()
     // Clipping Plane -> 1 ~ 10000
     // -2500 ~ 2500 -> 맵 z 범위 (또는 y 범위)
     // -5000 ~ 5000
+
+    //if (m_bIsFirstMainCamera) RenderMgr::GetInst()->RegisterMainCamera(this);
+    //if (m_bIsUICamera)        RenderMgr::GetInst()->RegisterUICamera(this);
 }
 
 void CCamera::Begin()
 {
-    // UI 카메라와 MainCamera RenderMgr에 새로이 등록 처리
     if (m_bIsFirstMainCamera) RenderMgr::GetInst()->RegisterMainCamera(this);
     if (m_bIsUICamera)        RenderMgr::GetInst()->RegisterUICamera(this);
 }

@@ -174,9 +174,9 @@ bool ALevel::IsObjectInLevel(const Ptr<GameObject>& _Object)
 bool ALevel::SetFirstMainCamera(CCamera* _Camera)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-    
-    if (m_FirstMainCamera) // 기존에 세팅한 MainCamera가 존재한다면, 해당 카메라, FirstMainCamera 마킹 제거
-        m_FirstMainCamera->SetAsFirstMainCamera(false);
+
+    // 기존에 세팅한 MainCamera가 존재한다면, 해당 카메라, FirstMainCamera 마킹 제거
+    if (m_FirstMainCamera) m_FirstMainCamera->SetAsFirstMainCamera(false);
 
     // 새로운 카메라 기록
     m_FirstMainCamera = _Camera;
@@ -189,8 +189,7 @@ bool ALevel::SetUICamera(CCamera* _Camera)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
     
-    if (m_UICamera)
-        m_UICamera->SetAsUICamera(false);
+    if (m_UICamera) m_UICamera->SetAsUICamera(false);
     
     // 새로운 UICamera 기록
     m_UICamera = _Camera;
@@ -274,11 +273,11 @@ HRESULT ALevel::Load(const wstring& _FilePath)
             Object->LoadFromLevelFile(pFile);
             AddObject(i, Object);
             
-            // 여기서 MainCamera와 UICamera 정보로 기초 카메라 정보 세팅처리 (shared Level 의)
+            // 여기서 shared Level 원본의 MainCamera와 UICamera 정보로 기초 카메라 정보 세팅처리
             if (Object->Camera())
             {
-                if (Object->Camera()->GetIsFirstMainCamera())   SetFirstMainCamera(Object->Camera().Get());
-                if (Object->Camera()->GetIsUICamera())          SetUICamera(Object->Camera().Get());
+                if (Object->Camera()->GetIsFirstMainCamera())   this->SetFirstMainCamera(Object->Camera().Get());
+                if (Object->Camera()->GetIsUICamera())          this->SetUICamera(Object->Camera().Get());
             }
         }
     }

@@ -52,7 +52,7 @@ void LevelMgr::Progress()
 
 void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
 {
-    if (m_LevelState == _NextState) return; // 이미 해당 State
+    // if (m_LevelState == _NextState) return; // 이미 해당 State
     
     LEVEL_STATE PrevState = m_LevelState;
     m_LevelState = _NextState;
@@ -115,10 +115,11 @@ void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLev
 
     if (_ChangeNextLevelStateToStop) // Editor에서 ChangeLevel 처리는 기본적으로 다음 LevelState를 Stop으로 처리 -> User Client의 Level 바꾸는건 이전 State를 계속해서 사용(Play)
         m_LevelState = LEVEL_STATE::STOP;
-    else
+    else // Clone 처리를 한 번 해주어야 함
     {
-        ChangeLevelState(LEVEL_STATE::STOP);
-        ChangeLevelState(LEVEL_STATE::PLAY);
+        // InGame play 상태에서의 ChangeLevel처리
+        if (m_LevelState == LEVEL_STATE::PLAY) // 기존에 Play 상태였다면, 계속해서 Play 상태를 유지
+            ChangeLevelState(LEVEL_STATE::PLAY);
     }
     
     EditorUI* pUI = EditorMgr::GetInst()->GetEditorUI("CollisionMatrixUI").Get();

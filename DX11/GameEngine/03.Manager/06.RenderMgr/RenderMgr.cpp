@@ -81,22 +81,14 @@ void RenderMgr::OnLevelPlayToStop()
 {
     m_mapDomainGameObject.clear();
     
-    // UICam 다시 찾아서 세팅하기 (이미 다시 SharedLevel로 돌아온 상황)
+    // 이미 SharedLevel로 돌아온 상황
     RegisterUICamera(LevelMgr::GetInst()->GetCurLevel()->GetUICamera());
-    GameObject* UICamObject = LevelMgr::GetInst()->GetCurLevel()->FindObjectByName(L"UICamera").Get();
-    if (UICamObject) m_UICam = UICamObject->Camera();
-    else m_UICam = nullptr;
-    
 }
 
 void RenderMgr::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
 {
     m_mapDomainGameObject.clear();
-    
-    // UICam 다시 찾아서 세팅하기 
-    GameObject* UICamObject = LevelMgr::GetInst()->GetCurLevel()->FindObjectByName(L"UICamera").Get();
-    if (UICamObject) m_UICam = UICamObject->Camera();
-    else m_UICam = nullptr;
+    RegisterUICamera(LevelMgr::GetInst()->GetCurLevel()->GetUICamera());
 }
 
 void RenderMgr::Render_Start()

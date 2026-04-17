@@ -3,10 +3,6 @@
 
 class LevelUI : public AssetUI
 {
-private:
-    
-    ALevel* m_Level{};
-    
 public:
     
     LevelUI();

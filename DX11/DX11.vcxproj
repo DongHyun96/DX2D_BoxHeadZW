@@ -187,6 +187,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\04.Asset\10.Sound\ASound.h" />
     <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\AComputeShader.h" />
     <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\ParticleTickCS\AParticleTickCS.h" />
+    <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\SetColorCS\ASetColorCS.h" />
     <ClInclude Include="GameEngine\06.Component\01.Transform\CTransform.h" />
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CCollider2D.h" />
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.h" />
@@ -294,6 +295,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\AirStrike\CAirStrike.h" />
     <ClInclude Include="Source\Scripts\BackgroundTile\CBackgroundTile.h" />
     <ClInclude Include="Source\Scripts\CCamMoveScript.h" />
+    <ClInclude Include="Source\Scripts\CCamPerspectiveMove.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\AnimHandler\CCharacterAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\AnimHandler\EnemyAnimHandler\CEnemyAnimHandler.h" />
     <ClInclude Include="Source\Scripts\CharacterScript\AnimHandler\EnemyAnimHandler\EAnimTransitionStrategy.h" />
@@ -376,6 +378,7 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\04.Asset\10.Sound\ASound.cpp" />
     <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\AComputeShader.cpp" />
     <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\ParticleTickCS\AParticleTickCS.cpp" />
+    <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\SetColorCS\ASetColorCS.cpp" />
     <ClCompile Include="GameEngine\06.Component\01.Transform\CTransform.cpp" />
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CCollider2D.cpp" />
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.cpp" />
@@ -485,6 +488,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\BackgroundTile\CBackgroundTile.cpp" />
     <ClCompile Include="Source\Scripts\CCamMoveScript.cpp">
     </ClCompile>
+    <ClCompile Include="Source\Scripts\CCamPerspectiveMove.cpp" />
     <ClCompile Include="Source\Scripts\CharacterScript\AnimHandler\CCharacterAnimHandler.cpp">
     </ClCompile>
     <ClCompile Include="Source\Scripts\CharacterScript\AnimHandler\EnemyAnimHandler\CEnemyAnimHandler.cpp">
@@ -610,6 +614,12 @@ CodeGen.exe</Command>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CS_ParticleTick</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CS_ParticleTick</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+    </FxCompile>
+    <FxCompile Include="HLSL\setcolor.fx">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CS_SetColor</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CS_SetColor</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
     </FxCompile>
     <FxCompile Include="HLSL\sprite.fx">

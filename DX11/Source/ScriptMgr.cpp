@@ -7,6 +7,7 @@
 #include "Source/Scripts/AirStrike\CAirStrike.h"
 #include "Source/Scripts/BackgroundTile\CBackgroundTile.h"
 #include "Source/Scripts/CCamMoveScript.h"
+#include "Source/Scripts/CCamPerspectiveMove.h"
 #include "Source/Scripts/CharacterScript\AnimHandler\CCharacterAnimHandler.h"
 #include "Source/Scripts/CharacterScript\AnimHandler\EnemyAnimHandler\CEnemyAnimHandler.h"
 #include "Source/Scripts/CharacterScript\AnimHandler\PlayerAnimHandler\CPlayerAnimHandler.h"
@@ -67,6 +68,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CAirStrike");
 	_vec.push_back(L"CBackgroundTile");
 	_vec.push_back(L"CCamMoveScript");
+	_vec.push_back(L"CCamPerspectiveMove");
 	_vec.push_back(L"CEnemyAnimHandler");
 	_vec.push_back(L"CPlayerAnimHandler");
 	_vec.push_back(L"CCharacterStat");
@@ -130,6 +132,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CBackgroundTile;
 	if (L"CCamMoveScript" == _strScriptName)
 		return new CCamMoveScript;
+	if (L"CCamPerspectiveMove" == _strScriptName)
+		return new CCamPerspectiveMove;
 	if (L"CCharacterAnimHandler" == _strScriptName)
 		return nullptr;
 	if (L"CEnemyAnimHandler" == _strScriptName)
@@ -251,6 +255,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CBackgroundTile;
 	case (UINT)SCRIPT_TYPE::CAMMOVESCRIPT:
 		return new CCamMoveScript;
+	case (UINT)SCRIPT_TYPE::CAMPERSPECTIVEMOVE:
+		return new CCamPerspectiveMove;
 	case (UINT)SCRIPT_TYPE::CHARACTERANIMHANDLER:
 		return nullptr;
 	case (UINT)SCRIPT_TYPE::ENEMYANIMHANDLER:
@@ -373,6 +379,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CBackgroundTile";
 	case SCRIPT_TYPE::CAMMOVESCRIPT:
 		return L"CCamMoveScript";
+	case SCRIPT_TYPE::CAMPERSPECTIVEMOVE:
+		return L"CCamPerspectiveMove";
 	case SCRIPT_TYPE::CHARACTERANIMHANDLER:
 		return L"CCharacterAnimHandler";
 	case SCRIPT_TYPE::ENEMYANIMHANDLER:

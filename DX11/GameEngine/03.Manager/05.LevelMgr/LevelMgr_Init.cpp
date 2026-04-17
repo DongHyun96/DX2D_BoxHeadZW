@@ -2,6 +2,7 @@
 #include "LevelMgr.h"
 #include "GameEngine/02.Device/Device.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
+#include "GameEngine/04.Asset/11.ComputeShader/SetColorCS/ASetColorCS.h"
 #include "Source/Scripts/CCamMoveScript.h"
 #include "Source/Scripts/CMonsterScript.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
@@ -29,7 +30,27 @@ void LevelMgr::CreateTestLevel()
     pLevel->GetLayer(6)->SetName(L"EnemyProjectile");
     
     // AssetMgr::GetInst()->AddAsset(pLevel->GetName(), pLevel.Get());
-    
+
+	// ComputeShader 사용해보기
+	// 텍스쳐 색칠하는 CS
+	// 색칠 당할 Texture 를 만든다.
+	Ptr<ATexture> pTargetTex = new ATexture;
+	pTargetTex->Create(   1024, 1024
+						, DXGI_FORMAT_R8G8B8A8_UNORM
+						, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS
+						, D3D11_USAGE_DEFAULT);
+
+	ASetColorCS CS{};
+
+	// 색칠할 텍스쳐를 알려준다.
+	CS.SetTargetTex(pTargetTex);
+
+	// 색을 정한다
+	CS.SetColor(Vec4(1.f, 0.f, 1.f, 1.f));
+
+	// 실행
+	CS.Execute();
+	
     Ptr<GameObject> pObject = nullptr;	
 	
 
@@ -145,6 +166,8 @@ void LevelMgr::CreateTestLevel()
 
         pMonster->MeshRender()->SetMesh(AssetMgr::GetInst()->Find<AMesh>(L"RectMesh"));
         pMonster->MeshRender()->SetMaterial(FIND_ASSET(AMaterial, L"MonsterMtrl"));
+    	
+    	pMonster->MeshRender()->GetMaterial()->SetTexture(TEX_0, pTargetTex);
         
         // pMonster->Collider2D()->SetScale(Vec2(50.f, 50.f));
 	    

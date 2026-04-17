@@ -65,7 +65,8 @@ void CPlayerScript::Begin()
 void CPlayerScript::AfterLevelBegin()
 {
     CCharacterScript::AfterLevelBegin();
-    GetOwner()->GetScriptComponent<CPlayerWeaponHandler>()->SetHandState(PLAYER_HANDSTATE::PISTOL);    
+    if (GetOwner()->GetScriptComponent<CPlayerWeaponHandler>())
+        GetOwner()->GetScriptComponent<CPlayerWeaponHandler>()->SetHandState(PLAYER_HANDSTATE::PISTOL);
 }
 
 void CPlayerScript::Tick()
@@ -146,7 +147,10 @@ void CPlayerScript::AfterPushedOutFin()
 
 PLAYER_HANDSTATE CPlayerScript::GetHandState() const
 {
-    return GetOwner()->GetScriptComponent<CPlayerWeaponHandler>()->GetHandState();
+    if (const Ptr<CPlayerWeaponHandler>& WeaponHandler = GetOwner()->GetScriptComponent<CPlayerWeaponHandler>())
+        return WeaponHandler->GetHandState();
+    
+    return PLAYER_HANDSTATE::PISTOL;
 }
 
 void CPlayerScript::BodyColliderOverlapped(CCollider2D* _OwnerCollider, CCollider2D* _OtherCollider)

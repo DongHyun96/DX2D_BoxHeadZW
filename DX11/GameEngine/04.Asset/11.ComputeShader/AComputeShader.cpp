@@ -75,6 +75,7 @@ int AComputeShader::Execute()
         return E_FAIL;
     }
 
+    // 실행할 때 그룹 수 계산
     CalcGroupNum();
 
     // 재질상수버퍼 재활용

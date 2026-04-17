@@ -17,16 +17,16 @@ void LevelUI::Tick_UI()
 {
     AssetUI::Tick_UI();
 
-    if (!m_Level) m_Level = static_cast<ALevel*>(GetTargetAsset().Get()); 
-    if (!m_Level) return; 
+    ALevel* pLevel = static_cast<ALevel*>(GetTargetAsset().Get());
+     
     
     if (ImGui::Button("Change Level"))
-        ChangeLevel(m_Level->GetKey(), true);
+        ChangeLevel(pLevel->GetKey(), true);
 
 
     wstring FirstCamName{};
-    if (!m_Level->m_FirstMainCamera)    FirstCamName = L"None";
-    else                                FirstCamName = m_Level->m_FirstMainCamera->GetOwner()->GetName();
+    if (!pLevel->m_FirstMainCamera)    FirstCamName = L"None";
+    else                                FirstCamName = pLevel->m_FirstMainCamera->GetOwner()->GetName();
 
     ImGui::Text("First Start Main Camera set : ");
     
@@ -42,8 +42,8 @@ void LevelUI::Tick_UI()
                 Ptr<GameObject> gObject = reinterpret_cast<GameObject*>(data);
                 
                 // 현재 선택된 레벨에 존재하는 카메라 오브젝트인지 확인
-                if (m_Level->IsObjectInLevel(gObject) && gObject->Camera())
-                    m_Level->SetFirstMainCamera(gObject->Camera().Get());
+                if (pLevel->IsObjectInLevel(gObject) && gObject->Camera())
+                    pLevel->SetFirstMainCamera(gObject->Camera().Get());
             }
         }
         
@@ -51,8 +51,8 @@ void LevelUI::Tick_UI()
     }
     
     wstring UICamName{};
-    if (!m_Level->m_UICamera)  UICamName = L"None";
-    else                       UICamName = m_Level->m_UICamera->GetOwner()->GetName();
+    if (!pLevel->m_UICamera)  UICamName = L"None";
+    else                       UICamName = pLevel->m_UICamera->GetOwner()->GetName();
 
     ImGui::Text("UI Camera set : ");
     ImGui::SameLine(100);
@@ -68,8 +68,8 @@ void LevelUI::Tick_UI()
                 Ptr<GameObject> gObject = reinterpret_cast<GameObject*>(data);
                 
                 // 현재 선택된 레벨에 존재하는 카메라 오브젝트인지 확인
-                if (m_Level->IsObjectInLevel(gObject) && gObject->Camera())
-                    m_Level->SetUICamera(gObject->Camera().Get());
+                if (pLevel->IsObjectInLevel(gObject) && gObject->Camera())
+                    pLevel->SetUICamera(gObject->Camera().Get());
             }
         }
         
