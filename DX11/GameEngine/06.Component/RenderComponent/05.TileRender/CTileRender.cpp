@@ -1,5 +1,8 @@
 ﻿#include "pch.h"
+#include "TileDecalInstancing.h"
 #include "CTileRender.h"
+
+#include <algorithm>
 
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/06.Component/01.Transform/CTransform.h"
@@ -7,19 +10,26 @@
 CTileRender::CTileRender()
     : CRenderComponent(COMPONENT_TYPE::TILE_RENDER)
 {
-    m_Buffer = new StructuredBuffer;
+    m_TileBuffer  = new StructuredBuffer;
 }
 
 CTileRender::CTileRender(const CTileRender& _Origin)
     : CRenderComponent(_Origin)
     , m_TileMap(_Origin.m_TileMap)
-    , m_vecSpriteInfo(_Origin.m_vecSpriteInfo)
+    , m_DecalAtlas(_Origin.m_DecalAtlas)
+    , m_vecTileInfo(_Origin.m_vecTileInfo)
+    , m_rsDecalInfo(_Origin.m_rsDecalInfo)
+    , m_iNextDecalID(_Origin.m_iNextDecalID)
 {
-    // 만약 들고 있었던 m_TileMap이 있었다면, 복사되는 TileRenderComponent에 대한 referencer도 ATileMap쪽으로 넘겨야함
-    if (_Origin.m_TileMap) _Origin.m_TileMap->AddTileRenderReferencer(this);
+    if (m_TileMap) m_TileMap->AddTileRenderReferencer(this);
     
-    m_Buffer = new StructuredBuffer;
-    SetTileMap(m_TileMap);
+    m_TileBuffer  = new StructuredBuffer;
+    
+    if (!m_vecTileInfo.empty())
+    {
+        m_TileBuffer->Create(sizeof(TileInfo), m_vecTileInfo.size(), SB_TYPE::SRV_ONLY, true);
+        m_TileBuffer->SetData(m_vecTileInfo.data(), sizeof(TileInfo) * m_vecTileInfo.size());
+    }
 }
 
 CTileRender::~CTileRender()
@@ -38,33 +48,61 @@ void CTileRender::Init()
 void CTileRender::FinalTick()
 {
     CRenderComponent::FinalTick();
-    
-    // 크기조정
-    if (m_TileMap)
-    {
-        
-    }
 }
 
 void CTileRender::Render()
 {
-    if (!m_TileMap) return;
-    
-    m_Buffer->Binding(20);
+    if (!m_TileMap || m_vecTileInfo.empty()) return;
+
+    m_TileBuffer->Binding(20);
 
     GetMaterial()->SetTexture(TEX_0, m_TileMap->GetAtlas());
     
     GetMaterial()->SetScalar(INT_0, m_TileMap->GetRow());
     GetMaterial()->SetScalar(INT_1, m_TileMap->GetCol());
-    /*GetMaterial()->SetScalar(VEC2_0, m_vecSpriteInfo[0].LeftTop);
-    GetMaterial()->SetScalar(VEC2_1, m_vecSpriteInfo[0].Slice);*/
 
     ApplyRenderTransformConst();
     GetMaterial()->Binding();
     
     GetMesh()->Render();
     
-    m_Buffer->Clear();
+    m_TileBuffer->Clear();
+
+    // 데칼 렌더링 (인스턴싱 제출)
+    if (!m_rsDecalInfo.empty() && m_DecalAtlas)
+    {
+        Ptr<AMesh>           pRectMesh = AssetMgr::GetInst()->Find<AMesh>(L"RectMesh");
+        Ptr<AGraphicShader>  pShader   = AssetMgr::GetInst()->Find<AGraphicShader>(L"TileDecalShader");
+
+        const Matrix& matWorld = Transform()->GetWorldMatrix();
+        const Vec3& vScale     = Transform()->GetRelativeScale();
+
+        for (const auto& decal : m_rsDecalInfo)
+        {
+            if (decal.Active == 0) continue;
+
+            // 데칼의 월드 행렬 계산
+            // decal.Pos는 타일맵 UV 기준 (0~1)
+            // 타일맵 로컬 좌표는 -0.5 ~ 0.5 범위 (RectMesh 기준)
+            Vec3 vLocalPos   = Vec3(decal.Pos.x - 0.5f, -(decal.Pos.y - 0.5f), 0.f);
+            Vec3 vDecalScale = Vec3(vScale.x * decal.Scale.x, vScale.y * decal.Scale.y, 1.f);
+            
+            Matrix matDecalWorld = Matrix::CreateScale(vDecalScale);
+            matDecalWorld *= Matrix::CreateTranslation(vLocalPos.x * vScale.x, vLocalPos.y * vScale.y, -1.f); // 타일보다 살짝 앞으로
+            matDecalWorld *= matWorld;
+
+            TileDecalInstancing::Submit
+            (
+                pRectMesh.Get(),
+                pShader.Get(),
+                m_DecalAtlas.Get(),
+                matDecalWorld,
+                decal.LeftTop,
+                decal.Slice,
+                decal.TintColor
+            );
+        }
+    }
 }
 
 void CTileRender::CreateMaterial()
@@ -101,8 +139,10 @@ void CTileRender::SetTileMap(const Ptr<ATileMap>& _TileMap)
 {
     // 이전 TileMap이 세팅되어 있었고 해당 TileMap이 새로이 들어온 TileMap과 동일하지 않다면,
     // ATileMap Referencer에서 제거
-    if (m_TileMap && m_TileMap != _TileMap)
+    if (m_TileMap.Get() && m_TileMap.Get() != _TileMap.Get())
+    {
         m_TileMap->RemoveTileRenderReferencer(this);
+    }
     
     m_TileMap = _TileMap;
     
@@ -112,7 +152,7 @@ void CTileRender::SetTileMap(const Ptr<ATileMap>& _TileMap)
     m_TileMap->AddTileRenderReferencer(this);
     
     // 이전 정보 리셋
-    m_vecSpriteInfo.clear();
+    m_vecTileInfo.clear();
     
     // 크기조정 ->
     /*const UINT Row        = m_TileMap->GetRow();
@@ -124,9 +164,10 @@ void CTileRender::SetTileMap(const Ptr<ATileMap>& _TileMap)
     // TileMap의 Sprite의 UV 정보를 받아옴
     const vector<Ptr<ASprite>>& vecSprites = m_TileMap->GetSprites();
 
+    m_vecTileInfo.clear();
     for (const Ptr<ASprite>& Sprite : vecSprites)
     {
-        SpriteInfo info{};
+        TileInfo info{};
         
         if (Sprite)
         {
@@ -134,27 +175,129 @@ void CTileRender::SetTileMap(const Ptr<ATileMap>& _TileMap)
             info.Slice   = Sprite->GetSliceUV();
         }
         
-        m_vecSpriteInfo.push_back(info);
+        m_vecTileInfo.push_back(info);
     }
     
     // 구조화버퍼의 크기가 모자라거나 한번도 할당한 적이 없으면 메모리 확장 or 재확장
-    if (m_Buffer->GetBufferSize() < sizeof(SpriteInfo) * m_vecSpriteInfo.size())
-        m_Buffer->Create(sizeof(SpriteInfo), m_vecSpriteInfo.size(), SB_TYPE::SRV_ONLY, true);
+    if (m_TileBuffer->GetBufferSize() < sizeof(TileInfo) * m_vecTileInfo.size())
+        m_TileBuffer->Create(sizeof(TileInfo), m_vecTileInfo.size(), SB_TYPE::SRV_ONLY, true);
     
     // Sprite들의 데이터를 구조화버퍼로 보내기
-    m_Buffer->SetData(m_vecSpriteInfo.data(), sizeof(SpriteInfo) * m_vecSpriteInfo.size());
+    m_TileBuffer->SetData(m_vecTileInfo.data(), sizeof(TileInfo) * m_vecTileInfo.size());
 }
 
 void CTileRender::SaveToLevelFile(FILE* _File)
 {
     CRenderComponent::SaveToLevelFile(_File);
     SaveAssetRef(_File, m_TileMap.Get());
+    SaveAssetRef(_File, m_DecalAtlas.Get());
+
+    // TileInfo 저장
+    size_t TileCount = m_vecTileInfo.size();
+    fwrite(&TileCount, sizeof(size_t), 1, _File);
+    fwrite(m_vecTileInfo.data(), sizeof(TileInfo), TileCount, _File);
+
+    // DecalInfo 저장
+    size_t DecalCount = m_rsDecalInfo.size();
+    fwrite(&DecalCount, sizeof(size_t), 1, _File);
+    fwrite(m_rsDecalInfo.data(), sizeof(DecalInfo), DecalCount, _File);
 }
 
 void CTileRender::LoadFromLevelFile(FILE* _File)
 {
     CRenderComponent::LoadFromLevelFile(_File);
     
-    m_TileMap = LoadAssetRef<ATileMap>(_File);
-    SetTileMap(m_TileMap);
+    m_TileMap    = LoadAssetRef<ATileMap>(_File);
+    m_DecalAtlas = LoadAssetRef<ATexture>(_File);
+
+    // TileInfo 로드
+    size_t TileCount = 0;
+    fread(&TileCount, sizeof(size_t), 1, _File);
+    m_vecTileInfo.resize(TileCount);
+    fread(m_vecTileInfo.data(), sizeof(TileInfo), TileCount, _File);
+
+    // DecalInfo 로드
+    size_t DecalCount = 0;
+    fread(&DecalCount, sizeof(size_t), 1, _File);
+    
+    vector<DecalInfo> vecDecals;
+    vecDecals.resize(DecalCount);
+    fread(vecDecals.data(), sizeof(DecalInfo), DecalCount, _File);
+
+    m_rsDecalInfo.clear();
+    for (const auto& decal : vecDecals)
+    {
+        m_rsDecalInfo.insert(decal);
+    }
+
+    // 타일 버퍼 재생성 및 데이터 전송
+    if (m_TileMap && !m_vecTileInfo.empty())
+    {
+        m_TileMap->AddTileRenderReferencer(this);
+        m_TileBuffer->Create(sizeof(TileInfo), m_vecTileInfo.size(), SB_TYPE::SRV_ONLY, true);
+        m_TileBuffer->SetData(m_vecTileInfo.data(), sizeof(TileInfo) * m_vecTileInfo.size());
+    }
+
+    // 데칼 버퍼 재생성 및 데이터 전송
+    if (!m_rsDecalInfo.empty())
+    {
+        m_bDecalChanged = true;
+    }
+
+    // 데칼 ID 카운터 갱신
+    m_iNextDecalID = 0;
+    for (const auto& info : m_rsDecalInfo)
+    {
+        if (m_iNextDecalID <= info.ID)
+            m_iNextDecalID = info.ID + 1;
+    }
+}
+
+int CTileRender::AddDecal(const Vec2& _vPos, const Vec2& _vScale, const Ptr<ASprite>& _pDecalSprite, const Vec4& _TintColor)
+{
+    if (_pDecalSprite == nullptr) return -1;
+
+    DecalInfo info{};
+    info.Pos       = _vPos;
+    info.Scale     = _vScale;
+    info.LeftTop   = _pDecalSprite->GetLeftTopUV();
+    info.Slice     = _pDecalSprite->GetSliceUV();
+    info.TintColor = _TintColor;
+    info.Active    = 1;
+    info.ID        = m_iNextDecalID++;
+
+    m_rsDecalInfo.insert(info);
+    m_bDecalChanged = true;
+
+    return info.ID;
+}
+
+void CTileRender::RemoveDecal(int _ID)
+{
+    DecalInfo info{};
+    info.ID = _ID;
+    if (m_rsDecalInfo.remove(info)) m_bDecalChanged = true;
+}
+
+void CTileRender::ClearAllDecals()
+{
+    m_rsDecalInfo.clear();
+    m_bDecalChanged = true;
+}
+
+DecalInfo* CTileRender::GetDecalInfo(int _ID)
+{
+    DecalInfo info{};
+    info.ID = _ID;
+    return m_rsDecalInfo.find(info);
+}
+
+void CTileRender::SetDecalAlpha(int _ID, float _Alpha)
+{
+    DecalInfo* pInfo = GetDecalInfo(_ID);
+    if (pInfo)
+    {
+        pInfo->TintColor.w = _Alpha;
+        m_bDecalChanged = true;
+    }
 }

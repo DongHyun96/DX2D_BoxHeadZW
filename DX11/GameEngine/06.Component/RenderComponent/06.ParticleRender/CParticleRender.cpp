@@ -25,10 +25,11 @@ CParticleRender::CParticleRender()
 	// 파티클 Tick 용 ComputeShader
 	Ptr<AComputeShader> pCS = AssetMgr::GetInst()->Find<AComputeShader>(L"ParticleTickCS");
 
-	if (nullptr == pCS)
+	if (!pCS)
 	{
 		pCS = new AParticleTickCS;
 		pCS->SetName(L"ParticleTickCS");
+		pCS->SetIsProvidedByEngine(true);
 		AssetMgr::GetInst()->AddAsset(pCS->GetName(), pCS.Get());
 	}
 
@@ -139,7 +140,7 @@ void CParticleRender::CreateMaterial()
 		return;
 
 	Ptr<AMaterial> pMtrl = AssetMgr::GetInst()->Find<AMaterial>(L"ParticleMtrl");
-	if (nullptr != pMtrl)
+	if (pMtrl)
 	{
 		SetMaterial(pMtrl);
 		return;
@@ -156,12 +157,14 @@ void CParticleRender::CreateMaterial()
 	pShader->SetRSType(RS_TYPE::CULL_NONE);
 	pShader->SetDSType(DS_TYPE::NO_WRITE);
 	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	pShader->SetIsProvidedByEngine(true);
 	AssetMgr::GetInst()->AddAsset(pShader->GetName(), pShader.Get());
 
 	pMtrl = new AMaterial;
 	pMtrl->SetName(L"ParticleMtrl");
 	pMtrl->SetShader(pShader);
 	pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_PARTICLE); // 렌더링 시점
+	pMtrl->SetIsProvidedByEngine(true);
 	AssetMgr::GetInst()->AddAsset(pMtrl->GetName(), pMtrl.Get());
 
 	// 재질 설정

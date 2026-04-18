@@ -307,6 +307,19 @@ void AssetMgr::CreateEngineShader()
     shader->SetIsProvidedByEngine(true);
     AddAsset(shader->GetName(), shader.Get());
     
+    // =================
+    // TileDecalShader
+    // =================
+    shader = new AGraphicShader;
+    shader->SetName(L"TileDecalShader");
+    shader->CreateVertexShader(L"Shader\\tile_decal.fx", "VS_TileDecal");
+    shader->CreatePixelShader(L"Shader\\tile_decal.fx", "PS_TileDecal");
+    shader->SetBSType(BS_TYPE::ALPHA_BLEND);
+    shader->SetRSType(RS_TYPE::CULL_NONE);
+    shader->SetDSType(DS_TYPE::LESS_NO_WRITE);
+    shader->SetIsProvidedByEngine(true);
+    AddAsset(shader->GetName(), shader.Get());
+    
 }
 
 void AssetMgr::CreateEngineMaterial()
@@ -381,5 +394,15 @@ void AssetMgr::CreateEngineMaterial()
     pMtrl->SetScalar(VEC4_0, Vec4(1.f, 1.f, 1.f, 1.f)); // Tint Color
     pMtrl->SetIsProvidedByEngine(true);
     
+    AddAsset(pMtrl->GetName(), pMtrl.Get());
+
+    /***********************
+    * TileDecal Material
+    ***********************/
+    pMtrl = new AMaterial;
+    pMtrl->SetName(L"TileDecalMtrl");
+    pMtrl->SetShader(Find<AGraphicShader>(L"TileDecalShader"));
+    pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_TRANSPARENT);
+    pMtrl->SetIsProvidedByEngine(true);
     AddAsset(pMtrl->GetName(), pMtrl.Get());
 }

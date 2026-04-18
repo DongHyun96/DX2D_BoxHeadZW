@@ -3,12 +3,25 @@
 
 #include "value.fx"
 
-struct SpriteInfo
+struct TileInfo
 {
     float2 LeftTop;
     float2 Slice;
 };
-StructuredBuffer<SpriteInfo> g_Buffer : register(t20);
+StructuredBuffer<TileInfo> g_Buffer : register(t20);
+
+struct DecalInfo
+{
+    float2 Pos;
+    float2 Scale;
+    float2 LeftTop;
+    float2 Slice;
+    float4 TintColor;
+    int    Active;
+    int    ID;
+    int2   Padding;
+};
+StructuredBuffer<DecalInfo> g_DecalBuffer : register(t21);
 
 
 #define AtlasTex    g_tex_0
@@ -17,6 +30,7 @@ StructuredBuffer<SpriteInfo> g_Buffer : register(t20);
 
 #define ROW         g_int_0
 #define COL         g_int_1
+#define DecalCount  g_int_2
 
 #define RenderOffset g_vec4_3.xy
 #define RenderScale  g_vec4_3.zw
@@ -50,10 +64,10 @@ VS_OUT VS_Tile(VS_IN _input)
     
     float4 vView = mul(vWorld, g_matView);
     float4 vProj = mul(vView, g_matProj);
-     
+
     output.vPosition = vProj;
     output.vWorldPos = vWorld;
-    output.vUV = _input.vUV * float2(COL, ROW);
+    output.vUV       = _input.vUV * float2(COL, ROW);
     
     return output;
 }
@@ -61,9 +75,6 @@ VS_OUT VS_Tile(VS_IN _input)
 // 입력된 텍스쳐를 사용해서 픽셀쉐이더의 출력 색상으로 지정한다.
 float4 PS_Tile(VS_OUT _input) : SV_Target
 {
-    // frac : 정수파트는 버리고 소수점값만 구함
-    // float2 vSpriteUV = frac(_input.vUV) * SliceUV + LeftTopUV;
-    
     int2 ColRow         = int2(_input.vUV);
     ColRow.x            = clamp(ColRow.x, 0, COL - 1);
     ColRow.y            = clamp(ColRow.y, 0, ROW - 1);
@@ -71,9 +82,9 @@ float4 PS_Tile(VS_OUT _input) : SV_Target
     float2 Slice        = g_Buffer[Idx].Slice;
     
     if (Slice.x <= 0 || Slice.y <= 0) discard;
-    
-    float2 vSpriteUV    = frac(_input.vUV) * Slice + g_Buffer[Idx].LeftTop;
-    float4 vColor = AtlasTex.Sample(g_sam_1, vSpriteUV);
+
+    float2 vSpriteUV = frac(_input.vUV) * Slice + g_Buffer[Idx].LeftTop;
+    float4 vColor    = AtlasTex.Sample(g_sam_1, vSpriteUV);
     
     if (vColor.a == 0.f)
         discard;

@@ -203,6 +203,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\05.TileRender\TileDecalInstancing.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\06.ParticleRender\CParticleRender.h" />
     <ClInclude Include="GameEngine\06.Component\RenderComponent\CRenderComponent.h" />
     <ClInclude Include="GameEngine\06.Component\02.Camera\CCamera.h" />
@@ -257,6 +258,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\07.EditorUI\11.CollisionMatrixUI\CollisionMatrixUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\12.DebugLogUI\DebugLogUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\EditorUI.h" />
+    <ClInclude Include="GameEngine\DataStructure\RandomizedSet.h" />
     <ClInclude Include="GameEngine\SpriteFrame.h" />
     <ClInclude Include="Header\assets.h" />
     <ClInclude Include="Header\components.h" />
@@ -394,6 +396,7 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\CFlipbookRender.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\04.FlipbookRender\FlipbookRenderInstancing.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\05.TileRender\CTileRender.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\05.TileRender\TileDecalInstancing.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\06.ParticleRender\CParticleRender.cpp" />
     <ClCompile Include="GameEngine\06.Component\RenderComponent\CRenderComponent.cpp" />
     <ClCompile Include="GameEngine\06.Component\02.Camera\CCamera.cpp" />
@@ -460,6 +463,13 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\SpriteFrame.cpp" />
     <ClCompile Include="Header\extern.cpp" />
     <ClCompile Include="Header\func.cpp" />
+    <FxCompile Include="HLSL\tile_decal.fx">
+      <FileType>Document</FileType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_TileDecal</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_TileDecal</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+    </FxCompile>
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />

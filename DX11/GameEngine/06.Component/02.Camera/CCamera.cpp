@@ -8,6 +8,7 @@
 #include "GameEngine/06.Component/RenderComponent/03.SpriteRender/CSpriteRender.h"
 #include "GameEngine/06.Component/RenderComponent/03.SpriteRender/SpriteRenderInstancing.h"
 #include "GameEngine/06.Component/RenderComponent/04.FlipbookRender/FlipbookRenderInstancing.h"
+#include "GameEngine/06.Component/RenderComponent/05.TileRender/TileDecalInstancing.h"
 
 CCamera::CCamera()
     : Component(COMPONENT_TYPE::CAMERA)
@@ -213,13 +214,14 @@ void CCamera::Render(bool _bUseRenderDomainSort)
         FlipbookRenderInstancing::FlushInstancing();
         BillboardRenderInstancing::FlushInstancing();
         SpriteRenderInstancing::FlushInstancing();
-        return;
+        TileDecalInstancing::FlushInstancing();
     }
 
     // SortObject();
     FlipbookRenderInstancing::BeginInstancing();
     BillboardRenderInstancing::BeginInstancing();
     SpriteRenderInstancing::BeginInstancing();
+    TileDecalInstancing::BeginInstancing();
 
     // Domain 순서대로 렌더링 진행
     for (const auto& Pair : RenderMgr::GetInst()->GetDomainGameObjects())
@@ -255,6 +257,7 @@ void CCamera::Render(bool _bUseRenderDomainSort)
     FlipbookRenderInstancing::FlushInstancing();
     BillboardRenderInstancing::FlushInstancing();
     SpriteRenderInstancing::FlushInstancing();
+    TileDecalInstancing::FlushInstancing();
 
 }
 

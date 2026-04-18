@@ -18,7 +18,7 @@ private:
     // CTileRender에서 이 ATileMap을 SetTileMap 처리해서 참조중인 TileRender Component를 들고 있는다.
     // ATileMap::Save 시, 수정된 TileMap을 기반으로 CTileRender::SetTileMap을 호출시켜 재구성이 필요해서 들고 있는다.
     // 해당 작업 이후 비로소, 기존의 CTileRender에 제대로 적용됨
-    set<class CTileRender*> m_setTileRenderComponentReferencer{};
+    set<CTileRender*> m_setTileRenderComponentReferencer{};
     
 private: 
     

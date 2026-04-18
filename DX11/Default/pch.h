@@ -97,6 +97,8 @@ using namespace std;
 #include "Module/Ptr.h"
 
 
+#include "GameEngine/DataStructure/RandomizedSet.h"
+
 ///////////////////////////////////////////////////User include///////////////////////////////////////////////////
 #include "Source/UserHeader/userDefine.h"
 #include "Source/UserHeader/userEnum.h"

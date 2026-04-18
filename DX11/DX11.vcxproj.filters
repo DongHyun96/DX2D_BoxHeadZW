@@ -233,6 +233,9 @@
     <ClInclude Include="Source\Scripts\Temp\CAirStrikePreview.h" />
     <ClInclude Include="Source\Scripts\UIScript\CCrossHair.h" />
     <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\SetColorCS\ASetColorCS.h" />
+    <ClInclude Include="GameEngine\06.Component\RenderComponent\05.TileRender\TileDecalInstancing.h" />
+    <ClInclude Include="GameEngine\DataStructure\RandomizedSet.h" />
+    <ClInclude Include="Source\Scripts\CCamPerspectiveMove.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Default\DX11.ico">
@@ -420,6 +423,8 @@
     <ClCompile Include="Source\Scripts\Temp\CAirStrikePreview.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\CCrossHair.cpp" />
     <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\SetColorCS\ASetColorCS.cpp" />
+    <ClCompile Include="GameEngine\06.Component\RenderComponent\05.TileRender\TileDecalInstancing.cpp" />
+    <ClCompile Include="Source\Scripts\CCamPerspectiveMove.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Default\DX11.rc">
@@ -448,5 +453,6 @@
     <FxCompile Include="HLSL\particle_func.fx" />
     <FxCompile Include="HLSL\particle_tick.fx" />
     <FxCompile Include="HLSL\setcolor.fx" />
+    <FxCompile Include="HLSL\tile_decal.fx" />
   </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@
 #include "GameEngine/05.GameObject/GameObject.h"
 #include "GameEngine/06.Component/02.Camera/CCamera.h"
 #include "GameEngine/06.Component/04.Light2D/CLight2D.h"
-#include "Source/UserHeader/userStruct.h"
+#include "GameEngine/DataStructure/RandomizedSet.h"
 
 
 class RenderMgr : public Singleton<RenderMgr>
