@@ -52,8 +52,11 @@ void KeyMgr::Init()
 
 void KeyMgr::Tick()
 {
-    Vec2 Temp = GetMouseUIPos();
-    DebugUtil::SetPermanentDebugLog("MousePosForUI", "Mouse UI pos : " + to_string(Temp.x) + ", " + to_string(Temp.y), DEF_COLOR_GREEN);
+    const Vec2 MouseUIPos = GetMouseUIPos();
+    DebugUtil::SetPermanentDebugLog("MousePosForUI", "Mouse UI pos : " + to_string(MouseUIPos.x) + ", " + to_string(MouseUIPos.y), DEF_COLOR_GREEN);
+    
+    const Vec2 MouseworldPos = GetMouseWorldPos2D(); 
+    DebugUtil::SetPermanentDebugLog("MousePosWorld", "Mouse World pos : " + to_string(MouseworldPos.x) + ", " + to_string(MouseworldPos.y), DEF_COLOR_GREEN);
     
     // GetFocus() : 현재 포커싱 중인 윈도우 핸들 반환
     // 현재 ImGui에 Focus가 잡혔을 때

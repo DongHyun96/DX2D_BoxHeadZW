@@ -58,6 +58,21 @@ float Lerp(float _Src, float _Dst, float _Alpha)
     return _Src * (1.f - _Alpha) + _Dst * _Alpha;
 }
 
+Vec2 MappingToNewRange(const Vec2& _Src, const Vec2& _SrcMin, const Vec2& _SrcMax, const Vec2& _DstMin, const Vec2& _DstMax)
+{
+    const float X = MappingToNewRange(_Src.x, _SrcMin.x, _SrcMax.x, _DstMin.x, _DstMax.x);
+    const float Y = MappingToNewRange(_Src.y, _SrcMin.y, _SrcMax.y, _DstMin.y, _DstMax.y);
+    return {X, Y};
+}
+
+Vec3 MappingToNewRange(const Vec3& _Src, const Vec3& _SrcMin, const Vec3& _SrcMax, const Vec3& _DstMin, const Vec3& _DstMax)
+{
+    const float X = MappingToNewRange(_Src.x, _SrcMin.x, _SrcMax.x, _DstMin.x, _DstMax.x);
+    const float Y = MappingToNewRange(_Src.y, _SrcMin.y, _SrcMax.y, _DstMin.y, _DstMax.y);
+    const float Z = MappingToNewRange(_Src.z, _SrcMin.z, _SrcMax.z, _DstMin.z, _DstMax.z);
+    return {X, Y, Z};
+}
+
 EDIRECTION GetEightDirection(const Vec3& _Vector)
 {
     return GetEightDirection(ToVec2(_Vector));

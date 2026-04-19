@@ -21,6 +21,41 @@ void TileRenderUI::Tick_UI()
     ImGui::SetNextItemOpen(false, ImGuiCond_FirstUseEver);
     if (ImGui::CollapsingHeader("TileMap Preview", ImGuiTreeNodeFlags_None))
         RenderPreview();
+    
+    ATexture* DecalAtlas = GetTargetObject()->TileRender()->GetDecalAtlas();
+    ImTextureRef SRV = DecalAtlas ? DecalAtlas->GetSRV().Get() : nullptr;
+
+    ImGui::Text("Current Decal Atlas : ");
+    
+    ImGui::ImageWithBg
+    (
+        SRV,
+        ImVec2(200, 200),
+        Vec2(0.f, 0.f), Vec2(1.f, 1.f),
+        ImVec4(0.f, 0.f, 0.f, 1.f)
+    );
+    
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload("Content"))
+        {
+            if (!TreeUI::IsPayloadMultiData(Payload))
+            {
+                DWORD_PTR data = *static_cast<DWORD_PTR*>(Payload->Data);
+                Ptr<Asset> pAsset = reinterpret_cast<Asset*>(data);
+
+                if (ASSET_TYPE::TEXTURE == pAsset->GetType())
+                    GetTargetObject()->TileRender()->SetDecalAtlas(static_cast<ATexture*>(pAsset.Get()));
+            }
+        }
+        
+        ImGui::EndDragDropTarget();
+    }
+
+    ImGui::Spacing();
+    
+    if (ImGui::Button("Clear DecalAtlas"))
+        GetTargetObject()->TileRender()->SetDecalAtlas(nullptr);
 }
 
 void TileRenderUI::RenderPreview()

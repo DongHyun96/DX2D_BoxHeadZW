@@ -24,7 +24,7 @@ enum class SCRIPT_PARAM
     ROUND_INFO_VECTOR,
     PROGRESS_BAR,
     FONT_STYLE,
-    FONT_ALIGN
+    FONT_ALIGN,
 };
 
 struct tScriptParam

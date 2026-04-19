@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "CBackgroundTile.h"
 
+#include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
+#include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 
@@ -14,6 +16,11 @@ CBackgroundTile::~CBackgroundTile()
 {
 }
 
+void CBackgroundTile::Init()
+{
+    
+}
+
 void CBackgroundTile::Begin()
 {
     /*const Vec3 Scale = Transform()->GetWorldScale();
@@ -23,10 +30,37 @@ void CBackgroundTile::Begin()
     m_TileSize          = m_WorldSize / m_TileRowCount; // 60*/
     
     GM->SetBackgroundCellManager(this);
+    
+    // Decal Sprite 정보 setting
+    
+    // Setting Blood stains
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            if (i == 2 && j == 1) break; // 이후로 Scorch Sprite 정보
+            
+            const wstring SpriteKey = L"Sprite\\BloodStainAndScorch" + to_wstring(i) + L"_" + to_wstring(j) + L".sprite";
+            Ptr<ASprite> Sprite = FIND_ASSET(ASprite, SpriteKey);
+            m_BloodStainSprites.push_back(Sprite);
+        }
+    }
+
+    for (int i = 1; i <= 2; ++i)
+    {
+        const wstring SpriteKey = L"Sprite\\BloodStainAndScorch" + to_wstring(2) + L"_" + to_wstring(i) + L".sprite";
+        Ptr<ASprite> Sprite = FIND_ASSET(ASprite, SpriteKey);
+        m_ScorchSprites.push_back(Sprite);
+    }
 }
 
 void CBackgroundTile::Tick()
 {
+    if (KEY_TAP(KEY::MLB))
+    {
+        const Vec2 DecalPos = KeyMgr::GetInst()->GetMouseWorldPos2D();
+        TileRender()->AddDecal(DecalPos, Vec2::One * 5.f, PickRandom(m_BloodStainSprites), 0.5f);
+    }
 }
 
 Vec2 CBackgroundTile::GetCellCoordToWorldPos(const CellCoord& _CellCoord) const

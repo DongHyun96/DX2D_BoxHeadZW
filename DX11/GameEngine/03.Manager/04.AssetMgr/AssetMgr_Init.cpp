@@ -316,7 +316,7 @@ void AssetMgr::CreateEngineShader()
     shader->CreatePixelShader(L"Shader\\tile_decal.fx", "PS_TileDecal");
     shader->SetBSType(BS_TYPE::ALPHA_BLEND);
     shader->SetRSType(RS_TYPE::CULL_NONE);
-    shader->SetDSType(DS_TYPE::LESS_NO_WRITE);
+    shader->SetDSType(DS_TYPE::LESS_EQUAL);
     shader->SetIsProvidedByEngine(true);
     AddAsset(shader->GetName(), shader.Get());
     
@@ -402,7 +402,7 @@ void AssetMgr::CreateEngineMaterial()
     pMtrl = new AMaterial;
     pMtrl->SetName(L"TileDecalMtrl");
     pMtrl->SetShader(Find<AGraphicShader>(L"TileDecalShader"));
-    pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_TRANSPARENT);
+    pMtrl->SetDomain(RENDER_DOMAIN::DOMAIN_MASKED);
     pMtrl->SetIsProvidedByEngine(true);
     AddAsset(pMtrl->GetName(), pMtrl.Get());
 }

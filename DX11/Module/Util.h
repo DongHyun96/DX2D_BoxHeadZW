@@ -63,6 +63,10 @@ T MappingToNewRange(const T& _Num, const T& _SrcMin, const T& _SrcMax, const T& 
     return static_cast<T>((_Num - _SrcMin) * (_DstMax - _DstMin) / (_SrcMax - _SrcMin) + _DstMin);
 }
 
+Vec2 MappingToNewRange(const Vec2& _Src, const Vec2& _SrcMin, const Vec2& _SrcMax, const Vec2& _DstMin, const Vec2& _DstMax);
+Vec3 MappingToNewRange(const Vec3& _Src, const Vec3& _SrcMin, const Vec3& _SrcMax, const Vec3& _DstMin, const Vec3& _DstMax);
+
+
 template <typename T>
 T GetRandom(const T& _Start, const T& _End)
 {

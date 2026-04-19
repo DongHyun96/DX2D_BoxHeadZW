@@ -1,5 +1,29 @@
 ﻿#pragma once
 
+struct SpawnedDecalData
+{
+    int     ID{};
+    float   Timer{};
+    float   ColorAlpha{};
+    
+    bool operator==(const SpawnedDecalData& _Other) const
+    {
+        return this->ID == _Other.ID; 
+    }
+};
+
+namespace std
+{
+    template<>
+    struct hash<SpawnedDecalData>
+    {
+        size_t operator()(const SpawnedDecalData& _Data) const
+        {
+            return hash<int>{}(_Data.ID);
+        }
+    };
+}
+
 /// <summary>
 /// 설치물 설치 위치 기록
 /// Cell Coord 관리
@@ -35,6 +59,14 @@ private:
         {FIRST_SPAWN_LOC5, {}},
         {FIRST_SPAWN_LOC6, {}}
     };
+
+private: // Blood stain & Scorch Decal 관련
+    
+    vector<Ptr<ASprite>> m_BloodStainSprites{};
+    vector<Ptr<ASprite>> m_ScorchSprites{};
+    
+    RandomizedSet<SpawnedDecalData> m_BloodStainSpawned{};
+    RandomizedSet<SpawnedDecalData> m_ScorchSpawned{};
     
 public:
     
@@ -44,6 +76,7 @@ public:
     
 public:
 
+    virtual void Init() override;
     virtual void Begin() override;
     virtual void Tick() override;
 

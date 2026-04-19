@@ -7,6 +7,9 @@
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/06.Component/01.Transform/CTransform.h"
 
+AMesh* CTileRender::s_RectMesh{};
+AGraphicShader* CTileRender::s_TileDecalShader{};
+
 CTileRender::CTileRender()
     : CRenderComponent(COMPONENT_TYPE::TILE_RENDER)
 {
@@ -43,6 +46,10 @@ void CTileRender::Init()
 {
     CRenderComponent::Init();
     // SetTileMap(m_TileMap);
+
+    if (!s_RectMesh) s_RectMesh = FIND_ASSET(AMesh, L"RectMesh").Get();
+    if (!s_TileDecalShader) s_TileDecalShader = FIND_ASSET(AGraphicShader, L"TileDecalShader").Get();
+        
 }
 
 void CTileRender::FinalTick()
@@ -71,32 +78,16 @@ void CTileRender::Render()
     // 데칼 렌더링 (인스턴싱 제출)
     if (!m_rsDecalInfo.empty() && m_DecalAtlas)
     {
-        Ptr<AMesh>           pRectMesh = AssetMgr::GetInst()->Find<AMesh>(L"RectMesh");
-        Ptr<AGraphicShader>  pShader   = AssetMgr::GetInst()->Find<AGraphicShader>(L"TileDecalShader");
-
-        const Matrix& matWorld = Transform()->GetWorldMatrix();
-        const Vec3& vScale     = Transform()->GetRelativeScale();
-
         for (const auto& decal : m_rsDecalInfo)
         {
             if (decal.Active == 0) continue;
 
-            // 데칼의 월드 행렬 계산
-            // decal.Pos는 타일맵 UV 기준 (0~1)
-            // 타일맵 로컬 좌표는 -0.5 ~ 0.5 범위 (RectMesh 기준)
-            Vec3 vLocalPos   = Vec3(decal.Pos.x - 0.5f, -(decal.Pos.y - 0.5f), 0.f);
-            Vec3 vDecalScale = Vec3(vScale.x * decal.Scale.x, vScale.y * decal.Scale.y, 1.f);
-            
-            Matrix matDecalWorld = Matrix::CreateScale(vDecalScale);
-            matDecalWorld *= Matrix::CreateTranslation(vLocalPos.x * vScale.x, vLocalPos.y * vScale.y, -1.f); // 타일보다 살짝 앞으로
-            matDecalWorld *= matWorld;
-
             TileDecalInstancing::Submit
             (
-                pRectMesh.Get(),
-                pShader.Get(),
+                s_RectMesh,
+                s_TileDecalShader,
                 m_DecalAtlas.Get(),
-                matDecalWorld,
+                decal.matWorld,
                 decal.LeftTop,
                 decal.Slice,
                 decal.TintColor
@@ -186,6 +177,83 @@ void CTileRender::SetTileMap(const Ptr<ATileMap>& _TileMap)
     m_TileBuffer->SetData(m_vecTileInfo.data(), sizeof(TileInfo) * m_vecTileInfo.size());
 }
 
+int CTileRender::AddDecal(const Vec2& _vPos, const Vec2& _vScale, const Ptr<ASprite>& _pDecalSprite, const Vec4& _TintColor)
+{
+    if (!_pDecalSprite || !m_TileMap) return -1;
+
+    DecalInfo info{};
+    info.Pos       = _vPos;
+    info.Scale     = _vScale;
+    info.LeftTop   = _pDecalSprite->GetLeftTopUV();
+    info.Slice     = _pDecalSprite->GetSliceUV();
+    info.TintColor = _TintColor;
+    info.Active    = 1;
+    info.ID        = m_iNextDecalID++;
+
+    // matWorld 미리 계산
+    const Matrix& matWorldTileMap = Transform()->GetWorldMatrix();
+
+    // decal.Pos는 타일맵 UV 기준 (0~1)
+    // 타일맵 로컬 좌표는 -0.5 ~ 0.5 범위 (RectMesh 기준)
+    // const Vec3 vLocalPos = Vec3(info.Pos.x - 0.5f, -(info.Pos.y - 0.5f), 0.f);
+    // const Vec3 vLocalPos = Vec3(info.Pos.x - 0.5f, info.Pos.y - 0.5f, 0.f);
+    
+    // Decal Scale 1.f 이 CellSize 1개의 크기
+    const Vec2& CellSize = m_TileMap->GetTileSize();
+    
+    // 월드상에서의 데칼 크기
+    const Vec3 DecalWorldScale = Vec3(CellSize.x * info.Scale.x, CellSize.y * info.Scale.y, 1.f);
+    
+    // 부모(타일맵)의 월드 스케일로 나누어서 로컬 스케일을 구함
+    // Vec3 vDecalLocalScale = Vec3(vDecalWorldScale.x / vWorldScale.x, vDecalWorldScale.y / vWorldScale.y, 1.f);
+    
+    info.matWorld = Matrix::CreateScale(DecalWorldScale);
+    info.matWorld *= Matrix::CreateTranslation(ToVec3(info.Pos, Transform()->GetWorldPos().z - 1000.f)); // 타일보다 살짝 앞으로
+
+    m_rsDecalInfo.insert(info);
+    m_bDecalChanged = true;
+
+    return info.ID;
+}
+
+int CTileRender::AddDecal(const Vec2& _vPos, const Vec2& _vScale, const Ptr<ASprite>& _pDecalSprite, float _ColorAlpha)
+{
+    Vec4 Color = DEF_COLOR_WHITE;
+    Color.w    = _ColorAlpha;
+    return AddDecal(_vPos, _vScale, _pDecalSprite, Color);
+}
+
+void CTileRender::RemoveDecal(int _ID)
+{
+    DecalInfo info{};
+    info.ID = _ID;
+    if (m_rsDecalInfo.remove(info)) m_bDecalChanged = true;
+}
+
+void CTileRender::ClearAllDecals()
+{
+    m_rsDecalInfo.clear();
+    m_bDecalChanged = true;
+}
+
+DecalInfo* CTileRender::GetDecalInfo(int _ID)
+{
+    DecalInfo info{};
+    info.ID = _ID;
+    return m_rsDecalInfo.find(info);
+}
+
+void CTileRender::SetDecalAlpha(int _ID, float _Alpha)
+{
+    DecalInfo* pInfo = GetDecalInfo(_ID);
+    if (pInfo)
+    {
+        pInfo->TintColor.w = _Alpha;
+        m_bDecalChanged = true;
+    }
+}
+
+
 void CTileRender::SaveToLevelFile(FILE* _File)
 {
     CRenderComponent::SaveToLevelFile(_File);
@@ -250,54 +318,5 @@ void CTileRender::LoadFromLevelFile(FILE* _File)
     {
         if (m_iNextDecalID <= info.ID)
             m_iNextDecalID = info.ID + 1;
-    }
-}
-
-int CTileRender::AddDecal(const Vec2& _vPos, const Vec2& _vScale, const Ptr<ASprite>& _pDecalSprite, const Vec4& _TintColor)
-{
-    if (_pDecalSprite == nullptr) return -1;
-
-    DecalInfo info{};
-    info.Pos       = _vPos;
-    info.Scale     = _vScale;
-    info.LeftTop   = _pDecalSprite->GetLeftTopUV();
-    info.Slice     = _pDecalSprite->GetSliceUV();
-    info.TintColor = _TintColor;
-    info.Active    = 1;
-    info.ID        = m_iNextDecalID++;
-
-    m_rsDecalInfo.insert(info);
-    m_bDecalChanged = true;
-
-    return info.ID;
-}
-
-void CTileRender::RemoveDecal(int _ID)
-{
-    DecalInfo info{};
-    info.ID = _ID;
-    if (m_rsDecalInfo.remove(info)) m_bDecalChanged = true;
-}
-
-void CTileRender::ClearAllDecals()
-{
-    m_rsDecalInfo.clear();
-    m_bDecalChanged = true;
-}
-
-DecalInfo* CTileRender::GetDecalInfo(int _ID)
-{
-    DecalInfo info{};
-    info.ID = _ID;
-    return m_rsDecalInfo.find(info);
-}
-
-void CTileRender::SetDecalAlpha(int _ID, float _Alpha)
-{
-    DecalInfo* pInfo = GetDecalInfo(_ID);
-    if (pInfo)
-    {
-        pInfo->TintColor.w = _Alpha;
-        m_bDecalChanged = true;
     }
 }

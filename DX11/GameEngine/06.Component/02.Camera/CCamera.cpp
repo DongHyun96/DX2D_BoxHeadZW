@@ -180,6 +180,7 @@ void CCamera::Render(bool _bUseRenderDomainSort)
         FlipbookRenderInstancing::BeginInstancing();
         BillboardRenderInstancing::BeginInstancing();
         SpriteRenderInstancing::BeginInstancing();
+        TileDecalInstancing::BeginInstancing();
 
         for (UINT i = 0; i < MAX_LAYER; ++i)
         {
@@ -226,32 +227,27 @@ void CCamera::Render(bool _bUseRenderDomainSort)
     // Domain 순서대로 렌더링 진행
     for (const auto& Pair : RenderMgr::GetInst()->GetDomainGameObjects())
     {
-        for (const Ptr<GameObject>& GameObject : Pair.second)
+        for (const Ptr<GameObject>& Object : Pair.second)
         {
             // 레이어 체크
-            if (!(m_LayerCheck & (1 << GameObject->GetLayerIdx())))
+            if (!(m_LayerCheck & (1 << Object->GetLayerIdx())))
                 continue;
 
             // 2D Frustum Culling (Domain 순회 시에도 동일하게 적용)
-            if (m_Type == PROJ_TYPE::ORTHOGRAPHIC && !GameObject->GetRenderCom()->IsInViewRect(m_ViewRectMin, m_ViewRectMax))
+            if (m_Type == PROJ_TYPE::ORTHOGRAPHIC && !Object->GetRenderCom()->IsInViewRect(m_ViewRectMin, m_ViewRectMax))
                 continue;
 
-            GameObject->Render();
+            Object->Render();
         }
 
-        /*if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT)
-        {
-            CFlipbookRender::FlushInstancing();
-            CBillboardRender::FlushInstancing();
-            CSpriteRender::FlushInstancing();
-        }
+        FlipbookRenderInstancing::FlushInstancing();
+        BillboardRenderInstancing::FlushInstancing();
+        SpriteRenderInstancing::FlushInstancing();
 
-        if (Pair.first == RENDER_DOMAIN::DOMAIN_TRANSPARENT_EFFECT)
+        if (Pair.first == RENDER_DOMAIN::DOMAIN_OPAQUE || Pair.first == RENDER_DOMAIN::DOMAIN_MASKED)
         {
-            CFlipbookRender::FlushInstancing();
-            CBillboardRender::FlushInstancing();
-            CSpriteRender::FlushInstancing();
-        }*/
+            TileDecalInstancing::FlushInstancing();
+        }
     }
 
     FlipbookRenderInstancing::FlushInstancing();
