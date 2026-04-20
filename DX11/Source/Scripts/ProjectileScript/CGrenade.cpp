@@ -5,6 +5,7 @@
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 
 // const float CGrenade::s_Gravity = 9.8f;
 const float CGrenade::s_Gravity = 980.f;
@@ -91,7 +92,10 @@ void CGrenade::Tick()
             m_ExplosionSpawnDesc.DamageAmount        = m_DamageAmount;
             m_ExplosionSpawnDesc.UpwardVelocity      = Vec2::UnitY * GetRandom(0.5f, 1.f);
             m_ExplosionSpawnDesc.SecondaryBurstCount = m_SpawnSubGrenade ? 4 : 2;
-            GM->SpawnExplosion(m_ExplosionSpawnDesc);
+            
+            if (GM->SpawnExplosion(m_ExplosionSpawnDesc))
+                GM->GetBackgroundCellManager()->SpawnScorchDecal(Transform()->GetWorldPos2D(), Vec2::One * GetRandom(3.f, 4.f));
+            
             GetOwner()->SetActive(false);
 
             // SubGrenade 추가로 Spawn처리할 경우

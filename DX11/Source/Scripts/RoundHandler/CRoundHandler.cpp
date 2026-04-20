@@ -28,6 +28,7 @@ void CRoundHandler::Init()
 
 void CRoundHandler::Begin()
 {
+    GM->SetRoundHandler(this);
 }
 
 void CRoundHandler::AfterLevelBegin()

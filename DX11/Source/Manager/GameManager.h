@@ -48,9 +48,9 @@ private: // Poolers
     class CFirePillarHandler* m_FirePillarHandler{};
 
 private:
-    
+
+    class CRoundHandler* m_RoundHandler{};
     class CFirstSpawnLocManager* m_FirstSpawnLocManager{};
-    
     class CIngameUIManager* m_InGameUIManager{};
     
 public:
@@ -100,12 +100,15 @@ public:
     void SetItemPooler(CPoolComponent* _PoolComponent) { m_ItemPooler = _PoolComponent; }
     CPoolComponent* GetItemPooler() const { return m_ItemPooler; }
     
+    void SetRoundHandler(CRoundHandler* _RoundHandler) { m_RoundHandler = _RoundHandler; }
+    CRoundHandler* GetRoundHandler() const { return m_RoundHandler; }
+    
 public: // Effect Spawn 관련
 
     void SpawnRocketSmoke(const Vec3& _SpawnPos);
     void SpawnExplosionDome(const Vec3& _SpawnPos, float _ExplosionSizeFactor = 1.f, float _FPS = 50.f, float _DamageAmount = 50.f, CScript* _SpawnedBy = nullptr);
-    
-    void SpawnExplosion(const ExplosionSpawnDesc& _Desc);
+
+    bool SpawnExplosion(const ExplosionSpawnDesc& _Desc);
     bool SpawnFirePillar(const FirePillarSpawnDesc& _Desc);
     bool SpawnFirePillar(const Vec3& _SpawnPos, float _DamageAmount = 75.f, CScript* _SpawnedBy = nullptr);
     

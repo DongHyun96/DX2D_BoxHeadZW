@@ -14,6 +14,7 @@
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Module/Util.h"
+#include "Source/Scripts/RoundHandler/CRoundHandler.h"
 
 CPlayerStat::CPlayerStat()
     : CCharacterStat(SCRIPT_TYPE::PLAYERSTAT)
@@ -81,6 +82,9 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
         // 미니건을 쏘다가 죽으면 재생이 계속 되기 때문에 여기서 멈춰준다
         Ptr<ASound> pSound = FIND_ASSET(ASound, L"Sound\\MinigunShotStart.wav");
         pSound->Stop();
+        
+        // set Round to GameOver
+        GM->GetRoundHandler()->SetRoundState(ROUND_STATE::GAME_OVER);
     }
 
     MainPlayerScript->SetMainState(NextState);

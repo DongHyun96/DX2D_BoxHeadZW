@@ -68,6 +68,9 @@ private: // Blood stain & Scorch Decal 관련
     RandomizedSet<SpawnedDecalData> m_BloodStainSpawned{};
     RandomizedSet<SpawnedDecalData> m_ScorchSpawned{};
     
+    static const float BLOODSTAIN_START_ALPHA;
+    static const float SCORCH_START_ALPHA;
+    
 public:
     
     CBackgroundTile();
@@ -80,6 +83,10 @@ public:
     virtual void Begin() override;
     virtual void Tick() override;
 
+private:
+    
+    void UpdateSpawnedDecal(RandomizedSet<SpawnedDecalData>& _SpawnedDecalData);
+    
 public:
     
     float GetWorldSize()        const { return m_WorldSize; }
@@ -144,6 +151,11 @@ public:
     void RemoveFirstSpawnDestination(FIRST_SPAWN_LOC _SpawnLoc, const CellCoord& _CellCoord);
     
     const CellCoord& GetRandomFirstSpawnLocDestination(FIRST_SPAWN_LOC _SpawnLoc);
+    
+public:
+    
+    void SpawnBloodStainDecal(const Vec2& _StainPos, const Vec2& _Scale);
+    void SpawnScorchDecal(const Vec2& _ScorchPos, const Vec2& _Scale);
     
 public:
     

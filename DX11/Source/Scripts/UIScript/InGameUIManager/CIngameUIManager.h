@@ -36,13 +36,22 @@ public:
         WeaponIcons[_HandState]->SetActive(true);
         RoundAmmoIcon->SetActive(true);
         
-        if (_HandState == PLAYER_HANDSTATE::PISTOL) MainAmmoCount->SetText(L"INF");
-        else MainAmmoCount->SetText(to_wstring(_MainAmmoCount));
+        if (_HandState == PLAYER_HANDSTATE::PISTOL)
+        {
+            MainAmmoCount->SetText(L"INF");
+            MainAmmoCount->SetColor(DEF_COLOR_WHITE);
+        }
+        else
+        {
+            MainAmmoCount->SetText(to_wstring(_MainAmmoCount));
+            MainAmmoCount->SetColor((_MainAmmoCount <= 0) ? Vec4(1.f, 0.f, 0.f, 1.f) : DEF_COLOR_WHITE);
+        }
     }
     
     void UpdateCurrentAmmoCount(int _AmmoCount)
     {
         MainAmmoCount->SetText(to_wstring(_AmmoCount));
+        MainAmmoCount->SetColor((_AmmoCount <= 0) ? Vec4(1.f, 0.f, 0.f, 1.f) : DEF_COLOR_WHITE);
     }
     
     void UpdateToStructure(PLAYER_STRUCTURE_TYPE _Type, int _Count)
@@ -167,8 +176,12 @@ public:
     void OnGameOver()
     {
         RoundNumberTimer = 0.f;
+        RoundText->SetAlpha(1.f);
+        RoundWaitText->SetAlpha(0.f); // Waiting for next round
+        RoundWaitTimeText->SetAlpha(0.f); // time text
+        
+        RoundText->SetText(L"Game Over");
     }
-    ///    
 };
 
 class CIngameUIManager : public CScript

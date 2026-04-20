@@ -44,6 +44,8 @@ private:
     Ptr<ATileMap>               m_TileMap{};
     Ptr<ATexture>               m_DecalAtlas{};
     
+    Ptr<ATexture>               m_DecalAtlases[TEX_END]{};
+    
     vector<TileInfo>            m_vecTileInfo{};
     Ptr<StructuredBuffer>       m_TileBuffer{};
 

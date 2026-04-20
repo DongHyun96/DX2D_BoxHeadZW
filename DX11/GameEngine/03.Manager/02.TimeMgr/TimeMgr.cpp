@@ -54,17 +54,20 @@ void TimeMgr::Tick()
     m_FPSAccumTime += m_DeltaTime;
     ++m_FPSFrameCount;
 
-    const float safeDeltaTime = (m_DeltaTime > 0.000001f) ? m_DeltaTime : 0.000001f;
+    /*const float safeDeltaTime = (m_DeltaTime > 0.000001f) ? m_DeltaTime : 0.000001f;
     m_FPS = static_cast<UINT>(1.f / safeDeltaTime);
 
     wchar_t buff[255];
     swprintf_s(buff, L"DT : %.3f ms | %u FPS", m_DeltaTime * 1000.f, m_FPS);
-    SetWindowText(Engine::GetInst()->GetMainWndHwnd(), buff);
+    SetWindowText(Engine::GetInst()->GetMainWndHwnd(), buff);*/
     // DebugUtil::SetPermanentDebugLog("FPS", "FPS : " + to_string(m_FPS), DEF_COLOR_GREEN);
     
 
+    ++m_FPS;
     if (m_FPSAccumTime >= 1.f)
     {
+        m_FPSDisplay = m_FPS;
+        m_FPS = 0;
         m_FPSAccumTime -= 1.f;
         m_FPSFrameCount = 0;
     }
@@ -130,7 +133,7 @@ void TimeMgr::Render()
     if (Flag)
     {
         wchar_t buff[255];
-        swprintf_s(buff, L"%d FPS", m_FPS);
+        swprintf_s(buff, L"%d FPS", m_FPSDisplay);
         FontMgr::GetInst()->DrawFont(buff, 10, 30, 24, FONT_RGBA(200, 20, 20, 255));
     }
     

@@ -101,7 +101,9 @@ void CRocketProjectile::BeginOverlap(CCollider2D* _OwnerCollider, CCollider2D* _
     m_ExplosionSpawnDesc.ExplosionSizeFactor = GetRandom(1.f, 1.2f);
     m_ExplosionSpawnDesc.DamageAmount        = m_DamageAmount;
     m_ExplosionSpawnDesc.UpwardVelocity      = Vec2::UnitY * GetRandom(0.35f, 0.7f);
-    GM->SpawnExplosion(m_ExplosionSpawnDesc);
+    
+    if (GM->SpawnExplosion(m_ExplosionSpawnDesc))
+        GM->GetBackgroundCellManager()->SpawnScorchDecal(Transform()->GetWorldPos2D(), Vec2::One * GetRandom(3.f, 4.f));
     
     if (Ptr<CStatScript> Stat = _OtherCollider->GetOwner()->GetScriptComponent<CStatScript>())
     {

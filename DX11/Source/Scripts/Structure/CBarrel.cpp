@@ -74,7 +74,10 @@ void CBarrel::UpdateLateExplosion()
     m_LateExplosionSpawnDesc.SpawnPos            = Transform()->GetRelativePos();
     m_LateExplosionSpawnDesc.ExplosionSizeFactor = GetRandom(1.2f, 1.5f);
     m_LateExplosionSpawnDesc.UpwardVelocity      = Vec2::UnitY * GetRandom(0.25f, 0.55f);
-    GM->SpawnExplosion(m_LateExplosionSpawnDesc);
+    
+    if (GM->SpawnExplosion(m_LateExplosionSpawnDesc))
+        GM->GetBackgroundCellManager()->SpawnScorchDecal(Transform()->GetWorldPos2D(), Vec2::One * GetRandom(3.f, 4.f));
+    
     TryExplodeAdjacentCells(); // 연쇄 폭파 처리 continue
 }
 

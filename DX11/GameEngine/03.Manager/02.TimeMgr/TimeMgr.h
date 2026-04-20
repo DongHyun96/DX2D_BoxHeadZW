@@ -19,6 +19,8 @@ private:
     float           m_CurrentGameDeltaTime{};  // 현재 컨텍스트에서 DT가 반환할 값
     
     UINT            m_FPS{};
+    UINT            m_FPSDisplay{};
+    
     float           m_FPSAccumTime{};
     UINT            m_FPSFrameCount{};
     

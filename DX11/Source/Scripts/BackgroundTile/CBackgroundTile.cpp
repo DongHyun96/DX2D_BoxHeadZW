@@ -1,10 +1,14 @@
 ﻿#include "pch.h"
 #include "CBackgroundTile.h"
 
+#include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "GameEngine/03.Manager/04.AssetMgr/AssetMgr.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+
+const float CBackgroundTile::BLOODSTAIN_START_ALPHA = 0.5f;
+const float CBackgroundTile::SCORCH_START_ALPHA     = 0.75f;
 
 CBackgroundTile::CBackgroundTile()
     : CScript(SCRIPT_TYPE::BACKGROUNDTILE)
@@ -56,10 +60,31 @@ void CBackgroundTile::Begin()
 
 void CBackgroundTile::Tick()
 {
-    if (KEY_TAP(KEY::MLB))
+    UpdateSpawnedDecal(m_BloodStainSpawned);
+    UpdateSpawnedDecal(m_ScorchSpawned);
+}
+
+void CBackgroundTile::UpdateSpawnedDecal(RandomizedSet<SpawnedDecalData>& _SpawnedDecalData)
+{
+    static float DECAL_LIFETIME = 30.f;
+    
+    for (int i = 0; i < _SpawnedDecalData.size(); )
     {
-        const Vec2 DecalPos = KeyMgr::GetInst()->GetMouseWorldPos2D();
-        TileRender()->AddDecal(DecalPos, Vec2::One * 5.f, PickRandom(m_BloodStainSprites), 0.5f);
+        SpawnedDecalData& DecalData = _SpawnedDecalData.data()[i];
+        
+        DecalData.Timer += DT;
+        
+        if (DecalData.Timer > DECAL_LIFETIME)
+        {
+            TileRender()->RemoveDecal(DecalData.ID);
+            _SpawnedDecalData.remove(DecalData);
+        }
+        else
+        {
+            DecalData.ColorAlpha = MappingToNewRange(DecalData.Timer, 0.f, DECAL_LIFETIME, BLOODSTAIN_START_ALPHA, 0.f); 
+            TileRender()->SetDecalAlpha(DecalData.ID, DecalData.ColorAlpha);
+            ++i;
+        }
     }
 }
 
@@ -144,6 +169,22 @@ const CellCoord& CBackgroundTile::GetRandomFirstSpawnLocDestination(FIRST_SPAWN_
 {
     if (m_FirstSpawnDestinations[_SpawnLoc].empty()) return CellCoord{};
     return m_FirstSpawnDestinations[_SpawnLoc].at(GetRandom(0, static_cast<int>(m_FirstSpawnDestinations[_SpawnLoc].size() - 1)));   
+}
+
+void CBackgroundTile::SpawnBloodStainDecal(const Vec2& _StainPos, const Vec2& _Scale)
+{
+    int SpawnedID = TileRender()->AddDecal(_StainPos, _Scale, PickRandom(m_BloodStainSprites), BLOODSTAIN_START_ALPHA);
+    if (SpawnedID == -1) return;
+    
+    m_BloodStainSpawned.insert(SpawnedDecalData(SpawnedID, 0.f, BLOODSTAIN_START_ALPHA));
+}
+
+void CBackgroundTile::SpawnScorchDecal(const Vec2& _ScorchPos, const Vec2& _Scale)
+{
+    int SpawnedID = TileRender()->AddDecal(_ScorchPos, _Scale, PickRandom(m_ScorchSprites), BLOODSTAIN_START_ALPHA);
+    if (SpawnedID == -1) return;
+    
+    m_ScorchSpawned.insert(SpawnedDecalData(SpawnedID, 0.f, BLOODSTAIN_START_ALPHA));
 }
 
 void CBackgroundTile::SaveToLevelFile(FILE* _File)
