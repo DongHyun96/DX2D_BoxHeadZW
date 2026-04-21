@@ -7,11 +7,6 @@ CGameUI::CGameUI(int _ScriptType)
 {
 }
 
-CGameUI::CGameUI(const CGameUI& _Origin)
-    : CScript(_Origin)
-{
-}
-
 CGameUI::~CGameUI()
 {
 }

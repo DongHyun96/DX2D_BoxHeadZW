@@ -41,11 +41,8 @@ void CButton::Begin()
 {
     CGameUI::Begin();
 
-    Ptr<CRenderComponent> pRenderCom = GetOwner()->GetRenderCom();
-    if (pRenderCom != nullptr)
-    {
+    if (Ptr<CRenderComponent> pRenderCom = GetOwner()->GetRenderCom())
         pRenderCom->CreateDynamicMaterial();
-    }
 }
 
 void CButton::Tick()
@@ -142,7 +139,7 @@ bool CButton::CheckMouseOn()
 {
     Vec2 vMousePos = KeyMgr::GetInst()->GetMouseUIPos();
 
-    Vec2 vWorldPos = Transform()->GetWorldPos2D() + GetRenderCom()->GetRenderOffset();
+    Vec2 vWorldPos   = Transform()->GetWorldPos2D() + GetRenderCom()->GetRenderOffset();
     Vec2 vWorldScale = Transform()->GetWorldScale2D() * GetRenderCom()->GetRenderScale();
 
     if (vMousePos.x > vWorldPos.x - vWorldScale.x * 0.5f &&

@@ -59,6 +59,7 @@
 #include "Source/Scripts/UIScript\CProgressBar.h"
 #include "Source/Scripts/UIScript\CText.h"
 #include "Source/Scripts/UIScript\InGameUIManager\CIngameUIManager.h"
+#include "Source/Scripts/UIScript\UIAnimation\CUIAnimation.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
@@ -116,6 +117,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CProgressBar");
 	_vec.push_back(L"CText");
 	_vec.push_back(L"CIngameUIManager");
+	_vec.push_back(L"CUIAnimation");
 }
 
 CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
@@ -236,6 +238,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CText;
 	if (L"CIngameUIManager" == _strScriptName)
 		return new CIngameUIManager;
+	if (L"CUIAnimation" == _strScriptName)
+		return new CUIAnimation;
 	return nullptr;
 }
 
@@ -359,6 +363,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CText;
 	case (UINT)SCRIPT_TYPE::INGAMEUIMANAGER:
 		return new CIngameUIManager;
+	case (UINT)SCRIPT_TYPE::UIANIMATION:
+		return new CUIAnimation;
 	}
 	return nullptr;
 }
@@ -483,6 +489,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CText";
 	case SCRIPT_TYPE::INGAMEUIMANAGER:
 		return L"CIngameUIManager";
+	case SCRIPT_TYPE::UIANIMATION:
+		return L"CUIAnimation";
 	}
 	return nullptr;
 }

@@ -34,6 +34,8 @@ public:
     void SetText(const wstring& _Text) { m_strText = _Text; }
     void SetAlpha(float _Alpha) { m_Color.w = _Alpha; }
     void SetColor(const Vec4& _Color) { m_Color = _Color; }
+    
+    const Vec4& GetColor() const { return m_Color; }
     float GetAlpha() const { return m_Color.w; }
     
     /*void SetFontSize(float _FontSize) { m_fFontSize = _FontSize; }
