@@ -61,6 +61,9 @@ private:
     };
 
 private: // Blood stain & Scorch Decal 관련
+
+    Ptr<ATexture> m_BloodStainAtlasTexture{};
+    Ptr<ATexture> m_ScorchAtlasTexture{};
     
     vector<Ptr<ASprite>> m_BloodStainSprites{};
     vector<Ptr<ASprite>> m_ScorchSprites{};
@@ -85,7 +88,7 @@ public:
 
 private:
     
-    void UpdateSpawnedDecal(RandomizedSet<SpawnedDecalData>& _SpawnedDecalData);
+    void UpdateSpawnedDecal(RandomizedSet<SpawnedDecalData>& _SpawnedDecalData, float _StartAlpha);
     
 public:
     

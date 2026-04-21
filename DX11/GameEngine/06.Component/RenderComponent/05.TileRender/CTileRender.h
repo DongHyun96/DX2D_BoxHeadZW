@@ -12,16 +12,15 @@ struct TileInfo
 
 struct DecalInfo
 {
-    Vec2   Pos{};         // 타일맵 UV 기준 위치 (0~1)
-    Vec2   Scale{};       // 타일맵 UV 기준 크기 (1.f 가 CellSize 1개의 크기)
-    Vec2   LeftTop{};     // 데칼 아틀라스 내 UV 좌상단
-    Vec2   Slice{};       // 데칼 아틀라스 내 UV 슬라이스
-    Vec4   TintColor{};   // 데칼 색상
-    Matrix matWorld{};    // 데칼의 월드 행렬 (미리 계산)
-    int    Active{};      // 활성화 여부
-    int    ID{};          // 데칼 ID
-    int    Padding[2]{};
-
+    ATexture*   DecalAtlas{};    // Decal Atlas texture
+    Vec2        Pos{};           // 타일맵 UV 기준 위치 (0~1)
+    Vec2        Scale{};         // 타일맵 UV 기준 크기 (1.f 가 CellSize 1개의 크기)
+    Vec2        LeftTop{};       // 데칼 아틀라스 내 UV 좌상단
+    Vec2        Slice{};         // 데칼 아틀라스 내 UV 슬라이스
+    Vec4        TintColor{};     // 데칼 색상
+    Matrix      matWorld{};      // 데칼의 월드 행렬 (미리 계산)
+    int         ID{};            // 데칼 ID
+    
     bool operator==(const DecalInfo& _Other) const { return ID == _Other.ID; }
 };
 
@@ -42,10 +41,6 @@ class CTileRender : public CRenderComponent
 private:
     
     Ptr<ATileMap>               m_TileMap{};
-    Ptr<ATexture>               m_DecalAtlas{};
-    
-    Ptr<ATexture>               m_DecalAtlases[TEX_END]{};
-    
     vector<TileInfo>            m_vecTileInfo{};
     Ptr<StructuredBuffer>       m_TileBuffer{};
 
@@ -80,12 +75,9 @@ public:
 
     Ptr<ATileMap> GetTileMap() const { return m_TileMap; }
     void SetTileMap(const Ptr<ATileMap>& _TileMap);
-
-    void SetDecalAtlas(const Ptr<ATexture>& _Atlas) { m_DecalAtlas = _Atlas; }
-    ATexture* GetDecalAtlas() const { return m_DecalAtlas.Get(); }
     
-    int AddDecal(const Vec2& _vPos, const Vec2& _vScale, const Ptr<ASprite>& _pDecalSprite, const Vec4& _TintColor);
-    int AddDecal(const Vec2& _vPos, const Vec2& _vScale, const Ptr<ASprite>& _pDecalSprite, float _ColorAlpha);
+    int AddDecal(ATexture* _DecalAtlasTexture, const Vec2& _vPos, const Vec2& _vScale, const Ptr<ASprite>& _pDecalSprite, const Vec4& _TintColor);
+    int AddDecal(ATexture* _DecalAtlasTexture, const Vec2& _vPos, const Vec2& _vScale, const Ptr<ASprite>& _pDecalSprite, float _ColorAlpha);
     void RemoveDecal(int _ID);
     void ClearAllDecals();
 

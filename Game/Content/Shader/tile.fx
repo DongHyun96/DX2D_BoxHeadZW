@@ -10,20 +10,6 @@ struct TileInfo
 };
 StructuredBuffer<TileInfo> g_Buffer : register(t20);
 
-struct DecalInfo
-{
-    float2 Pos;
-    float2 Scale;
-    float2 LeftTop;
-    float2 Slice;
-    float4 TintColor;
-    int    Active;
-    int    ID;
-    int2   Padding;
-};
-StructuredBuffer<DecalInfo> g_DecalBuffer : register(t21);
-
-
 #define AtlasTex    g_tex_0
 #define LeftTopUV   g_vec2_0
 #define SliceUV     g_vec2_1

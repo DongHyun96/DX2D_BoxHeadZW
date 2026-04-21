@@ -133,7 +133,8 @@ void CAirStrike::TickAirStriking(const Ptr<CCamMoveScript>& CamMove)
             
             m_ExplosionSpawnDesc.SpawnPos       = Vec3(x, y, y);
             m_ExplosionSpawnDesc.UpwardVelocity = Vec2(GetRandom(-0.05f, 0.05f), GetRandom(0.2f, 0.4f));
-            GM->SpawnExplosion(m_ExplosionSpawnDesc);
+            if (GM->SpawnExplosion(m_ExplosionSpawnDesc))
+                GM->GetBackgroundCellManager()->SpawnScorchDecal(Vec2(x, y), Vec2::One * GetRandom(5.f, 6.f));
         }
         
         // 터지는 소리 한번만 재생

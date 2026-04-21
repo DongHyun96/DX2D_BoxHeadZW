@@ -67,7 +67,7 @@ void CEnemyAnimHandler::UpdateAnimTransition()
         
         // 이전 PushedOut 방향에 따라 Die Flipbook 고르기
         const UINT BaseIdx = GetDieFlipbookIdxBase();
-        vector<UINT> TempVec = {0, 3, 6}; const UINT IdxOffset = PickRandom(TempVec);
+        vector<UINT> TempVec = {0, 3, 6}; const UINT IdxOffset = *PickRandom(TempVec);
         const UINT PickedIdx = BaseIdx + IdxOffset;
         
         FlipbookRender()->Play(L"Die", PickedIdx, 10.f, 1); 

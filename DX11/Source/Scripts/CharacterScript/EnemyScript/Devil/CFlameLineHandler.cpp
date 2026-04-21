@@ -5,6 +5,7 @@
 #include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/BackgroundTile/CBackgroundTile.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
 
@@ -44,7 +45,8 @@ void CFlameLineHandler::Tick()
         SpawnPos.y -= FirePillarSpawnDownOffsetY;
         SpawnPos.z = SpawnPos.y;
         
-        GM->SpawnFirePillar(SpawnPos, 0.f);
+        if (GM->SpawnFirePillar(SpawnPos, 0.f))
+            GM->GetBackgroundCellManager()->SpawnScorchDecal(ToVec2(SpawnPos), Vec2::One * GetRandom(3.f, 6.f));
     }
 
     // 총 공격 시간 끝이라고 판단 처리

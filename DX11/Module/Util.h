@@ -98,16 +98,16 @@ T GetRandom(const T& _Start, const T& _End)
 }
 
 template<typename T>
-T PickRandom(const vector<T>& _Vec)
+const T* PickRandom(const vector<T>& _Vec)
 {
     if (_Vec.empty())
     {
         assert(nullptr);
-        return T();
+        return nullptr;
     }
     
     int RandomIdx = GetRandom<int>(0, _Vec.size() - 1);
-    return _Vec[RandomIdx];
+    return &_Vec[RandomIdx];
 }
 
 /// <summary>

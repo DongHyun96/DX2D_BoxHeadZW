@@ -7,8 +7,8 @@
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 
-const float CBackgroundTile::BLOODSTAIN_START_ALPHA = 0.5f;
-const float CBackgroundTile::SCORCH_START_ALPHA     = 0.75f;
+const float CBackgroundTile::BLOODSTAIN_START_ALPHA = 0.7f;
+const float CBackgroundTile::SCORCH_START_ALPHA     = 0.6f;
 
 CBackgroundTile::CBackgroundTile()
     : CScript(SCRIPT_TYPE::BACKGROUNDTILE)
@@ -22,7 +22,8 @@ CBackgroundTile::~CBackgroundTile()
 
 void CBackgroundTile::Init()
 {
-    
+    AddScriptParam(SCRIPT_PARAM::TEXTURE, &m_BloodStainAtlasTexture, L"BloodStainAtlasTexture");
+    AddScriptParam(SCRIPT_PARAM::TEXTURE, &m_ScorchAtlasTexture, L"ScorchAtlasTexture");
 }
 
 void CBackgroundTile::Begin()
@@ -50,21 +51,24 @@ void CBackgroundTile::Begin()
         }
     }
 
-    for (int i = 1; i <= 2; ++i)
+    for (int i = 0; i < 4; ++i)
     {
-        const wstring SpriteKey = L"Sprite\\BloodStainAndScorch" + to_wstring(2) + L"_" + to_wstring(i) + L".sprite";
-        Ptr<ASprite> Sprite = FIND_ASSET(ASprite, SpriteKey);
-        m_ScorchSprites.push_back(Sprite);
+        for (int j = 0; j < 4; ++j)
+        {
+            const wstring SpriteKey = L"Sprite\\ScorchDecal" + to_wstring(i) + L"_" + to_wstring(j) + L".sprite";
+            Ptr<ASprite> Sprite = FIND_ASSET(ASprite, SpriteKey);
+            m_ScorchSprites.push_back(Sprite);
+        }
     }
 }
 
 void CBackgroundTile::Tick()
 {
-    UpdateSpawnedDecal(m_BloodStainSpawned);
-    UpdateSpawnedDecal(m_ScorchSpawned);
+    UpdateSpawnedDecal(m_BloodStainSpawned, BLOODSTAIN_START_ALPHA);
+    UpdateSpawnedDecal(m_ScorchSpawned, SCORCH_START_ALPHA);
 }
 
-void CBackgroundTile::UpdateSpawnedDecal(RandomizedSet<SpawnedDecalData>& _SpawnedDecalData)
+void CBackgroundTile::UpdateSpawnedDecal(RandomizedSet<SpawnedDecalData>& _SpawnedDecalData, float _StartAlpha)
 {
     static float DECAL_LIFETIME = 30.f;
     
@@ -81,7 +85,7 @@ void CBackgroundTile::UpdateSpawnedDecal(RandomizedSet<SpawnedDecalData>& _Spawn
         }
         else
         {
-            DecalData.ColorAlpha = MappingToNewRange(DecalData.Timer, 0.f, DECAL_LIFETIME, BLOODSTAIN_START_ALPHA, 0.f); 
+            DecalData.ColorAlpha = MappingToNewRange(DecalData.Timer, 0.f, DECAL_LIFETIME, _StartAlpha, 0.f); 
             TileRender()->SetDecalAlpha(DecalData.ID, DecalData.ColorAlpha);
             ++i;
         }
@@ -173,7 +177,7 @@ const CellCoord& CBackgroundTile::GetRandomFirstSpawnLocDestination(FIRST_SPAWN_
 
 void CBackgroundTile::SpawnBloodStainDecal(const Vec2& _StainPos, const Vec2& _Scale)
 {
-    int SpawnedID = TileRender()->AddDecal(_StainPos, _Scale, PickRandom(m_BloodStainSprites), BLOODSTAIN_START_ALPHA);
+    int SpawnedID = TileRender()->AddDecal(m_BloodStainAtlasTexture.Get(), _StainPos, _Scale, *PickRandom(m_BloodStainSprites), BLOODSTAIN_START_ALPHA);
     if (SpawnedID == -1) return;
     
     m_BloodStainSpawned.insert(SpawnedDecalData(SpawnedID, 0.f, BLOODSTAIN_START_ALPHA));
@@ -181,10 +185,13 @@ void CBackgroundTile::SpawnBloodStainDecal(const Vec2& _StainPos, const Vec2& _S
 
 void CBackgroundTile::SpawnScorchDecal(const Vec2& _ScorchPos, const Vec2& _Scale)
 {
-    int SpawnedID = TileRender()->AddDecal(_ScorchPos, _Scale, PickRandom(m_ScorchSprites), BLOODSTAIN_START_ALPHA);
-    if (SpawnedID == -1) return;
+    int SpawnedID = TileRender()->AddDecal(m_ScorchAtlasTexture.Get(), _ScorchPos, _Scale, *PickRandom(m_ScorchSprites), SCORCH_START_ALPHA);
+    if (SpawnedID == -1)
+    {
+        return;
+    }
     
-    m_ScorchSpawned.insert(SpawnedDecalData(SpawnedID, 0.f, BLOODSTAIN_START_ALPHA));
+    m_ScorchSpawned.insert(SpawnedDecalData(SpawnedID, 0.f, SCORCH_START_ALPHA));
 }
 
 void CBackgroundTile::SaveToLevelFile(FILE* _File)
@@ -203,6 +210,10 @@ void CBackgroundTile::SaveToLevelFile(FILE* _File)
         for (const CellCoord& cellCoord : Pair.second)
             fwrite(&cellCoord, sizeof(CellCoord), 1, _File);
     }
+    
+    // Decals
+    SaveAssetRef(_File, m_BloodStainAtlasTexture.Get());
+    SaveAssetRef(_File, m_ScorchAtlasTexture.Get());
 }
 
 void CBackgroundTile::LoadFromLevelFile(FILE* _File)
@@ -233,4 +244,8 @@ void CBackgroundTile::LoadFromLevelFile(FILE* _File)
             Pair.second.push_back(CellCoord);
         }
     }
+    
+    // Decals
+    m_BloodStainAtlasTexture = LoadAssetRef<ATexture>(_File);
+    m_ScorchAtlasTexture     = LoadAssetRef<ATexture>(_File);   
 }

@@ -22,7 +22,7 @@ void TileRenderUI::Tick_UI()
     if (ImGui::CollapsingHeader("TileMap Preview", ImGuiTreeNodeFlags_None))
         RenderPreview();
     
-    ATexture* DecalAtlas = GetTargetObject()->TileRender()->GetDecalAtlas();
+    /*ATexture* DecalAtlas = GetTargetObject()->TileRender()->GetDecalAtlas();
     ImTextureRef SRV = DecalAtlas ? DecalAtlas->GetSRV().Get() : nullptr;
 
     ImGui::Text("Current Decal Atlas : ");
@@ -55,7 +55,7 @@ void TileRenderUI::Tick_UI()
     ImGui::Spacing();
     
     if (ImGui::Button("Clear DecalAtlas"))
-        GetTargetObject()->TileRender()->SetDecalAtlas(nullptr);
+        GetTargetObject()->TileRender()->SetDecalAtlas(nullptr);*/
 }
 
 void TileRenderUI::RenderPreview()
