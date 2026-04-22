@@ -38,6 +38,7 @@ private:
     bool m_bBackToStopOnAnimEnd{}; // Animation 재생이 끝났을 때, 바로 Stop 처리할지(원본 데이터로 돌아갈지) 여부
     
     float m_AnimTimer{}; // Animation 재생 Timer
+    UINT m_ObjectAnimFinishedCount{}; // Animation 재생이 끝난 GameObject Count (재생 중, 끝난 시점을 알아야 해서 Count check함)
     
 public:
     

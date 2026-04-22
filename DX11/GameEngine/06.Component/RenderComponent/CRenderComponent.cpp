@@ -60,7 +60,8 @@ void CRenderComponent::FinalTick()
 Ptr<AMaterial> CRenderComponent::CreateDynamicMaterial()
 {
     // 동적 재질 생성은 반드시 레벨이 Play 모드일 경우에만 사용 가능한 기능
-    assert(LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY);
+    // Editing 환경에서, UIAnimation 때문에 Editing 환경에서도 처리 가능하도록
+    // assert(LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::PLAY);
     
     if (!m_DynamicMaterial) m_Material = m_DynamicMaterial = m_SharedMaterial->Clone(); // 처음 생성할 때
     else                    m_Material = m_DynamicMaterial; // 기존에 생성한 DynamicMaterial이 있을 때

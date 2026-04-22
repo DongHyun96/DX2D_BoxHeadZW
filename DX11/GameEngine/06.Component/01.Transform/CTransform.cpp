@@ -40,15 +40,6 @@ Vec3 CTransform::GetWorldScale() const
 	return vWorldScale;
 }
 
-CTransform CTransform::Lerp(const CTransform& a, const CTransform& b, float alpha)
-{
-	CTransform Temp{};
-	Temp.m_RelativePos		= Vec3::Lerp(a.m_RelativePos,		b.m_RelativePos,	alpha);
-	Temp.m_RelativeScale	= Vec3::Lerp(a.m_RelativeScale, 	b.m_RelativeScale,	alpha);
-	Temp.m_RelativeRot		= Vec3::Lerp(a.m_RelativeRot,		b.m_RelativeRot,	alpha);
-	return Temp;
-}
-
 void CTransform::FinalTick()
 {
 	if (m_bUpdateZDepthToYCoordOnEveryTick)

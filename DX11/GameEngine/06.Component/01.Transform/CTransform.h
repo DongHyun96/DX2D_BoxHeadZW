@@ -123,12 +123,6 @@ public:
 
 public:
     
-    static CTransform Lerp(const CTransform& a, const CTransform& b, float alpha);
-    static CTransform Lerp(CTransform* a, CTransform* b, float alpha) { return Lerp(*a, *b, alpha); }
-    static CTransform Lerp(const Ptr<CTransform>& a, const Ptr<CTransform>& b, float alpha) { return Lerp(*(a.Get()), *(b.Get()), alpha); }
-
-public:
-    
     CTransform& operator=(const CTransform& _Other)
     {
         m_bUpdateZDepthToYCoordOnEveryTick  = _Other.m_bUpdateZDepthToYCoordOnEveryTick;
