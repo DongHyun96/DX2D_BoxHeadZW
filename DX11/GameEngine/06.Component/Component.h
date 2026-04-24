@@ -66,6 +66,12 @@ public:
 	/// GameObject에 AddComponent 이후 Init 호출
 	/// </summary>
 	virtual void Init() {}
+
+	/// <summary>
+	/// <para> 현재 Level의 GUID 테이블이 초기화된 이후로 바로 호출됨(Begin 시점 이전) </para>
+	/// <para> GameObject 레퍼런스 재연결 처리를 이 함수 시점에서 처리 -> 필요하면 override 할 것 </para>
+	/// </summary>
+	virtual void AfterLevelGameObjectGuidTableInit() {}
 	
 	virtual void Begin() {}
 	

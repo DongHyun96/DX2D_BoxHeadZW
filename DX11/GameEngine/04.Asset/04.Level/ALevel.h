@@ -13,6 +13,12 @@ class ALevel : public Asset
 {
 
     friend class LevelUI;
+
+private:
+    
+    // CurLevel의 LevelStop 상황과 LevelPlay 상태에서의 GUID 값은 모두 동일
+    // Level이 복제되어, 동일한 Guid를 가진 GameObject들이 막 생성이 되었을 때, Begin 호출 이전에 해당 테이블 초기화 처리됨
+    unordered_map<GUID, GameObject*, GUIDHasher> m_GuidTable{};
     
 private:
     
@@ -46,6 +52,11 @@ public:
     void Deregister();
 
 public:
+    
+    /// <summary>
+    /// GameObject Guid 테이블 초기화 이후, GO 레퍼런스 초기화 처리할 클래스단에서 해당 시점 이용 
+    /// </summary>
+    void AfterInitGuidTable();
     
     /// <summary>
     /// Level 처음 시작 시 호출 
@@ -92,6 +103,7 @@ public:
     }
 
     Ptr<GameObject> FindObjectByName(const wstring& _Name);
+    GameObject* GetObjectByGUID(const GUID& _GUID);
 
     /// <summary>
     /// 해당 GameObject 객체가 이 Level에 존재하는지 확인
@@ -122,4 +134,9 @@ public:
     bool SetFirstMainCamera(CCamera* _Camera);
     bool SetUICamera(CCamera* _Camera);
     CCamera* GetUICamera() const { return m_UICamera; }
+
+public:
+    
+    void InitGuidTable();
+    
 };

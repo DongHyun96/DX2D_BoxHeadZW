@@ -38,6 +38,19 @@ public:
     virtual void LoadFromLevelFile(FILE* _File) override;
 
     CLONE(CTransform)
+
+public:
+    
+    /// <summary>
+    /// 다른 Transform의 RelativePos, RelativeScale, RelativeRot를 자기자신에게 복사
+    /// </summary>
+    bool CopyRelativePosScaleRot(CTransform* _Other);
+
+
+    /// <summary>
+    /// 다른 Transform의 RelativePos, RelativeScale, RelativeRot를 자기자신에게 복사
+    /// </summary>
+    bool CopyRelativePosScaleRot(const Ptr<CTransform>& _Other);
     
 public:
 

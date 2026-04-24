@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include <set>
 
-// TODO : PoolComponent UI 만들기
+#include "GameEngine/04.Asset/09.Prefab/APrefab.h"
+
 class CPoolComponent : public Component
 {
     

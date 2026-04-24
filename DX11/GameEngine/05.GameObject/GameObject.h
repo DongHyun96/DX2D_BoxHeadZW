@@ -17,7 +17,13 @@ class GameObject : public Entity
 	friend class TaskMgr;
 	friend class Layer;
 	friend class Menu;
+	friend class Outliner;
+	friend class APrefab;
 
+private:
+	
+	GUID m_GUID{};
+	
 private:
 
 	// Text Object인지 여부 (Rendering 처리를 따로 해주어야 해서 체킹함)
@@ -69,9 +75,15 @@ public:
 
 public:
 	
-	CLONE(GameObject);
+	GameObject* Clone() const { return new GameObject(*this); };
 	
 public:
+	
+	/// <summary>
+	/// <para> 현재 Level의 GUID 초기화 처리 이후, 바로 호출될 함수 </para>
+	/// <para> GO 레퍼런스를 다시 재연결해야 하는 Component(Script 포함)에 대해, 다시 재연결 처리를 이 시점에서 한다 </para>
+	/// </summary>
+	void AfterLevelGameObjectGuidTableInit();
 	
 	void Begin();
 	void AfterLevelBegin();
@@ -169,6 +181,14 @@ public:
 	
 	void SetIsTextObject(bool _IsTextObject) { m_bIsTextObject = _IsTextObject; }
 	bool GetIsTextObject() const { return m_bIsTextObject; }
+
+public:
+	
+	GUID GetGUID();
+	
+private:
+	
+	GUID& GetGUIDRef();
 	
 public:
 	

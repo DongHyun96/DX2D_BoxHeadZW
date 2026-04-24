@@ -31,6 +31,17 @@ void ALevel::Deregister()
     for (Layer& layer : m_arrLayer) layer.DeregisterObjectsFromAllObjects();
 }
 
+void ALevel::AfterInitGuidTable()
+{
+    for (const Layer& layer : m_arrLayer)
+    {
+        const vector<Ptr<GameObject>>& vecParents = layer.GetParentObjects();
+        
+        for (const Ptr<GameObject>& object : vecParents)
+            object->AfterLevelGameObjectGuidTableInit();
+    }
+}
+
 void ALevel::Begin()
 {
     m_mapLayerNameIndex.clear();
@@ -144,6 +155,12 @@ Ptr<GameObject> ALevel::FindObjectByName(const wstring& _Name)
     return nullptr;
 }
 
+GameObject* ALevel::GetObjectByGUID(const GUID& _GUID)
+{
+    if (m_GuidTable.contains(_GUID)) return m_GuidTable[_GUID];
+    return nullptr;
+}
+
 bool ALevel::IsObjectInLevel(const Ptr<GameObject>& _Object)
 {
     for (const Layer& layer : m_arrLayer)
@@ -196,6 +213,32 @@ bool ALevel::SetUICamera(CCamera* _Camera)
     if (m_UICamera) m_UICamera->SetAsUICamera(true);
     
     return true;
+}
+
+void ALevel::InitGuidTable()
+{
+    m_GuidTable.clear();
+    
+    for (const Layer& layer : m_arrLayer)
+    {
+        const vector<Ptr<GameObject>>& vecParents = layer.GetParentObjects();
+        
+        for (const Ptr<GameObject>& object : vecParents)
+        {
+            queue<Ptr<GameObject>> q{};
+            q.push(object);
+            
+            while (!q.empty())
+            {
+                Ptr<GameObject> pObject = q.front(); q.pop();
+                
+                m_GuidTable[pObject->GetGUID()] = pObject.Get();
+                
+                const vector<Ptr<GameObject>>& vecChild = pObject->GetChildren();
+                for (const Ptr<GameObject>& child : vecChild) q.push(child);
+            }
+        }
+    }
 }
 
 HRESULT ALevel::Save(const wstring& _FilePath)

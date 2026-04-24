@@ -13,7 +13,6 @@ private:
     Ptr<ALevel> m_SharedLevel{};
     LEVEL_STATE m_LevelState = LEVEL_STATE::STOP;
 
-    
 public:
     
     void Init();

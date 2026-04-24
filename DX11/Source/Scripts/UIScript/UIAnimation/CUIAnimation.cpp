@@ -3,6 +3,7 @@
 
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
+#include "GameEngine/05.GameObject/GameObjectRefHolder.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Scripts/UIScript/CText.h"
 
@@ -11,125 +12,99 @@ CUIAnimation::CUIAnimation()
 {
 }
 
+CUIAnimation::CUIAnimation(const CUIAnimation& _Origin)
+    : CScript(_Origin)
+    , m_vecTracks(_Origin.m_vecTracks)
+    , m_bBackToStopOnAnimEnd(_Origin.m_bBackToStopOnAnimEnd)
+    // 나머지 멤버변수는 초기값으로 처리 (Editing 환경에서 재생 Testing 중이던 Animation일 수 있음 -> 이걸 다시 멈춘 상태로 시작)
+{
+}
+
 CUIAnimation::~CUIAnimation()
 {
+}
+
+void CUIAnimation::AfterLevelGameObjectGuidTableInit()
+{
+    // Track에 지정된 GameObject Reference 실제로 복원 처리 & Origin Data 또한 복원한 Reference로 복원 처리를 해준다
+    for (UIAnimTrack& Track : m_vecTracks)
+    {
+        Track.TargetObjectReference.LinkReferenceToGameObject(LevelMgr::GetInst()->GetCurLevel().Get());
+
+        // 원본 KeyFramer값 세팅
+        GameObject* TargetObject = Track.TargetObjectReference.GetGameObject();
+        if (!TargetObject)
+        {
+            DebugUtil::AddDebugLog("[CUIAnimation::AfterLevelGameObjectGuidTableInit] : GameObject ref invalid!");
+            return;
+        }
+
+        /* Original State 값들 저장 */
+        Track.OriginalStateData.SetAnimDataFromGameObject(TargetObject, -1.f);
+    }
 }
 
 void CUIAnimation::Tick()
 {
     if (!m_bIsPlaying) return;
 
-    // 모든 Animation 종료되었는지 체크
-    if (m_ObjectAnimFinishedCount >= m_mapTracks.size())
-    {
-        // 종료 처리
-        if (m_bBackToStopOnAnimEnd) Stop();
-        return;
-    }
-    
     m_AnimTimer += DT;
 
-    for (pair<GameObject* const, UIAnimTrack>& Pair : m_mapTracks)
+    UINT TrackFinishedCnt{};
+    for (UIAnimTrack& Track : m_vecTracks)
     {
-        GameObject* TargetObject                    = Pair.first;
-        const vector<UIAnimKeyFrameData>& KeyFrames = Pair.second.KeyFrames;
-        int& CurrentKeyIndex                        = Pair.second.CurrentKeyIndex;
-        
-        // 새로운 키 프레임 재생해야하는지 체크
-        if (m_AnimTimer > KeyFrames[CurrentKeyIndex].Time) ++CurrentKeyIndex; // 다음 키 프레임 재생으로 넘어감
-
-        // 모든 키프레임 소진 -> 이 GameObject에 대한 Animation 종료
-        if (CurrentKeyIndex >= KeyFrames.size())
-        {
-            ++m_ObjectAnimFinishedCount;
-            return;
-        }
-        
-        // 이전 키 프레임과 현재 키 프레임 사이의 Time 간격으로 값 보간 처리
-        const UIAnimKeyFrameData& PrevKeyFrame      = KeyFrames[CurrentKeyIndex - 1];
-        const UIAnimKeyFrameData& CurrentKeyFrame   = KeyFrames[CurrentKeyIndex];
-        
-        const float TimeDiff            = CurrentKeyFrame.Time - PrevKeyFrame.Time;
-        const float CurrentKeyFrameTime = m_AnimTimer - PrevKeyFrame.Time; // 이전 키 프레임과 현재 키 프레임 사이의 시간 흐름
-        const float TimeAlpha           = MappingToNewRange(CurrentKeyFrameTime, 0.f, TimeDiff, 0.f, 1.f);
-        
-        // Transform S, R, T 사이 보간 처리
-        Vec3 TargetPos   = TargetObject->Transform()->GetRelativePos();
-        Vec3 TargetScale = TargetObject->Transform()->GetRelativeScale();
-        Vec3 TargetRot   = TargetObject->Transform()->GetRelativeRot();
-        
-        TargetPos   = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativePos(), CurrentKeyFrame.Transform->GetRelativePos(), TimeAlpha);
-        TargetScale = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativeScale(), CurrentKeyFrame.Transform->GetRelativeScale(), TimeAlpha);
-        TargetRot   = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativeRot(), CurrentKeyFrame.Transform->GetRelativeRot(), TimeAlpha);
-        
-        TargetObject->Transform()->SetRelativePos(TargetPos);
-        TargetObject->Transform()->SetRelativeScale(TargetScale);
-        TargetObject->Transform()->SetRelativeRot(TargetRot);
-        
-        if (Ptr<CText> Text = TargetObject->GetScriptComponent<CText>())
-        {
-            Vec4 Color = Text->GetColor();
-            Color = Vec4::Lerp(PrevKeyFrame.TintColor, CurrentKeyFrame.TintColor, TimeAlpha);
-            Text->SetColor(Color);
-        }
-        else if (TargetObject->GetRenderCom())
-        {
-            Vec4 Color = TargetObject->GetRenderCom()->GetMaterial()->GetScalar<Vec4>(VEC4_0);
-            Color = Vec4::Lerp(PrevKeyFrame.TintColor, CurrentKeyFrame.TintColor, TimeAlpha);
-            TargetObject->GetRenderCom()->GetMaterial()->SetScalar(VEC4_0, Color);
-        }
+        Track.WhilePlaying(m_AnimTimer);
+        if (!Track.GetIsPlaying()) ++TrackFinishedCnt;
+    }
+    
+    // 모든 Track의 재생이 끝났는지 체크
+    if (TrackFinishedCnt >= m_vecTracks.size())
+    {
+        // 모두 끝난 시점, 만약 원상태로 복구 처리 옵션이 체크 되어있다면, 원상태로 복구
+        if (m_bBackToStopOnAnimEnd) Stop();
+        m_bIsPlaying = false;
     }
 }
 
 bool CUIAnimation::AddGameObjectToAnimate(GameObject* _GameObject)
 {
-    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-    if (m_mapTracks.contains(_GameObject)) return false;
-    if (!_GameObject->Transform()) return false; // 최소 Transform 정보는 있어야 Animation 가능
+    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP)  return false;
+    if (IsTrackHasObject(_GameObject))                              return false;
+    if (!_GameObject->Transform())                                  return false; // 최소 Transform 정보는 있어야 Animation 가능
     
-    // 초기 default 원본 기록 -> Animation Stop시, 해당 설정으로 돌아가기 위함
-    m_mapTracks.insert(make_pair(_GameObject, UIAnimTrack()));
+    // 새로운 AnimTrack 추가
+    UIAnimTrack NewAnimTrack{};
+    NewAnimTrack.TargetObjectReference.SetGameObject(_GameObject);
+    NewAnimTrack.OriginalStateData.SetAnimDataFromGameObject(_GameObject, -1.f); // 초기 default 원본 기록 -> Animation Stop시, 해당 설정으로 돌아가기 위함
     
-    UIAnimKeyFrameData DefaultData{};
+    // 0번 키프레임 추가 (일단 첫 키 프레임 생성은 원본의 값과 동일한 값으로 세팅되게끔 처리한다)
+    UIAnimKeyFrameData FirstKeyFrame = NewAnimTrack.OriginalStateData;
+    FirstKeyFrame.Time               = 0.f;
+    NewAnimTrack.KeyFrames.push_back(FirstKeyFrame);
     
-    DefaultData.Time      = -1.f; // 초기 Time은 -1.f
-    DefaultData.Transform = _GameObject->Transform()->Clone();
-    
-    if (Ptr<CText> Text = _GameObject->GetScriptComponent<CText>())      DefaultData.TintColor = Text->GetColor();
-    else if (Ptr<CRenderComponent> Render = _GameObject->GetRenderCom()) DefaultData.TintColor = Render->GetMaterial()->GetScalar<Vec4>(VEC4_0);
-        
-    m_mapTracks[_GameObject].KeyFrames.push_back(DefaultData);
-    
-    // index 1번 기본 Default 키프레임 추가 (여기서부터 editor에 노출)
-    UIAnimKeyFrameData FirstData{};
-    FirstData      = DefaultData;
-    FirstData.Time = 0.f;
-    m_mapTracks[_GameObject].KeyFrames.push_back(FirstData);
-    
+    m_vecTracks.push_back(NewAnimTrack);
     return true;
 }
 
-bool CUIAnimation::RemoveGameObject(GameObject* _GameObject)
+bool CUIAnimation::RemoveTrack(int _TrackIdx)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-    if (!m_mapTracks.contains(_GameObject)) return false;
+    if (_TrackIdx < 0 || _TrackIdx >= m_vecTracks.size()) return false;
 
-    // Animation 데이터에서 삭제
-    m_mapTracks.erase(_GameObject);
-    
+    m_vecTracks.erase(m_vecTracks.begin() + _TrackIdx);
     return true;
 }
 
-bool CUIAnimation::AddNewKeyFrame(GameObject* _GameObject, float _KeyFrameTime)
+bool CUIAnimation::AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-    if (!m_mapTracks.contains(_GameObject)) return false;                  // 해당 오브젝트가 Animation 정보에 등록되어 있지 않음 (먼저 AddGameObjectToAnimate 함수로 GameObject 추가할 것)
+    if (_TrackIdx < 0 || _TrackIdx >= m_vecTracks.size()) return false;
 
-    vector<UIAnimKeyFrameData>& KeyFrames = m_mapTracks[_GameObject].KeyFrames;
+    vector<UIAnimKeyFrameData>& KeyFrames = m_vecTracks[_TrackIdx].KeyFrames;
 
     for (vector<UIAnimKeyFrameData>::iterator it = KeyFrames.begin(); it != KeyFrames.end(); ++it)
     {
-        if (_KeyFrameTime < it->Time) continue;
+        if (_KeyFrameTime > it->Time) continue;
         if (_KeyFrameTime == it->Time) return false; // 동시간대의 키프레임이 이미 존재한다면, 중복된 키프레임 추가 불가
         
         // 삽입될 위치가 여기다
@@ -139,80 +114,87 @@ bool CUIAnimation::AddNewKeyFrame(GameObject* _GameObject, float _KeyFrameTime)
         NewData.Time      = _KeyFrameTime;
         NewData.Transform = PrevIt->Transform->Clone();
         NewData.TintColor = PrevIt->TintColor;
+        NewData.bUseLerp  = PrevIt->bUseLerp;
         
         KeyFrames.insert(it, NewData);
         return true;
     }
 
-    // 여기까지 애초에 도달할 수 없음
-    // 도달하면 말이 안됨
-    assert(nullptr);
-    return false;
+    // 마지막 키프레임으로 추가되었을 때
+    UIAnimKeyFrameData NewData{};
+    NewData.Time      = _KeyFrameTime;
+    NewData.Transform = KeyFrames.back().Transform->Clone();
+    NewData.TintColor = KeyFrames.back().TintColor;
+    KeyFrames.push_back(NewData);
+    
+    return true;
 }
 
-bool CUIAnimation::RemoveKeyFrame(GameObject* _GameObject, int _KeyFrameIdx)
+bool CUIAnimation::RemoveKeyFrame(int _TrackIdx, int _KeyFrameIdx)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-    if (!m_mapTracks.contains(_GameObject)) return false;
+    if (_TrackIdx < 0 || _TrackIdx >= m_vecTracks.size()) return false;
     
-    vector<UIAnimKeyFrameData>& KeyFrames = m_mapTracks[_GameObject].KeyFrames;
-    if (_KeyFrameIdx <= 0 || _KeyFrameIdx >= KeyFrames.size()) return false; // 여기서 Default value인 index 0까지도 삭제 처리 불가능하게끔 처리 -> 사용자가 삭제가능한 키프레임은 idx 1부터 시작
+    vector<UIAnimKeyFrameData>& KeyFrames = m_vecTracks[_TrackIdx].KeyFrames;
+    if (_KeyFrameIdx < 0 || _KeyFrameIdx >= KeyFrames.size()) return false;
 
     KeyFrames.erase(KeyFrames.begin() + _KeyFrameIdx);
     return true;
 }
 
-void CUIAnimation::Play(bool _bBackToStopOnEnd)
+bool CUIAnimation::IsTrackHasObject(GameObject* _GameObject)
 {
-    // 초기 setting으로 조정 -> index 1번부터 재생처리를 해야 한다
-    for (pair<GameObject* const, UIAnimTrack>& Pair : m_mapTracks)
-        Pair.second.CurrentKeyIndex = 1;
+    for (const UIAnimTrack& Track : m_vecTracks)
+        if (Track.TargetObjectReference.GetGameObject() == _GameObject) return true;
+    return false;
+}
 
-    m_AnimTimer               = 0.f;
-    m_bIsPlaying              = true;
-    m_ObjectAnimFinishedCount = 0;
-    m_bBackToStopOnAnimEnd    = _bBackToStopOnEnd;
+bool CUIAnimation::Play(bool _bBackToStopOnEnd)
+{
+    if (m_vecTracks.empty()) return false;
     
-    // 초기 setting(index 1) 로 처리해서 start
-    for (pair<GameObject* const, UIAnimTrack>& Pair : m_mapTracks)
+    for (UIAnimTrack& Track : m_vecTracks)
     {
-        GameObject* TargetObject    = Pair.first;
-        vector<UIAnimKeyFrameData>& KeyFrames = Pair.second.KeyFrames;
-        
-        TargetObject->Transform() = KeyFrames[1].Transform;
-        
-        if (Ptr<CText> Text = TargetObject->GetScriptComponent<CText>()) Text->SetColor(KeyFrames[1].TintColor);
-        if (TargetObject->GetRenderCom()) TargetObject->GetRenderCom()->GetMaterial()->SetScalar(VEC4_0, KeyFrames[1].TintColor);
+        // 재생 불가능한 Track이 껴 있을 수 있음 ( ex) 키 프레임이 하나도 없는 경우 )
+        // 모든 트랙이 재생 가능한 상태여야 Play 처리 가능하다고 판단
+        if (!Track.OnPlayStart()) return false;
     }
+    
+    // Animation 관련 값 초기 setting으로 조정
+    m_AnimTimer            = 0.f;
+    m_bIsPlaying           = true;
+    m_bBackToStopOnAnimEnd = _bBackToStopOnEnd;
+    return true;
 }
 
 void CUIAnimation::Stop()
 {
     // 초기 setting으로 돌아게끔 처리
-    for (pair<GameObject* const, UIAnimTrack>& Pair : m_mapTracks)
-    {
-        GameObject* TargetObject    = Pair.first;
-        Pair.second.CurrentKeyIndex = 0;
-        
-        vector<UIAnimKeyFrameData>& KeyFrames = Pair.second.KeyFrames;
-        
-        TargetObject->Transform() = KeyFrames[0].Transform;
-        
-        if (Ptr<CText> Text = TargetObject->GetScriptComponent<CText>()) Text->SetColor(KeyFrames[0].TintColor);
-    }
+    for (UIAnimTrack& Track : m_vecTracks) Track.Stop();
 
-    m_AnimTimer               = 0.f;
-    m_bIsPlaying              = false;
-    m_ObjectAnimFinishedCount = 0;
+    m_AnimTimer  = 0.f;
+    m_bIsPlaying = false;
 }
 
 void CUIAnimation::SaveToLevelFile(FILE* _File)
 {
-    // TODO : 어떻게 레벨에 배치된 GameObject 레퍼런스를 저장하고 불러올지 고민해볼 것
-    // Load에서 새로 생성 처리를 하면 안됨 -> Level에서 불러온 GameObject로, 다시금 트랙을 복구시켜야 함
+    // 개수 저장
+    const int TrackCount = m_vecTracks.size();
+    fwrite(&TrackCount, sizeof(int), 1, _File);
+
+    for (UIAnimTrack& Track : m_vecTracks)
+        Track.SaveToLevelFile(_File);
 }
 
 void CUIAnimation::LoadFromLevelFile(FILE* _File)
 {
+    int TrackCount{};
+    fread(&TrackCount, sizeof(int), 1, _File);
     
+    for (int i = 0; i < TrackCount; ++i)
+    {
+        UIAnimTrack AnimTrack{};
+        AnimTrack.LoadFromLevelFile(_File);
+        m_vecTracks.push_back(AnimTrack);
+    }
 }

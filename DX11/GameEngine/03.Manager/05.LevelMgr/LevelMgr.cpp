@@ -64,6 +64,13 @@ void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
         
         // 원본 Asset 레벨의 복제본 레벨을 만들어서 현재 레벨로 가리킨다.
         m_CurLevel = m_SharedLevel->Clone();
+
+        // Guid 테이블 업데이트
+        m_CurLevel->InitGuidTable();
+        
+        // 업데이트된 Guid 테이블을 이용하여, GameObject 레퍼런스를 다시 잡아줌
+        m_CurLevel->AfterInitGuidTable();
+        
         m_CurLevel->SetChanged();
         m_CurLevel->Begin();
         m_CurLevel->AfterLevelBegin();
@@ -114,12 +121,26 @@ void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLev
     DebugUtil::SetPermanentDebugLog("CurrentLevel", "CURRENT LEVEL : " + LevelNameStr, Vec4(1.f, 0.f, 0.f, 1.f));
 
     if (_ChangeNextLevelStateToStop) // Editor에서 ChangeLevel 처리는 기본적으로 다음 LevelState를 Stop으로 처리 -> User Client의 Level 바꾸는건 이전 State를 계속해서 사용(Play)
+    {
         m_LevelState = LEVEL_STATE::STOP;
+        
+        // Guid Table 업데이트
+        m_CurLevel->InitGuidTable();
+        
+        // 업데이트된 GuidTable을 통해 GameObject 레퍼런스를 다시 잡아줌
+        m_CurLevel->AfterInitGuidTable();
+        
+        
+    }
     else // Clone 처리를 한 번 해주어야 함
     {
         // InGame play 상태에서의 ChangeLevel처리
         if (m_LevelState == LEVEL_STATE::PLAY) // 기존에 Play 상태였다면, 계속해서 Play 상태를 유지
             ChangeLevelState(LEVEL_STATE::PLAY);
+        
+        // 비용이 들기 때문에 Play 상태처리 이후에, Guid Table 업데이트 처리를 ChangeCurState 함수 내에서 해준다
+        // (ChangeCurLevel, ChangeCurLevelState 두 상황 모두 해주어야 하기 때문에 한 번만 처리하기 위함)
+        
     }
     
     EditorUI* pUI = EditorMgr::GetInst()->GetEditorUI("CollisionMatrixUI").Get();

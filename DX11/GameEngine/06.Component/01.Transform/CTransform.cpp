@@ -111,6 +111,28 @@ void CTransform::LoadFromLevelFile(FILE* _File)
 	fread(&m_IndependentScale	, sizeof(bool), 1, _File);
 }
 
+bool CTransform::CopyRelativePosScaleRot(CTransform* _Other)
+{
+	if (!_Other) return false;
+	
+	m_RelativePos   = _Other->m_RelativePos;
+	m_RelativeScale = _Other->m_RelativeScale;
+	m_RelativeRot   = _Other->m_RelativeRot;
+	
+	return true;
+}
+
+bool CTransform::CopyRelativePosScaleRot(const Ptr<CTransform>& _Other)
+{
+	if (!_Other) return false;
+	
+	m_RelativePos   = _Other->m_RelativePos;
+	m_RelativeScale = _Other->m_RelativeScale;
+	m_RelativeRot   = _Other->m_RelativeRot;
+	
+	return true;
+}
+
 void CTransform::SetRelativePosFromWorldPos(const Vec3& _DesiredWorldPos)
 {
 	m_RelativePos = CalculateRelativePosFromWorldPos(_DesiredWorldPos);

@@ -27,19 +27,6 @@ CScript::~CScript()
 {
 }
 
-GameObject* CScript::Instantiate(APrefab* _Prefab, int _LayerIdx, Vec3 _WorldPos)
-{
-    if (!_Prefab) return nullptr;
-
-    GameObject* pObject = _Prefab->Instantiate();
-
-    if (pObject->Transform()) pObject->Transform()->SetRelativePos(_WorldPos);
-
-    CreateObject(pObject, _LayerIdx);
-    
-    return pObject;
-}
-
 void CScript::Destroy()
 {
     GetOwner()->Destroy();

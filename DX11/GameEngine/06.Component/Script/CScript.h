@@ -93,14 +93,6 @@ protected:
             m_vecScriptParam.erase(it);
         }
     }
-
-    /// <summary>
-    /// Prefab Instantiating
-    /// </summary>
-    /// <param name="_Prefab"> : 인스턴스화 시킬 Prefab 에셋 </param>
-    /// <param name="_LayerIdx"> : 인스턴스화 할 layer idx </param>
-    /// <param name="_WorldPos"> : 스폰 위치 </param>
-    GameObject* Instantiate(class APrefab* _Prefab, int _LayerIdx, Vec3 _WorldPos);
     
 public:
     

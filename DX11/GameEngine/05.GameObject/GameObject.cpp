@@ -48,6 +48,7 @@ GameObject::GameObject(const GameObject& _Origin)
 	, m_IsActive(_Origin.m_IsActive)
 	, m_IsVisible(_Origin.m_IsVisible)
 	, m_IgnoreGlobalTimeScale(_Origin.m_IgnoreGlobalTimeScale)
+	, m_GUID(_Origin.m_GUID)
 {
 	/* 복사 처리 안하고 원본 초기값을 사용하는 변수들 (밑의 추가처리까지 포함해서)
 	 * m_ObjectMarkedDeactivated
@@ -78,6 +79,18 @@ GameObject::GameObject(const GameObject& _Origin)
 
 GameObject::~GameObject()
 {
+}
+
+void GameObject::AfterLevelGameObjectGuidTableInit()
+{
+	for (const Ptr<CScript>& script : m_vecScripts)
+		script->AfterLevelGameObjectGuidTableInit();
+	
+	for (const Ptr<Component>& component : m_Components)
+		if (component) component->AfterLevelGameObjectGuidTableInit();
+	
+	for (const Ptr<GameObject>& child : m_vecChild)
+		child->AfterLevelGameObjectGuidTableInit();
 }
 
 void GameObject::Begin()
@@ -401,6 +414,28 @@ void GameObject::SetActive(bool _Active, bool _SetActiveHierarchy)
 	}
 }
 
+GUID GameObject::GetGUID()
+{
+	if (IsEqualGUID(m_GUID, GUID_NULL))
+	{
+		if (FAILED(CoCreateGuid(&m_GUID)))
+			DebugUtil::AddDebugLog("[GameObject::GetGUID] : Failed to create new GUID!");
+	}
+	
+	return m_GUID;
+}
+
+GUID& GameObject::GetGUIDRef()
+{
+	if (IsEqualGUID(m_GUID, GUID_NULL))
+	{
+		if (FAILED(CoCreateGuid(&m_GUID)))
+			DebugUtil::AddDebugLog("[GameObject::GetGUIDRef] : Failed to create new GUID!");
+	}
+	
+	return m_GUID;
+}
+
 bool GameObject::SetLayerIdx(int _LayerIdx)
 {
 	// 현재 레벨이 Stop 상태가 아니라면, Layer 변경 불가
@@ -471,6 +506,9 @@ void GameObject::SaveToLevelFile(FILE* _File)
 {
 	// 이름
 	SaveWString(_File, GetName());
+
+	// GUID 저장
+	fwrite(&GetGUIDRef(), sizeof(GUID), 1, _File);
 	
 	// 컴포넌트
 	for (UINT i = 0; i < static_cast<UINT>(COMPONENT_TYPE::END); ++i)
@@ -519,10 +557,8 @@ void GameObject::LoadFromLevelFile(FILE* _File)
 	// 이름
 	SetName(LoadWString(_File));
 	
-	if (GetName() == L"Cliff1")
-	{
-		int a = 0;
-	}
+	// GUID
+	fread(&GetGUIDRef(), sizeof(GUID), 1, _File);
 	
 	// 컴포넌트
 	UINT ComType{};

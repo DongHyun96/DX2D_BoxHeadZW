@@ -25,7 +25,9 @@ bool APrefab::SetProtoObj(const Ptr<GameObject>& _Object)
 
 GameObject* APrefab::Instantiate()
 {
-    return !m_ProtoObj ? nullptr : m_ProtoObj->Clone();
+    if (!m_ProtoObj) return nullptr;
+    GameObject* ClonedObject = m_ProtoObj->Clone();
+    return ClonedObject;
 }
 
 GameObject* APrefab::InstantiateAndSpawnToCurLevel()

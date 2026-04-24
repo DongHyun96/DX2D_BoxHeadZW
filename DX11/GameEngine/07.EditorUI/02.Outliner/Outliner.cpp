@@ -125,6 +125,10 @@ void Outliner::DuplicateObjectTick()
     {
         Ptr<GameObject> ClonedObject = gameObject->Clone();
         
+        // Editing으로 Clone 처리된 GameObject의 GUID는 새로이 생성 처리
+        if (FAILED(CoCreateGuid(&(ClonedObject->m_GUID))))
+            DebugUtil::AddDebugLog("[Outliner::DuplicateObjectTick] : Failed to create new GUID!");
+        
         // 카메라 Main or UICam duplicate 처리 관련 -> 해당 Level에 하나만 존재해야 해서 마킹을 모두 지움
         // 만일 MainCamera나 UICamera로 만들고 싶다면, LevelUI에서 직접 Drag&Drop 기능으로 처리할 것
         if (ClonedObject->Camera())

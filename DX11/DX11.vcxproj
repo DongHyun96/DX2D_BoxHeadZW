@@ -188,6 +188,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\AComputeShader.h" />
     <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\ParticleTickCS\AParticleTickCS.h" />
     <ClInclude Include="GameEngine\04.Asset\11.ComputeShader\SetColorCS\ASetColorCS.h" />
+    <ClInclude Include="GameEngine\05.GameObject\GameObjectRefHolder.h" />
     <ClInclude Include="GameEngine\06.Component\01.Transform\CTransform.h" />
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CCollider2D.h" />
     <ClInclude Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.h" />
@@ -382,6 +383,7 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\AComputeShader.cpp" />
     <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\ParticleTickCS\AParticleTickCS.cpp" />
     <ClCompile Include="GameEngine\04.Asset\11.ComputeShader\SetColorCS\ASetColorCS.cpp" />
+    <ClCompile Include="GameEngine\05.GameObject\GameObjectRefHolder.cpp" />
     <ClCompile Include="GameEngine\06.Component\01.Transform\CTransform.cpp" />
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CCollider2D.cpp" />
     <ClCompile Include="GameEngine\06.Component\03.Collider2D\CColliderCircle.cpp" />
@@ -564,6 +566,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\UIScript\CText.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\UIAnimation\CUIAnimation.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\UIAnimation\CUIAnimationStructImpl.cpp" />
     <ClCompile Include="Source\UserHeader\userStruct.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -110,3 +110,28 @@ struct GlobalData
     float   EngineTime{};       // 누적시간값
 };
 extern GlobalData g_Global;
+
+struct GUIDHasher
+{
+    size_t operator()(const GUID& guid) const
+    {
+        // GUID는 총 16바이트
+        // 가장 빠르고 효율적인 방법은 8바이트(uint64_t) 2개로 쪼개서 해시를 결합
+        const uint64_t* p = reinterpret_cast<const uint64_t*>(&guid);
+        
+        size_t hash1 = hash<uint64_t>{}(p[0]);
+        size_t hash2 = hash<uint64_t>{}(p[1]);
+        
+        // 두 해시값을 섞어주기 (Boost 라이브러리의 hash_combine 알고리즘과 동일)
+        return hash1 ^ (hash2 + 0x9e3779b9 + (hash1 << 6) + (hash1 >> 2));
+    }
+};
+
+// 두 GUID가 같은지 비교하는 Equal 함수 객체
+struct GUIDEqual
+{
+    bool operator()(const GUID& lhs, const GUID& rhs) const
+    {
+        return IsEqualGUID(lhs, rhs);
+    }
+};
