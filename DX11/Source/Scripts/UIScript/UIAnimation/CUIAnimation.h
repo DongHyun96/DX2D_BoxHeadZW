@@ -112,6 +112,13 @@ public:
     virtual void AfterLevelGameObjectGuidTableInit() override;
     
     virtual void Tick() override;
+
+public:
+
+    const vector<UIAnimTrack>& GetTracks() const { return m_vecTracks; }
+    vector<UIAnimTrack>& GetTracks() { return m_vecTracks; }
+    bool IsPlaying() const { return m_bIsPlaying; }
+    float GetAnimTimer() const { return m_AnimTimer; }
     
 public: // Editing 관련 함수들
     
