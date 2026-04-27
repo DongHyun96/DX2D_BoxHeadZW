@@ -325,7 +325,7 @@ void FlipbookUI::DrawSpriteTable
         assert(pUI.Get());
 
         pUI->SetWarningText("Are you sure you want to clear all sprites from this Flipbook?");
-        pUI->AddDelegate(this, static_cast<DELEGATE_BOOL>(&FlipbookUI::OnConfirmClearSprites));
+        pUI->SetDelegate(this, static_cast<DELEGATE_BOOL>(&FlipbookUI::OnConfirmClearSprites));
         pUI->SetActive(true);
     }
     

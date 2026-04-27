@@ -297,7 +297,7 @@ void FlipbookRenderUI::TickRemoveCategory(const Ptr<CFlipbookRender>& _FlipbookR
         assert(pUI.Get());
 
         pUI->SetWarningText("Are you sure you want to remove this selected Category?");
-        pUI->AddDelegate(this, static_cast<DELEGATE_BOOL>(&FlipbookRenderUI::OnRemoveCategoryConfirmed));
+        pUI->SetDelegate(this, static_cast<DELEGATE_BOOL>(&FlipbookRenderUI::OnRemoveCategoryConfirmed));
         pUI->SetActive(true);
     }
 

@@ -129,11 +129,13 @@ public:
 	Ptr<T> GetScriptComponent() const;
 
 	/// <summary>
-	/// 이미 해당하는 Type의 Script를 보유중인지 조사
+	/// 해당하는 Type의 Script 반환
 	/// </summary>
-	/// <param name="_ScriptType"></param>
-	/// <returns></returns>
+	/// <returns> : 해당 Script Type이 없다면 nullptr 반환 </returns>
+	CScript* GetScriptComponent(SCRIPT_TYPE _ScriptType) const;
+	
 	bool HasScript(SCRIPT_TYPE _ScriptType) const;
+	
 	
 	const vector<Ptr<CScript>>& GetScripts() const { return m_vecScripts; }
 

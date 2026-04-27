@@ -26,7 +26,7 @@ private:
 public:
 
     void SetWarningText(const string& _WarningText) { m_WarningText = _WarningText; }
-    void AddDelegate(Entity* _Inst, DELEGATE_BOOL _MemFunc) { m_EntityInst = _Inst; m_MemFunc = _MemFunc; }
+    void SetDelegate(Entity* _Inst, DELEGATE_BOOL _MemFunc) { m_EntityInst = _Inst; m_MemFunc = _MemFunc; }
     
 private:
     

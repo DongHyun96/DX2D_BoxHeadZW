@@ -21,8 +21,11 @@
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/03.SpriteRenderUI/SpriteRenderUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/04.FlipbookRenderUI/FlipbookRenderUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/05.TileRenderUI/TileRenderUI.h"
+#include "GameEngine/07.EditorUI/04.ComponentUI/06.ScriptUI/CustomScriptUI/GameUIAnimationUI/GameUIAnimationUI.h"
+
 #include "GameEngine/07.EditorUI/04.ComponentUI/07.PoolUI/PoolUI.h"
 #include "GameEngine/07.EditorUI/10.ConfirmUI/ConfirmUI.h"
+#include "Source/Scripts/UIScript/UIAnimation/CUIAnimation.h"
 
 #define ADD_COMPONENT_UI(ComponentType, type, Size)                          \
     m_arrComUI[static_cast<UINT>(ComponentType)] = new type;                 \
@@ -115,16 +118,43 @@ void ObjectInspectorViewer::CreateChildUI()
     ADD_COMPONENT_UI(COMPONENT_TYPE::FLIPBOOK_RENDER,   FlipbookRenderUI,       Vec2(0.f, 500.f));
     ADD_COMPONENT_UI(COMPONENT_TYPE::TILE_RENDER,       TileRenderUI,           Vec2(0.f, 500.f));
     ADD_COMPONENT_UI(COMPONENT_TYPE::POOL,              PoolUI,                 Vec2(0.f, 300.f));
+    
+    // Custom Script UI 추가 (Script Type이지만 Component 칸 특수적으로 사용하는 UI들
+    m_mapCustomScriptUI[UIANIMATION] = new GameUIAnimationUI;
+    m_mapCustomScriptUI[UIANIMATION]->SetSizeAsChild(Vec2(0.f, 400.f));
+    m_Owner->AddChildUI(m_mapCustomScriptUI[UIANIMATION].Get());
 }
 
 void ObjectInspectorViewer::SetTargetObject(GameObject* _Object)
 {
     m_TargetObject = _Object;
 
+    // Refresh Components
     for (UINT i = 0; i < static_cast<UINT>(COMPONENT_TYPE::END); ++i)
     {
         if (!m_arrComUI[i]) continue;
         m_arrComUI[i]->SetTargetObject(m_TargetObject);
+    }
+    
+    // Refresh Custom Script UI
+    for (pair<const SCRIPT_TYPE, Ptr<CustomScriptUI>>& Pair : m_mapCustomScriptUI)
+    {
+        const SCRIPT_TYPE CustomScriptType        = Pair.first;
+        const Ptr<CustomScriptUI>& customScriptUI = Pair.second;
+        
+        // TargetObject가 nullptr이든, valid한 pointer이든 SetTargetObject를 해주어야 UI 창 Active가 업데이트 처리된다
+        customScriptUI->SetTargetObject(m_TargetObject);
+
+        if (m_TargetObject)
+        {
+            // TargetObject가 존재하고, 일치하는 CustomScript를 TargetObject가 소유하고 있다면, 활성화 처리 
+            if (CScript* script = m_TargetObject->GetScriptComponent(CustomScriptType))
+            {
+                customScriptUI->SetScript(script);
+                customScriptUI->SetActive(true);
+            }
+            else customScriptUI->SetActive(false);
+        }
     }
 
     RefreshScripts();
@@ -139,11 +169,12 @@ void ObjectInspectorViewer::RefreshScripts()
         return;
     }
 
-    const vector<Ptr<CScript>>& vecScripts = m_TargetObject->GetScripts();
+    const vector<Ptr<CScript>>& TargetObjScripts = m_TargetObject->GetScripts();
 
-    if (m_vecScriptUI.size() < vecScripts.size())
+    // TargetObj의 Script 개수보다 현재 vecScriptUI 개수가 적은 상태
+    if (m_vecScriptUI.size() < TargetObjScripts.size())
     {
-        int addCount = static_cast<int>(vecScripts.size() - m_vecScriptUI.size());
+        const int addCount = TargetObjScripts.size() - m_vecScriptUI.size();
         for (int i = 0; i < addCount; ++i)
         {
             ScriptUI* pScriptUI = new ScriptUI;
@@ -155,8 +186,22 @@ void ObjectInspectorViewer::RefreshScripts()
 
     for (size_t i = 0; i < m_vecScriptUI.size(); ++i)
     {
-        if (vecScripts.size() <= i)  m_vecScriptUI[i]->SetScript(nullptr);
-        else                         m_vecScriptUI[i]->SetScript(vecScripts[i].Get());
+        // TargetObjectScripts의 Size를 넘어선 Idx이면 SetScript를 nullptr로 해줌으로써 비활성화 처리
+        if (TargetObjScripts.size() <= i)
+        {
+            m_vecScriptUI[i]->SetScript(nullptr);
+            continue;
+        }
+
+        // CustomScriptUI가 존재하는 Script인 경우, 역시 비활성화
+        if (m_mapCustomScriptUI.contains(static_cast<SCRIPT_TYPE>(TargetObjScripts[i]->GetScriptType())))
+        {
+            m_vecScriptUI[i]->SetScript(nullptr);
+            continue;
+        }
+
+        // 나머지 Script case의 경우, 활성화 처리
+        m_vecScriptUI[i]->SetScript(TargetObjScripts[i].Get());
     }
 }
 
@@ -238,14 +283,14 @@ void ObjectInspectorViewer::TickAddScriptUI()
             {
                 CScript* pNewScript = ScriptMgr::GetScript(ScriptName);
                 
-                if (m_TargetObject->HasScript(static_cast<SCRIPT_TYPE>(pNewScript->GetScriptType())))
+                if (m_TargetObject->GetScriptComponent(static_cast<SCRIPT_TYPE>(pNewScript->GetScriptType())))
                 {
                     m_AddPendingScript = pNewScript;
                     Ptr<ConfirmUI> pUI = dynamic_cast<ConfirmUI*>(EditorMgr::GetInst()->FindUI("ConfirmUI").Get());
                     assert(pUI.Get());
                     
                     pUI->SetWarningText("Same type of script already exists in this gameObject!. Continue?");
-                    pUI->AddDelegate(this, static_cast<DELEGATE_BOOL>(&ObjectInspectorViewer::OnConfirmAddPendingScript));
+                    pUI->SetDelegate(this, static_cast<DELEGATE_BOOL>(&ObjectInspectorViewer::OnConfirmAddPendingScript));
                     pUI->SetActive(true);
                 }
                 else

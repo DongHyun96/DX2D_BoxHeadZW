@@ -232,14 +232,23 @@ bool GameObject::RemoveScript(const Ptr<CScript>& _TargetScript)
 	return false;
 }
 
+CScript* GameObject::GetScriptComponent(SCRIPT_TYPE _ScriptType) const
+{
+	for (const Ptr<CScript>& script : m_vecScripts)
+		if (script->GetScriptType() == _ScriptType) return script.Get();
+	
+	return nullptr;
+}
+
 bool GameObject::HasScript(SCRIPT_TYPE _ScriptType) const
 {
 	for (const Ptr<CScript>& script : m_vecScripts)
 		if (script->GetScriptType() == _ScriptType) return true;
+	
 	return false;
 }
 
-        
+
 bool GameObject::AddComponent(const Ptr<Component>& _Com)
 {
 	if (CRenderComponent* RenderComponent = dynamic_cast<CRenderComponent*>(_Com.Get()))

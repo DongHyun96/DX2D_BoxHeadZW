@@ -50,7 +50,7 @@ private:
 
     void AddItemHeight();
     
-    virtual void OnRemoveScriptConfirmed(bool _Confirmed) override;
+    virtual void OnRemoveComponentConfirmed(bool _Confirmed) override;
     
     
     

@@ -514,7 +514,7 @@ void Outliner::OnDeleteKeyPressed(const vector<Ptr<GameObject>>& _GameObjects)
     assert(pUI.Get());
 
     pUI->SetWarningText("Are you sure you want to delete GameObject from Level?");
-    pUI->AddDelegate(this, static_cast<DELEGATE_BOOL>(&Outliner::OnConfirmedYesOrNo));
+    pUI->SetDelegate(this, static_cast<DELEGATE_BOOL>(&Outliner::OnConfirmedYesOrNo));
     pUI->SetActive(true);
     
     m_PendingToKillObjects.clear();

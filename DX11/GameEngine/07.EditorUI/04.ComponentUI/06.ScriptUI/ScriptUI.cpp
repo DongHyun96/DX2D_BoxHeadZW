@@ -89,11 +89,8 @@ void ScriptUI::SetScript(CScript* _Script)
 
 	if (m_TargetScript)
 	{
-		int type = m_TargetScript->GetScriptType();
-		if (type == 12) // BACKGROUNDTILE
-		{
-			s_BackgroundTileEditingTarget = (CBackgroundTile*)m_TargetScript.Get();
-		}
+		if (m_TargetScript->GetScriptType() == BACKGROUNDTILE)
+			s_BackgroundTileEditingTarget = static_cast<CBackgroundTile*>(m_TargetScript.Get());
 	}
 
 	SetActive(m_TargetScript != nullptr);
@@ -625,7 +622,7 @@ void ScriptUI::AddItemHeight()
 	m_ItemHeight += vSize.y + 200.f;
 }
 
-void ScriptUI::OnRemoveScriptConfirmed(bool _Confirmed)
+void ScriptUI::OnRemoveComponentConfirmed(bool _Confirmed)
 {
 	if (_Confirmed)
 	{

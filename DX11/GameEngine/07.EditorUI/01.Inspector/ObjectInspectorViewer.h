@@ -2,6 +2,7 @@
 #include "GameEngine/07.EditorUI/EditorUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/ComponentUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/06.ScriptUI/ScriptUI.h"
+#include "GameEngine/07.EditorUI/04.ComponentUI/06.ScriptUI/CustomScriptUI/CustomScriptUI.h"
 
 class ObjectInspectorViewer : public Entity
 {
@@ -10,6 +11,10 @@ private:
     GameObject*             m_TargetObject{};
     Ptr<ComponentUI>        m_arrComUI[static_cast<UINT>(COMPONENT_TYPE::END)]{};
     vector<Ptr<ScriptUI>>   m_vecScriptUI{};
+    
+private: // Custom Script UI 관련
+
+    map<SCRIPT_TYPE, Ptr<CustomScriptUI>> m_mapCustomScriptUI{}; // ex) GameUIAnimationUI 기타 등등
 
 private:
     

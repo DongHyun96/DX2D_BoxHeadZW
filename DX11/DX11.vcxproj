@@ -235,6 +235,8 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\04.FlipbookRenderUI\FlipbookRenderUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\05.TileRenderUI\TileRenderUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\RenderUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\CustomScriptUI\CustomScriptUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\CustomScriptUI\GameUIAnimationUI\GameUIAnimationUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\ScriptUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\07.PoolUI\PoolUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\ComponentUI.h" />
@@ -438,6 +440,84 @@ CodeGen.exe</Command>
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\04.FlipbookRenderUI\FlipbookRenderUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\05.TileRenderUI\TileRenderUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\RenderUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\CustomScriptUI\CustomScriptUI.cpp">
+      <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+      <BrowseInformation>false</BrowseInformation>
+      <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
+      <CompileAs>Default</CompileAs>
+      <UseDynamicDebugging>false</UseDynamicDebugging>
+      <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <ErrorReporting>Prompt</ErrorReporting>
+      <ExpandAttributedSource>false</ExpandAttributedSource>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableASAN>false</EnableASAN>
+      <EnableFuzzer>false</EnableFuzzer>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <EnableVectorLength>NotSet</EnableVectorLength>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <GenerateModuleDependencies>false</GenerateModuleDependencies>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ObjectFileName>x64\Debug\</ObjectFileName>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ProgramDataBaseFileName>x64\Debug\vc145.pdb</ProgramDataBaseFileName>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>x64\Debug\GameClient.pch</PrecompiledHeaderOutputFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessKeepComments>false</PreprocessKeepComments>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+      <ShowIncludes>false</ShowIncludes>
+      <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <SpectreMitigation>false</SpectreMitigation>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <TrackerLogDirectory>x64\Debug\GameClient.tlog\</TrackerLogDirectory>
+      <TranslateIncludes>false</TranslateIncludes>
+      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <IntelJCCErratum>false</IntelJCCErratum>
+      <BuildStlModules>false</BuildStlModules>
+      <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+      <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_UNICODE;UNICODE;</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../;./;Default;</AdditionalIncludeDirectories>
+      <LinkCompiled>true</LinkCompiled>
+    </ClCompile>
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\CustomScriptUI\GameUIAnimationUI\GameUIAnimationUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\ScriptUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\07.PoolUI\PoolUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\ComponentUI.cpp" />
