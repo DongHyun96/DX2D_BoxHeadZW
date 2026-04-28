@@ -165,13 +165,9 @@ void UIAnimTrack::WhilePlaying(float AnimTimer)
     const float TimeAlpha           = MappingToNewRange(CurrentKeyFrameTime, 0.f, TimeDiff, 0.f, 1.f);
     
     // Transform S, R, T 사이 보간 처리 (다른 값 x 오로지 s, r, t만 처리할 것)
-    Vec3 TargetPos   = TargetObject->Transform()->GetRelativePos();
-    Vec3 TargetScale = TargetObject->Transform()->GetRelativeScale();
-    Vec3 TargetRot   = TargetObject->Transform()->GetRelativeRot();
-    
-    TargetPos   = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativePos(), CurrentKeyFrame.Transform->GetRelativePos(), TimeAlpha);
-    TargetScale = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativeScale(), CurrentKeyFrame.Transform->GetRelativeScale(), TimeAlpha);
-    TargetRot   = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativeRot(), CurrentKeyFrame.Transform->GetRelativeRot(), TimeAlpha);
+    Vec3 TargetPos   = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativePos(), CurrentKeyFrame.Transform->GetRelativePos(), TimeAlpha);
+    Vec3 TargetScale = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativeScale(), CurrentKeyFrame.Transform->GetRelativeScale(), TimeAlpha);
+    Vec3 TargetRot   = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativeRot(), CurrentKeyFrame.Transform->GetRelativeRot(), TimeAlpha);
     
     TargetObject->Transform()->SetRelativePos(TargetPos);
     TargetObject->Transform()->SetRelativeScale(TargetScale);

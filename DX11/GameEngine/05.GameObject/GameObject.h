@@ -36,10 +36,13 @@ private:
 	bool m_ObjectMarkedDeactivated{};
 	bool m_IsActive  = true;
 	bool m_IsVisible = true;
-	bool m_IgnoreGlobalTimeScale{}; // true면 TimeScale을 무시한 DeltaTime 사용 (PLAY 중엔 E_DT와 동일)
-
+	
 	vector<function<void(GameObject*)>> m_vecDelegateOnActivate{}; // SetActive true 처리될 때 CallBack 처리
 	vector<function<void(GameObject*)>> m_vecDelegateOnDeactivate{}; // SetActive false 처리될 때 CallBack 처리
+	
+private: // TimeScale에 따른 DT Context 관련
+	
+	bool m_IgnoreGlobalTimeScale{}; // true면 TimeScale을 무시한 DeltaTime 사용 (PLAY 중엔 E_DT와 동일)
 	
 private:
 

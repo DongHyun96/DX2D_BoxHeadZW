@@ -13,7 +13,10 @@ private:
 
     float           m_DeltaTime{}; // 1 프레임 간격 시간 (Engine DT)
     float           m_Time{}; // 게임이 켜진 이후로 흐른 시간(누적시간)
-    float           m_TimeScale{1.f};
+
+private:
+    
+    float           m_TimeScale = 1.f;
     float           m_GameUnscaledDeltaTime{}; // 게임 로직용 Unscaled DT (PLAY일 때 EngineDT)
     float           m_GameScaledDeltaTime{};   // 게임 로직용 TimeScale 적용 DT
     float           m_CurrentGameDeltaTime{};  // 현재 컨텍스트에서 DT가 반환할 값
@@ -39,9 +42,6 @@ public:
     float GetEngineTime() const { return g_Global.EngineTime; }
     
     void SetTimeScale(float _Scale);
-    float GetTimeScale() const { return m_TimeScale; }
-    float GetScaledDeltaTime() const { return m_GameScaledDeltaTime; }
-    float GetUnscaledDeltaTime() const { return m_GameUnscaledDeltaTime; }
 
     // GameObject Tick/FinalTick 컨텍스트에서만 사용할 것
     float PushGameDeltaTimeContext(bool _UseUnscaledDeltaTime);

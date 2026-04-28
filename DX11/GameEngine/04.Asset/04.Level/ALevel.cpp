@@ -33,6 +33,7 @@ void ALevel::Deregister()
 
 void ALevel::AddEditingTickEnabledGameObject(GameObject* _GameObject)
 {
+    if (!_GameObject) return;
     m_setEditingTickEnabledGameObject.insert(_GameObject);
 }
 
@@ -73,7 +74,9 @@ void ALevel::AfterLevelBegin()
 void ALevel::EditingTick()
 {
     for (GameObject* gameObject : m_setEditingTickEnabledGameObject)
+    {
         gameObject->Tick();
+    }
 }
 
 void ALevel::Tick()
