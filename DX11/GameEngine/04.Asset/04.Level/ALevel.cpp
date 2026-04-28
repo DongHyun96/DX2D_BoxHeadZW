@@ -31,6 +31,11 @@ void ALevel::Deregister()
     for (Layer& layer : m_arrLayer) layer.DeregisterObjectsFromAllObjects();
 }
 
+void ALevel::AddEditingTickEnabledGameObject(GameObject* _GameObject)
+{
+    m_setEditingTickEnabledGameObject.insert(_GameObject);
+}
+
 void ALevel::AfterInitGuidTable()
 {
     for (const Layer& layer : m_arrLayer)
@@ -63,6 +68,12 @@ void ALevel::AfterLevelBegin()
         layer.AfterLevelBegin();
     
     CollisionMgr::GetInst()->CalculateOptimalGridCellSize(this);
+}
+
+void ALevel::EditingTick()
+{
+    for (GameObject* gameObject : m_setEditingTickEnabledGameObject)
+        gameObject->Tick();
 }
 
 void ALevel::Tick()

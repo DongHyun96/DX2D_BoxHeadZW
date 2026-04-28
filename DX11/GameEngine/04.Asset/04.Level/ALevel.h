@@ -19,6 +19,12 @@ private:
     // CurLevel의 LevelStop 상황과 LevelPlay 상태에서의 GUID 값은 모두 동일
     // Level이 복제되어, 동일한 Guid를 가진 GameObject들이 막 생성이 되었을 때, Begin 호출 이전에 해당 테이블 초기화 처리됨
     unordered_map<GUID, GameObject*, GUIDHasher> m_GuidTable{};
+
+private:
+
+    // Editing 환경에서(LEVELSTATE_STOP), Tick 함수를 돌려봐야 하는 GameObject들 등록해서 사용할 것
+    // 주의할 점 : Editing 환경에서의 수정된 값으로 Level Play 진입 시, 초기 값이 아닌 수정된 값으로 시작될 수 있는 점 주의할 것
+    set<GameObject*> m_setEditingTickEnabledGameObject{};
     
 private:
     
@@ -50,6 +56,8 @@ public:
     
     void AddObject(int _LayerIdx, const Ptr<GameObject>& _Object);
     void Deregister();
+    
+    void AddEditingTickEnabledGameObject(GameObject* _GameObject);    
 
 public:
     
@@ -67,6 +75,12 @@ public:
     /// Level 시작 처리 이후 호출 
     /// </summary>
     void AfterLevelBegin();
+
+    /// <summary>
+    /// Editing 환경에서의 Tick 함수 처리 -> 등록받은 GameObject에 대해서만 Editing 환경에서의 EditingTick 함수로
+    /// Tick Test를 해볼 수 있게끔 처리한다 (주의할 점 : Editing 환경에서의 수정된 값으로 Level Play 진입 시, 초기 값이 아닌 수정된 값으로 시작될 수 있는 점 주의할 것)
+    /// </summary>
+    void EditingTick();
     
     void Tick();
     void FinalTick();

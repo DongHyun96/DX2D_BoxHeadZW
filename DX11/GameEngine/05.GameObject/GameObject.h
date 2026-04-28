@@ -33,8 +33,8 @@ private:
 
 	// SetActive(false) 시, 한 번은 다음 FinalTick()을 호출받아 vecAllObjects에 들어가 있어야 제대로 된 충돌검사 및 CallBack호출이 이루어지기 때문에
 	// SetActive(false) 조작 시, Pending 처리로 FinalTick 한번은 호출처리한다.
-	bool m_ObjectMarkedDeactivated{}; 
-	bool m_IsActive = true;
+	bool m_ObjectMarkedDeactivated{};
+	bool m_IsActive  = true;
 	bool m_IsVisible = true;
 	bool m_IgnoreGlobalTimeScale{}; // true면 TimeScale을 무시한 DeltaTime 사용 (PLAY 중엔 E_DT와 동일)
 

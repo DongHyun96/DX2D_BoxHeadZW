@@ -110,7 +110,6 @@ public:
 public:
 
     virtual void AfterLevelGameObjectGuidTableInit() override;
-    
     virtual void Tick() override;
 
 public:

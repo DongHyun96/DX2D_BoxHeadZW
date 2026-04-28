@@ -42,6 +42,13 @@ void CUIAnimation::AfterLevelGameObjectGuidTableInit()
         /* Original State 값들 저장 */
         Track.OriginalStateData.SetAnimDataFromGameObject(TargetObject, -1.f);
     }
+    
+    // Editing 환경에서도 Tick함수가 돌게끔 처리
+    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
+        LevelMgr::GetInst()->GetCurLevel()->AddEditingTickEnabledGameObject(GetOwner());
+    
+    Stop(); // 첫 Stop 처리 추가 (Level Stop 시, Play 시 모두 필요)
+    
 }
 
 void CUIAnimation::Tick()
