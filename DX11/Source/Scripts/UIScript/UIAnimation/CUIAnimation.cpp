@@ -45,7 +45,11 @@ void CUIAnimation::AfterLevelGameObjectGuidTableInit()
     
     // Editing 환경에서도 Tick함수가 돌게끔 처리
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
+    {
         LevelMgr::GetInst()->GetCurLevel()->AddEditingTickEnabledGameObject(GetOwner());
+        GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::IMPLICIT_ENGINE_DT);
+    }
+    else GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::DEFAULT);
     
     Stop(); // 첫 Stop 처리 추가 (Level Stop 시, Play 시 모두 필요)
     
