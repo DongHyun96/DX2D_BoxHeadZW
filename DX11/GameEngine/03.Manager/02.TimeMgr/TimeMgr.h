@@ -1,5 +1,12 @@
 ﻿#pragma once
 
+enum class DT_CONTEXT_TYPE
+{
+    DEFAULT,            // GamePlay DT Type : TimeScale 영향을 받는 일반적인 DT Context type
+    UNSCALED,           // TimeScale 영향을 받지 않는 GamePlay DT Type
+    IMPLICIT_ENGINE_DT  // GamePlay 상태가 아닌 Pause나 Stop 상태에서도 절대적인 Engine DT 값으로 DT를 구할 때의 Type
+};
+
 class TimeMgr : public Singleton<TimeMgr>
 {
     
@@ -44,7 +51,7 @@ public:
     void SetTimeScale(float _Scale);
 
     // GameObject Tick/FinalTick 컨텍스트에서만 사용할 것
-    float PushGameDeltaTimeContext(bool _UseUnscaledDeltaTime);
+    float PushGameDeltaTimeContext(DT_CONTEXT_TYPE _DTContextType);
     void PopGameDeltaTimeContext(float _PrevDeltaTime);
 
     /// <summary>

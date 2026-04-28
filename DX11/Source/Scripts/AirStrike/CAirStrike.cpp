@@ -68,7 +68,7 @@ void CAirStrike::Begin()
     }
     
     // TimeScale 영향 받지 않게끔 설정
-    GetOwner()->SetIgnoreGlobalTimeScale(true);
+    GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::UNSCALED);
 }
 
 void CAirStrike::Tick()

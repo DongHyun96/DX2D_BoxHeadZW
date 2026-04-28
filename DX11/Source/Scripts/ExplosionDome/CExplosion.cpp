@@ -22,7 +22,7 @@ void CExplosion::Begin()
 {
     CExplosionDome::Begin();
     GetOwner()->AddActivateDelegate(bind(&CExplosion::OnActivateOwnerObject, this, placeholders::_1));
-    GetOwner()->SetIgnoreGlobalTimeScale(true); // Unaffected by global time scale.
+    GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::UNSCALED); // Unaffected by global time scale.
 }
 
 void CExplosion::Tick()

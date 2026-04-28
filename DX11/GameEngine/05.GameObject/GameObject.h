@@ -9,6 +9,7 @@
 
 #define GET_COMPONENT(COM_NAME, COM_TYPE) Ptr<C##COM_NAME> COM_NAME() const {return dynamic_cast<C##COM_NAME*>(m_Components[static_cast<UINT>(COMPONENT_TYPE::COM_TYPE)].Get()); }
 
+enum class DT_CONTEXT_TYPE;
 class CMeshRender;
 
 class GameObject : public Entity
@@ -41,8 +42,9 @@ private:
 	vector<function<void(GameObject*)>> m_vecDelegateOnDeactivate{}; // SetActive false 처리될 때 CallBack 처리
 	
 private: // TimeScale에 따른 DT Context 관련
-	
-	bool m_IgnoreGlobalTimeScale{}; // true면 TimeScale을 무시한 DeltaTime 사용 (PLAY 중엔 E_DT와 동일)
+
+	DT_CONTEXT_TYPE m_DTContextType{};
+	// bool m_IgnoreGlobalTimeScale{}; // true면 TimeScale을 무시한 DeltaTime 사용 (PLAY 중엔 E_DT와 동일)
 	
 private:
 
@@ -174,13 +176,12 @@ public:
 	void SetActive(bool _Active, bool _SetActiveHierarchy = true);
 
 	bool GetObjectMarkedDeactivated() const { return m_ObjectMarkedDeactivated; }
-
 	bool GetVisible() const { return m_IsVisible; }
-	bool IsIgnoringGlobalTimeScale() const { return m_IgnoreGlobalTimeScale; }
 	
 	
 	void SetVisible(bool _Visible) { m_IsVisible = _Visible; }
-	void SetIgnoreGlobalTimeScale(bool _Ignore) { m_IgnoreGlobalTimeScale = _Ignore; }
+
+	void SetDTContextType(DT_CONTEXT_TYPE _ContextType) { m_DTContextType = _ContextType; }
 	
 public:
 	

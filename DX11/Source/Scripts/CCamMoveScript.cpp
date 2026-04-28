@@ -23,7 +23,8 @@ CCamMoveScript::~CCamMoveScript()
 
 void CCamMoveScript::Begin()
 {
-    GetOwner()->SetIgnoreGlobalTimeScale(true); // 슬로모션 영향 x 
+    // GetOwner()->SetDT
+    GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::UNSCALED); // 슬로모션 영향 x
 }
 
 void CCamMoveScript::Tick()

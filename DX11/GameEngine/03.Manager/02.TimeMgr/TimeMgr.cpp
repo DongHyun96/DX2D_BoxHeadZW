@@ -110,13 +110,17 @@ void TimeMgr::SetTimeScale(float _Scale)
     // g_Global.DeltaTime = m_CurrentGameDeltaTime;
 }
 
-float TimeMgr::PushGameDeltaTimeContext(bool _UseUnscaledDeltaTime)
+float TimeMgr::PushGameDeltaTimeContext(DT_CONTEXT_TYPE _DTContextType)
 {
     const float prevDeltaTime = m_CurrentGameDeltaTime;
 
-    m_CurrentGameDeltaTime = _UseUnscaledDeltaTime ? m_GameUnscaledDeltaTime : m_GameScaledDeltaTime;
-    g_Global.DeltaTime     = m_CurrentGameDeltaTime;
-
+    switch (_DTContextType)
+    {
+    case DT_CONTEXT_TYPE::DEFAULT:              m_CurrentGameDeltaTime = m_GameScaledDeltaTime; break;
+    case DT_CONTEXT_TYPE::UNSCALED:             m_CurrentGameDeltaTime = m_GameUnscaledDeltaTime; break;
+    case DT_CONTEXT_TYPE::IMPLICIT_ENGINE_DT:   m_CurrentGameDeltaTime = g_Global.EngineDT; break;
+    }
+    
     return prevDeltaTime;
 }
 

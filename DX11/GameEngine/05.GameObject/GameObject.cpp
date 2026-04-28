@@ -21,9 +21,9 @@ namespace
 		float m_PrevDeltaTime{};
 
 	public:
-		explicit ScopedObjectDeltaTimeContext(bool _UseUnscaledDeltaTime)
+		explicit ScopedObjectDeltaTimeContext(DT_CONTEXT_TYPE _DTContextType)
 		{
-			m_PrevDeltaTime = TimeMgr::GetInst()->PushGameDeltaTimeContext(_UseUnscaledDeltaTime);
+			m_PrevDeltaTime = TimeMgr::GetInst()->PushGameDeltaTimeContext(_DTContextType);
 		}
 
 		~ScopedObjectDeltaTimeContext()
@@ -47,7 +47,7 @@ GameObject::GameObject(const GameObject& _Origin)
 	, m_LayerIdx(_Origin.m_LayerIdx) // 원본의 LayerIdx를 따르도록 처리
 	, m_IsActive(_Origin.m_IsActive)
 	, m_IsVisible(_Origin.m_IsVisible)
-	, m_IgnoreGlobalTimeScale(_Origin.m_IgnoreGlobalTimeScale)
+	, m_DTContextType(_Origin.m_DTContextType)
 	, m_GUID(_Origin.m_GUID)
 {
 	/* 복사 처리 안하고 원본 초기값을 사용하는 변수들 (밑의 추가처리까지 포함해서)
@@ -116,7 +116,7 @@ void GameObject::AfterLevelBegin()
 
 void GameObject::Tick()
 {
-	ScopedObjectDeltaTimeContext dtContext(m_IgnoreGlobalTimeScale);
+	ScopedObjectDeltaTimeContext dtContext(m_DTContextType);
 	
 	for (const Ptr<CScript>& script : m_vecScripts)
 		script->Tick();
@@ -127,7 +127,7 @@ void GameObject::Tick()
 
 void GameObject::FinalTick()
 {
-	ScopedObjectDeltaTimeContext dtContext(m_IgnoreGlobalTimeScale);
+	ScopedObjectDeltaTimeContext dtContext(m_DTContextType);
 
 	for (const Ptr<Component>& component : m_Components)
 		if (component) component->FinalTick();
@@ -154,7 +154,7 @@ void GameObject::FinalTick_Editor()
 {
 	if (!m_IsActive) return;
 
-	ScopedObjectDeltaTimeContext dtContext(m_IgnoreGlobalTimeScale);
+	ScopedObjectDeltaTimeContext dtContext(m_DTContextType);
 	
 	for (const Ptr<Component>& component : m_Components)
 		if (component) component->FinalTick();
