@@ -154,6 +154,30 @@ bool CUIAnimation::RemoveKeyFrame(int _TrackIdx, int _KeyFrameIdx)
     return true;
 }
 
+int CUIAnimation::SortKeyFrames(int _TrackIdx, int _CurrentIdx)
+{
+    if (_TrackIdx < 0 || _TrackIdx >= m_vecTracks.size()) return -1;
+
+    vector<UIAnimKeyFrameData>& KeyFrames = m_vecTracks[_TrackIdx].KeyFrames;
+    if (KeyFrames.empty()) return -1;
+
+    // 현재 선택된 키프레임의 포인터나 고유 값을 기억 (여기서는 시간과 데이터를 기준으로 찾음)
+    UIAnimKeyFrameData selectedData = KeyFrames[_CurrentIdx];
+
+    // 시간순 정렬
+    std::sort(KeyFrames.begin(), KeyFrames.end(), [](const UIAnimKeyFrameData& a, const UIAnimKeyFrameData& b) {
+        return a.Time < b.Time;
+    });
+
+    // 정렬 후 새로운 인덱스 찾아 반환
+    for (int i = 0; i < static_cast<int>(KeyFrames.size()); ++i)
+    {
+        if (KeyFrames[i].Time == selectedData.Time)
+            return i;
+    }
+    return 0;
+}
+
 bool CUIAnimation::IsTrackHasObject(GameObject* _GameObject)
 {
     for (const UIAnimTrack& Track : m_vecTracks)

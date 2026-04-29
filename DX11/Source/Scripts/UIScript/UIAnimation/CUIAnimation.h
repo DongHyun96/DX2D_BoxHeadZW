@@ -62,9 +62,20 @@ public:
     /// </summary>
     /// <returns> : 만약 삭제 불가능하다면 return false </returns>
     bool RemoveKeyFrame(int _TrackIdx, int _KeyFrameIdx);
+
+    /// <summary>
+    /// 특정 트랙의 키프레임을 시간순으로 정렬하고, 특정 인덱스가 정렬 후 어디로 이동했는지 반환
+    /// </summary>
+    /// <param name="_TrackIdx"></param>
+    /// <param name="_CurrentIdx"></param>
+    /// <returns></returns>
+    int SortKeyFrames(int _TrackIdx, int _CurrentIdx);
     
 private:
     
+    /// <summary>
+    /// 이미 해당 오브젝트 Track이 존재하는 경우 
+    /// </summary>
     bool IsTrackHasObject(GameObject* _GameObject);
     
 public: // 실제 Level play시 처리 가능한 함수들 
