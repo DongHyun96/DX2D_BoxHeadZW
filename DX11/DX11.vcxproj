@@ -356,6 +356,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\UIScript\CText.h" />
     <ClInclude Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.h" />
     <ClInclude Include="Source\Scripts\UIScript\UIAnimation\CUIAnimation.h" />
+    <ClInclude Include="Source\Scripts\UIScript\UIAnimation\UIAnimationData.h" />
     <ClInclude Include="Source\UserHeader\userDefine.h" />
     <ClInclude Include="Source\UserHeader\userEnum.h" />
     <ClInclude Include="Source\UserHeader\userStruct.h" />
@@ -646,7 +647,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\UIScript\CText.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\UIAnimation\CUIAnimation.cpp" />
-    <ClCompile Include="Source\Scripts\UIScript\UIAnimation\CUIAnimationStructImpl.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\UIAnimation\UIAnimationData.cpp" />
     <ClCompile Include="Source\UserHeader\userStruct.cpp" />
   </ItemGroup>
   <ItemGroup>

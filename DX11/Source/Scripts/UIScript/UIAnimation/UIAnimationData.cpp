@@ -1,7 +1,14 @@
 ﻿#include "pch.h"
-#include "CUIAnimation.h"
+#include "UIAnimationData.h"
+
+#include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "Source/Scripts/UIScript/CText.h"
 
+map<UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE, Ptr<UpdateUIAnimKeyIndexStrategy>> UIAnimTrack::s_mapUpdateAnimKeyIndexStrategies = 
+{
+    { UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::DEFAULT,        new PlayingStateUpdateIndexStrategy },
+    { UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::EDITING_STOP,   new StopStateEditorUpdateIndexStrategy }
+};
 
 bool UIAnimKeyFrameData::SetAnimDataFromGameObject(GameObject* _GameObject, float _Time)
 {
@@ -50,18 +57,29 @@ void UIAnimKeyFrameData::LoadFromLevelFile(FILE* _File)
     fread(&bUseLerp, sizeof(bool), 1, _File);
 }
 
+bool PlayingStateUpdateIndexStrategy::UpdateCurPlayingIndex(float _AnimTimer, int& _CurPlayingKeyIndex, const vector<UIAnimKeyFrameData>& _KeyFrames)
+{
+    // 새로운 키 프레임 재생해야하는지 체크
+    if (_AnimTimer > _KeyFrames[_CurPlayingKeyIndex].Time) ++_CurPlayingKeyIndex; // 다음 프레임 재생으로 넘어감
+    return true;
+}
 
+bool StopStateEditorUpdateIndexStrategy::UpdateCurPlayingIndex(float _AnimTimer, int& _CurPlayingKeyIndex, const vector<UIAnimKeyFrameData>& _KeyFrames)
+{
+    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) return false;
 
+    for (int i = 0; i < _KeyFrames.size(); ++i)
+    {
+        if (_AnimTimer > _KeyFrames[i].Time) continue;
 
+        _CurPlayingKeyIndex = (_AnimTimer == _KeyFrames[i].Time) ? i : i - 1;
+        return true;
+    }
 
-
-
-
-
-
-
-
-
+    // 여기로 넘어오면 모든 키프레임을 소진한 상태이다(마지막 KeyFrame까지 소진). -> 마지막 Index + 1로 초기화하고 종료
+    _CurPlayingKeyIndex = _KeyFrames.size();
+    return true;
+}
 
 
 // 여기서는 GUID 복사만 일어남 (AfterLevelGameObjectGuidTableInit 시점에 GameObject ref 제대로 잡아주어야 함)
@@ -134,16 +152,24 @@ bool UIAnimTrack::OnPlayStart()
         
     // TargetObject Transform 초기 Setting으로 처리한 뒤, play 시작 처리    
     TargetObject->Transform()->CopyRelativePosScaleRot(KeyFrames[0].Transform);
+
+    /* Init CurKeyFrame Index Update Strategy */
+    m_UpdateUIKeyIndexStrategy = s_mapUpdateAnimKeyIndexStrategies[UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::DEFAULT].Get();
     
     return true;
 }
 
-void UIAnimTrack::WhilePlaying(float AnimTimer)
+void UIAnimTrack::WhilePlaying(float _AnimTimer)
 {
     if (!bIsPlaying) return;
-    
-    // 새로운 키 프레임 재생해야하는지 체크
-    if (AnimTimer > KeyFrames[CurPlayingKeyIndex]. Time) ++CurPlayingKeyIndex; // 다음 프레임 재생으로 넘어감
+    UpdateTrack(_AnimTimer);
+}
+
+void UIAnimTrack::UpdateTrack(float _AnimTimer)
+{
+    // 키 프레임 업데이트
+    // Editing 상태에서의 Stop 상황 & Normal Play 상황에 따른 Index 업데이트 처리가 다르기 때문에 전략 패턴으로 CurPlayingKeyIndex 업데이트 처리를 함
+    m_UpdateUIKeyIndexStrategy->UpdateCurPlayingIndex(_AnimTimer, CurPlayingKeyIndex, KeyFrames);
     
     // 모든 키 프레임 소진 체크 -> 이 Track에 대한 Animation 종료
     if (CurPlayingKeyIndex >= KeyFrames.size())
@@ -155,13 +181,15 @@ void UIAnimTrack::WhilePlaying(float AnimTimer)
 
     // TargetObject가 여기서는 무조건 Valid한 상황
     GameObject* TargetObject = TargetObjectReference.GetGameObject();
-    
-    // 이전 키 프레임과 현재 키 프레임 사이의 Time 간격으로 값 보간 처리
-    const UIAnimKeyFrameData& PrevKeyFrame      = KeyFrames[CurPlayingKeyIndex - 1];
+
+    // 현재 KeyFrame이 First KeyFrame인 경우에도 예외처리를 해주어야 함
+    const UIAnimKeyFrameData& PrevKeyFrame      = (CurPlayingKeyIndex == 0) ? KeyFrames[CurPlayingKeyIndex] : KeyFrames[CurPlayingKeyIndex - 1];
     const UIAnimKeyFrameData& CurrentKeyFrame   = KeyFrames[CurPlayingKeyIndex];
     
+    // 이전 키 프레임과 현재 키 프레임 사이의 Time 간격으로 값 보간 처리
+    
     const float TimeDiff            = CurrentKeyFrame.Time - PrevKeyFrame.Time;
-    const float CurrentKeyFrameTime = AnimTimer - PrevKeyFrame.Time; // 이전 키 프레임과 현재 키 프레임 사이의 시간 흐름
+    const float CurrentKeyFrameTime = _AnimTimer - PrevKeyFrame.Time; // 이전 키 프레임과 현재 키 프레임 사이의 시간 흐름
     const float TimeAlpha           = MappingToNewRange(CurrentKeyFrameTime, 0.f, TimeDiff, 0.f, 1.f);
     
     // Transform S, R, T 사이 보간 처리 (다른 값 x 오로지 s, r, t만 처리할 것)

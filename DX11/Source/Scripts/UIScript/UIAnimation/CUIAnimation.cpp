@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CUIAnimation.h"
 
+#include "UIAnimationData.h"
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/05.GameObject/GameObjectRefHolder.h"

@@ -7,6 +7,7 @@
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
 #include "Source/Scripts/UIScript/CText.h"
 #include "Source/Scripts/UIScript/UIAnimation/CUIAnimation.h"
+#include "Source/Scripts/UIScript/UIAnimation/UIAnimationData.h"
 
 namespace
 {
