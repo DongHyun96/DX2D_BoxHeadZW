@@ -33,6 +33,10 @@ Vec4 GetRandomColor(bool _bUseRandomAlpha = false);
 
 float Lerp(float _Src, float _Dst, float _Alpha);
 
+Vec3 Lerp(const Vec3& _Src, const Vec3& _Dst, float _Alpha);
+Vec4 Lerp(const Vec4& _Src, const Vec4& _Dst, float _Alpha);
+
+
 /// <summary>
 /// 새로운 Range로 Mapping한 값 구하기
 /// </summary>

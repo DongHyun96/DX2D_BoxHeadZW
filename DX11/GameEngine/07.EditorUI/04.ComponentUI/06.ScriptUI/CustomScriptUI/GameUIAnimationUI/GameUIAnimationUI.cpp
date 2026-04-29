@@ -104,8 +104,13 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
 {
     vector<UIAnimTrack>& Tracks = _Animation->GetTracks();
 
-    // 전체 애니메이션 길이 계산 (안전한 비교)
-    float maxAnimTime = 2.0f; // 최소 2초 길이 보장
+    if (Tracks.empty())
+    {
+        ImGui::Text("No tracks.");
+        return;
+    }
+
+    float maxAnimTime = 2.0f;
     for (size_t i = 0; i < Tracks.size(); ++i)
     {
         if (!Tracks[i].KeyFrames.empty())
@@ -114,9 +119,8 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
             if (lastTime > maxAnimTime) maxAnimTime = lastTime;
         }
     }
-    maxAnimTime += 1.0f; // 여백 1초 추가
+    maxAnimTime += 1.f;
 
-    // 드래그 앤 드롭 영역 (아웃라이너 상단)
     ImGui::BeginDisabled(!_bCanEdit);
     ImGui::Button("Drop GameObject Here to Add Track", ImVec2(-FLT_MIN, 30.0f));
     if (ImGui::BeginDragDropTarget())
@@ -126,15 +130,18 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
             if (!TreeUI::IsPayloadMultiData(Payload))
             {
                 DWORD_PTR Data = *static_cast<DWORD_PTR*>(Payload->Data);
-                GameObject* ReceivedObj = reinterpret_cast<GameObject*>(Data);
-                _Animation->AddGameObjectToAnimate(ReceivedObj);
+                
+                if (Ptr<GameObject> ReceivedObj = reinterpret_cast<GameObject*>(Data))
+                    _Animation->AddGameObjectToAnimate(ReceivedObj.Get());
             }
         }
         ImGui::EndDragDropTarget();
     }
     ImGui::EndDisabled();
 
-    // 메인 에디터 테이블 (높이를 고정하여 스크롤 생성)
+    ImVec2 timelineAreaPos = ImGui::GetCursorScreenPos();
+    static float s_ActualTimelineStartX = timelineAreaPos.x + 200.0f;
+
     static ImGuiTableFlags tableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg;
     if (ImGui::BeginTable("AnimDopeSheet", 2, tableFlags, ImVec2(0.0f, 250.0f)))
     {
@@ -142,14 +149,8 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
         ImGui::TableSetupColumn("Timeline", ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableHeadersRow();
 
-        // ----------------------------------------------------
-        // 타임라인 눈금자 그리기 (배경)
-        // ----------------------------------------------------
         ImDrawList* drawList = ImGui::GetWindowDrawList();
-        ImVec2 timelineTopLeft = ImGui::GetCursorScreenPos();
-        float contentWidth = ImGui::GetContentRegionAvail().x;
         
-        // 트랙들 렌더링
         for (int TrackIdx = 0; TrackIdx < static_cast<int>(Tracks.size()); ++TrackIdx)
         {
             UIAnimTrack& Track = Tracks[TrackIdx];
@@ -157,38 +158,37 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
 
             ImGui::TableNextRow();
 
-            // --- [1열] 아웃라이너 (트랙 선택) ---
+            // --- [1열] 아웃라이너 ---
             ImGui::TableSetColumnIndex(0);
             ImGui::PushID(TrackIdx);
             
             bool bIsSelectedTrack = (m_SelectedTrackIdx == TrackIdx);
-            string TrackName = "##" + to_string(TrackIdx); // 숨겨진 라벨
+            string TrackName = "##" + to_string(TrackIdx);
             
-            // 트랙 선택 막대
             if (ImGui::Selectable(TrackName.c_str(), bIsSelectedTrack, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap))
             {
                 m_SelectedTrackIdx = TrackIdx;
-                m_SelectedKeyIdx = -1; // 트랙을 클릭하면 키프레임 선택은 해제
+                m_SelectedKeyIdx = -1;
             }
             
             ImGui::SameLine();
             ImGui::Text("%s", GetGameObjectName(TargetObj).c_str());
             ImGui::PopID();
 
-            // --- [2열] 도프시트 타임라인 (키프레임 마커) ---
+            // --- [2열] 도프시트 타임라인 ---
             ImGui::TableSetColumnIndex(1);
             
             ImVec2 cellPos = ImGui::GetCursorScreenPos();
             float cellHeight = ImGui::GetTextLineHeightWithSpacing();
 
-            // 배경 눈금선 (0.5초 단위)
+            s_ActualTimelineStartX = cellPos.x;
+
             for (float t = 0.0f; t <= maxAnimTime; t += 0.5f)
             {
                 float x = cellPos.x + (t * m_TimelineScale);
                 drawList->AddLine(ImVec2(x, cellPos.y), ImVec2(x, cellPos.y + cellHeight), IM_COL32(100, 100, 100, 50));
             }
 
-            // 키프레임 다이아몬드 그리기 및 클릭 판정
             const int keyCount = static_cast<int>(Track.KeyFrames.size());
             for (int KeyIdx = 0; KeyIdx < keyCount; ++KeyIdx)
             {
@@ -196,29 +196,22 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
                 float keyX = cellPos.x + (time * m_TimelineScale);
                 float keyY = cellPos.y + (cellHeight * 0.5f);
 
-                // 마우스 클릭 및 드래그 판정을 위한 InvisibleButton
                 ImGui::SetCursorScreenPos(ImVec2(keyX - 6.0f, cellPos.y));
                 ImGui::PushID(KeyIdx);
-    
                 ImGui::InvisibleButton("##Key", ImVec2(12.0f, cellHeight));
 
-                // [추가] 드래그 로직
                 if (ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
                 {
                     m_SelectedTrackIdx = TrackIdx;
                     m_SelectedKeyIdx = KeyIdx;
 
-                    // 마우스 위치를 타임라인 시간으로 변환
                     float mouseXInTimeline = ImGui::GetIO().MousePos.x - cellPos.x;
                     float newTime = mouseXInTimeline / m_TimelineScale;
-
                     newTime = max(newTime, 0.f);
 
-                    // 시간이 변경되었다면 적용 및 정렬
                     if (Track.KeyFrames[KeyIdx].Time != newTime)
                     {
                         Track.KeyFrames[KeyIdx].Time = newTime;
-                        // 실시간 정렬 (인덱스 갱신)
                         m_SelectedKeyIdx = _Animation->SortKeyFrames(TrackIdx, m_SelectedKeyIdx);
                     }
                 }
@@ -231,7 +224,6 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
     
                 ImGui::PopID();
 
-                // 다이아몬드 렌더링 색상 (선택된 상태면 빨간색, 아니면 주황색)
                 bool bIsSelectedKey = (m_SelectedTrackIdx == TrackIdx && m_SelectedKeyIdx == KeyIdx);
                 ImU32 keyColor = bIsSelectedKey ? IM_COL32(255, 50, 50, 255) : IM_COL32(255, 165, 0, 255);
 
@@ -245,20 +237,58 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
             }
         }
 
-        // 현재 재생 인디케이터 (초록색 선)
-        float currentAnimTime = _Animation->GetAnimTimer();
-        if (currentAnimTime > 0.0f || _Animation->IsPlaying())
+        // ----------------------------------------------------
+        // 타임라인 스크러빙 드래그 처리
+        // ----------------------------------------------------
+        
+        static bool s_bIsScrubbing = false;
+        
+        // 타임라인 영역의 좌상단/우하단 좌표 계산
+        ImVec2 timelineRectMin = ImVec2(s_ActualTimelineStartX, timelineAreaPos.y);
+        ImVec2 timelineRectMax = ImVec2(timelineRectMin.x + ImGui::GetColumnWidth(1), timelineAreaPos.y + 250.0f);
+
+        // 마우스가 타임라인 영역 내부에 있고, 왼쪽 버튼을 막 클릭했다면
+        if (ImGui::IsMouseHoveringRect(timelineRectMin, timelineRectMax) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         {
-            float startX = ImGui::GetCursorScreenPos().x + ImGui::GetColumnOffset(1);
-            float scrubberX = startX + (currentAnimTime * m_TimelineScale);
-            ImVec2 tableEndPos = ImGui::GetCursorScreenPos();
-            
-            drawList->AddLine(
-                ImVec2(scrubberX, timelineTopLeft.y), 
-                ImVec2(scrubberX, tableEndPos.y), 
-                IM_COL32(0, 255, 0, 255), 2.0f
-            );
+            // 키프레임 다이아몬드 같은 다른 UI를 클릭한게 아닐 때만 (충돌 방지)
+            if (!ImGui::IsAnyItemActive()) 
+                s_bIsScrubbing = true;
         }
+
+        if (s_bIsScrubbing)
+        {
+            if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+            {
+                // 드래그 중: 현재 마우스 위치에 맞춰 에디팅 타임 갱신
+                float mouseX         = ImGui::GetIO().MousePos.x - s_ActualTimelineStartX;
+                float newEditingTime = max(mouseX / m_TimelineScale, 0.f);
+                
+                _Animation->SetEditingAnimTime(newEditingTime);
+            }
+            else
+            {
+                // 마우스 떼면 드래그 종료
+                s_bIsScrubbing = false;
+            }
+        }
+
+        // ----------------------------------------------------
+        // 현재 Time 재생 인디케이터 (초록색 선)
+        // ----------------------------------------------------
+        float currentDisplayTime = _Animation->IsPlaying() ? _Animation->GetAnimTimer() : _Animation->GetEditingAnimTimer();
+        float scrubberX = s_ActualTimelineStartX + (currentDisplayTime * m_TimelineScale);
+        ImVec2 tableEndPos = ImGui::GetCursorScreenPos();
+        
+        drawList->AddLine(
+            ImVec2(scrubberX, timelineAreaPos.y), 
+            ImVec2(scrubberX, tableEndPos.y), 
+            IM_COL32(0, 255, 0, 255), 2.0f
+        );
+
+        ImVec2 triP1(scrubberX, timelineAreaPos.y);
+        ImVec2 triP2(scrubberX - 6.0f, timelineAreaPos.y - 12.0f);
+        ImVec2 triP3(scrubberX + 6.0f, timelineAreaPos.y - 12.0f);
+        drawList->AddTriangleFilled(triP1, triP2, triP3, IM_COL32(0, 255, 0, 255));
 
         ImGui::EndTable();
     }

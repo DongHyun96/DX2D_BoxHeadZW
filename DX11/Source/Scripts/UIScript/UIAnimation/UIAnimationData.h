@@ -107,14 +107,18 @@ public:
     void WhilePlaying(float _AnimTimer);
 
     /// <summary>
-    /// AnimTimer에 따른 Track 상태 Update (Track Testing 용으로 필요 & Play 시에도 해당 함수 사용) 
-    /// </summary>
-    void UpdateTrack(float _AnimTimer);
-
-    /// <summary>
     /// 재생중인 Track stop
     /// </summary>
     void Stop();
+    
+public:
+    
+    /// <summary>
+    /// AnimTimer에 따른 Track 상태 Update (Track Testing 용으로 필요 & Play 시에도 해당 함수 사용) 
+    /// </summary>
+    void UpdateTrack(float _AnimTimer);
+    
+    void ManuallyUpdateTintColorControlType();
 
 public:
     

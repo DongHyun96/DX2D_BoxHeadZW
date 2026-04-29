@@ -14,7 +14,12 @@ private:
     bool m_bIsPlaying{};
     bool m_bBackToStopOnAnimEnd{}; // Animation 재생이 끝났을 때, 바로 Stop 처리할지(원본 데이터로 돌아갈지) 여부
     
-    float m_AnimTimer{}; // Animation 재생 Timer
+    float m_AnimTimer{}; // Animation 재생 Timer (실제 Play 처리에 쓰일 Timer)
+    
+private:
+
+    // Editor에서 Animation Stop 상황에서도 해당 Time에 Animation 상태가 어떨지 확인하는 용도의 Timer
+    float m_EditingAnimTimer{}; 
     
 public:
     
@@ -34,6 +39,15 @@ public:
     vector<UIAnimTrack>& GetTracks() { return m_vecTracks; }
     bool IsPlaying() const { return m_bIsPlaying; }
     float GetAnimTimer() const { return m_AnimTimer; }
+    
+public:
+    
+    float GetEditingAnimTimer() const { return m_EditingAnimTimer; }
+
+    /// <summary>
+    /// 에디팅 타이머를 설정하고 해당 시점의 상태로 오브젝트들을 업데이트
+    /// </summary>
+    void SetEditingAnimTime(float _Time);
     
 public: // Editing 관련 함수들
     

@@ -78,6 +78,21 @@ void CUIAnimation::Tick()
     }
 }
 
+void CUIAnimation::SetEditingAnimTime(float _Time)
+{
+    m_EditingAnimTimer = max(_Time, 0.f);
+    
+    // 재생 중이 아닐 때에만 Editing timer를 사용하여 상태 업데이트
+    if (!m_bIsPlaying)
+    {
+        for (UIAnimTrack& Track : m_vecTracks)
+        {
+            Track.ManuallyUpdateTintColorControlType();
+            Track.UpdateTrack(m_EditingAnimTimer);
+        }
+    }
+}
+
 bool CUIAnimation::AddGameObjectToAnimate(GameObject* _GameObject)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP)  return false;

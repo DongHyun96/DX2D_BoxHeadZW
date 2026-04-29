@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "UIAnimationData.h"
 
+#include <algorithm>
+
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "Source/Scripts/UIScript/CText.h"
 
@@ -66,18 +68,21 @@ bool PlayingStateUpdateIndexStrategy::UpdateCurPlayingIndex(float _AnimTimer, in
 
 bool StopStateEditorUpdateIndexStrategy::UpdateCurPlayingIndex(float _AnimTimer, int& _CurPlayingKeyIndex, const vector<UIAnimKeyFrameData>& _KeyFrames)
 {
-    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP) return false;
+    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
+    if (_KeyFrames.empty()) return false;
 
     for (int i = 0; i < _KeyFrames.size(); ++i)
     {
-        if (_AnimTimer > _KeyFrames[i].Time) continue;
-
-        _CurPlayingKeyIndex = (_AnimTimer == _KeyFrames[i].Time) ? i : i - 1;
-        return true;
+        // 타임라인 시간이 현재 검사하는 키프레임보다 작거나 같으면 그곳이 목표 인덱스
+        if (_AnimTimer <= _KeyFrames[i].Time)
+        {
+            _CurPlayingKeyIndex = i; 
+            return true;
+        }
     }
 
-    // 여기로 넘어오면 모든 키프레임을 소진한 상태이다(마지막 KeyFrame까지 소진). -> 마지막 Index + 1로 초기화하고 종료
-    _CurPlayingKeyIndex = _KeyFrames.size();
+    // 마우스를 마지막 키프레임보다 더 우측으로 끌었을 때
+    _CurPlayingKeyIndex = _KeyFrames.size() - 1;
     return true;
 }
 
@@ -142,7 +147,7 @@ bool UIAnimTrack::OnPlayStart()
     else if (const Ptr<CRenderComponent>& RenderCom = TargetObject->GetRenderCom())
     {
         TintColorControlType = TintColorControl::RENDERCOM_TINTCOLOR;
-        TargetMaterial = RenderCom->GetMaterial().Get();
+        TargetMaterial       = RenderCom->CreateDynamicMaterial().Get();
         TargetMaterial->SetScalar(VEC4_0, KeyFrames[0].TintColor);
     }
     else TintColorControlType = TintColorControl::NONE; 
@@ -193,9 +198,9 @@ void UIAnimTrack::UpdateTrack(float _AnimTimer)
     const float TimeAlpha           = MappingToNewRange(CurrentKeyFrameTime, 0.f, TimeDiff, 0.f, 1.f);
     
     // Transform S, R, T 사이 보간 처리 (다른 값 x 오로지 s, r, t만 처리할 것)
-    Vec3 TargetPos   = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativePos(), CurrentKeyFrame.Transform->GetRelativePos(), TimeAlpha);
-    Vec3 TargetScale = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativeScale(), CurrentKeyFrame.Transform->GetRelativeScale(), TimeAlpha);
-    Vec3 TargetRot   = Vec3::Lerp(PrevKeyFrame.Transform->GetRelativeRot(), CurrentKeyFrame.Transform->GetRelativeRot(), TimeAlpha);
+    Vec3 TargetPos   = Lerp(PrevKeyFrame.Transform->GetRelativePos(), CurrentKeyFrame.Transform->GetRelativePos(), TimeAlpha);
+    Vec3 TargetScale = Lerp(PrevKeyFrame.Transform->GetRelativeScale(), CurrentKeyFrame.Transform->GetRelativeScale(), TimeAlpha);
+    Vec3 TargetRot   = Lerp(PrevKeyFrame.Transform->GetRelativeRot(), CurrentKeyFrame.Transform->GetRelativeRot(), TimeAlpha);
     
     TargetObject->Transform()->SetRelativePos(TargetPos);
     TargetObject->Transform()->SetRelativeScale(TargetScale);
@@ -205,19 +210,33 @@ void UIAnimTrack::UpdateTrack(float _AnimTimer)
     {
     case TintColorControl::TEXT_COLOR:
     {
-        Vec4 Color = TargetText->GetColor();
-        Color = Vec4::Lerp(PrevKeyFrame.TintColor, CurrentKeyFrame.TintColor,TimeAlpha);
+        Vec4 Color = Lerp(PrevKeyFrame.TintColor, CurrentKeyFrame.TintColor,TimeAlpha);
         TargetText->SetColor(Color);
     }
         break;
     case TintColorControl::RENDERCOM_TINTCOLOR:
     {
-        Vec4 Color = TargetMaterial->GetScalar<Vec4>(VEC4_0);
-        Color = Vec4::Lerp(PrevKeyFrame.TintColor, CurrentKeyFrame.TintColor,TimeAlpha);
+        Vec4 Color = Lerp(PrevKeyFrame.TintColor, CurrentKeyFrame.TintColor,TimeAlpha);
         TargetMaterial->SetScalar(VEC4_0, Color);
     }
         break;
     }
+}
+
+void UIAnimTrack::ManuallyUpdateTintColorControlType()
+{
+    GameObject* TargetObject = TargetObjectReference.GetGameObject();
+    if (!TargetObject) return;
+    
+    /* Init tint color control type & TargetObject Color 0번 키프레임 Color로 세팅 처리 */
+    if (TargetText = TargetObject->GetScriptComponent<CText>().Get())
+        TintColorControlType = TintColorControl::TEXT_COLOR;
+    else if (const Ptr<CRenderComponent>& RenderCom = TargetObject->GetRenderCom())
+    {
+        TargetMaterial       = RenderCom->CreateDynamicMaterial().Get();
+        TintColorControlType = TintColorControl::RENDERCOM_TINTCOLOR;
+    }
+    else TintColorControlType = TintColorControl::NONE;     
 }
 
 void UIAnimTrack::Stop()
@@ -241,4 +260,9 @@ void UIAnimTrack::Stop()
         TargetMaterial = RenderCom->GetMaterial().Get();
         TargetMaterial->SetScalar(VEC4_0, KeyFrames[0].TintColor);
     }
+    
+    /* Init CurKeyFrame Index Update Strategy */
+    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
+        m_UpdateUIKeyIndexStrategy = s_mapUpdateAnimKeyIndexStrategies[UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::EDITING_STOP].Get();
+    else  m_UpdateUIKeyIndexStrategy = s_mapUpdateAnimKeyIndexStrategies[UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::DEFAULT].Get();
 }

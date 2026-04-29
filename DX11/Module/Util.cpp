@@ -58,6 +58,16 @@ float Lerp(float _Src, float _Dst, float _Alpha)
     return _Src * (1.f - _Alpha) + _Dst * _Alpha;
 }
 
+Vec3 Lerp(const Vec3& _Src, const Vec3& _Dst, float _Alpha)
+{
+    return Vec3(Lerp(_Src.x, _Dst.x, _Alpha), Lerp(_Src.y, _Dst.y, _Alpha), Lerp(_Src.z, _Dst.z, _Alpha));
+}
+
+Vec4 Lerp(const Vec4& _Src, const Vec4& _Dst, float _Alpha)
+{
+    return Vec4(Lerp(_Src.x, _Dst.x, _Alpha), Lerp(_Src.y, _Dst.y, _Alpha), Lerp(_Src.z, _Dst.z, _Alpha), Lerp(_Src.w, _Dst.w, _Alpha));
+}
+
 Vec2 MappingToNewRange(const Vec2& _Src, const Vec2& _SrcMin, const Vec2& _SrcMax, const Vec2& _DstMin, const Vec2& _DstMax)
 {
     const float X = MappingToNewRange(_Src.x, _SrcMin.x, _SrcMax.x, _DstMin.x, _DstMax.x);
