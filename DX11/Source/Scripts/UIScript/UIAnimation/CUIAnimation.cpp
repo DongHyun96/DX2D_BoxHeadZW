@@ -141,7 +141,7 @@ bool CUIAnimation::AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime)
         NewData.Time      = _KeyFrameTime;
         NewData.Transform = PrevIt->Transform->Clone();
         NewData.TintColor = PrevIt->TintColor;
-        NewData.bUseLerp  = PrevIt->bUseLerp;
+        NewData.bEaseOut  = PrevIt->bEaseOut;
         
         KeyFrames.insert(it, NewData);
         return true;

@@ -62,12 +62,25 @@ void GameUIAnimationUI::Tick_UI()
     // 데이터가 변했을 때를 대비한 Selection 안전장치
     ClearSelectionIfInvalid(Animation);
 
+    float MaxAnimTime = 2.f;
+    const vector<UIAnimTrack>& Tracks = Animation->GetTracks();
+
+    for (const UIAnimTrack& Track : Tracks)
+    {
+        if (!Track.KeyFrames.empty())
+        {
+            const float LastTime = Track.KeyFrames.back().Time;
+            if (LastTime > MaxAnimTime) MaxAnimTime = LastTime;
+        }
+    }
+    MaxAnimTime += 1.f; // 여백 1초 추가
+    
     // 1. 상단 재생/컨트롤 툴바
-    RenderToolbar(Animation, bCanEdit);
+    RenderToolbar(Animation, bCanEdit, MaxAnimTime);
     ImGui::Separator();
 
     // 2. 메인 에디터 (좌: 트랙 리스트 / 우: 도프시트 타임라인)
-    RenderMainEditor(Animation, bCanEdit);
+    RenderMainEditor(Animation, bCanEdit, MaxAnimTime);
     ImGui::Separator();
 
     // 3. 하단 인스펙터 (선택된 트랙/키프레임 편집기)
@@ -77,7 +90,7 @@ void GameUIAnimationUI::Tick_UI()
     HandlePendingRemovals(Animation);
 }
 
-void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit)
+void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime)
 {
     // 재생 컨트롤
     if (ImGui::Button("Play")) { _Animation->Play(false); }
@@ -87,6 +100,15 @@ void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit)
     if (ImGui::Button("Stop")) { _Animation->Stop(); }
 
     ImGui::SameLine(0, 20.0f);
+
+    // Time indicator 시간 조정
+    float CurrentDisplayTime = _Animation->IsPlaying() ? _Animation->GetAnimTimer() : _Animation->GetEditingAnimTimer();
+    
+    ImGui::BeginDisabled(_Animation->IsPlaying() || !_bCanEdit);
+    ImGui::SetNextItemWidth(300.0f);
+    if (ImGui::SliderFloat("Time", &CurrentDisplayTime, 0.0f, _MaxAnimTime, "%.3f s"))
+        _Animation->SetEditingAnimTime(CurrentDisplayTime);
+    ImGui::EndDisabled();
     
     // 상태 텍스트
     if (_Animation->IsPlaying())
@@ -100,7 +122,7 @@ void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit)
     ImGui::SliderFloat("Zoom", &m_TimelineScale, 50.0f, 500.0f, "%.0f px/s");
 }
 
-void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdit)
+void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime)
 {
     vector<UIAnimTrack>& Tracks = _Animation->GetTracks();
 
@@ -109,17 +131,6 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
         ImGui::Text("No tracks.");
         return;
     }
-
-    float maxAnimTime = 2.0f;
-    for (size_t i = 0; i < Tracks.size(); ++i)
-    {
-        if (!Tracks[i].KeyFrames.empty())
-        {
-            float lastTime = Tracks[i].KeyFrames.back().Time;
-            if (lastTime > maxAnimTime) maxAnimTime = lastTime;
-        }
-    }
-    maxAnimTime += 1.f;
 
     ImGui::BeginDisabled(!_bCanEdit);
     ImGui::Button("Drop GameObject Here to Add Track", ImVec2(-FLT_MIN, 30.0f));
@@ -130,7 +141,6 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
             if (!TreeUI::IsPayloadMultiData(Payload))
             {
                 DWORD_PTR Data = *static_cast<DWORD_PTR*>(Payload->Data);
-                
                 if (Ptr<GameObject> ReceivedObj = reinterpret_cast<GameObject*>(Data))
                     _Animation->AddGameObjectToAnimate(ReceivedObj.Get());
             }
@@ -183,7 +193,7 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
 
             s_ActualTimelineStartX = cellPos.x;
 
-            for (float t = 0.0f; t <= maxAnimTime; t += 0.5f)
+            for (float t = 0.0f; t <= _MaxAnimTime; t += 0.5f)
             {
                 float x = cellPos.x + (t * m_TimelineScale);
                 drawList->AddLine(ImVec2(x, cellPos.y), ImVec2(x, cellPos.y + cellHeight), IM_COL32(100, 100, 100, 50));
@@ -200,6 +210,7 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
                 ImGui::PushID(KeyIdx);
                 ImGui::InvisibleButton("##Key", ImVec2(12.0f, cellHeight));
 
+                // 다이아몬드 모양 키프레임 기능
                 if (ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
                 {
                     m_SelectedTrackIdx = TrackIdx;
@@ -237,44 +248,8 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
             }
         }
 
-        // ----------------------------------------------------
-        // 타임라인 스크러빙 드래그 처리
-        // ----------------------------------------------------
+        // Current Time Indicator 기능
         
-        static bool s_bIsScrubbing = false;
-        
-        // 타임라인 영역의 좌상단/우하단 좌표 계산
-        ImVec2 timelineRectMin = ImVec2(s_ActualTimelineStartX, timelineAreaPos.y);
-        ImVec2 timelineRectMax = ImVec2(timelineRectMin.x + ImGui::GetColumnWidth(1), timelineAreaPos.y + 250.0f);
-
-        // 마우스가 타임라인 영역 내부에 있고, 왼쪽 버튼을 막 클릭했다면
-        if (ImGui::IsMouseHoveringRect(timelineRectMin, timelineRectMax) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-        {
-            // 키프레임 다이아몬드 같은 다른 UI를 클릭한게 아닐 때만 (충돌 방지)
-            if (!ImGui::IsAnyItemActive()) 
-                s_bIsScrubbing = true;
-        }
-
-        if (s_bIsScrubbing)
-        {
-            if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            {
-                // 드래그 중: 현재 마우스 위치에 맞춰 에디팅 타임 갱신
-                float mouseX         = ImGui::GetIO().MousePos.x - s_ActualTimelineStartX;
-                float newEditingTime = max(mouseX / m_TimelineScale, 0.f);
-                
-                _Animation->SetEditingAnimTime(newEditingTime);
-            }
-            else
-            {
-                // 마우스 떼면 드래그 종료
-                s_bIsScrubbing = false;
-            }
-        }
-
-        // ----------------------------------------------------
-        // 현재 Time 재생 인디케이터 (초록색 선)
-        // ----------------------------------------------------
         float currentDisplayTime = _Animation->IsPlaying() ? _Animation->GetAnimTimer() : _Animation->GetEditingAnimTimer();
         float scrubberX = s_ActualTimelineStartX + (currentDisplayTime * m_TimelineScale);
         ImVec2 tableEndPos = ImGui::GetCursorScreenPos();
@@ -359,9 +334,9 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
             m_SelectedKeyIdx = _Animation->SortKeyFrames(m_SelectedTrackIdx, m_SelectedKeyIdx);
         }
         
-        bool bUseLerp = KeyFrame.bUseLerp;
+        bool bUseLerp = KeyFrame.bEaseOut;
         if (ImGui::Checkbox("Use Lerp (Interpolate from previous)", &bUseLerp)) 
-            KeyFrame.bUseLerp = bUseLerp;
+            KeyFrame.bEaseOut = bUseLerp;
 
         if (KeyFrame.Transform)
         {

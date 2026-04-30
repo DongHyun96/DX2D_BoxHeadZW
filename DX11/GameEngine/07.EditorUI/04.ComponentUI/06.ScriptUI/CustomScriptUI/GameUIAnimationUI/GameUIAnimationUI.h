@@ -28,8 +28,8 @@ public:
     void Tick_UI() override;
 
 private:
-    void RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit);
-    void RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdit);
+    void RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime);
+    void RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime);
     void RenderBottomInspector(CUIAnimation* _Animation, bool _bCanEdit);
     
     void HandlePendingRemovals(CUIAnimation* _Animation);

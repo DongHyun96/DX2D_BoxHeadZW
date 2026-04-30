@@ -40,7 +40,7 @@ void UIAnimKeyFrameData::SaveToLevelFile(FILE* _File)
     if (Transform) Transform->SaveToLevelFile(_File);
         
     fwrite(&TintColor, sizeof(Vec4), 1, _File);
-    fwrite(&bUseLerp, sizeof(bool), 1, _File);
+    fwrite(&bEaseOut, sizeof(bool), 1, _File);
 }
 
 void UIAnimKeyFrameData::LoadFromLevelFile(FILE* _File)
@@ -56,7 +56,7 @@ void UIAnimKeyFrameData::LoadFromLevelFile(FILE* _File)
     }
         
     fread(&TintColor, sizeof(Vec4), 1, _File);
-    fread(&bUseLerp, sizeof(bool), 1, _File);
+    fread(&bEaseOut, sizeof(bool), 1, _File);
 }
 
 bool PlayingStateUpdateIndexStrategy::UpdateCurPlayingIndex(float _AnimTimer, int& _CurPlayingKeyIndex, const vector<UIAnimKeyFrameData>& _KeyFrames)
