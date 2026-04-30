@@ -138,10 +138,10 @@ bool CUIAnimation::AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime)
         // 삽입 시, 이전 값과 동일한 it로 생성을 한다
         vector<UIAnimKeyFrameData>::iterator PrevIt = prev(it);
         UIAnimKeyFrameData NewData{};
-        NewData.Time      = _KeyFrameTime;
-        NewData.Transform = PrevIt->Transform->Clone();
-        NewData.TintColor = PrevIt->TintColor;
-        NewData.bEaseOut  = PrevIt->bEaseOut;
+        NewData.Time       = _KeyFrameTime;
+        NewData.Transform  = PrevIt->Transform->Clone();
+        NewData.TintColor  = PrevIt->TintColor;
+        NewData.EasingType = PrevIt->EasingType;
         
         KeyFrames.insert(it, NewData);
         return true;

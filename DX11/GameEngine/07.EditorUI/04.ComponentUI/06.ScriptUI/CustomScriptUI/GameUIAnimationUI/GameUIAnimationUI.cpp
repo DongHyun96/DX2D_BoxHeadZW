@@ -334,9 +334,12 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
             m_SelectedKeyIdx = _Animation->SortKeyFrames(m_SelectedTrackIdx, m_SelectedKeyIdx);
         }
         
-        bool bUseLerp = KeyFrame.bEaseOut;
-        if (ImGui::Checkbox("Use Lerp (Interpolate from previous)", &bUseLerp)) 
-            KeyFrame.bEaseOut = bUseLerp;
+        const char* EasingNames[] = { "Linear (Constant Speed)", "Ease-Out (Fast to Slow)" };
+        int easeIdx = static_cast<int>(KeyFrame.EasingType);
+        
+        ImGui::SetNextItemWidth(250.0f);
+        if (ImGui::Combo("Easing Type", &easeIdx, EasingNames, IM_ARRAYSIZE(EasingNames)))
+            KeyFrame.EasingType = static_cast<UIAnimEasingType>(easeIdx);
 
         if (KeyFrame.Transform)
         {

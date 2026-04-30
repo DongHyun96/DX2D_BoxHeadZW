@@ -2,6 +2,12 @@
 
 #include "GameEngine/05.GameObject/GameObjectRefHolder.h"
 
+enum class UIAnimEasingType
+{
+    LINEAR,     // 선형 보간
+    EASE_OUT    // 초반 빠름, 후반 점점 느려짐 처리
+};
+
 enum class TintColorControl
 {
     NONE,                   // TintColor 옵션 none (아무 색상도 건드리지 않는다)
@@ -14,7 +20,8 @@ struct UIAnimKeyFrameData
     float               Time{};                       // 키프레임 시간대 (-1.f인 경우, 원본 GO의 데이터)
     Ptr<CTransform>     Transform{};
     Vec4                TintColor  = DEF_COLOR_WHITE; // Text GameObject의 경우, Text의 TintColor값으로 적용됨(주의) -> CText나 RenderComponent를 따로 가지고 있지 않을 경우 처리 x   
-    bool                bEaseOut{};                   // 이전 키 프레임에서 이 키 프레임으로 Animation 전환 처리 시, 초반 속도는 빠르게 후반 속도는 느리게 처리할지에 대한 옵션
+    
+    UIAnimEasingType EasingType{};
 
 public:
     /// <summary>

@@ -40,7 +40,7 @@ void UIAnimKeyFrameData::SaveToLevelFile(FILE* _File)
     if (Transform) Transform->SaveToLevelFile(_File);
         
     fwrite(&TintColor, sizeof(Vec4), 1, _File);
-    fwrite(&bEaseOut, sizeof(bool), 1, _File);
+    fwrite(&EasingType, sizeof(UIAnimEasingType), 1, _File);
 }
 
 void UIAnimKeyFrameData::LoadFromLevelFile(FILE* _File)
@@ -56,7 +56,7 @@ void UIAnimKeyFrameData::LoadFromLevelFile(FILE* _File)
     }
         
     fread(&TintColor, sizeof(Vec4), 1, _File);
-    fread(&bEaseOut, sizeof(bool), 1, _File);
+    fread(&EasingType, sizeof(UIAnimEasingType), 1, _File);
 }
 
 bool PlayingStateUpdateIndexStrategy::UpdateCurPlayingIndex(float _AnimTimer, int& _CurPlayingKeyIndex, const vector<UIAnimKeyFrameData>& _KeyFrames)
@@ -192,10 +192,20 @@ void UIAnimTrack::UpdateTrack(float _AnimTimer)
     const UIAnimKeyFrameData& CurrentKeyFrame   = KeyFrames[CurPlayingKeyIndex];
     
     // 이전 키 프레임과 현재 키 프레임 사이의 Time 간격으로 값 보간 처리
-    
+
     const float TimeDiff            = CurrentKeyFrame.Time - PrevKeyFrame.Time;
     const float CurrentKeyFrameTime = _AnimTimer - PrevKeyFrame.Time; // 이전 키 프레임과 현재 키 프레임 사이의 시간 흐름
-    const float TimeAlpha           = MappingToNewRange(CurrentKeyFrameTime, 0.f, TimeDiff, 0.f, 1.f);
+    float TimeAlpha                 = MappingToNewRange(CurrentKeyFrameTime, 0.f, TimeDiff, 0.f, 1.f);
+
+    switch (CurrentKeyFrame.EasingType)
+    {
+    /*case UIAnimEasingType::LINEAR:
+        break;*/
+    case UIAnimEasingType::EASE_OUT:
+        // Quadratic Ease-Out : 1 - (1 - t) * (1 - t)
+        TimeAlpha = 1.f - (1.f - TimeAlpha) * (1.f - TimeAlpha);
+        break;
+    }
     
     // Transform S, R, T 사이 보간 처리 (다른 값 x 오로지 s, r, t만 처리할 것)
     Vec3 TargetPos   = Lerp(PrevKeyFrame.Transform->GetRelativePos(), CurrentKeyFrame.Transform->GetRelativePos(), TimeAlpha);
