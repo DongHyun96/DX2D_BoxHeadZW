@@ -62,7 +62,12 @@ public: // Editing 관련 함수들
     /// 해당 index 번째 Animation에서 제거
     /// </summary>
     /// <returns> : Editing 상태가 아니거나, index 초과 시 return false </returns>
-    bool RemoveTrack(int _TrackIdx);
+    bool RemoveTrackByTrackIdx(int _TrackIdx);
+
+    /// <summary>
+    /// Target GameObject를 들고 있는 Track 삭제하기 
+    /// </summary>
+    bool RemoveTrackByGameObject(GameObject* _GameObject);
 
 public:
     /// <summary>

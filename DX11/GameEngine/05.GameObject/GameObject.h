@@ -38,8 +38,9 @@ private:
 	bool m_IsActive  = true;
 	bool m_IsVisible = true;
 	
-	vector<function<void(GameObject*)>> m_vecDelegateOnActivate{}; // SetActive true 처리될 때 CallBack 처리
-	vector<function<void(GameObject*)>> m_vecDelegateOnDeactivate{}; // SetActive false 처리될 때 CallBack 처리
+	vector<function<void(GameObject*)>> 	m_vecDelegateOnActivate{};		// SetActive true 처리될 때 CallBack 처리
+	vector<function<void(GameObject*)>> 	m_vecDelegateOnDeactivate{};	// SetActive false 처리될 때 CallBack 처리
+	vector<function<void()>>				m_vecDelegateOnDestroy{};		// Destroy 처리될 때 Callback 처리 -> GameObjectRefHolder에게 Destroy 되었다고 알림 처리할 때 사용
 	
 private: // TimeScale에 따른 DT Context 관련
 
@@ -117,6 +118,8 @@ public:
 	void AddDeactivateDelegate(const function<void(GameObject*)>& _Delegate) { m_vecDelegateOnDeactivate.push_back(_Delegate); }
 	// void RemoveDeactivateDelegate(const function<void()>& _Delegate) // 이건 functional 특성 상 wrapper이기 때문에 직접 비교가 불가능 -> 특정 요소를 찝어서 remove처리 불가능
 	void AddActivateDelegate(const function<void(GameObject*)>& _Delegate) { m_vecDelegateOnActivate.push_back(_Delegate); }
+	
+	void AddDestroyDelegate(const function<void()>& _Delegate) { m_vecDelegateOnDestroy.push_back(_Delegate); }
 	
 public:
 	

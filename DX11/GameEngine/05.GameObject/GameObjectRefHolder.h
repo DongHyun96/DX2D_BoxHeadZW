@@ -10,6 +10,8 @@ private:
 	GameObject* m_GameObject{}; // 실질적인 원본 reference 객체
 	GUID		m_RefGUID{};	// Reference GameObject의 GUID
 	
+	function<void(GameObject*)> m_DelegateOnGameObjectDestroyed{}; // 래퍼런스로 들고 있었던 게임오브젝트가 Delete되었을 때, 이 GameObjectRefHolder를 사용중이었던 객체에게 알림용 Delegate
+	
 public:
 
 	GameObjectRefHolder();
@@ -31,6 +33,18 @@ public:
 	{
 		return _Other.m_RefGUID == m_RefGUID;
 	}
+
+public:
+	
+	void SetDestroyDelegate(const function<void(GameObject*)>& _Func) { m_DelegateOnGameObjectDestroyed = _Func; }
+	
+private:
+	
+	/// <summary>
+	/// 래퍼런스로 들고 있었던 GameObject가 Destroy되었을 때, Callback 받는 함수
+	/// 래퍼런스 연결을 끊고 nullptr로 처리 & 추가로 해당 Reference를 들고 있었던 다른 객체에게 Destroy되었다고 알림(만약 Destroy 관련 구독 처리가 되어 있다면)
+	/// </summary>
+	void OnGameObjectDestroyed();
 	
 public:
 	

@@ -405,7 +405,7 @@ void GameUIAnimationUI::HandlePendingRemovals(CUIAnimation* _Animation)
 {
     if (m_RemoveTrackIdx >= 0)
     {
-        _Animation->RemoveTrack(m_RemoveTrackIdx);
+        _Animation->RemoveTrackByTrackIdx(m_RemoveTrackIdx);
         if (m_SelectedTrackIdx == m_RemoveTrackIdx) { m_SelectedTrackIdx = -1; m_SelectedKeyIdx = -1; }
         m_RemoveTrackIdx = -1; 
     }

@@ -33,6 +33,15 @@ void GameObjectRefHolder::SetGameObject(GameObject* _GameObject)
     m_RefGUID    = (m_GameObject == nullptr) ? GUID_NULL : m_GameObject->GetGUID();
 }
 
+void GameObjectRefHolder::OnGameObjectDestroyed()
+{
+    if (m_DelegateOnGameObjectDestroyed) m_DelegateOnGameObjectDestroyed(m_GameObject);
+    
+    // 레퍼런스 연결 끊기
+    m_GameObject = nullptr;
+    m_RefGUID    = GUID_NULL;
+}
+
 void GameObjectRefHolder::SaveToLevelFile(FILE* _File)
 {
     fwrite(&m_RefGUID, sizeof(GUID), 1, _File);
@@ -47,4 +56,7 @@ void GameObjectRefHolder::LinkReferenceToGameObject(const Ptr<ALevel>& _Level)
 {
     if (!_Level) return;
     m_GameObject = _Level->GetObjectByGUID(m_RefGUID);
+
+    // 정상적으로 불러와졌다면, Destroy 처리에 대한 Delegate binding 처리
+    if (m_GameObject) m_GameObject->AddDestroyDelegate(bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
 }

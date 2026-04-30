@@ -504,6 +504,9 @@ void GameObject::Destroy()
 		}
 	}
 	
+	for (const function<void()>& OnDestroy : m_vecDelegateOnDestroy)
+		OnDestroy();
+	
 	TaskInfo info = {};
     
 	info.Type       = TASK_TYPE::DESTROY_OBJECT;

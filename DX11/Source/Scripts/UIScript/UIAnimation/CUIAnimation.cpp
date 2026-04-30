@@ -39,6 +39,10 @@ void CUIAnimation::AfterLevelGameObjectGuidTableInit()
             DebugUtil::AddDebugLog("[CUIAnimation::AfterLevelGameObjectGuidTableInit] : GameObject ref invalid!");
             return;
         }
+        
+        /* GameObject 래퍼런스로 들고 있었던 원본 GameObject가 Destroy 되었을 때 Callback binding */
+        // 원본 GameObject가 Destroy 당하면, 달려있었던 Track을 삭제처리한다
+        Track.TargetObjectReference.SetDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
 
         /* Original State 값들 저장 */
         Track.OriginalStateData.SetAnimDataFromGameObject(TargetObject, -1.f);
@@ -113,13 +117,32 @@ bool CUIAnimation::AddGameObjectToAnimate(GameObject* _GameObject)
     return true;
 }
 
-bool CUIAnimation::RemoveTrack(int _TrackIdx)
+bool CUIAnimation::RemoveTrackByTrackIdx(int _TrackIdx)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
     if (_TrackIdx < 0 || _TrackIdx >= m_vecTracks.size()) return false;
 
     m_vecTracks.erase(m_vecTracks.begin() + _TrackIdx);
     return true;
+}
+
+bool CUIAnimation::RemoveTrackByGameObject(GameObject* _GameObject)
+{
+    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
+
+    for (auto it = m_vecTracks.begin(); it != m_vecTracks.end(); ++it)
+    {
+        const UIAnimTrack& Track = *it;
+        
+        if (Track.TargetObjectReference.GetGameObject() == _GameObject)
+        {
+            m_vecTracks.erase(it);
+            return true;
+        }
+    }
+
+    // 일치하는 GameObject를 찾지 못함
+    return false;
 }
 
 bool CUIAnimation::AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime)
