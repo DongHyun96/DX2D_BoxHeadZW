@@ -16,7 +16,6 @@ CUIAnimation::CUIAnimation()
 CUIAnimation::CUIAnimation(const CUIAnimation& _Origin)
     : CScript(_Origin)
     , m_vecTracks(_Origin.m_vecTracks)
-    , m_bBackToStopOnAnimEnd(_Origin.m_bBackToStopOnAnimEnd)
     // 나머지 멤버변수는 초기값으로 처리 (Editing 환경에서 재생 Testing 중이던 Animation일 수 있음 -> 이걸 다시 멈춘 상태로 시작)
 {
 }
@@ -51,10 +50,10 @@ void CUIAnimation::AfterLevelGameObjectGuidTableInit()
     // Editing 환경에서도 Tick함수가 돌게끔 처리
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
     {
-        LevelMgr::GetInst()->GetCurLevel()->AddEditingTickEnabledGameObject(GetOwner());
+        LevelMgr::GetInst()->GetCurLevel()->AddEditingTickEnabledGameObject(GetOwner()); // 이거 Level Stop 할 때마다 매번 잡힘 -> set이라 안잡힘
         GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::IMPLICIT_ENGINE_DT);
     }
-    else GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::DEFAULT);
+    else GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::DEFAULT); // 이것도 문제가 될 수 있음 -> 해당 Script를 지웠다고 쳤을 때, DT_CONTEXT_TYPE이 ENGINE_DT로 잡혀서 시작할 수도 있음
     
     Stop(); // 첫 Stop 처리 추가 (Level Stop 시, Play 시 모두 필요)
     
@@ -76,9 +75,20 @@ void CUIAnimation::Tick()
     // 모든 Track의 재생이 끝났는지 체크
     if (TrackFinishedCnt >= m_vecTracks.size())
     {
-        // 모두 끝난 시점, 만약 원상태로 복구 처리 옵션이 체크 되어있다면, 원상태로 복구
-        if (m_bBackToStopOnAnimEnd) Stop();
-        m_bIsPlaying = false;
+        // 끝처리 Type에 따른 끝 처리
+        switch (m_EndHandling)
+        {
+        case UIAnimEndHandling::DEFAULT:
+            m_bIsPlaying = false;
+            return;
+        case UIAnimEndHandling::BACK_TO_STOP:
+            Stop();
+            m_bIsPlaying = false;
+            return;
+        case UIAnimEndHandling::LOOP:
+            Play(UIAnimEndHandling::LOOP);
+            return;
+        }
     }
 }
 
@@ -223,7 +233,7 @@ bool CUIAnimation::IsTrackHasObject(GameObject* _GameObject)
     return false;
 }
 
-bool CUIAnimation::Play(bool _bBackToStopOnEnd)
+bool CUIAnimation::Play(UIAnimEndHandling _EndHandlingType)
 {
     if (m_vecTracks.empty()) return false;
     
@@ -235,9 +245,9 @@ bool CUIAnimation::Play(bool _bBackToStopOnEnd)
     }
     
     // Animation 관련 값 초기 setting으로 조정
-    m_AnimTimer            = 0.f;
-    m_bIsPlaying           = true;
-    m_bBackToStopOnAnimEnd = _bBackToStopOnEnd;
+    m_AnimTimer   = 0.f;
+    m_bIsPlaying  = true;
+    m_EndHandling = _EndHandlingType;
     return true;
 }
 
@@ -271,4 +281,10 @@ void CUIAnimation::LoadFromLevelFile(FILE* _File)
         AnimTrack.LoadFromLevelFile(_File);
         m_vecTracks.push_back(AnimTrack);
     }
+}
+
+void CUIAnimation::OnRemoveScript()
+{
+    CScript::OnRemoveScript();
+    Stop();
 }

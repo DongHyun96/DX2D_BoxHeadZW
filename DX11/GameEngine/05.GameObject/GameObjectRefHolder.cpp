@@ -58,5 +58,5 @@ void GameObjectRefHolder::LinkReferenceToGameObject(const Ptr<ALevel>& _Level)
     m_GameObject = _Level->GetObjectByGUID(m_RefGUID);
 
     // 정상적으로 불러와졌다면, Destroy 처리에 대한 Delegate binding 처리
-    if (m_GameObject) m_GameObject->AddDestroyDelegate(bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
+    if (m_GameObject) m_GameObject->AddDestroyDelegate(reinterpret_cast<DWORD_PTR>(this), bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
 }

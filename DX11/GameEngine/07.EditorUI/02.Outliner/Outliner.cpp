@@ -250,13 +250,6 @@ void Outliner::ReNew()
         // 매 프레임 현재 Level에 존재하는 GameObject 정보 업데이트
         m_Tree->Clear();
 
-        // Stop 중인 경우, Editor 전용 오브젝트들 띄우기
-        if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
-        {
-            for (const Ptr<GameObject>& EditorObject : EditorMgr::GetInst()->GetGameObjects())
-                AddGameObject(nullptr, EditorObject);
-        }
-        
         Ptr<ALevel> CurLevel = LevelMgr::GetInst()->GetCurLevel();
 
         for (int i = 0; i < MAX_LAYER; ++i)
@@ -287,9 +280,10 @@ void Outliner::ReNew()
 
     m_Tree->Clear();
 
+    // Stop 중인 경우, Editor 전용 오브젝트들 띄우기
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
     {
-        for (const Ptr<GameObject>& editorObject : EditorMgr::GetInst()->GetGameObjects())
+        for (const Ptr<GameObject>& editorObject : EditorMgr::GetInst()->GetEditorGameObjects())
             AddGameObject(nullptr, editorObject);
     }
 
@@ -427,7 +421,7 @@ void Outliner::CleanupInactiveDelegateRegistrations()
 {
     for (auto iter = m_ActiveDelegateRegisteredObjects.begin(); iter != m_ActiveDelegateRegisteredObjects.end();)
     {
-        if (m_CurrentObjectDataInTree.find(*iter) == m_CurrentObjectDataInTree.end())
+        if (!m_CurrentObjectDataInTree.contains(*iter))
             iter = m_ActiveDelegateRegisteredObjects.erase(iter);
         else
             ++iter;

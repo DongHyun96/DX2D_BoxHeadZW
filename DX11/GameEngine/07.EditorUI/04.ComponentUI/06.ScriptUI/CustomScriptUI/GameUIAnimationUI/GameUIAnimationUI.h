@@ -14,13 +14,17 @@ private:
     int m_SelectedKeyIdx   = -1;
     
     // 타임라인 시각화용 줌 스케일 (1초당 픽셀 수)
-    float m_TimelineScale = 150.0f; 
+    float m_TimelineScale = 150.f; 
 
     // 트랙/키프레임 삭제 지연 처리
     int m_RemoveTrackIdx    = -1;
     int m_RemoveKeyTrackIdx = -1;
     int m_RemoveKeyIdx      = -1;
 
+private:
+    
+    const float m_MaxAnimTimeMargin = 1.f;    
+    
 public:
     GameUIAnimationUI();
     virtual ~GameUIAnimationUI() override;
@@ -28,6 +32,11 @@ public:
     void Tick_UI() override;
 
 private:
+
+    virtual void SetTargetObject(const Ptr<GameObject>& _TargetObject) override;
+        
+private:
+    
     void RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime);
     void RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime);
     void RenderBottomInspector(CUIAnimation* _Animation, bool _bCanEdit);

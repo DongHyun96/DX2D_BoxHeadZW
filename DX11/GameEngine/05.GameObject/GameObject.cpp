@@ -47,19 +47,8 @@ GameObject::GameObject(const GameObject& _Origin)
 	, m_LayerIdx(_Origin.m_LayerIdx) // 원본의 LayerIdx를 따르도록 처리
 	, m_IsActive(_Origin.m_IsActive)
 	, m_IsVisible(_Origin.m_IsVisible)
-	, m_DTContextType(_Origin.m_DTContextType)
 	, m_GUID(_Origin.m_GUID)
 {
-	/* 복사 처리 안하고 원본 초기값을 사용하는 변수들 (밑의 추가처리까지 포함해서)
-	 * m_ObjectMarkedDeactivated
-	 * m_vecDelegateOnActivate
-	 * m_vecOnDeactivate
-	 * m_Parent
-	 * m_bInLayer
-	 */
-	
-	
-	
 	// 원본 오브젝트와 동일한 세팅의 컴포넌트를 복사해서 나한테 넣어준다.
 	for (UINT i = 0; i < static_cast<UINT>(COMPONENT_TYPE::END); ++i)
 	{
@@ -223,8 +212,19 @@ bool GameObject::RemoveScript(const Ptr<CScript>& _TargetScript)
 	{
 		if (*iter == _TargetScript)
 		{
-			(*iter)->m_Owner = nullptr;
+			// OnRemoveScript Delegate 호출
+			if (m_mapDelegateOnRemoveScript.contains(iter->Get()) && m_mapDelegateOnRemoveScript[iter->Get()])
+				m_mapDelegateOnRemoveScript[iter->Get()]();
+
+			// OnRemoveScript Delegate 제거
+			m_mapDelegateOnRemoveScript.erase(iter->Get());
+
+			// Destroy Delegate 제거
+			m_mapDelegateOnDestroy.erase(reinterpret_cast<DWORD_PTR>(iter->Get()));
+			
+			// GameObject에서 Script 제거
 			m_vecScripts.erase(iter);
+			
 			return true;
 		}
 	}
@@ -268,7 +268,12 @@ bool GameObject::AddComponent(const Ptr<Component>& _Com)
 	
 	// 입력으로 들어온 컴포넌트가 스크립트면, vector로 관리
 	if (_Com->GetComponentType() == COMPONENT_TYPE::SCRIPT)
-		m_vecScripts.push_back(dynamic_cast<CScript*>(_Com.Get()));
+	{
+		CScript* Script = dynamic_cast<CScript*>(_Com.Get());
+		m_vecScripts.push_back(Script);
+		m_mapDelegateOnRemoveScript.insert(make_pair(Script, bind(&CScript::OnRemoveScript, Script)));
+		m_mapDelegateOnDestroy.insert(make_pair(reinterpret_cast<DWORD_PTR>(Script), bind(&CScript::OnOwnerDestroy, Script)));
+	}
 	
 	else // 입력으로 들어온 컴포넌트가 스크립트가 아니면, 알맞은 배열 포인터로 가리킴
 	{
@@ -503,9 +508,10 @@ void GameObject::Destroy()
 				q.push(NextChild.Get());
 		}
 	}
-	
-	for (const function<void()>& OnDestroy : m_vecDelegateOnDestroy)
-		OnDestroy();
+
+	// Destroy Delegate 처리
+	for (const pair<const DWORD_PTR, function<void()>>& Pair : m_mapDelegateOnDestroy)
+		Pair.second();
 	
 	TaskInfo info = {};
     

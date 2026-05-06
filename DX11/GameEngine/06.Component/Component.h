@@ -38,6 +38,11 @@ public:
 	COMPONENT_TYPE GetComponentType() const { return m_Type; }
 	GameObject* GetOwner() const { return m_Owner; }
 	
+protected:
+
+	void SetOwner(GameObject* _Owner) { m_Owner = _Owner; }
+
+public:
 	
     GET_OTHER_COMPONENT(Transform);
     GET_OTHER_COMPONENT(Camera);

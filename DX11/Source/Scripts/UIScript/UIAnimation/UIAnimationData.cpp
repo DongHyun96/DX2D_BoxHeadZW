@@ -203,7 +203,8 @@ void UIAnimTrack::UpdateTrack(float _AnimTimer)
         break;*/
     case UIAnimEasingType::EASE_OUT:
         // Quadratic Ease-Out : 1 - (1 - t) * (1 - t)
-        TimeAlpha = 1.f - (1.f - TimeAlpha) * (1.f - TimeAlpha);
+        const float Temp = 1.f - TimeAlpha;
+        TimeAlpha = 1.f - Temp * Temp;
         break;
     }
     

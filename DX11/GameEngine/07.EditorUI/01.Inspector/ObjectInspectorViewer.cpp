@@ -129,7 +129,7 @@ void ObjectInspectorViewer::SetTargetObject(GameObject* _Object)
 {
     m_TargetObject = _Object;
 
-    // Refresh Components
+    // Refresh Object's ComponentUIs
     for (UINT i = 0; i < static_cast<UINT>(COMPONENT_TYPE::END); ++i)
     {
         if (!m_arrComUI[i]) continue;
@@ -139,22 +139,8 @@ void ObjectInspectorViewer::SetTargetObject(GameObject* _Object)
     // Refresh Custom Script UI
     for (pair<const SCRIPT_TYPE, Ptr<CustomScriptUI>>& Pair : m_mapCustomScriptUI)
     {
-        const SCRIPT_TYPE CustomScriptType        = Pair.first;
         const Ptr<CustomScriptUI>& customScriptUI = Pair.second;
-        
-        // TargetObject가 nullptr이든, valid한 pointer이든 SetTargetObject를 해주어야 UI 창 Active가 업데이트 처리된다
         customScriptUI->SetTargetObject(m_TargetObject);
-
-        if (m_TargetObject)
-        {
-            // TargetObject가 존재하고, 일치하는 CustomScript를 TargetObject가 소유하고 있다면, 활성화 처리 
-            if (CScript* script = m_TargetObject->GetScriptComponent(CustomScriptType))
-            {
-                customScriptUI->SetScript(script);
-                customScriptUI->SetActive(true);
-            }
-            else customScriptUI->SetActive(false);
-        }
     }
 
     RefreshScripts();

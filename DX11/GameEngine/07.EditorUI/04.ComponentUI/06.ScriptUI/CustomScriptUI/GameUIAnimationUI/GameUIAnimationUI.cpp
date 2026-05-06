@@ -4,9 +4,11 @@
 #include <algorithm>
 
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
+#include "GameEngine/03.Manager/09.EditorMgr/EditorMgr.h"
 #include "GameEngine/05.GameObject/GameObject.h"
 #include "GameEngine/06.Component/RenderComponent/CRenderComponent.h"
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
+#include "Source/ScriptMgr.h"
 #include "Source/Scripts/UIScript/CText.h"
 #include "Source/Scripts/UIScript/UIAnimation/CUIAnimation.h"
 #include "Source/Scripts/UIScript/UIAnimation/UIAnimationData.h"
@@ -40,7 +42,7 @@ namespace
 }
 
 GameUIAnimationUI::GameUIAnimationUI()
-    : CustomScriptUI("GameUIAnimation(Script)")
+    : CustomScriptUI("GameUIAnimation(Script)", SCRIPT_TYPE::UIANIMATION)
 {
     m_ComponentTitle = "GameUIAnimation";
 }
@@ -54,11 +56,12 @@ void GameUIAnimationUI::Tick_UI()
     ComponentUI::Tick_UI();
 
     CUIAnimation* Animation = static_cast<CUIAnimation*>(GetScript());
-    if (!Animation) return;
 
     // 현재 레벨이 정지(STOP) 상태인지 체크
     const bool bCanEdit = (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP);
-
+    
+    ImGui::BeginDisabled(!bCanEdit);
+    
     // 데이터가 변했을 때를 대비한 Selection 안전장치
     ClearSelectionIfInvalid(Animation);
 
@@ -73,7 +76,7 @@ void GameUIAnimationUI::Tick_UI()
             if (LastTime > MaxAnimTime) MaxAnimTime = LastTime;
         }
     }
-    MaxAnimTime += 1.f; // 여백 1초 추가
+    MaxAnimTime += m_MaxAnimTimeMargin; // 여백 1초 추가
     
     // 1. 상단 재생/컨트롤 툴바
     RenderToolbar(Animation, bCanEdit, MaxAnimTime);
@@ -86,16 +89,51 @@ void GameUIAnimationUI::Tick_UI()
     // 3. 하단 인스펙터 (선택된 트랙/키프레임 편집기)
     RenderBottomInspector(Animation, bCanEdit);
 
+    ImGui::EndDisabled();
+    
     // 삭제 예약 처리
     HandlePendingRemovals(Animation);
+}
+
+void GameUIAnimationUI::SetTargetObject(const Ptr<GameObject>& _TargetObject)
+{
+    // 이전 TargetObject가 존재했다면, Animation Stop 처리
+    // Outliner ReNew를 통해서도 호출됨 -> Level Play 상태에서의 ReNew 로는 들어오지 않음
+    // -> Level Stop시에만 SetTargetObject가 호출됨
+    // Inspector 포커스를 잃었을 때, 포커스가 잡힌 CUIAnimation을 들고 있었던 GameObject의 Focus가 모두 사라졌는지 확인해서
+    // 모두 사라졌다면, Animation Stop 호출 처리
+    GameObject* PrevTargetObject = GetTargetObject().Get();
+    CustomScriptUI::SetTargetObject(_TargetObject);
+
+    // 이전 TargetObject가 없었다면, 따로 Animation Stop 처리할 일 x
+    if (!PrevTargetObject) return;
+    
+    // Focus를 잃었음
+    if (!GetTargetObject())
+    {
+        // 현재 띄워져있는 모든 Inspector에 대한 이 GameObject Focus가 사라졌다면, 해당 Animation Stop 처리를 함으로써
+        // 레퍼런스로 들고 있었던 GameObject들 원본값으로 되돌리기
+        for (const Ptr<Inspector>& inspector : EditorMgr::GetInst()->GetInspectors())
+        {
+            // 아직 해당 GO의 Focus가 남은 Inspector가 존재하는 상황 (Lock이 걸려있는 오브젝트가 있다거나,
+            // 아직 Inspector SetTargetObject Loop가 모두 돌지 않았거나(마지막 오브젝트 Loop가 들어왔을 때 비로소 제대로 해제 처리가 됨)...)
+            if (inspector->GetTargetObject() == PrevTargetObject) return;
+        }
+        
+        // 해당 GO의 Focus를 모두 잃은 상태, Animation Stop 처리
+        if (Ptr<CUIAnimation> UIAnimationScript = PrevTargetObject->GetScriptComponent<CUIAnimation>())
+            UIAnimationScript->Stop();
+    }
 }
 
 void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime)
 {
     // 재생 컨트롤
-    if (ImGui::Button("Play")) { _Animation->Play(false); }
+    if (ImGui::Button("Play")) { _Animation->Play(); }
     ImGui::SameLine();
-    if (ImGui::Button("Play(AutoStop)")) { _Animation->Play(true); }
+    if (ImGui::Button("Play(AutoStop)")) { _Animation->Play(UIAnimEndHandling::BACK_TO_STOP); }
+    ImGui::SameLine();
+    if (ImGui::Button("Play(Loop)")) { _Animation->Play(UIAnimEndHandling::LOOP); }
     ImGui::SameLine();
     if (ImGui::Button("Stop")) { _Animation->Stop(); }
 
@@ -182,7 +220,7 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
             }
             
             ImGui::SameLine();
-            ImGui::Text("%s", GetGameObjectName(TargetObj).c_str());
+            ImGui::Text(GetGameObjectName(TargetObj).c_str());
             ImGui::PopID();
 
             // --- [2열] 도프시트 타임라인 ---
@@ -248,21 +286,22 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
             }
         }
 
-        // Current Time Indicator 기능
-        
+        // Current Time Indicator
+
         float currentDisplayTime = _Animation->IsPlaying() ? _Animation->GetAnimTimer() : _Animation->GetEditingAnimTimer();
-        float scrubberX = s_ActualTimelineStartX + (currentDisplayTime * m_TimelineScale);
-        ImVec2 tableEndPos = ImGui::GetCursorScreenPos();
+        float scrubberX          = s_ActualTimelineStartX + (currentDisplayTime * m_TimelineScale);
+        ImVec2 tableEndPos       = ImGui::GetCursorScreenPos();
         
-        drawList->AddLine(
+        drawList->AddLine
+        (
             ImVec2(scrubberX, timelineAreaPos.y), 
             ImVec2(scrubberX, tableEndPos.y), 
-            IM_COL32(0, 255, 0, 255), 2.0f
+            IM_COL32(0, 255, 0, 255), 2.f
         );
 
         ImVec2 triP1(scrubberX, timelineAreaPos.y);
-        ImVec2 triP2(scrubberX - 6.0f, timelineAreaPos.y - 12.0f);
-        ImVec2 triP3(scrubberX + 6.0f, timelineAreaPos.y - 12.0f);
+        ImVec2 triP2(scrubberX - 6.f, timelineAreaPos.y - 12.f);
+        ImVec2 triP3(scrubberX + 6.f, timelineAreaPos.y - 12.f);
         drawList->AddTriangleFilled(triP1, triP2, triP3, IM_COL32(0, 255, 0, 255));
 
         ImGui::EndTable();

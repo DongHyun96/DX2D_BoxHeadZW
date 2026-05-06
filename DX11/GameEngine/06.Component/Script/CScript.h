@@ -39,6 +39,9 @@ struct tScriptParam
 
 class CScript : public Component
 {
+    
+    friend class GameObject;
+    
 private:
     
     const int               m_ScriptType{};
@@ -93,6 +96,18 @@ protected:
             m_vecScriptParam.erase(it);
         }
     }
+    
+protected:
+    
+    /// <summary>
+    /// Owner GO에서 RemoveScript로 이 Script가 Remove당했을 때 Callback 받는 함수 
+    /// </summary>
+    virtual void OnRemoveScript() { SetOwner(nullptr); }
+
+    /// <summary>
+    /// Owner Go가 Destroy되었을 때 호출처리될 함수 (만약 Owner Destroy 이전에 할 일이 있다면 이 함수 override 받아서 실행)
+    /// </summary>
+    virtual void OnOwnerDestroy() {}
     
 public:
     

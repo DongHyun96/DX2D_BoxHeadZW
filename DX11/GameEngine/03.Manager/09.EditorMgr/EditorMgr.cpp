@@ -36,6 +36,22 @@ EditorMgr::~EditorMgr()
     }
 }
 
+void EditorMgr::SetTargetObjectToInspectors(const Ptr<GameObject>& _GameObject)
+{
+    for (const Ptr<Inspector>& inspector : m_vecInspector)
+    {
+        inspector->SetTargetObject(_GameObject);
+    }
+    
+    
+}
+
+void EditorMgr::SetTargetAssetToInspectors(const Ptr<Asset>& _Asset)
+{
+    for (const Ptr<Inspector>& inspector : m_vecInspector)
+        inspector->SetTargetAsset(_Asset);
+}
+
 void EditorMgr::AddInspector()
 {
     const string InspectorUIName = "Inspector" + to_string(m_vecInspector.size());

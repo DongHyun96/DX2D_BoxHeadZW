@@ -139,6 +139,7 @@ void TimeMgr::Render()
         wchar_t buff[255];
         swprintf_s(buff, L"%d FPS", m_FPSDisplay);
         FontMgr::GetInst()->DrawFont(buff, 10, 30, 24, FONT_RGBA(200, 20, 20, 255));
+        DebugUtil::SetPermanentDebugLog("FPS", "FPS : " + to_string(m_FPSDisplay), DEF_COLOR_WHITE);
     }
     
     if (KEY_TAP(KEY::F1)) Flag = !Flag;

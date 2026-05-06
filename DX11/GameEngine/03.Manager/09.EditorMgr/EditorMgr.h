@@ -41,21 +41,13 @@ public:
 
     void RegisterFocusedUI(const Ptr<EditorUI>& _UI) { m_FocusedUI = _UI; }
 
-    const vector<Ptr<GameObject>>& GetGameObjects() const { return m_vecEditorObject; }
+    const vector<Ptr<GameObject>>& GetEditorGameObjects() const { return m_vecEditorObject; }
     
     const vector<Ptr<Inspector>>& GetInspectors() const { return m_vecInspector; }
     
-    void SetTargetObjectToInspectors(const Ptr<GameObject>& _GameObject)
-    {
-        for (const Ptr<Inspector>& inspector : m_vecInspector)
-            inspector->SetTargetObject(_GameObject);
-    }
+    void SetTargetObjectToInspectors(const Ptr<GameObject>& _GameObject);
     
-    void SetTargetAssetToInspectors(const Ptr<Asset>& _Asset)
-    {
-        for (const Ptr<Inspector>& inspector : m_vecInspector)
-            inspector->SetTargetAsset(_Asset);        
-    }
+    void SetTargetAssetToInspectors(const Ptr<Asset>& _Asset);
     
 public:
     

@@ -1,6 +1,13 @@
 ﻿#pragma once
 
 
+enum class UIAnimEndHandling
+{
+    DEFAULT,        // 마지막 상태 유지
+    BACK_TO_STOP,   // Stop 상태로 돌아가기
+    LOOP            // Animation Loop 처리
+};
+
 
 class CUIAnimation : public CScript
 {
@@ -12,7 +19,7 @@ private:
 private:
     
     bool m_bIsPlaying{};
-    bool m_bBackToStopOnAnimEnd{}; // Animation 재생이 끝났을 때, 바로 Stop 처리할지(원본 데이터로 돌아갈지) 여부
+    UIAnimEndHandling m_EndHandling{}; // Animation 재생이 끝났을 때, 어떻게 처리할 것인지에 대한 정보
     
     float m_AnimTimer{}; // Animation 재생 Timer (실제 Play 처리에 쓰일 Timer)
     
@@ -99,11 +106,24 @@ private:
     
 public: // 실제 Level play시 처리 가능한 함수들 
     
-    bool Play(bool _bBackToStopOnEnd = false);
+    bool Play(UIAnimEndHandling _EndHandlingType = UIAnimEndHandling::DEFAULT);
     void Stop();
     
 public:
     
     void SaveToLevelFile(FILE* _File) override;
     void LoadFromLevelFile(FILE* _File) override;
+
+private:
+    
+    /// <summary>
+    /// 이 Script 제거 시에 호출받을 함수 (UIAnimation Script가 제거되기 이전, Stop처리로 레퍼런스로 들고 있었던 GameObject 원본값으로 돌리기) 
+    /// </summary>
+    virtual void OnRemoveScript() override;
+
+    /// <summary>
+    /// Owner GO 자체가 삭제처리되었을 때 (역시사 Stop 처리를 해주어, GO Reference가 원본값으로 돌아가도록 처리)
+    /// </summary>
+    virtual void OnOwnerDestroy() override { Stop(); }
+    
 };

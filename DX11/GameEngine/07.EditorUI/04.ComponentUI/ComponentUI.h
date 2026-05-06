@@ -7,14 +7,12 @@ class ComponentUI : public EditorUI
 {
 protected:
     
-    string m_ComponentTitle{};
+    string          m_ComponentTitle{};
+    Ptr<GameObject> m_TargetObject{};
     
 private:
     
-    Ptr<GameObject> m_TargetObject;
     const COMPONENT_TYPE  m_ComType;
-    
-    
     
 public:
     
@@ -30,7 +28,7 @@ public:
     
 public:
     
-    GET(Ptr<GameObject>, TargetObject)
+    Ptr<GameObject> GetTargetObject() const { return m_TargetObject; }
 
     /// <summary>
     /// <para> ComponentUI에 띄울 TargetObject 세팅 </para>
@@ -38,7 +36,7 @@ public:
     /// <para> 만약 TargetObject가 nullptr이거나, 해당 TargetObject에 대응되는 Component가 존재하지 않다면 자신의 Active를 끈다. </para> 
     /// </summary>
     /// <param name="_TargetObject"></param>
-    void SetTargetObject(const Ptr<GameObject>& _TargetObject);
+    virtual void SetTargetObject(const Ptr<GameObject>& _TargetObject);
     
 private:
     

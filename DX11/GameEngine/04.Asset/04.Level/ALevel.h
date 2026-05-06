@@ -57,7 +57,7 @@ public:
     void AddObject(int _LayerIdx, const Ptr<GameObject>& _Object);
     void Deregister();
     
-    void AddEditingTickEnabledGameObject(GameObject* _GameObject);    
+    void AddEditingTickEnabledGameObject(GameObject* _GameObject);
 
 public:
     

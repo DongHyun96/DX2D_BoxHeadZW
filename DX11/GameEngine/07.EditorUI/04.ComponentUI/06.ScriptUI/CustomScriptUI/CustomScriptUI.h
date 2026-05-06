@@ -5,19 +5,24 @@ class CustomScriptUI : public ComponentUI
 {
 private:
 
-    CScript* m_TargetScript{};
+    CScript*            m_TargetScript{};
+    const SCRIPT_TYPE   m_CustomScriptType{};
     
 public:
-    CustomScriptUI(const string& _Name);
+    
+    CustomScriptUI(const string& _Namem, SCRIPT_TYPE _CustomScripType);
     virtual ~CustomScriptUI() override;
 
 public:
     
     virtual void OnRemoveComponentConfirmed(bool _Confirmed) override;
-    
+
 public:
     
-    void SetScript(CScript* _Script) { m_TargetScript = _Script; }
+    virtual void SetTargetObject(const Ptr<GameObject>& _TargetObject) override;
+
+protected:
+    
     CScript* GetScript() const { return m_TargetScript; }
     
 };
