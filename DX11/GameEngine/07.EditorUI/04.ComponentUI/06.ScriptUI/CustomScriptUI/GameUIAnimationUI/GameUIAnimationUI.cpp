@@ -8,6 +8,7 @@
 #include "GameEngine/05.GameObject/GameObject.h"
 #include "GameEngine/06.Component/RenderComponent/CRenderComponent.h"
 #include "GameEngine/07.EditorUI/07.TreeUI/TreeUI.h"
+#include "GameEngine/07.EditorUI/10.ConfirmUI/ConfirmUI.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Scripts/UIScript/CText.h"
 #include "Source/Scripts/UIScript/UIAnimation/CUIAnimation.h"
@@ -343,8 +344,17 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
     }
 
     ImGui::SameLine(ImGui::GetWindowWidth() - 120.0f);
-    if (ImGui::Button("Remove Track")) 
+    if (ImGui::Button("Remove Track"))
+    {
         m_RemoveTrackIdx = m_SelectedTrackIdx;
+        
+        Ptr<ConfirmUI> pUI = dynamic_cast<ConfirmUI*>(EditorMgr::GetInst()->FindUI("ConfirmUI").Get());
+        assert(pUI.Get());
+                    
+        pUI->SetWarningText("Are you sure you want to delete this Track?");
+        pUI->SetDelegate(this, static_cast<DELEGATE_BOOL>(&GameUIAnimationUI::OnRemoveTrackConfirmUI));
+        pUI->SetActive(true);
+    }
 
     ImGui::EndDisabled();
     ImGui::Separator();
@@ -436,9 +446,21 @@ void GameUIAnimationUI::ClearSelectionIfInvalid(CUIAnimation* _Animation)
     }
 }
 
+void GameUIAnimationUI::OnRemoveTrackConfirmUI(bool _Confirmed)
+{
+    if (_Confirmed)
+    {
+        m_PendingToRemoveTrack = true;
+        return;
+    }
+
+    m_PendingToRemoveTrack = false;
+    m_RemoveTrackIdx       = -1;
+}
+
 void GameUIAnimationUI::HandlePendingRemovals(CUIAnimation* _Animation)
 {
-    if (m_RemoveTrackIdx >= 0)
+    if (m_RemoveTrackIdx >= 0 && m_PendingToRemoveTrack)
     {
         _Animation->RemoveTrackByTrackIdx(m_RemoveTrackIdx);
         if (m_SelectedTrackIdx == m_RemoveTrackIdx) { m_SelectedTrackIdx = -1; m_SelectedKeyIdx = -1; }

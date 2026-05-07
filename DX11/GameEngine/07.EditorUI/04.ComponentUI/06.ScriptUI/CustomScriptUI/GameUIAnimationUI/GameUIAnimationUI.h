@@ -23,6 +23,10 @@ private:
 
 private:
     
+    bool m_PendingToRemoveTrack{};
+    
+private:
+    
     const float m_MaxAnimTimeMargin = 1.f;    
     
 public:
@@ -43,4 +47,9 @@ private:
     
     void HandlePendingRemovals(CUIAnimation* _Animation);
     void ClearSelectionIfInvalid(CUIAnimation* _Animation);
+
+private:
+    
+    void OnRemoveTrackConfirmUI(bool _Confirmed);
+    
 };
