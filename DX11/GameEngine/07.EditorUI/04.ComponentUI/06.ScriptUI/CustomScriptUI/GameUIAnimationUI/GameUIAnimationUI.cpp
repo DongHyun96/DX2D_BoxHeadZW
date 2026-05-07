@@ -402,20 +402,20 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
             if (ImGui::DragFloat3("Scale", Scale, 0.1f))
             {
                 KeyFrame.Transform->SetRelativeScale(Scale);
-                _Animation->SetEditingAnimTime(_Animation->GetEditingAnimTimer()); // 수정한 Data로 수정처리
+                _Animation->SetEditingAnimTime(_Animation->GetEditingAnimTimer());
             }
             ImGui::SetNextItemWidth(250.0f);
             if (ImGui::DragFloat3("Rotation", RotDeg, 0.5f))
             {
                 KeyFrame.Transform->SetRelativeRot(RotDeg * (XM_PI / 180.f));
-                _Animation->SetEditingAnimTime(_Animation->GetEditingAnimTimer()); // 수정한 Data로 수정처리
+                _Animation->SetEditingAnimTime(_Animation->GetEditingAnimTimer());
             }
 
             Vec4 TintColor = KeyFrame.TintColor;
             if (ImGui::ColorEdit4("Tint Color", TintColor, ImGuiColorEditFlags_Float))
             {
                 KeyFrame.TintColor = TintColor;
-                _Animation->SetEditingAnimTime(_Animation->GetEditingAnimTimer()); // 수정한 Data로 수정처리
+                _Animation->SetEditingAnimTime(_Animation->GetEditingAnimTimer());
             }
         }
 
