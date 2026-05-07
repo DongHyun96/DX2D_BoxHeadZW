@@ -94,16 +94,15 @@ void CUIAnimation::Tick()
 
 void CUIAnimation::SetEditingAnimTime(float _Time)
 {
+    // 재생 중이 아닐 때에만 Editing timer를 사용하여 상태 업데이트
+    if (m_bIsPlaying) return;
+    
     m_EditingAnimTimer = max(_Time, 0.f);
     
-    // 재생 중이 아닐 때에만 Editing timer를 사용하여 상태 업데이트
-    if (!m_bIsPlaying)
+    for (UIAnimTrack& Track : m_vecTracks)
     {
-        for (UIAnimTrack& Track : m_vecTracks)
-        {
-            Track.ManuallyUpdateTintColorControlType();
-            Track.UpdateTrack(m_EditingAnimTimer);
-        }
+        Track.ManuallyUpdateTintColorControlType();
+        Track.UpdateTrack(m_EditingAnimTimer);
     }
 }
 
@@ -122,6 +121,9 @@ bool CUIAnimation::AddGameObjectToAnimate(GameObject* _GameObject)
     UIAnimKeyFrameData FirstKeyFrame = NewAnimTrack.OriginalStateData;
     FirstKeyFrame.Time               = 0.f;
     NewAnimTrack.KeyFrames.push_back(move(FirstKeyFrame));
+
+    // Stop 처리를 함으로 초기화 처리(ex) KeyFrameIdx UpdateStrategy 기타 등등)
+    NewAnimTrack.Stop();
     
     m_vecTracks.push_back(move(NewAnimTrack));
     return true;

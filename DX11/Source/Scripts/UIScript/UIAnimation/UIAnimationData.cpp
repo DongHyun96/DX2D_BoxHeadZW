@@ -100,6 +100,7 @@ UIAnimTrack::UIAnimTrack(UIAnimTrack&& _Origin) noexcept
     : TargetObjectReference(move(_Origin.TargetObjectReference)) // 여기서는 원본 GO 레퍼런스 모두 이동 (GUID 뿐 아니라 GO 포인터까지)
     , OriginalStateData(move(_Origin.OriginalStateData))
     , KeyFrames(move(_Origin.KeyFrames))
+    , m_UpdateUIKeyIndexStrategy(_Origin.m_UpdateUIKeyIndexStrategy)
 {
     // 곧 소멸할 객체에 대해, 안전 처리
     _Origin.TargetText                 = nullptr;
