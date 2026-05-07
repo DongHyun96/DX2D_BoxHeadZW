@@ -107,23 +107,20 @@ void GameUIAnimationUI::SetTargetObject(const Ptr<GameObject>& _TargetObject)
 
     // 이전 TargetObject가 없었다면, 따로 Animation Stop 처리할 일 x
     if (!PrevTargetObject) return;
-    
-    // Focus를 잃었음
-    if (!GetTargetObject())
+
+    // 이전 CUIAnimation Object Focus를 잃은 경우
+    // 현재 띄워져있는 모든 Inspector에 대한 이 GameObject Focus가 사라졌다면, 해당 Animation Stop 처리를 함으로써
+    // 레퍼런스로 들고 있었던 GameObject들 원본값으로 되돌리기
+    for (const Ptr<Inspector>& inspector : EditorMgr::GetInst()->GetInspectors())
     {
-        // 현재 띄워져있는 모든 Inspector에 대한 이 GameObject Focus가 사라졌다면, 해당 Animation Stop 처리를 함으로써
-        // 레퍼런스로 들고 있었던 GameObject들 원본값으로 되돌리기
-        for (const Ptr<Inspector>& inspector : EditorMgr::GetInst()->GetInspectors())
-        {
-            // 아직 해당 GO의 Focus가 남은 Inspector가 존재하는 상황 (Lock이 걸려있는 오브젝트가 있다거나,
-            // 아직 Inspector SetTargetObject Loop가 모두 돌지 않았거나(마지막 오브젝트 Loop가 들어왔을 때 비로소 제대로 해제 처리가 됨)...)
-            if (inspector->GetTargetObject() == PrevTargetObject) return;
-        }
-        
-        // 해당 GO의 Focus를 모두 잃은 상태, Animation Stop 처리
-        if (Ptr<CUIAnimation> UIAnimationScript = PrevTargetObject->GetScriptComponent<CUIAnimation>())
-            UIAnimationScript->Stop();
+        // 아직 해당 GO의 Focus가 남은 Inspector가 존재하는 상황 (Lock이 걸려있는 오브젝트가 있다거나,
+        // 아직 Inspector SetTargetObject Loop가 모두 돌지 않았거나(마지막 오브젝트 Loop가 들어왔을 때 비로소 제대로 해제 처리가 됨)...)
+        if (inspector->GetTargetObject() == PrevTargetObject) return;
     }
+    
+    // 해당 GO의 Focus를 모두 잃은 상태, Animation Stop 처리
+    if (Ptr<CUIAnimation> UIAnimationScript = PrevTargetObject->GetScriptComponent<CUIAnimation>())
+        UIAnimationScript->Stop();
 }
 
 void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime)

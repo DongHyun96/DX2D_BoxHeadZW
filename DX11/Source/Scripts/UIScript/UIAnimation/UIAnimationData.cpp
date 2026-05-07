@@ -87,9 +87,13 @@ bool StopStateEditorUpdateIndexStrategy::UpdateCurPlayingIndex(float _AnimTimer,
 }
 
 
-// 여기서는 GUID 복사만 일어남 (AfterLevelGameObjectGuidTableInit 시점에 GameObject ref 제대로 잡아주어야 함)
+
+
+
+
+
 UIAnimTrack::UIAnimTrack(const UIAnimTrack& _Origin)
-    : TargetObjectReference(_Origin.TargetObjectReference)
+    : TargetObjectReference(_Origin.TargetObjectReference) // 여기서는 GUID 복사만 일어남 (AfterLevelGameObjectGuidTableInit 시점에 GameObject ref 제대로 잡아주어야 함)
     , OriginalStateData(_Origin.OriginalStateData)
     , KeyFrames(_Origin.KeyFrames)
     // 나머지 멤버변수는 초기값으로 둠 (Editing 환경에서 Play 상태로 테스팅 중이었던 상태 복구처리)

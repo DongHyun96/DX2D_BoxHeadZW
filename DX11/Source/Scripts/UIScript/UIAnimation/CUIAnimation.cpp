@@ -44,7 +44,11 @@ void CUIAnimation::AfterLevelGameObjectGuidTableInit()
         Track.TargetObjectReference.SetDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
 
         /* Original State 값들 저장 */
-        Track.OriginalStateData.SetAnimDataFromGameObject(TargetObject, -1.f);
+        // Level Stop 상황이라면, TargetObject Data로 초기화
+        // Level Play 상황이라면, 기존에 복사생성자로 복사해둔 OriginalStateData를 사용 -> Editing 상태에서 Animation을 재생중인 상태에서 Play로 전환했을 수 있음
+        // 이때는 원본 GO가 이미 오염된 상황이라 복사생성자를 통해 받은 OriginalStateData를 그대로 사용해야 제대로 Initial 값으로 초기화 처리가 됨
+        if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
+            Track.OriginalStateData.SetAnimDataFromGameObject(TargetObject, -1.f);
     }
     
     // Editing 환경에서도 Tick함수가 돌게끔 처리
@@ -215,7 +219,7 @@ int CUIAnimation::SortKeyFrames(int _TrackIdx, int _CurrentIdx)
     UIAnimKeyFrameData selectedData = KeyFrames[_CurrentIdx];
 
     // 시간순 정렬
-    std::sort(KeyFrames.begin(), KeyFrames.end(), [](const UIAnimKeyFrameData& a, const UIAnimKeyFrameData& b) {
+    sort(KeyFrames.begin(), KeyFrames.end(), [](const UIAnimKeyFrameData& a, const UIAnimKeyFrameData& b) {
         return a.Time < b.Time;
     });
 
