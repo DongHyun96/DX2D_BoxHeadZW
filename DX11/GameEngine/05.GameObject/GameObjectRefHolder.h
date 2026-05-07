@@ -16,6 +16,15 @@ public:
 
 	GameObjectRefHolder();
 	GameObjectRefHolder(const GameObjectRefHolder& _Origin);
+	GameObjectRefHolder(GameObjectRefHolder&& _Origin) noexcept;
+	
+	GameObjectRefHolder& operator=(const GameObjectRefHolder& _Other);
+	GameObjectRefHolder& operator=(GameObjectRefHolder&& _Other) noexcept;
+	
+	
+	
+public:
+	
 	GameObjectRefHolder(GameObject* _Object);
 	GameObjectRefHolder(GUID _Guid);
 	~GameObjectRefHolder();

@@ -96,6 +96,59 @@ UIAnimTrack::UIAnimTrack(const UIAnimTrack& _Origin)
 {
 }
 
+UIAnimTrack::UIAnimTrack(UIAnimTrack&& _Origin) noexcept
+    : TargetObjectReference(move(_Origin.TargetObjectReference)) // 여기서는 원본 GO 레퍼런스 모두 이동 (GUID 뿐 아니라 GO 포인터까지)
+    , OriginalStateData(move(_Origin.OriginalStateData))
+    , KeyFrames(move(_Origin.KeyFrames))
+{
+    // 곧 소멸할 객체에 대해, 안전 처리
+    _Origin.TargetText                 = nullptr;
+    _Origin.TargetMaterial             = nullptr;
+    _Origin.m_UpdateUIKeyIndexStrategy = nullptr;
+}
+
+UIAnimTrack& UIAnimTrack::operator=(const UIAnimTrack& _Other)
+{
+    if (this == &_Other) return *this; 
+
+    TargetObjectReference = _Other.TargetObjectReference;
+    OriginalStateData     = _Other.OriginalStateData;
+    KeyFrames             = _Other.KeyFrames;
+
+    // 2. 런타임 상태 초기화 (복사 생성자와 동일한 로직 적용)
+    CurPlayingKeyIndex   = 0;
+    bIsPlaying           = false;
+    TintColorControlType = TintColorControl::NONE;
+    TargetText           = nullptr;
+    TargetMaterial       = nullptr;
+    m_UpdateUIKeyIndexStrategy = s_mapUpdateAnimKeyIndexStrategies[UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::DEFAULT].Get();
+
+    return *this;
+}
+
+UIAnimTrack& UIAnimTrack::operator=(UIAnimTrack&& _Other) noexcept
+{
+    if (this == &_Other) return *this; 
+
+    TargetObjectReference = move(_Other.TargetObjectReference);
+    OriginalStateData     = move(_Other.OriginalStateData);
+    KeyFrames             = move(_Other.KeyFrames);
+
+    CurPlayingKeyIndex   = 0;
+    bIsPlaying           = false;
+    TintColorControlType = TintColorControl::NONE;
+    TargetText           = nullptr;
+    TargetMaterial       = nullptr;
+    m_UpdateUIKeyIndexStrategy = s_mapUpdateAnimKeyIndexStrategies[UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::DEFAULT].Get();
+
+    // 3. 뺏긴 원본 객체의 포인터 안전하게 비우기
+    _Other.TargetText                 = nullptr;
+    _Other.TargetMaterial             = nullptr;
+    _Other.m_UpdateUIKeyIndexStrategy = nullptr;
+
+    return *this;
+}
+
 void UIAnimTrack::SaveToLevelFile(FILE* _File)
 {
     TargetObjectReference.SaveToLevelFile(_File);

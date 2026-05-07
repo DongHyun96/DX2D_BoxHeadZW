@@ -162,14 +162,6 @@ void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, 
 
 void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime)
 {
-    vector<UIAnimTrack>& Tracks = _Animation->GetTracks();
-
-    if (Tracks.empty())
-    {
-        ImGui::Text("No tracks.");
-        return;
-    }
-
     ImGui::BeginDisabled(!_bCanEdit);
     ImGui::Button("Drop GameObject Here to Add Track", ImVec2(-FLT_MIN, 30.0f));
     if (ImGui::BeginDragDropTarget())
@@ -187,6 +179,14 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
     }
     ImGui::EndDisabled();
 
+    vector<UIAnimTrack>& Tracks = _Animation->GetTracks();
+
+    if (Tracks.empty())
+    {
+        ImGui::Text("No tracks.");
+        return;
+    }
+    
     ImVec2 timelineAreaPos = ImGui::GetCursorScreenPos();
     static float s_ActualTimelineStartX = timelineAreaPos.x + 200.0f;
 
@@ -240,12 +240,12 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
             const int keyCount = static_cast<int>(Track.KeyFrames.size());
             for (int KeyIdx = 0; KeyIdx < keyCount; ++KeyIdx)
             {
-                float time = Track.KeyFrames[KeyIdx].Time;
-                float keyX = cellPos.x + (time * m_TimelineScale);
-                float keyY = cellPos.y + (cellHeight * 0.5f);
+                const float time = Track.KeyFrames[KeyIdx].Time;
+                const float keyX = cellPos.x + (time * m_TimelineScale);
+                const float keyY = cellPos.y + (cellHeight * 0.5f);
 
                 ImGui::SetCursorScreenPos(ImVec2(keyX - 6.0f, cellPos.y));
-                ImGui::PushID(KeyIdx);
+                ImGui::PushID(TrackIdx * 1000.f + KeyIdx);
                 ImGui::InvisibleButton("##Key", ImVec2(12.0f, cellHeight));
 
                 // 다이아몬드 모양 키프레임 기능
@@ -254,9 +254,8 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
                     m_SelectedTrackIdx = TrackIdx;
                     m_SelectedKeyIdx = KeyIdx;
 
-                    float mouseXInTimeline = ImGui::GetIO().MousePos.x - cellPos.x;
-                    float newTime = mouseXInTimeline / m_TimelineScale;
-                    newTime = max(newTime, 0.f);
+                    const float mouseXInTimeline = ImGui::GetIO().MousePos.x - cellPos.x;
+                    const float newTime          = max(mouseXInTimeline / m_TimelineScale, 0.f);
 
                     if (Track.KeyFrames[KeyIdx].Time != newTime)
                     {
@@ -276,20 +275,20 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
                 bool bIsSelectedKey = (m_SelectedTrackIdx == TrackIdx && m_SelectedKeyIdx == KeyIdx);
                 ImU32 keyColor = bIsSelectedKey ? IM_COL32(255, 50, 50, 255) : IM_COL32(255, 165, 0, 255);
 
-                ImVec2 p1(keyX, keyY - 5.0f);
-                ImVec2 p2(keyX + 5.0f, keyY);
-                ImVec2 p3(keyX, keyY + 5.0f);
-                ImVec2 p4(keyX - 5.0f, keyY);
+                const ImVec2 p1(keyX, keyY - 5.0f);
+                const ImVec2 p2(keyX + 5.0f, keyY);
+                const ImVec2 p3(keyX, keyY + 5.0f);
+                const ImVec2 p4(keyX - 5.0f, keyY);
                 
                 drawList->AddQuadFilled(p1, p2, p3, p4, keyColor);
-                drawList->AddQuad(p1, p2, p3, p4, IM_COL32(0, 0, 0, 255), 1.0f);
+                drawList->AddQuad(p1, p2, p3, p4, IM_COL32(0, 0, 0, 255), 1.f);
             }
         }
 
         // Current Time Indicator
 
-        float currentDisplayTime = _Animation->IsPlaying() ? _Animation->GetAnimTimer() : _Animation->GetEditingAnimTimer();
-        float scrubberX          = s_ActualTimelineStartX + (currentDisplayTime * m_TimelineScale);
+        const float currentDisplayTime = _Animation->IsPlaying() ? _Animation->GetAnimTimer() : _Animation->GetEditingAnimTimer();
+        const float scrubberX          = s_ActualTimelineStartX + (currentDisplayTime * m_TimelineScale);
         ImVec2 tableEndPos       = ImGui::GetCursorScreenPos();
         
         drawList->AddLine

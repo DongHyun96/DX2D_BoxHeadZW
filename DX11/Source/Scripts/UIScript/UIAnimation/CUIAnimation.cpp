@@ -121,9 +121,9 @@ bool CUIAnimation::AddGameObjectToAnimate(GameObject* _GameObject)
     // 0번 키프레임 추가 (일단 첫 키 프레임 생성은 원본의 값과 동일한 값으로 세팅되게끔 처리한다)
     UIAnimKeyFrameData FirstKeyFrame = NewAnimTrack.OriginalStateData;
     FirstKeyFrame.Time               = 0.f;
-    NewAnimTrack.KeyFrames.push_back(FirstKeyFrame);
+    NewAnimTrack.KeyFrames.push_back(move(FirstKeyFrame));
     
-    m_vecTracks.push_back(NewAnimTrack);
+    m_vecTracks.push_back(move(NewAnimTrack));
     return true;
 }
 

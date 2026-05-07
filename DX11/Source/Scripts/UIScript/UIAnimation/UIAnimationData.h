@@ -95,7 +95,13 @@ public:
     
     UIAnimTrack() = default;
     ~UIAnimTrack() = default;
+    
     UIAnimTrack(const UIAnimTrack& _Origin);
+    UIAnimTrack(UIAnimTrack&& _Origin) noexcept;
+    
+    UIAnimTrack& operator=(const UIAnimTrack& _Other);
+    UIAnimTrack& operator=(UIAnimTrack&& _Other) noexcept;
+        
     
 public:
     

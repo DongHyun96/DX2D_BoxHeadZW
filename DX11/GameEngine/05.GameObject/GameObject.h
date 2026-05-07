@@ -121,6 +121,8 @@ public:
 	void AddActivateDelegate(const function<void(GameObject*)>& _Delegate) { m_vecDelegateOnActivate.push_back(_Delegate); }
 	
 	void AddDestroyDelegate(DWORD_PTR _Delegator, const function<void()>& _Delegate) { m_mapDelegateOnDestroy.insert(make_pair(_Delegator, _Delegate)); }
+	void RemoveDestroyDelegate(DWORD_PTR _Delegator) { m_mapDelegateOnDestroy.erase(_Delegator); }
+	
 	void AddRemoveScriptDelegate(CScript* _ScriptTarget, const function<void()>& _Delegate) { m_mapDelegateOnRemoveScript.insert(make_pair(_ScriptTarget, _Delegate)); }
 	
 public:

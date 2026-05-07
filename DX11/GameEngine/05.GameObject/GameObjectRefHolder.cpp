@@ -12,6 +12,35 @@ GameObjectRefHolder::GameObjectRefHolder(const GameObjectRefHolder& _Origin)
 {
 }
 
+// 소유권 이전 및 기존 객체 사용불가 처리
+GameObjectRefHolder::GameObjectRefHolder(GameObjectRefHolder&& _Origin) noexcept
+    : m_GameObject(_Origin.m_GameObject)
+    , m_RefGUID(_Origin.m_RefGUID)
+{
+    _Origin.m_RefGUID    = GUID_NULL;
+    _Origin.m_GameObject = nullptr;
+}
+
+GameObjectRefHolder& GameObjectRefHolder::operator=(const GameObjectRefHolder& _Other)
+{
+    if (this == &_Other) return *this;
+
+    this->m_GameObject = _Other.m_GameObject;
+    this->m_RefGUID    = _Other.m_RefGUID;
+}
+
+GameObjectRefHolder& GameObjectRefHolder::operator=(GameObjectRefHolder&& _Other) noexcept
+{
+    if (this == &_Other) return *this;
+
+    // 소유권 이전 및 기존 객체 사용불가 처리
+    
+    this->m_GameObject  = _Other.m_GameObject;
+    this->m_RefGUID     = _Other.m_RefGUID;
+    _Other.m_GameObject = nullptr;
+    _Other.m_RefGUID    = GUID_NULL;
+}
+
 GameObjectRefHolder::GameObjectRefHolder(GameObject* _Object)
     : m_GameObject(_Object)
 {
@@ -25,12 +54,20 @@ GameObjectRefHolder::GameObjectRefHolder(GUID _Guid)
 
 GameObjectRefHolder::~GameObjectRefHolder()
 {
+    if (m_GameObject) m_GameObject->RemoveDestroyDelegate(reinterpret_cast<DWORD_PTR>(this));
 }
 
 void GameObjectRefHolder::SetGameObject(GameObject* _GameObject)
 {
+    // 기존에 GameObject 레퍼런스가 잡혀있었을 때, 해당 GO의 DestroyDelegate 해제
+    if (m_GameObject) m_GameObject->RemoveDestroyDelegate(reinterpret_cast<DWORD_PTR>(this));
+    
     m_GameObject = _GameObject;
     m_RefGUID    = (m_GameObject == nullptr) ? GUID_NULL : m_GameObject->GetGUID();
+    
+    
+    // 새로 들어온 GO가 Valid하다면, 새로이 Destroy Delegate를 잡아준다
+    if (m_GameObject) m_GameObject->AddDestroyDelegate(reinterpret_cast<DWORD_PTR>(this), bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
 }
 
 void GameObjectRefHolder::OnGameObjectDestroyed()
