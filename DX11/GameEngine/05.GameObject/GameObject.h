@@ -24,6 +24,11 @@ class GameObject : public Entity
 private:
 	
 	GUID m_GUID{};
+
+private:
+
+	// 이 GameObject를 소유하는 중인 Level Object
+	class ALevel* m_OwnerLevel{};
 	
 private:
 
@@ -207,6 +212,10 @@ public:
 	
 	int GetLayerIdx() const { return m_LayerIdx; }
 	bool SetLayerIdx(int _LayerIdx);
+
+public:
+	
+	ALevel* GetOwnerLevel() const { return m_OwnerLevel; }
 	
 public:
 

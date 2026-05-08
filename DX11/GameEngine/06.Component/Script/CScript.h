@@ -49,7 +49,11 @@ private:
     
 protected:
     
-    Vec3 m_PrevRelativePosition{}; // Blocking 처리용 이전 PrevRelativePos 
+    Vec3 m_PrevRelativePosition{}; // Blocking 처리용 이전 PrevRelativePos
+
+private:
+    
+    bool m_bUseEditingTick{}; // Editing 환경에서 EditingTick을 사용하는 Script라면 true로 켜줄 것
     
 public:
     
@@ -65,9 +69,23 @@ public:
     // final - 최종구현이며 자식 클래스에서 더 이상 구현할 수 없다
     virtual void FinalTick() override final {}
     
+protected:
+    
+    /// <summary>
+    /// Editing 환경에서 EditingTick을 통한 Tick 처리 받기 처리 활성화 
+    /// </summary>
+    /// <returns> : 실패했다면 return false </returns>
+    bool RegisterEditingTickEnabled();
+    
+    void DeRegisterEditingTickEnabled();
+    
+    void RequestLevelToRetrySave();
+    
 public:
     
     int GetScriptType() const { return m_ScriptType; }
+    
+    bool GetIsUseEditingTick() const { return m_bUseEditingTick; }
     
 protected:
     

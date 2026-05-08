@@ -12,7 +12,7 @@ ALevel::ALevel()
 {
     for (int i = 0; i < MAX_LAYER; ++i)
     {
-        m_arrLayer[i].m_LayerIdx = i;
+        m_arrLayer[i].m_LayerIdx   = i;
         m_arrLayer[i].m_OwnerLevel = this;
     }
 }
@@ -35,6 +35,11 @@ void ALevel::AddEditingTickEnabledGameObject(GameObject* _GameObject)
 {
     if (!_GameObject) return;
     m_setEditingTickEnabledGameObject.insert(_GameObject);
+}
+
+void ALevel::RemoveEditingTickEnabledGameObject(GameObject* _GameObject)
+{
+    m_setEditingTickEnabledGameObject.erase(_GameObject);
 }
 
 void ALevel::AfterInitGuidTable()
@@ -291,6 +296,13 @@ HRESULT ALevel::Save(const wstring& _FilePath)
     
     
     fclose(pFile);
+
+    // 재저장 처리가 필요한 경우 (ex : UIAnimation 재생 상태에서 Save가 들어왔을 경우, 다시 Stop 상태로 돌려놓은 뒤 재저장)
+    if (m_bRetrySave)
+    {
+        m_bRetrySave = false;
+        return Save(_FilePath);
+    }
     
     return S_OK;
 }

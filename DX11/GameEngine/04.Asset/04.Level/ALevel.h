@@ -44,6 +44,11 @@ private: // 이 레벨에서 사용될 FirstMainCamera와 UICamera 정보 (CCame
     
     CCamera* m_FirstMainCamera{};
     CCamera* m_UICamera{};
+
+private:
+
+    // Save 도중, 다시 Save 처리를 해야하는 상황이 생겼을 때 true
+    bool m_bRetrySave{};
     
 public:
     
@@ -58,6 +63,7 @@ public:
     void Deregister();
     
     void AddEditingTickEnabledGameObject(GameObject* _GameObject);
+    void RemoveEditingTickEnabledGameObject(GameObject* _GameObject);
 
 public:
     
@@ -104,6 +110,8 @@ public:
     void CheckCollisionLayer(const wstring& _LayerName1, const wstring& _LayerName2);
     
     UINT* GetCollisionMatrix() { return m_CollisionMatrix; }
+
+    void RequestRetrySave() { m_bRetrySave = true; }
     
     virtual HRESULT Save(const wstring& _FilePath) override;
     virtual HRESULT Load(const wstring& _FilePath) override;

@@ -156,9 +156,10 @@ UIAnimTrack& UIAnimTrack::operator=(UIAnimTrack&& _Other) noexcept
 
 void UIAnimTrack::SaveToLevelFile(FILE* _File)
 {
-    TargetObjectReference.SaveToLevelFile(_File);
-
-    // OriginalStateData의 경우, 원본 GameObject 레퍼런스가 완전히 복원된 이후, 해당 원본값을 불러와서 처리
+    TargetObjectReference.SaveToLevelFile(_File); // GUID만 저장 처리됨
+    
+    // 이걸 여기서 저장 처리를 다시 해버리면, 순서가 꼬이게 됨 (GameObject Save -> Component Save -> Script Save 순으로 저장 처리가 기본 순서)
+    // if (TargetObjectReference.GetGameObject()) TargetObjectReference.GetGameObject()->SaveToLevelFile(_File); 
         
     // 키프레임 개수 저장
     const int KeyFrameCount = KeyFrames.size();

@@ -44,7 +44,13 @@ public:
 
     const vector<UIAnimTrack>& GetTracks() const { return m_vecTracks; }
     vector<UIAnimTrack>& GetTracks() { return m_vecTracks; }
+
+    /// <summary>
+    /// 실질적으로 멈추어서, AnimTimer도 0이 되어있는 상태인지까지 체크
+    /// </summary>
+    /// <returns></returns>
     bool IsPlaying() const { return m_bIsPlaying; }
+    
     float GetAnimTimer() const { return m_AnimTimer; }
     
 public:
@@ -124,6 +130,6 @@ private:
     /// <summary>
     /// Owner GO 자체가 삭제처리되었을 때 (역시사 Stop 처리를 해주어, GO Reference가 원본값으로 돌아가도록 처리)
     /// </summary>
-    virtual void OnOwnerDestroy() override { Stop(); }
+    virtual void OnOwnerDestroy() override;
     
 };

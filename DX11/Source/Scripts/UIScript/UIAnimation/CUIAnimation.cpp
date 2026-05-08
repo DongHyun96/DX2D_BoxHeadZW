@@ -53,11 +53,7 @@ void CUIAnimation::AfterLevelGameObjectGuidTableInit()
     
     // Editing 환경에서도 Tick함수가 돌게끔 처리
     if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
-    {
-        LevelMgr::GetInst()->GetCurLevel()->AddEditingTickEnabledGameObject(GetOwner()); // 이거 Level Stop 할 때마다 매번 잡힘 -> set이라 안잡힘
-        GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::IMPLICIT_ENGINE_DT);
-    }
-    else GetOwner()->SetDTContextType(DT_CONTEXT_TYPE::DEFAULT); // 이것도 문제가 될 수 있음 -> 해당 Script를 지웠다고 쳤을 때, DT_CONTEXT_TYPE이 ENGINE_DT로 잡혀서 시작할 수도 있음
+        RegisterEditingTickEnabled();
     
     Stop(); // 첫 Stop 처리 추가 (Level Stop 시, Play 시 모두 필요)
     
@@ -268,6 +264,10 @@ void CUIAnimation::Stop()
 
 void CUIAnimation::SaveToLevelFile(FILE* _File)
 {
+    // 저장 시에는 무조건 Stop처리된 상태에서 저장
+    // 재생 상태에서 저장해버리면, 원본 GO가 수정된 값으로 저장되어버리게 된다
+    Stop();
+    
     // 개수 저장
     const int TrackCount = m_vecTracks.size();
     fwrite(&TrackCount, sizeof(int), 1, _File);
@@ -292,5 +292,17 @@ void CUIAnimation::LoadFromLevelFile(FILE* _File)
 void CUIAnimation::OnRemoveScript()
 {
     CScript::OnRemoveScript();
+    Stop();
+    
+    // Owner GO의 EditingTick 등록 해제해야하는지 체크 (다른 Script에서 EditingTickEnabled 옵션을 켜놨을 수 있음)
+    for (const Ptr<CScript>& Script : GetOwner()->GetScripts())
+        if (Script != this && Script->GetIsUseEditingTick()) return;
+
+    // 다른 Script에서 EditingTickEnable옵션을 사용하지 않는다면, 이 GameObject에 대해 EditingTick 비활성화
+    DeRegisterEditingTickEnabled();
+}
+
+void CUIAnimation::OnOwnerDestroy()
+{
     Stop();
 }

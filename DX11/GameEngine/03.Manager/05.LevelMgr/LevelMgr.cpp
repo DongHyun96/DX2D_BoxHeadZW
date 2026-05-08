@@ -40,12 +40,9 @@ void LevelMgr::Progress()
     m_CurLevel->Deregister();
 
     // 레벨의 상태가 Play 일 때만 Level의 Tick을 수행
-    if (m_LevelState == LEVEL_STATE::PLAY)
-        m_CurLevel->Tick(); // 레벨안에 있는 오브젝트들이 이번 DT 동안 할 일 수행
-    
-    if (m_LevelState == LEVEL_STATE::STOP)
-        m_CurLevel->EditingTick();
-    
+    if (m_LevelState == LEVEL_STATE::PLAY)      m_CurLevel->Tick(); // 레벨안에 있는 오브젝트들이 이번 DT 동안 할 일 수행
+    else if (m_LevelState == LEVEL_STATE::STOP) m_CurLevel->EditingTick();
+        
     m_CurLevel->FinalTick();
 
     // 충돌 검사 진행

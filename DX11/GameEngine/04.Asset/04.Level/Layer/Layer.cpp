@@ -34,9 +34,7 @@ void Layer::AddObject(const Ptr<GameObject>& _Object)
 
     // 아직 아무 Layer에도 할당되지 않았던 오브젝트의 경우
     if (_Object->m_LayerIdx == -1) _Object->m_LayerIdx = m_LayerIdx;
-    
-    _Object->m_bInLayer = true;
-    
+
     // 트리 레벨 순회 방문처리 (Child까지 Layer의 번호를 설정하는 과정)
     // 여기서는 bInLayer만 true로 잡히도록 처리 (LayerIdx는 Child에서 고유한 LayerIdx를 들고 있을 수 있도록 수정 x)
     list<GameObject*> queue{};
@@ -48,7 +46,8 @@ void Layer::AddObject(const Ptr<GameObject>& _Object)
         queue.pop_front();
         
         // pObject->m_LayerIdx = m_LayerIdx;
-        pObject->m_bInLayer = true;
+        pObject->m_bInLayer   = true;
+        pObject->m_OwnerLevel = this->m_OwnerLevel;
         // m_vecAllObjects.push_back(pObject);
 
         for (const Ptr<GameObject>& pChild : pObject->m_vecChild)
