@@ -46,7 +46,7 @@ public:
     vector<UIAnimTrack>& GetTracks() { return m_vecTracks; }
 
     /// <summary>
-    /// 실질적으로 멈추어서, AnimTimer도 0이 되어있는 상태인지까지 체크
+    /// 실질적으로 멈추어서, 현재 AnimTimer도 0이 되어있는 상태인지까지 체크
     /// </summary>
     /// <returns></returns>
     bool IsPlaying() const { return m_bIsPlaying; }

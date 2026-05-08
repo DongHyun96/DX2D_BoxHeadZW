@@ -105,9 +105,6 @@ public:
     
 public:
     
-    void SaveToLevelFile(FILE* _File);
-    void LoadFromLevelFile(FILE* _File);
-
     /// <summary>
     /// Play 시작 시 호출
     /// </summary>
@@ -136,5 +133,10 @@ public:
 public:
     
     bool GetIsPlaying() const { return bIsPlaying; }
+    
+public:
+    
+    void SaveToLevelFile(FILE* _File);
+    void LoadFromLevelFile(FILE* _File);
     
 };

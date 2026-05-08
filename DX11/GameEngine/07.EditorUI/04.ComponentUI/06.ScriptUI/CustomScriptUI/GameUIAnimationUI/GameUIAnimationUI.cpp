@@ -27,7 +27,7 @@ namespace
         return ToString(_GameObject->GetName());
     }
 
-    bool ApplyKeyFrameToTarget(GameObject* _TargetObject, const UIAnimKeyFrameData& _KeyFrameData)
+    /*bool ApplyKeyFrameToTarget(GameObject* _TargetObject, const UIAnimKeyFrameData& _KeyFrameData)
     {
         if (!_TargetObject || !_TargetObject->Transform() || !_KeyFrameData.Transform) return false;
 
@@ -39,7 +39,7 @@ namespace
             RenderCom->GetMaterial()->SetScalar(VEC4_0, _KeyFrameData.TintColor);
 
         return true;
-    }
+    }*/
 }
 
 GameUIAnimationUI::GameUIAnimationUI()
@@ -328,8 +328,6 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
     if (ImGui::Button("Capture Origin (from Target)")) 
         SelectedTrack.OriginalStateData.SetAnimDataFromGameObject(TargetObj, -1.f);
     ImGui::SameLine();
-    if (ImGui::Button("Apply Origin (to Target)")) 
-        ApplyKeyFrameToTarget(TargetObj, SelectedTrack.OriginalStateData);
     
     // 키프레임 추가 기능
     ImGui::Spacing();
@@ -423,8 +421,6 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
         if (ImGui::Button("Capture KeyFrame from Target Object")) 
             KeyFrame.SetAnimDataFromGameObject(TargetObj, KeyFrame.Time);
         ImGui::SameLine();
-        if (ImGui::Button("Apply KeyFrame to Target Object")) 
-            ApplyKeyFrameToTarget(TargetObj, KeyFrame);
 
         // 첫 번째 키프레임은 삭제 제한 처리
         const bool bCanDeleteKey = (m_SelectedKeyIdx > 0 && SelectedTrack.KeyFrames.size() > 1);
