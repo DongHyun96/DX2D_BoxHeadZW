@@ -92,6 +92,15 @@ void CUIAnimation::Tick()
     }
 }
 
+bool CUIAnimation::IsPlaying() const
+{
+    switch (m_EndHandling)
+    {
+    case UIAnimEndHandling::BACK_TO_STOP: case UIAnimEndHandling::LOOP: return m_bIsPlaying;
+    case UIAnimEndHandling::DEFAULT: return m_bIsPlaying || m_AnimTimer > 0.f;
+    }
+}
+
 void CUIAnimation::SetEditingAnimTime(float _Time)
 {
     // 재생 중이 아닐 때에만 Editing timer를 사용하여 상태 업데이트
