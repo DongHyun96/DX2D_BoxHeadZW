@@ -275,7 +275,13 @@ void CUIAnimation::SaveToLevelFile(FILE* _File)
 {
     // 저장 시에는 무조건 Stop처리된 상태에서 저장
     // 재생 상태에서 저장해버리면, 원본 GO가 수정된 값으로 저장되어버리게 된다
-    Stop();
+    // 만일 재생중인 상태에서 저장 요청이 들어간 경우, Stop처리를 한 뒤, 다시금 Level에 재저장 요청 처리
+    if (IsPlaying())
+    {
+        Stop();
+        RequestLevelToRetrySave();
+        return; // 어차피 다시금 저장 처리가 되면서 저장될 예정
+    }
     
     // 개수 저장
     const int TrackCount = m_vecTracks.size();
@@ -314,4 +320,13 @@ void CUIAnimation::OnRemoveScript()
 void CUIAnimation::OnOwnerDestroy()
 {
     Stop();
+    
+    // Owner GO의 EditingTick 등록 해제해야하는지 체크 (다른 Script에서 EditingTickEnabled 옵션을 켜놨을 수 있음)
+    for (const Ptr<CScript>& Script : GetOwner()->GetScripts())
+        if (Script != this && Script->GetIsUseEditingTick()) return;
+
+    // 다른 Script에서 EditingTickEnable옵션을 사용하지 않는다면, 이 GameObject에 대해 EditingTick 비활성화
+    // 오브젝트 자체가 삭제처리될 때에도, ALevel에는 EditingTick GO Set에 해당 GameObject가 들어가있는 상황
+    // 이걸 지우기 위해서 DeRegisterEditingTick처리를 해주어야 함
+    DeRegisterEditingTickEnabled(); 
 }

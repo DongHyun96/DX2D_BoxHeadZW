@@ -76,7 +76,14 @@ protected:
     /// </summary>
     /// <returns> : 실패했다면 return false </returns>
     bool RegisterEditingTickEnabled();
-    
+
+    /// <summary>
+    /// <para> Editing Tick 비활성화 처리 </para>
+    /// <para> 이 처리를 해야하는 두 가지 상황 </para>
+    /// <para> 1. Owner GO에서 EditingTick을 사용하는 Script가 모두(꼭 모두 지워졌을 때를 확인해야 함) Remove 처리 되었을 때 </para>
+    /// <para> 2. Owner Go 자체가 Destroy 요청이 들어왔을 때 -> </para>
+    /// <para> GO 자체의 Tick은 상관 없겠지만, ALevel의 EditingTick set에서 해당 GO를 지우는 처리를 해주어야 함 </para>
+    /// </summary>
     void DeRegisterEditingTickEnabled();
     
     void RequestLevelToRetrySave();
