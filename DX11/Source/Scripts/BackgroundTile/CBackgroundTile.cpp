@@ -85,7 +85,7 @@ void CBackgroundTile::UpdateSpawnedDecal(RandomizedSet<SpawnedDecalData>& _Spawn
         }
         else
         {
-            DecalData.ColorAlpha = MappingToNewRange(DecalData.Timer, 0.f, DECAL_LIFETIME, _StartAlpha, 0.f); 
+            DecalData.ColorAlpha = MappingToNewRangeUnclamped(DecalData.Timer, 0.f, DECAL_LIFETIME, _StartAlpha, 0.f); 
             TileRender()->SetDecalAlpha(DecalData.ID, DecalData.ColorAlpha);
             ++i;
         }

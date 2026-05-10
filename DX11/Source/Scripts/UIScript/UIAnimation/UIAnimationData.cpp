@@ -254,8 +254,8 @@ void UIAnimTrack::UpdateTrack(float _AnimTimer)
 
     const float TimeDiff            = CurrentKeyFrame.Time - PrevKeyFrame.Time;
     const float CurrentKeyFrameTime = _AnimTimer - PrevKeyFrame.Time; // 이전 키 프레임과 현재 키 프레임 사이의 시간 흐름
-    float TimeAlpha                 = MappingToNewRange(CurrentKeyFrameTime, 0.f, TimeDiff, 0.f, 1.f);
-
+    float TimeAlpha                 = MappingToNewRangeClamped(CurrentKeyFrameTime, 0.f, TimeDiff, 0.f, 1.f);
+    
     switch (CurrentKeyFrame.EasingType)
     {
     /*case UIAnimEasingType::LINEAR:

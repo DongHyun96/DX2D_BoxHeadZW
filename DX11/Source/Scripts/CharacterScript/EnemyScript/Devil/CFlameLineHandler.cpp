@@ -34,7 +34,7 @@ void CFlameLineHandler::Tick()
     
     
     m_AttackColliderScaleTimer += DT;
-    ColliderRect()->SetScaleX(MappingToNewRange(m_AttackColliderScaleTimer, 0.f, TotalAttackTime, 1.f, AttackColliderScaleDest));
+    ColliderRect()->SetScaleX(MappingToNewRangeUnclamped(m_AttackColliderScaleTimer, 0.f, TotalAttackTime, 1.f, AttackColliderScaleDest));
     
     m_PillarIntervalTimer += DT;
     

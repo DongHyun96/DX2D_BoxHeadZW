@@ -94,7 +94,7 @@ void CAirStrike::TickWaitAirStrike()
 {
     // Time Slow + Sound pitch 하강
     // Strike Sound는 예외처리 해둠
-    const float TimeAndPitchScale = MappingToNewRange(m_Timer, 0.f, 3.5f, 1.f, 0.1f);
+    const float TimeAndPitchScale = MappingToNewRangeUnclamped(m_Timer, 0.f, 3.5f, 1.f, 0.1f);
     AssetMgr::GetInst()->SetGlobalSoundPitch(TimeAndPitchScale);
     TimeMgr::GetInst()->SetTimeScale(TimeAndPitchScale);
 }
@@ -102,7 +102,7 @@ void CAirStrike::TickWaitAirStrike()
 void CAirStrike::TickAirStriking(const Ptr<CCamMoveScript>& CamMove)
 {
     // Sound Pitch 및 TimeScale 설정
-    const float SoundPitchScale = MappingToNewRange(m_Timer, 3.5f, 5.5f, 0.1f, 1.f);
+    const float SoundPitchScale = MappingToNewRangeUnclamped(m_Timer, 3.5f, 5.5f, 0.1f, 1.f);
     AssetMgr::GetInst()->SetGlobalSoundPitch(SoundPitchScale);
     TimeMgr::GetInst()->SetTimeScale(SoundPitchScale);
     
@@ -121,7 +121,7 @@ void CAirStrike::TickAirStriking(const Ptr<CCamMoveScript>& CamMove)
     if (m_EffectTimer > EFFECT_SPAWN_INTERVAL)
     {
         m_EffectTimer -= EFFECT_SPAWN_INTERVAL;
-        UINT EffectCount = MappingToNewRange(m_Timer, 3.5f, 5.5f, 10.f, 60.f);
+        UINT EffectCount = MappingToNewRangeUnclamped(m_Timer, 3.5f, 5.5f, 10.f, 60.f);
         
         for (int i = 0 ; i < EffectCount; i++)
         {

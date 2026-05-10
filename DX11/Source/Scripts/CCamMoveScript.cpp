@@ -42,7 +42,7 @@ void CCamMoveScript::Tick()
     const float Length = ToMousePosDir.Length();
 
     // 바라보는 방향으로 Lerp Dest 조정
-    m_CamLerpDestPos += ToVec3(ToMousePosDir.Normalized()) * MappingToNewRange(Length, 0.f, RESOL_DIAG_HALF_LENGTH, 0.f, 250.f);
+    m_CamLerpDestPos += ToVec3(ToMousePosDir.Normalized()) * MappingToNewRangeUnclamped(Length, 0.f, RESOL_DIAG_HALF_LENGTH, 0.f, 250.f);
     
     HandleCameraEffect();
     HandleBoundary();

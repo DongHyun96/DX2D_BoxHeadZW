@@ -69,18 +69,33 @@ Vec4 Lerp(const Vec4& _Src, const Vec4& _Dst, float _Alpha)
     
 }
 
-Vec2 MappingToNewRange(const Vec2& _Src, const Vec2& _SrcMin, const Vec2& _SrcMax, const Vec2& _DstMin, const Vec2& _DstMax)
+Vec2 MappingToNewRangeUnclamped(const Vec2& _Src, const Vec2& _SrcMin, const Vec2& _SrcMax, const Vec2& _DstMin, const Vec2& _DstMax)
 {
-    const float X = MappingToNewRange(_Src.x, _SrcMin.x, _SrcMax.x, _DstMin.x, _DstMax.x);
-    const float Y = MappingToNewRange(_Src.y, _SrcMin.y, _SrcMax.y, _DstMin.y, _DstMax.y);
+    const float X = MappingToNewRangeUnclamped(_Src.x, _SrcMin.x, _SrcMax.x, _DstMin.x, _DstMax.x);
+    const float Y = MappingToNewRangeUnclamped(_Src.y, _SrcMin.y, _SrcMax.y, _DstMin.y, _DstMax.y);
     return {X, Y};
 }
 
-Vec3 MappingToNewRange(const Vec3& _Src, const Vec3& _SrcMin, const Vec3& _SrcMax, const Vec3& _DstMin, const Vec3& _DstMax)
+Vec3 MappingToNewRangeUnclamped(const Vec3& _Src, const Vec3& _SrcMin, const Vec3& _SrcMax, const Vec3& _DstMin, const Vec3& _DstMax)
 {
-    const float X = MappingToNewRange(_Src.x, _SrcMin.x, _SrcMax.x, _DstMin.x, _DstMax.x);
-    const float Y = MappingToNewRange(_Src.y, _SrcMin.y, _SrcMax.y, _DstMin.y, _DstMax.y);
-    const float Z = MappingToNewRange(_Src.z, _SrcMin.z, _SrcMax.z, _DstMin.z, _DstMax.z);
+    const float X = MappingToNewRangeUnclamped(_Src.x, _SrcMin.x, _SrcMax.x, _DstMin.x, _DstMax.x);
+    const float Y = MappingToNewRangeUnclamped(_Src.y, _SrcMin.y, _SrcMax.y, _DstMin.y, _DstMax.y);
+    const float Z = MappingToNewRangeUnclamped(_Src.z, _SrcMin.z, _SrcMax.z, _DstMin.z, _DstMax.z);
+    return {X, Y, Z};
+}
+
+Vec2 MappingToNewRangeClamped(const Vec2& _Src, const Vec2& _SrcMin, const Vec2& _SrcMax, const Vec2& _DstMin, const Vec2& _DstMax)
+{
+    const float X = MappingToNewRangeClamped(_Src.x, _SrcMin.x, _SrcMax.x, _DstMin.x, _DstMax.x);
+    const float Y = MappingToNewRangeClamped(_Src.y, _SrcMin.y, _SrcMax.y, _DstMin.y, _DstMax.y);
+    return {X, Y};
+}
+
+Vec3 MappingToNewRangeClamped(const Vec3& _Src, const Vec3& _SrcMin, const Vec3& _SrcMax, const Vec3& _DstMin, const Vec3& _DstMax)
+{
+    const float X = MappingToNewRangeClamped(_Src.x, _SrcMin.x, _SrcMax.x, _DstMin.x, _DstMax.x);
+    const float Y = MappingToNewRangeClamped(_Src.y, _SrcMin.y, _SrcMax.y, _DstMin.y, _DstMax.y);
+    const float Z = MappingToNewRangeClamped(_Src.z, _SrcMin.z, _SrcMax.z, _DstMin.z, _DstMax.z);
     return {X, Y, Z};
 }
 

@@ -187,7 +187,7 @@ bool CTurret::HandleRotateToTarget()
     
     if (DestAngle < 0.f) DestAngle += XM_2PI;
     
-    int DestSpriteIdx = MappingToNewRange(DestAngle, 0.f, XM_2PI, 0.f, 32.f);
+    int DestSpriteIdx = MappingToNewRangeUnclamped(DestAngle, 0.f, XM_2PI, 0.f, 32.f);
     DestSpriteIdx     = min(DestSpriteIdx, 31); // 넘을 일은 없지만(정확히 360도를 찍어야 함) 미연에 idx 넘어가는 것 방지
 
     const int CurrentSpriteIdx = FlipbookRender()->GetCurAnimatingSpriteIdx();  
@@ -220,7 +220,7 @@ bool CTurret::HandleRotateToTarget()
 
 float CTurret::GetCurrentFacedAngle()
 {
-    const float Angle = MappingToNewRange(static_cast<float>(FlipbookRender()->GetCurAnimatingSpriteIdx()), 0.f, 32.f, 0.f, XM_2PI);
+    const float Angle = MappingToNewRangeUnclamped(static_cast<float>(FlipbookRender()->GetCurAnimatingSpriteIdx()), 0.f, 32.f, 0.f, XM_2PI);
     return Angle;
 }
 

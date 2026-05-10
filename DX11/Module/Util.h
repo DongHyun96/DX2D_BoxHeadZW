@@ -47,28 +47,31 @@ Vec4 Lerp(const Vec4& _Src, const Vec4& _Dst, float _Alpha);
 /// <param name="_DstMax"> : 새로 Mapping할 범위의 Max </param>
 /// <returns> : 새로 Mapping처리된 값 </returns>
 template<typename T>
-T MappingToNewRange(const T& _Num, const T& _SrcMin, const T& _SrcMax, const T& _DstMin, const T& _DstMax)
+T MappingToNewRangeUnclamped(const T& _Num, const T& _SrcMin, const T& _SrcMax, const T& _DstMin, const T& _DstMax)
 {
-    /*if (_SrcMin > _SrcMax)
-    {
-        DebugUtil::AddDebugLog(L"[MappingToNewRange] : wrong Src range received.");
-        return T();
-    }
-    
-    if (_DstMin > _DstMax)
-    {
-        DebugUtil::AddDebugLog(L"[MappingToNewRange] : wrong Dst range received.");
-        return T();
-    }*/
-    
-    if (_SrcMin == _SrcMax)
-        return static_cast<T>((_Num - _SrcMin) * (_DstMax - _DstMin) + _DstMin);
-    
-    return static_cast<T>((_Num - _SrcMin) * (_DstMax - _DstMin) / (_SrcMax - _SrcMin) + _DstMin);
+    return (_SrcMin == _SrcMax) ? static_cast<T>((_Num - _SrcMin) * (_DstMax - _DstMin) + _DstMin) :
+                                  static_cast<T>((_Num - _SrcMin) * (_DstMax - _DstMin) / (_SrcMax - _SrcMin) + _DstMin);  
 }
 
-Vec2 MappingToNewRange(const Vec2& _Src, const Vec2& _SrcMin, const Vec2& _SrcMax, const Vec2& _DstMin, const Vec2& _DstMax);
-Vec3 MappingToNewRange(const Vec3& _Src, const Vec3& _SrcMin, const Vec3& _SrcMax, const Vec3& _DstMin, const Vec3& _DstMax);
+Vec2 MappingToNewRangeUnclamped(const Vec2& _Src, const Vec2& _SrcMin, const Vec2& _SrcMax, const Vec2& _DstMin, const Vec2& _DstMax);
+Vec3 MappingToNewRangeUnclamped(const Vec3& _Src, const Vec3& _SrcMin, const Vec3& _SrcMax, const Vec3& _DstMin, const Vec3& _DstMax);
+
+template<typename T>
+T MappingToNewRangeClamped(const T& _Num, const T& _SrcMin, const T& _SrcMax, const T& _DstMin, const T& _DstMax)
+{
+    if (_SrcMin == _SrcMax)
+        return _DstMin;
+
+    const T ActualMin = min(_SrcMin, _SrcMax);
+    const T ActualMax = max(_SrcMin, _SrcMax);
+    
+    T ClampedNum = clamp(_Num, ActualMin, ActualMax);
+
+    return static_cast<T>((ClampedNum - _SrcMin) * (_DstMax - _DstMin) / (_SrcMax - _SrcMin) + _DstMin);
+}
+
+Vec2 MappingToNewRangeClamped(const Vec2& _Src, const Vec2& _SrcMin, const Vec2& _SrcMax, const Vec2& _DstMin, const Vec2& _DstMax);
+Vec3 MappingToNewRangeClamped(const Vec3& _Src, const Vec3& _SrcMin, const Vec3& _SrcMax, const Vec3& _DstMin, const Vec3& _DstMax);
 
 
 template <typename T>

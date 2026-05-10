@@ -172,7 +172,7 @@ void CEnemyScript::HandleFadeOut()
     m_FadeInOutTime += DT;
 
     // Tint Color를 수정함으로써, FadeOut 처리 해준다
-    const float ColorAlpha = MappingToNewRange(m_FadeInOutTime, 0.f, m_FadeInOutTotalTime, 1.f, 0.f);
+    const float ColorAlpha = MappingToNewRangeUnclamped(m_FadeInOutTime, 0.f, m_FadeInOutTotalTime, 1.f, 0.f);
     Vec4 TintColor = DEF_COLOR_WHITE;
     TintColor.w = ColorAlpha;
 
