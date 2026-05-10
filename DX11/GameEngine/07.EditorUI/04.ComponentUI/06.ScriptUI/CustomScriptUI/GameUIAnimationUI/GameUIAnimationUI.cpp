@@ -250,22 +250,24 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
                 if (ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
                 {
                     m_SelectedTrackIdx = TrackIdx;
-                    m_SelectedKeyIdx = KeyIdx;
+                    m_SelectedKeyIdx   = KeyIdx;
 
                     const float mouseXInTimeline = ImGui::GetIO().MousePos.x - cellPos.x;
                     const float newTime          = max(mouseXInTimeline / m_TimelineScale, 0.f);
 
+                    // 새로운 Time으로 변경처리되었다면, 해당 Time으로 키프레임 Time 적용
                     if (Track.KeyFrames[KeyIdx].Time != newTime)
                     {
                         Track.KeyFrames[KeyIdx].Time = newTime;
                         m_SelectedKeyIdx = _Animation->SortKeyFrames(TrackIdx, m_SelectedKeyIdx);
+                        _Animation->SetEditingAnimTime(_Animation->GetEditingAnimTimer());
                     }
                 }
 
                 if (ImGui::IsItemClicked())
                 {
                     m_SelectedTrackIdx = TrackIdx;
-                    m_SelectedKeyIdx = KeyIdx;
+                    m_SelectedKeyIdx   = KeyIdx;
                 }
     
                 ImGui::PopID();
@@ -371,10 +373,11 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
         ImGui::SetNextItemWidth(150.0f);
         if (ImGui::InputFloat("Keyframe Time", &frameTime, 0.01f, 0.1f, "%.3f"))
         {
-            if (frameTime < 0.f) frameTime = 0.f;
+            frameTime     = max(frameTime, 0.f);
             KeyFrame.Time = frameTime;
-            // 수치 변경 후 즉시 정렬 및 인덱스 동기화
-            m_SelectedKeyIdx = _Animation->SortKeyFrames(m_SelectedTrackIdx, m_SelectedKeyIdx);
+            
+            m_SelectedKeyIdx = _Animation->SortKeyFrames(m_SelectedTrackIdx, m_SelectedKeyIdx); // 수치 변경 후 즉시 정렬 및 인덱스 동기화
+            _Animation->SetEditingAnimTime(_Animation->GetEditingAnimTimer()); // 수정한 Data로 수정처리            
         }
         
         const char* EasingNames[] = { "Linear (Constant Speed)", "Ease-Out (Fast to Slow)" };
@@ -382,12 +385,15 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
         
         ImGui::SetNextItemWidth(250.0f);
         if (ImGui::Combo("Easing Type", &easeIdx, EasingNames, IM_ARRAYSIZE(EasingNames)))
+        {
             KeyFrame.EasingType = static_cast<UIAnimEasingType>(easeIdx);
+            _Animation->SetEditingAnimTime(_Animation->GetEditingAnimTimer());
+        }
 
         if (KeyFrame.Transform)
         {
-            Vec3 Pos = KeyFrame.Transform->GetRelativePos();
-            Vec3 Scale = KeyFrame.Transform->GetRelativeScale();
+            Vec3 Pos    = KeyFrame.Transform->GetRelativePos();
+            Vec3 Scale  = KeyFrame.Transform->GetRelativeScale();
             Vec3 RotDeg = KeyFrame.Transform->GetRelativeRot() * (180.f / XM_PI);
 
             ImGui::SetNextItemWidth(250.0f);
