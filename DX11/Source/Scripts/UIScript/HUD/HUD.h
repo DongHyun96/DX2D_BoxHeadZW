@@ -36,14 +36,9 @@ private:
 public:
     
     void OnRoundWaitStart();
-    
+    void OnRoundStart(int RoundNumber);
+    void OnGameOver();
     
     void OnRoundWaiting(float RoundWaitTime);
-    
-    void OnRoundStart(int RoundNumber);
-    
     void OnRounding();
-    
-    
-    void OnGameOver();
 };
