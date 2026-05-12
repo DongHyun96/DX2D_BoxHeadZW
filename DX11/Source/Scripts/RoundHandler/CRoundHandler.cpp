@@ -34,7 +34,7 @@ void CRoundHandler::Begin()
 void CRoundHandler::AfterLevelBegin()
 {
     // Round 대기 or Start
-    GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnRoundWaitStart();
+    GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundWaitStart();
 }
 
 void CRoundHandler::Tick()
@@ -58,7 +58,7 @@ void CRoundHandler::HandleTransition()
     case ROUND_STATE::WAIT:
     {
         m_RoundWaitTimer -= DT;
-        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnRoundWaiting(m_RoundWaitTimer);
+        GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundWaiting(m_RoundWaitTimer);
         
         if (m_RoundWaitTimer > 0.f) return;
         
@@ -70,7 +70,7 @@ void CRoundHandler::HandleTransition()
     {
         m_CurrentRoundTimer += DT;
         
-        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnRounding();
+        GM->GetIngameUIManager()->GetRoundIndicators()->OnRounding();
         
         if (!m_ThisRoundAdditionalSpawnLeft.empty())
         {
@@ -146,7 +146,7 @@ void CRoundHandler::SetRoundState(ROUND_STATE _RoundState)
     case ROUND_STATE::WAIT:
     {
         m_RoundWaitTimer = s_RoundWaitTime;
-        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnRoundWaitStart();
+        GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundWaitStart();
         return;
     }
         
@@ -184,14 +184,14 @@ void CRoundHandler::SetRoundState(ROUND_STATE _RoundState)
         m_AdditionalSpawnTimer    = 0.f;
         m_AllDieCheckTimer        = 0.f;
         
-        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnRoundStart(m_CurrentRoundIdx + 1);
+        GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundStart(m_CurrentRoundIdx + 1);
         
         return;
     }
         
     case ROUND_STATE::GAME_OVER:
     {
-        GM->GetIngameUIManager()->GetRoundIndicatorsRef().OnGameOver();
+        GM->GetIngameUIManager()->GetRoundIndicators()->OnGameOver();
     }
         
     }

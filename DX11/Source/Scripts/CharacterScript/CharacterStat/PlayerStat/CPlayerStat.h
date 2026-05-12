@@ -18,7 +18,7 @@ private:
     float m_InvincibleTimer = 0.f;
     const float m_InvincibleDuration = 3.f;
     
-    std::vector<float> m_HitHistory; // 최근 1초 내의 피격 기록 (Timestamp)
+    vector<float> m_HitHistory; // 최근 1초 내의 피격 기록 (Timestamp)
     float m_FlickerTimer = 0.f;
 
 public:

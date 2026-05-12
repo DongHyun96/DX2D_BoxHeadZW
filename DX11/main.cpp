@@ -40,7 +40,7 @@ int APIENTRY wWinMain
     
     // 메모리 누수 감지
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    // _CrtSetBreakAlloc(138); // 누수 발생지점 중단점 걸어주는 기능
+    // _CrtSetBreakAlloc(7731822); // 누수 발생지점 중단점 걸어주는 기능
 
     hInst = hInstance;
 

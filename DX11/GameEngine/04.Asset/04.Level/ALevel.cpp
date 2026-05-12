@@ -17,6 +17,43 @@ ALevel::ALevel()
     }
 }
 
+ALevel::ALevel(const ALevel& _Origin)
+    : Asset(_Origin)
+    , m_Changed(true)
+    , m_mapLayerNameIndex(_Origin.m_mapLayerNameIndex)
+{
+    for (int i = 0; i < MAX_LAYER; ++i)
+    {
+        m_arrLayer[i].m_LayerIdx   = i;
+        m_arrLayer[i].m_OwnerLevel = this;
+        m_arrLayer[i].SetName(_Origin.m_arrLayer[i].GetName());
+        m_CollisionMatrix[i] = _Origin.m_CollisionMatrix[i];
+    }
+
+    for (int i = 0; i < MAX_LAYER; ++i)
+    {
+        for (const Ptr<GameObject>& pOriginObject : _Origin.m_arrLayer[i].m_vecParents)
+        {
+            Ptr<GameObject> pCloneObject = pOriginObject->Clone();
+            m_arrLayer[i].AddObject(pCloneObject);
+
+            list<Ptr<GameObject>> q{};
+            q.push_back(pCloneObject);
+            while (!q.empty())
+            {
+                Ptr<GameObject> pCurrent = q.front(); q.pop_front();
+                if (pCurrent->Camera())
+                {
+                    if (pCurrent->Camera()->GetIsFirstMainCamera()) m_FirstMainCamera = pCurrent->Camera().Get();
+                    if (pCurrent->Camera()->GetIsUICamera())        m_UICamera = pCurrent->Camera().Get();
+                }
+                for (const Ptr<GameObject>& pChild : pCurrent->GetChildren())
+                    q.push_back(pChild);
+            }
+        }
+    }
+}
+
 ALevel::~ALevel()
 {
 }

@@ -258,7 +258,7 @@ void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
         // UI 업데이트
         CInvenScript* Inven = GM->GetPlayerObject()->GetScriptComponent<CInvenScript>().Get();
         
-        GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().UpdateToGun(m_HandState, Inven->GetCurrentAmmoCount(_HandState));
+        GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToGun(m_HandState, Inven->GetCurrentAmmoCount(_HandState));
         GM->GetIngameUIManager()->GetCrossHair()->GetOwner()->SetActive(true);
     }
 }

@@ -295,7 +295,7 @@ void EditorMgr::CreateEditorObject()
     m_vecEditorObject.push_back(pObject);
     
     // Editor용 카메라로서 RenderMgr에 등록
-    RenderMgr::GetInst()->RegisterEditorCamera(pObject->Camera());
+    RenderMgr::GetInst()->RegisterEditorCamera(pObject->Camera().Get());
 }
 
 void EditorMgr::FlushPendingInspectorRemove()

@@ -70,5 +70,5 @@ void CInvenScript::ReduceCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _Redu
     m_AmmoLeft[_HandState] = max(m_AmmoLeft[_HandState] - _ReduceAmount, 0);
     
     if (_HandState != PLAYER_HANDSTATE::PISTOL)
-        GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().UpdateCurrentAmmoCount(m_AmmoLeft[_HandState]);   
+        GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateCurrentAmmoCount(m_AmmoLeft[_HandState]);   
 }

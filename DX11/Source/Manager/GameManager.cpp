@@ -36,6 +36,7 @@ void GameManager::OnLevelBegin()
     m_FirstSpawnLocManager   = nullptr;
     m_ItemPooler             = nullptr;
     m_RoundHandler           = nullptr;
+    m_InGameUIManager        = nullptr;
     
     CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
@@ -56,6 +57,7 @@ void GameManager::OnLevelPlayToStop()
     m_FirstSpawnLocManager   = nullptr;
     m_ItemPooler             = nullptr;
     m_RoundHandler           = nullptr;
+    m_InGameUIManager        = nullptr;
     
     CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
@@ -66,6 +68,8 @@ void GameManager::OnLevelPlayToStop()
 void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
 {
     // TODO : 특정 Level에서 다른 Level 로 넘어갈 때 처리할 것 처리하기
+    m_InGameUIManager        = nullptr;
+    
     CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
 }

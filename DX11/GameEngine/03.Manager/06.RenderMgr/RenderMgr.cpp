@@ -42,7 +42,7 @@ void RenderMgr::Progress()
     {
         // 카메라 기반 렌더링
         // 카메라가 세팅되어있지 않다면 rendering 불가
-        if (m_MainCam.Get())
+        if (m_MainCam)
         {
             // 카메라를 이용해서 Render 처리
             // m_MainCam->SortObject(); // RenderDomain 별 정렬
@@ -61,7 +61,7 @@ void RenderMgr::Progress()
     }
     
     // UI 카메라 나중에 렌더링 (UI가 월드 위에 그려지도록) -> Play, Stop 상태 관련 없이 항상 존재하면 렌더링 처리 (Stop 상태에서 UI 편집을 해야하기 때문)
-    if (m_UICam.Get() && m_UICam->GetOwner()->GetActive())
+    if (m_UICam && m_UICam->GetOwner()->GetActive())
     {
         // m_UICam->SortObject();
         m_UICam->RenderGameUI();
@@ -154,7 +154,7 @@ void RenderMgr::Render_Debug()
         DebugInfo& info = *iter;
 
         // UICamera를 사용해야 하는 경우 처리
-        if (info.UseUICamera && m_UICam.Get())
+        if (info.UseUICamera && m_UICam)
         {
             g_Trans.matView = m_UICam->GetViewMat();
             g_Trans.matProj = m_UICam->GetProjMat();
@@ -203,7 +203,7 @@ void RenderMgr::Render_Debug()
     }
 }
 
-Ptr<CCamera> RenderMgr::GetPOVCam() const
+CCamera* RenderMgr::GetPOVCam() const
 {
     return LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP ? m_EditorCam : m_MainCam;
 }

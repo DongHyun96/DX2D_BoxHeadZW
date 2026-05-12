@@ -114,7 +114,7 @@ void CStructureHandler::UpdateCurrentStructureHolding()
     else if (KeyMgr::GetInst()->GetMouseWheel() == -1)
         UpdateToPrevStructureTypeHolding();
     
-    GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().UpdateToStructure(m_CurrentStructureHolding, m_InvenScript->GetStructureCount(m_CurrentStructureHolding));
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToStructure(m_CurrentStructureHolding, m_InvenScript->GetStructureCount(m_CurrentStructureHolding));
 
 }
 

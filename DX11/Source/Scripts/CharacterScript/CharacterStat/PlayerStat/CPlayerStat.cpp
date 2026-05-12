@@ -15,6 +15,7 @@
 #include "GameEngine/04.Asset/10.Sound/ASound.h"
 #include "Module/Util.h"
 #include "Source/Scripts/RoundHandler/CRoundHandler.h"
+#include "Source/Scripts/UIScript/HUD/HUD.h"
 
 CPlayerStat::CPlayerStat()
     : CCharacterStat(SCRIPT_TYPE::PLAYERSTAT)
@@ -88,14 +89,14 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
     }
 
     MainPlayerScript->SetMainState(NextState);
-    GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().HPBar->SetRatio(GetHP() / GetMaxHP());
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->HPBar->SetRatio(GetHP() / GetMaxHP());
     return true;
 }
 
 bool CPlayerStat::ApplyHeal(float _HealAmount)
 {
     bool Result = CCharacterStat::ApplyHeal(_HealAmount);
-    GM->GetIngameUIManager()->GetAmmoCountUIAreaRef().HPBar->SetRatio(GetHP() / GetMaxHP());
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->HPBar->SetRatio(GetHP() / GetMaxHP());
     return Result;
 }
 

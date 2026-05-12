@@ -53,6 +53,7 @@ private:
 public:
     
     ALevel();
+    ALevel(const ALevel& _Origin);
     virtual ~ALevel() override;
     
 public:
