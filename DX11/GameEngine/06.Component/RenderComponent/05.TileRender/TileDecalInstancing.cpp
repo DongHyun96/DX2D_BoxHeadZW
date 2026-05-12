@@ -68,7 +68,7 @@ namespace
     // 데칼은 타일 위에 그려져야 하므로 Depth 순서가 중요할 수 있음 (일단은 맵으로 관리)
     map<float, TileDecalDepthBucket, greater<float>> g_TileDecalDepthBuckets{};
 
-    StructuredBuffer* g_TileDecalInstanceBuffer = nullptr;
+    Ptr<StructuredBuffer> g_TileDecalInstanceBuffer{};
     UINT g_TileDecalInstanceCapacity = 0;
 
     void EnsureTileDecalInstanceBuffer(UINT _RequiredCount)
