@@ -37,6 +37,7 @@ public:
 	void SetGameObject(GameObject* _GameObject);
 	
 	GameObject* GetGameObject() const { return m_GameObject; }
+	GUID GetRefGUID() const { return m_RefGUID; }
 
 	bool operator==(const GameObjectRefHolder& _Other) const
 	{

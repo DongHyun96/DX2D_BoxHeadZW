@@ -19,10 +19,21 @@ struct UIAnimKeyFrameData
 {
     float               Time{};                       // 키프레임 시간대 (-1.f인 경우, 원본 GO의 데이터)
     Ptr<CTransform>     Transform{};
-    Vec4                TintColor  = DEF_COLOR_WHITE; // Text GameObject의 경우, Text의 TintColor값으로 적용됨(주의) -> CText나 RenderComponent를 따로 가지고 있지 않을 경우 처리 x   
+    Vec4                TintColor = DEF_COLOR_WHITE; // Text GameObject의 경우, Text의 TintColor값으로 적용됨(주의) -> CText나 RenderComponent를 따로 가지고 있지 않을 경우 처리 x   
     
     UIAnimEasingType EasingType{};
 
+public:
+    
+    UIAnimKeyFrameData();
+    ~UIAnimKeyFrameData();
+    
+    UIAnimKeyFrameData(const UIAnimKeyFrameData& _Origin);
+    UIAnimKeyFrameData(UIAnimKeyFrameData&& _Origin) noexcept;
+    
+    UIAnimKeyFrameData& operator=(const UIAnimKeyFrameData& _Other);
+    UIAnimKeyFrameData& operator=(UIAnimKeyFrameData&& _Other) noexcept;
+    
 public:
     /// <summary>
     /// GameObject로부터 AnimData 받아서 자신의 값으로 세팅
@@ -66,12 +77,12 @@ struct StopStateEditorUpdateIndexStrategy : public UpdateUIAnimKeyIndexStrategy
 struct UIAnimTrack
 {
     GameObjectRefHolder         TargetObjectReference{};        // 이 Track을 사용할 GameObject
-    
-public:
-    
-    UIAnimKeyFrameData          OriginalStateData{};            // 원본 데이터 저장 (이걸 오브젝트 단위로, 원본값을 저장해야 함)
-    
     vector<UIAnimKeyFrameData>  KeyFrames{};                    // 시간 순서에 따라 정렬된 키프레임들
+    
+private:
+    
+    static unordered_map<GUID, UIAnimKeyFrameData, GUIDHasher>    ORIGINAL_STATE_DATA;        // 원본 데이터 저장 (같은 오브젝트를 서로 다른 AnimationTrack이 관여할 때, 원본값은 항상 동일해야 한다)
+    static unordered_map<GUID, int, GUIDHasher>                   ORIGINAL_STATE_DATA_COUNT;  // 한Track당(GUID 당), 원본 데이터값 저장을 몇개 했는지 기록, 복제된 Level내에서도 Count를 올려주어야 소멸자에서 제대로 처리를 할 수 있을 듯?
 
 private: // Play 시작 시, 또는 Play 중 쓰일 값들
 
@@ -103,6 +114,72 @@ public:
     UIAnimTrack& operator=(const UIAnimTrack& _Other);
     UIAnimTrack& operator=(UIAnimTrack&& _Other) noexcept;
         
+public:
+
+    static bool HasOriginalStateData(const GUID& _GUID) { return ORIGINAL_STATE_DATA.contains(_GUID); }
+
+    /// <summary>
+    /// 기존에 이미 추가된 OriginalData값 수정 
+    /// </summary>
+    /// <param name="_GUID"> : 수정할 GO</param>
+    /// <param name="_ModifiedData"> : 수정된 데이터 </param>
+    /// <returns> : 만약 기존에 추가한 OriginalData가 없다면 return false -> AddOriginalStateData로 최초 추가를 해주어야 비로소 이용 가능</returns>
+    // TODO : 해당 처리해야할 부분에서 호출해줄 것
+    static bool ModifyOriginalStateData(const GUID& _GUID, const UIAnimKeyFrameData& _ModifiedData);
+
+    /// <summary>
+    /// 해당 GUID의 원본 KeyFrame값 return
+    /// </summary>
+    /// <param name="_GUID"> : Target GUID </param>
+    /// <param name="_OutOriginalData"> : 반환받을 OriginalData KeyFrame </param>
+    /// <returns> : 해당 키가 없다면, return false </returns>
+    static bool GetOriginalKeyFrameData(const GUID& _GUID, OUT UIAnimKeyFrameData& _OutOriginalData);
+
+private:
+
+    /// <summary>
+    /// Original Data 추가 (주의, 기존에 추가된(다른 Animation Track에서도 참조중인) GO의 원본값에 대한 RefCount(정확히는 Origin Count) 개수가 올라감
+    /// 만약 기존 원본 자료가 있다면, 기존의 원본 자료값을 이용하도록 처리한다
+    /// </summary>
+    static void AddOriginalStateData(const GUID& _GUID, const UIAnimKeyFrameData& _OriginalData);
+    
+    /// <summary>
+    /// <para> OriginalStateData Count 줄이기 </para>
+    /// <para> 만일 Count가 0이 되면, 원본값 폐기(참조중인 Track이 없는 것으로 간주) </para>
+    /// </summary>
+    /// <returns> : 원본값 자체가 저장이 안되어 있는 경우, return false (애초에 나오지 않아야 하는 상황이긴 함) </returns>
+    static bool ReduceOriginalStateData(const GUID& _GUID);
+
+public:
+    
+    /// <summary>
+    /// <para> 자기 자신의 원본값을 기록하면서, OriginalStateData Count++ 처리 </para>
+    /// <para> OriginalStateData KeyFrame 자체는 Default 값이 들어가게 된다 -> 추후 이 값을 수정하려면 ModifyOriginalStateData 함수 사용할 것 </para>
+    /// </summary>
+    /// <returns> 자기 자신의 ObjectReference의 GUID가 Valid한 GUID가 아니라면 return false </returns>
+    bool AddSelfDefaultOriginalStateData() const;
+    
+    /// <summary>
+    /// 자기 자신의 원본값을 기록하면서, OriginalStateData Count++ 처리
+    /// </summary>
+    /// <param name="_OriginalData"> : 기록할 원본값 </param>
+    /// <returns> : 자기자신의 GUID 가 valid하지 않다면 return false </returns>
+    bool AddSelfOriginalStateData(const UIAnimKeyFrameData& _OriginalData) const;
+
+    /// <summary>
+    /// 자기자신의 원본값 Count만 하나 키우기
+    /// </summary>
+    /// <returns> : 만약 Map에 자기자신의 GUID가 없는 상황이라면 return false </returns>
+    bool TryAddSelfOriginalStateDataCount() const;
+    
+public:
+    
+    /// <summary>
+    /// <para> 자기 자신의 원본값 Count 하나 줄이기 </para>
+    /// <para> 만약 Count가 0이 되면 해당 원본값 삭제 </para>
+    /// </summary>
+    /// <returns> : 원본값 자체가 없는 경우, return false </returns>
+    bool ReduceSelfOriginalStateData() const { return ReduceOriginalStateData(TargetObjectReference.GetRefGUID()); }
     
 public:
     

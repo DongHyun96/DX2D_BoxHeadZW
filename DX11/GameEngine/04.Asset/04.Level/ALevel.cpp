@@ -24,21 +24,22 @@ ALevel::ALevel(const ALevel& _Origin)
 {
     for (int i = 0; i < MAX_LAYER; ++i)
     {
+        // Layer 번호 설정 및 Owner Level & Layer 사용자 지정 이름이 있다면 해당 이름으로 설정
+        // CollisionMatrix 설정
         m_arrLayer[i].m_LayerIdx   = i;
         m_arrLayer[i].m_OwnerLevel = this;
         m_arrLayer[i].SetName(_Origin.m_arrLayer[i].GetName());
         m_CollisionMatrix[i] = _Origin.m_CollisionMatrix[i];
-    }
-
-    for (int i = 0; i < MAX_LAYER; ++i)
-    {
-        for (const Ptr<GameObject>& pOriginObject : _Origin.m_arrLayer[i].m_vecParents)
+        
+        for (const Ptr<GameObject>& OriginParentObject : _Origin.m_arrLayer[i].m_vecParents)
         {
-            Ptr<GameObject> pCloneObject = pOriginObject->Clone();
-            m_arrLayer[i].AddObject(pCloneObject);
+            // ParentObject 추가 처리
+            Ptr<GameObject> ClonedParent = OriginParentObject->Clone();
+            m_arrLayer[i].AddParentObject(ClonedParent);
 
+            // 카메라 오브젝트 찾기 처리
             list<Ptr<GameObject>> q{};
-            q.push_back(pCloneObject);
+            q.push_back(ClonedParent);
             while (!q.empty())
             {
                 Ptr<GameObject> pCurrent = q.front(); q.pop_front();
@@ -60,7 +61,7 @@ ALevel::~ALevel()
 
 void ALevel::AddObject(int _LayerIdx, const Ptr<GameObject>& _Object)
 {
-    m_arrLayer[_LayerIdx].AddObject(_Object);
+    m_arrLayer[_LayerIdx].AddParentObject(_Object);
 }
 
 void ALevel::Deregister()
@@ -81,6 +82,8 @@ void ALevel::RemoveEditingTickEnabledGameObject(GameObject* _GameObject)
 
 void ALevel::AfterInitGuidTable()
 {
+    // 업데이트된 Guid 테이블을 이용하여, GameObject 레퍼런스를 다시 잡아줌
+    
     for (const Layer& layer : m_arrLayer)
     {
         const vector<Ptr<GameObject>>& vecParents = layer.GetParentObjects();
@@ -295,6 +298,8 @@ void ALevel::InitGuidTable()
             }
         }
     }
+    
+    AfterInitGuidTable();
 }
 
 HRESULT ALevel::Save(const wstring& _FilePath)

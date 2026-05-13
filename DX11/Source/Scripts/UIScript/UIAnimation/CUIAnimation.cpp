@@ -43,12 +43,13 @@ void CUIAnimation::AfterLevelGameObjectGuidTableInit()
         // 원본 GameObject가 Destroy 당하면, 달려있었던 Track을 삭제처리한다
         Track.TargetObjectReference.SetDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
 
-        /* Original State 값들 저장 */
-        // Level Stop 상황이라면, TargetObject Data로 초기화
-        // Level Play 상황이라면, 기존에 복사생성자로 복사해둔 OriginalStateData를 사용 -> Editing 상태에서 Animation을 재생중인 상태에서 Play로 전환했을 수 있음
-        // 이때는 원본 GO가 이미 오염된 상황이라 복사생성자를 통해 받은 OriginalStateData를 그대로 사용해야 제대로 Initial 값으로 초기화 처리가 됨
+        /* Original State 값들 기록 */
         if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
-            Track.OriginalStateData.SetAnimDataFromGameObject(TargetObject, -1.f);
+        {
+            UIAnimKeyFrameData OriginalStateData{};
+            OriginalStateData.SetAnimDataFromGameObject(TargetObject, -1.f);
+            UIAnimTrack::ModifyOriginalStateData(TargetObject->GetGUID(), OriginalStateData);
+        }
     }
     
     // Editing 환경에서도 Tick함수가 돌게끔 처리
@@ -71,7 +72,6 @@ void CUIAnimation::Tick()
         Track.WhilePlaying(m_AnimTimer);
         if (!Track.GetIsPlaying()) ++TrackFinishedCnt;
     }
-    
     // 모든 Track의 재생이 끝났는지 체크
     if (TrackFinishedCnt >= m_vecTracks.size())
     {
@@ -99,6 +99,8 @@ bool CUIAnimation::IsPlaying() const
     case UIAnimEndHandling::BACK_TO_STOP: case UIAnimEndHandling::LOOP: return m_bIsPlaying;
     case UIAnimEndHandling::DEFAULT: return m_bIsPlaying || m_AnimTimer > 0.f;
     }
+    
+    return false;
 }
 
 void CUIAnimation::SetEditingAnimTime(float _Time)
@@ -118,16 +120,38 @@ void CUIAnimation::SetEditingAnimTime(float _Time)
 bool CUIAnimation::AddGameObjectToAnimate(GameObject* _GameObject)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP)  return false;
-    if (IsTrackHasObject(_GameObject))                              return false;
+    if (IsTrackHasObject(_GameObject))                              return false; // 이미 해당 Object AnimTrack이 있는 경우
     if (!_GameObject->Transform())                                  return false; // 최소 Transform 정보는 있어야 Animation 가능
     
-    // 새로운 AnimTrack 추가
+    /* 새로운 AnimTrack 추가 */
     UIAnimTrack NewAnimTrack{};
     NewAnimTrack.TargetObjectReference.SetGameObject(_GameObject);
-    NewAnimTrack.OriginalStateData.SetAnimDataFromGameObject(_GameObject, -1.f); // 초기 default 원본 기록 -> Animation Stop시, 해당 설정으로 돌아가기 위함
+    
+    /* 원본값 기록 */
+    // 1. 기존의 원본값이 이미 존재했다면 -> 해당 원본값으로 원본값 사용 -> 다른 Animation에서 Stop 처리를 안한 상태에서 해당 GO를 이 Animation에 추가할 경우 원본값 훼손이 될 수 있음 -> 기존의 원본값을 본래의 원본값으로 저장 처리할 것
+    // 최초 Animate할 GO를 잡은 상황 -> 현재 GO 상태를 초기원본으로 기록처리
+    
+    UIAnimKeyFrameData OriginalKeyFrameData{};
+
+    
+    if (NewAnimTrack.TryAddSelfOriginalStateDataCount()) // 기존 데이터가 있다고 간주하고 Count만 올리기 시도
+    {
+        // 기존 데이터가 있는 경우, 기존 데이터를 새로 들어온 GO의 데이터로 훼손하지 않는다.
+        UIAnimTrack::GetOriginalKeyFrameData(_GameObject->GetGUID(), OriginalKeyFrameData);
+    }
+    else // 처음 OriginalStateData를 기록하는 상황
+    {
+        // 기존 데이터가 없는 상황 -> 이번에 들어온 GameObject가 원본 데이터라고 간주하고 원본 데이터 최초 기록
+        
+        OriginalKeyFrameData.SetAnimDataFromGameObject(_GameObject, -1.f); // 초기 default 원본 기록 -> Animation Stop시, 해당 설정으로 돌아가기 위함
+
+        if (!NewAnimTrack.AddSelfOriginalStateData(OriginalKeyFrameData))
+            DebugUtil::AddDebugLog("[CUIAnimation::AddGameObjectToAnimate] : Failed to AddSelfOriginalStateData");
+    }
+    
     
     // 0번 키프레임 추가 (일단 첫 키 프레임 생성은 원본의 값과 동일한 값으로 세팅되게끔 처리한다)
-    UIAnimKeyFrameData FirstKeyFrame = NewAnimTrack.OriginalStateData;
+    UIAnimKeyFrameData FirstKeyFrame = OriginalKeyFrameData;
     FirstKeyFrame.Time               = 0.f;
     NewAnimTrack.KeyFrames.push_back(move(FirstKeyFrame));
 
@@ -143,6 +167,8 @@ bool CUIAnimation::RemoveTrackByTrackIdx(int _TrackIdx)
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
     if (_TrackIdx < 0 || _TrackIdx >= m_vecTracks.size()) return false;
 
+    m_vecTracks[_TrackIdx].ReduceSelfOriginalStateData();
+    
     m_vecTracks.erase(m_vecTracks.begin() + _TrackIdx);
     return true;
 }
@@ -157,6 +183,7 @@ bool CUIAnimation::RemoveTrackByGameObject(GameObject* _GameObject)
         
         if (Track.TargetObjectReference.GetGameObject() == _GameObject)
         {
+            Track.ReduceSelfOriginalStateData();
             m_vecTracks.erase(it);
             return true;
         }
@@ -276,6 +303,9 @@ void CUIAnimation::SaveToLevelFile(FILE* _File)
     // 저장 시에는 무조건 Stop처리된 상태에서 저장
     // 재생 상태에서 저장해버리면, 원본 GO가 수정된 값으로 저장되어버리게 된다
     // 만일 재생중인 상태에서 저장 요청이 들어간 경우, Stop처리를 한 뒤, 다시금 Level에 재저장 요청 처리
+    
+    // 만일 다른 Animation에서 동일한 GO를 건드린 상황(Play 중)이라면, 이건 또 어떻게 처리를 할 것인가에 대한 문제도 있음
+    // 위의 상황은 다른 Animation 내에서도 동일한 처리로 똑같이 다시 Save 요청이 들어가기 때문에 알아서 처리가 됨
     if (IsPlaying())
     {
         Stop();
@@ -299,8 +329,14 @@ void CUIAnimation::LoadFromLevelFile(FILE* _File)
     for (int i = 0; i < TrackCount; ++i)
     {
         UIAnimTrack AnimTrack{};
-        AnimTrack.LoadFromLevelFile(_File);
-        m_vecTracks.push_back(AnimTrack);
+        AnimTrack.LoadFromLevelFile(_File); // 여기서 Track GameObjectRefHolder의 GUID만 복원 처리(아직 GO가 초기화되지 않은 상태일 수 있음)
+        
+        // 복원된 GUID가 Valid한 GUID라면, 원본 데이터 자리 미리 차지(첫 AddOriginalStateData를 여기서 처리)
+        // 첫 AddOriginalStateData 처리를 여기랑, AddObjectToAnimate에서 해주어야 OriginalStateDataCount가 정확히 잡힘
+        if (!AnimTrack.AddSelfDefaultOriginalStateData())
+            DebugUtil::AddDebugLog("[CUIAnimation::LoadFromLevelFile] : Failed to AddSelfDefaultOriginalStateData");
+        
+        m_vecTracks.push_back(move(AnimTrack));
     }
 }
 
@@ -313,6 +349,10 @@ void CUIAnimation::OnRemoveScript()
     for (const Ptr<CScript>& Script : GetOwner()->GetScripts())
         if (Script != this && Script->GetIsUseEditingTick()) return;
 
+    // 모든 Track에 대해, OnRemove 처리를 해준다. (원본값 관련 처리를 위해)
+    for (const UIAnimTrack& Track : m_vecTracks)
+        Track.ReduceSelfOriginalStateData();
+    
     // 다른 Script에서 EditingTickEnable옵션을 사용하지 않는다면, 이 GameObject에 대해 EditingTick 비활성화
     DeRegisterEditingTickEnabled();
 }
@@ -324,7 +364,10 @@ void CUIAnimation::OnOwnerDestroy()
     // Owner GO의 EditingTick 등록 해제해야하는지 체크 (다른 Script에서 EditingTickEnabled 옵션을 켜놨을 수 있음)
     for (const Ptr<CScript>& Script : GetOwner()->GetScripts())
         if (Script != this && Script->GetIsUseEditingTick()) return;
-
+    
+    for (const UIAnimTrack& Track : m_vecTracks)
+        Track.ReduceSelfOriginalStateData();
+    
     // 다른 Script에서 EditingTickEnable옵션을 사용하지 않는다면, 이 GameObject에 대해 EditingTick 비활성화
     // 오브젝트 자체가 삭제처리될 때에도, ALevel에는 EditingTick GO Set에 해당 GameObject가 들어가있는 상황
     // 이걸 지우기 위해서 DeRegisterEditingTick처리를 해주어야 함

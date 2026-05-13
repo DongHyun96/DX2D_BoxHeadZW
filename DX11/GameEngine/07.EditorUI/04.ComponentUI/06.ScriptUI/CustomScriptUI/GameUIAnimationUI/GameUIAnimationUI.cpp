@@ -327,8 +327,12 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
     ImGui::BeginDisabled(!_bCanEdit);
     
     // 원본 상태 복사/적용
-    if (ImGui::Button("Capture Origin (from Target)")) 
-        SelectedTrack.OriginalStateData.SetAnimDataFromGameObject(TargetObj, -1.f);
+    if (ImGui::Button("Capture Origin (from Target)"))
+    {
+        UIAnimKeyFrameData NewOriginData{};
+        NewOriginData.SetAnimDataFromGameObject(TargetObj, -1.f);
+        UIAnimTrack::ModifyOriginalStateData(TargetObj->GetGUID(), NewOriginData);
+    }
     ImGui::SameLine();
     
     // 키프레임 추가 기능

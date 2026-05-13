@@ -6,11 +6,65 @@
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "Source/Scripts/UIScript/CText.h"
 
+unordered_map<GUID, UIAnimKeyFrameData, GUIDHasher>   UIAnimTrack::ORIGINAL_STATE_DATA{};
+unordered_map<GUID, int, GUIDHasher>                  UIAnimTrack::ORIGINAL_STATE_DATA_COUNT{};
+
 map<UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE, Ptr<UpdateUIAnimKeyIndexStrategy>> UIAnimTrack::s_mapUpdateAnimKeyIndexStrategies = 
 {
     { UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::DEFAULT,        new PlayingStateUpdateIndexStrategy },
     { UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::EDITING_STOP,   new StopStateEditorUpdateIndexStrategy }
 };
+
+UIAnimKeyFrameData::UIAnimKeyFrameData()
+{
+}
+
+UIAnimKeyFrameData::~UIAnimKeyFrameData()
+{
+}
+
+UIAnimKeyFrameData::UIAnimKeyFrameData(const UIAnimKeyFrameData& _Origin)
+    : Time(_Origin.Time)
+    , Transform(_Origin.Transform ? _Origin.Transform->Clone() : nullptr)
+    , TintColor(_Origin.TintColor)
+    , EasingType(_Origin.EasingType)
+{
+}
+
+UIAnimKeyFrameData::UIAnimKeyFrameData(UIAnimKeyFrameData&& _Origin) noexcept
+    : Time(_Origin.Time)
+    , Transform(_Origin.Transform) // 얕은 복사 처리로 하고 원본의 Transform을 nullptr 처리
+    , TintColor(_Origin.TintColor)
+    , EasingType(_Origin.EasingType)
+{
+    _Origin.Transform = nullptr;
+}
+
+UIAnimKeyFrameData& UIAnimKeyFrameData::operator=(const UIAnimKeyFrameData& _Other)
+{
+    if (this == &_Other) return *this;
+    
+    Time       = _Other.Time;
+    Transform  = _Other.Transform ? _Other.Transform->Clone() : nullptr;
+    TintColor  = _Other.TintColor;
+    EasingType = _Other.EasingType;
+    
+    return *this;
+}
+
+UIAnimKeyFrameData& UIAnimKeyFrameData::operator=(UIAnimKeyFrameData&& _Other) noexcept
+{
+    if (this == &_Other) return *this;
+    
+    Time       = _Other.Time;
+    Transform  = _Other.Transform;
+    TintColor  = _Other.TintColor;
+    EasingType = _Other.EasingType;
+    
+    _Other.Transform = nullptr;
+    
+    return *this;
+}
 
 bool UIAnimKeyFrameData::SetAnimDataFromGameObject(GameObject* _GameObject, float _Time)
 {
@@ -85,15 +139,8 @@ bool StopStateEditorUpdateIndexStrategy::UpdateCurPlayingIndex(float _AnimTimer,
     return true;
 }
 
-
-
-
-
-
-
 UIAnimTrack::UIAnimTrack(const UIAnimTrack& _Origin)
     : TargetObjectReference(_Origin.TargetObjectReference) // 여기서는 GUID 복사만 일어남 (AfterLevelGameObjectGuidTableInit 시점에 GameObject ref 제대로 잡아주어야 함)
-    , OriginalStateData(_Origin.OriginalStateData)
     , KeyFrames(_Origin.KeyFrames)
     // 나머지 멤버변수는 초기값으로 둠 (Editing 환경에서 Play 상태로 테스팅 중이었던 상태 복구처리)
 {
@@ -101,7 +148,6 @@ UIAnimTrack::UIAnimTrack(const UIAnimTrack& _Origin)
 
 UIAnimTrack::UIAnimTrack(UIAnimTrack&& _Origin) noexcept
     : TargetObjectReference(move(_Origin.TargetObjectReference)) // 여기서는 원본 GO 레퍼런스 모두 이동 (GUID 뿐 아니라 GO 포인터까지)
-    , OriginalStateData(move(_Origin.OriginalStateData))
     , KeyFrames(move(_Origin.KeyFrames))
     , m_UpdateUIKeyIndexStrategy(_Origin.m_UpdateUIKeyIndexStrategy)
 {
@@ -116,7 +162,7 @@ UIAnimTrack& UIAnimTrack::operator=(const UIAnimTrack& _Other)
     if (this == &_Other) return *this; 
 
     TargetObjectReference = _Other.TargetObjectReference;
-    OriginalStateData     = _Other.OriginalStateData;
+    // OriginalStateData     = _Other.OriginalStateData;
     KeyFrames             = _Other.KeyFrames;
 
     // 2. 런타임 상태 초기화 (복사 생성자와 동일한 로직 적용)
@@ -135,14 +181,13 @@ UIAnimTrack& UIAnimTrack::operator=(UIAnimTrack&& _Other) noexcept
     if (this == &_Other) return *this; 
 
     TargetObjectReference = move(_Other.TargetObjectReference);
-    OriginalStateData     = move(_Other.OriginalStateData);
     KeyFrames             = move(_Other.KeyFrames);
 
-    CurPlayingKeyIndex   = 0;
-    bIsPlaying           = false;
-    TintColorControlType = TintColorControl::NONE;
-    TargetText           = nullptr;
-    TargetMaterial       = nullptr;
+    CurPlayingKeyIndex         = 0;
+    bIsPlaying                 = false;
+    TintColorControlType       = TintColorControl::NONE;
+    TargetText                 = nullptr;
+    TargetMaterial             = nullptr;
     m_UpdateUIKeyIndexStrategy = s_mapUpdateAnimKeyIndexStrategies[UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE::DEFAULT].Get();
 
     // 3. 뺏긴 원본 객체의 포인터 안전하게 비우기
@@ -183,6 +228,85 @@ void UIAnimTrack::LoadFromLevelFile(FILE* _File)
     KeyFrames.resize(KeyFrameCount);
     for (UIAnimKeyFrameData& KeyFrame : KeyFrames)
         KeyFrame.LoadFromLevelFile(_File);
+}
+
+void UIAnimTrack::AddOriginalStateData(const GUID& _GUID, const UIAnimKeyFrameData& _OriginalData)
+{
+    // 저장된 원본값이 없을 때에만 최초 기록을 남기는 형식으로 처리
+    // 기존에 원본값을 저장한 Animation이 있었고 해당 Animation을 재생중인 상황에서(원본값이 아닌 상황에서)
+    // 다른 Animation에서 동일한 GO로 AnimationTrack을 추가한다 했을 때, 손상된 원본값이 저장처리가 될 수 있어서 이런식으로 처리를 함
+    // 대신, 원본값 참조 Count는 항상 올려주는 식으로 처리한다.
+    
+    // 최초 Add인 경우
+    if (!ORIGINAL_STATE_DATA.contains(_GUID))
+    {
+        ORIGINAL_STATE_DATA[_GUID]       = _OriginalData;
+        ORIGINAL_STATE_DATA_COUNT[_GUID] = 1;
+        return;
+    }
+    
+    ++ORIGINAL_STATE_DATA_COUNT[_GUID];
+}
+
+bool UIAnimTrack::ModifyOriginalStateData(const GUID& _GUID, const UIAnimKeyFrameData& _ModifiedData)
+{
+    if (!ORIGINAL_STATE_DATA.contains(_GUID)) return false;
+
+    ORIGINAL_STATE_DATA[_GUID] = _ModifiedData;
+    return true;
+}
+
+bool UIAnimTrack::GetOriginalKeyFrameData(const GUID& _GUID, UIAnimKeyFrameData& _OutOriginalData)
+{
+    if (!ORIGINAL_STATE_DATA.contains(_GUID))
+    {
+        _OutOriginalData = UIAnimKeyFrameData();
+        return false;
+    }
+
+    _OutOriginalData = ORIGINAL_STATE_DATA.at(_GUID);
+    return true;
+}
+
+bool UIAnimTrack::ReduceOriginalStateData(const GUID& _GUID)
+{
+    if (!ORIGINAL_STATE_DATA.contains(_GUID))
+    {
+        assert(nullptr);
+        return false;
+    }
+
+    if (--ORIGINAL_STATE_DATA_COUNT[_GUID] <= 0)
+    {
+        ORIGINAL_STATE_DATA.erase(_GUID);
+        ORIGINAL_STATE_DATA_COUNT.erase(_GUID);
+    }
+    
+    return true;
+}
+
+bool UIAnimTrack::AddSelfDefaultOriginalStateData() const
+{
+    if (TargetObjectReference.GetRefGUID() == GUID_NULL) return false;
+
+    AddOriginalStateData(TargetObjectReference.GetRefGUID(), UIAnimKeyFrameData());
+    return true;
+}
+
+bool UIAnimTrack::AddSelfOriginalStateData(const UIAnimKeyFrameData& _OriginalData) const
+{
+    if (TargetObjectReference.GetRefGUID() == GUID_NULL) return false;
+    
+    AddOriginalStateData(TargetObjectReference.GetRefGUID(), _OriginalData);
+    return true;
+}
+
+bool UIAnimTrack::TryAddSelfOriginalStateDataCount() const
+{
+    if (!ORIGINAL_STATE_DATA_COUNT.contains(TargetObjectReference.GetRefGUID())) return false;
+    
+    ++ORIGINAL_STATE_DATA_COUNT[TargetObjectReference.GetRefGUID()];
+    return true;
 }
 
 bool UIAnimTrack::OnPlayStart()
@@ -318,6 +442,8 @@ void UIAnimTrack::Stop()
     
     GameObject* TargetObject = TargetObjectReference.GetGameObject();
     if (!TargetObject) return;
+
+    const UIAnimKeyFrameData& OriginalStateData = ORIGINAL_STATE_DATA[TargetObjectReference.GetRefGUID()];
     
     TargetObject->Transform()->CopyRelativePosScaleRot(OriginalStateData.Transform);
 

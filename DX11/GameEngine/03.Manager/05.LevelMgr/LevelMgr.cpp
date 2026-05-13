@@ -52,7 +52,8 @@ void LevelMgr::Progress()
 
 void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
 {
-    // if (m_LevelState == _NextState) return; // 이미 해당 State
+    // 이미 해당 State
+    if (m_LevelState == _NextState) return;
     
     LEVEL_STATE PrevState = m_LevelState;
     m_LevelState = _NextState;
@@ -67,9 +68,6 @@ void LevelMgr::ChangeCurLevelState(LEVEL_STATE _NextState)
 
         // Guid 테이블 업데이트
         m_CurLevel->InitGuidTable();
-        
-        // 업데이트된 Guid 테이블을 이용하여, GameObject 레퍼런스를 다시 잡아줌
-        m_CurLevel->AfterInitGuidTable();
         
         m_CurLevel->SetChanged();
         m_CurLevel->Begin();
@@ -120,28 +118,12 @@ void LevelMgr::ChangeCurLevel(const Ptr<ALevel>& _NextLevel, bool _ChangeNextLev
     
     DebugUtil::SetPermanentDebugLog("CurrentLevel", "CURRENT LEVEL : " + LevelNameStr, Vec4(1.f, 0.f, 0.f, 1.f));
 
-    if (_ChangeNextLevelStateToStop) // Editor에서 ChangeLevel 처리는 기본적으로 다음 LevelState를 Stop으로 처리 -> User Client의 Level 바꾸는건 이전 State를 계속해서 사용(Play)
-    {
-        m_LevelState = LEVEL_STATE::STOP;
-        
-        // Guid Table 업데이트
-        m_CurLevel->InitGuidTable();
-        
-        // 업데이트된 GuidTable을 통해 GameObject 레퍼런스를 다시 잡아줌
-        m_CurLevel->AfterInitGuidTable();
-        
-        
-    }
-    else // Clone 처리를 한 번 해주어야 함
-    {
-        // InGame play 상태에서의 ChangeLevel처리
-        if (m_LevelState == LEVEL_STATE::PLAY) // 기존에 Play 상태였다면, 계속해서 Play 상태를 유지
-            ChangeLevelState(LEVEL_STATE::PLAY);
-        
-        // 비용이 들기 때문에 Play 상태처리 이후에, Guid Table 업데이트 처리를 ChangeCurState 함수 내에서 해준다
-        // (ChangeCurLevel, ChangeCurLevelState 두 상황 모두 해주어야 하기 때문에 한 번만 처리하기 위함)
-        
-    }
+    // Level을 전환하되, ChangeNextLevelToStop이든 아니든, Stop 상태로 한 번 처리는 해주어야 함
+    m_LevelState = LEVEL_STATE::STOP;
+    m_CurLevel->InitGuidTable(); // GuidTable 업데이트 (여기서는 원본 SharedLevel의 GuidTable을 갱신한다)
+
+    // Play 상태를 이어가거나, 아니면 새로이 Play 처리를 하는 상황이라면 CurLevelState 수정
+    if (!_ChangeNextLevelStateToStop) ChangeCurLevelState(LEVEL_STATE::PLAY);
     
     EditorUI* pUI = EditorMgr::GetInst()->GetEditorUI("CollisionMatrixUI").Get();
     if (CollisionMatrixUI* MatUI = dynamic_cast<CollisionMatrixUI*>(pUI))

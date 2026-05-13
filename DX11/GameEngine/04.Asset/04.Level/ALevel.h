@@ -18,6 +18,9 @@ private:
     
     // CurLevel의 LevelStop 상황과 LevelPlay 상태에서의 GUID 값은 모두 동일
     // Level이 복제되어, 동일한 Guid를 가진 GameObject들이 막 생성이 되었을 때, Begin 호출 이전에 해당 테이블 초기화 처리됨
+    // 주의 : Stop 상태의 원본 Level에서의 GameObject만이 GuidTable에 등록되어 처리됨
+    // Play 시작되었을 때, 새로이 생성된 오브젝트들에 대해서는 테이블에 추가되지 않는다
+    // 애초에 목적이 Stop 상황 Editing 상황 시의 GameObjectReference와 Play 상황에서의 GameObjectReference 싱크를 맞추기 위함이기 때문
     unordered_map<GUID, GameObject*, GUIDHasher> m_GuidTable{};
 
 private:
@@ -66,12 +69,6 @@ public:
     void AddEditingTickEnabledGameObject(GameObject* _GameObject);
     void RemoveEditingTickEnabledGameObject(GameObject* _GameObject);
 
-public:
-    
-    /// <summary>
-    /// GameObject Guid 테이블 초기화 이후, GO 레퍼런스 초기화 처리할 클래스단에서 해당 시점 이용 
-    /// </summary>
-    void AfterInitGuidTable();
     
     /// <summary>
     /// Level 처음 시작 시 호출 
@@ -160,6 +157,16 @@ public:
 
 public:
     
+    /// <summary>
+    /// 이 Leve에 있는 모든 GO(Child 오브젝트 포함)를 순회하며, GameObject의 GUID를 통해, Level의 GUIDTable 초기화 
+    /// </summary>
     void InitGuidTable();
+    
+private:
+    
+    /// <summary>
+    /// GameObject Guid 테이블 초기화 이후 업데이트된 Guid 테이블을 이용하여, GameObject 레퍼런스를 다시 잡아줌 
+    /// </summary>
+    void AfterInitGuidTable();
     
 };
