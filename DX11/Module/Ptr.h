@@ -7,6 +7,28 @@ private:
 	T* m_Ptr{};
 
 public:
+	Ptr()
+		: m_Ptr(nullptr)
+	{}
+
+	Ptr(T* _Ptr)
+		: m_Ptr(_Ptr)
+	{
+		if (m_Ptr) m_Ptr->AddRef();
+	}
+
+	Ptr(const Ptr& _Ptr)
+		: m_Ptr(_Ptr.m_Ptr)
+	{
+		if (m_Ptr) m_Ptr->AddRef();
+	}
+
+	~Ptr()
+	{
+		if (m_Ptr) m_Ptr->Release();
+	}
+	
+public:
 
 	T* Get() const { return m_Ptr; }
 	T** GetAddressOf() { return &m_Ptr; }
@@ -47,29 +69,6 @@ public:
 	bool operator!=(const Ptr& _Ptr) const { return m_Ptr != _Ptr.m_Ptr; }*/
 	
 	explicit operator bool() const { return m_Ptr != nullptr; }
-
-
-public:
-	Ptr()
-		: m_Ptr(nullptr)
-	{}
-
-	Ptr(T* _Ptr)
-		: m_Ptr(_Ptr)
-	{
-		if (m_Ptr) m_Ptr->AddRef();
-	}
-
-	Ptr(const Ptr& _Ptr)
-		: m_Ptr(_Ptr.m_Ptr)
-	{
-		if (m_Ptr) m_Ptr->AddRef();
-	}
-
-	~Ptr()
-	{
-		if (m_Ptr) m_Ptr->Release();
-	}
 
 };
 

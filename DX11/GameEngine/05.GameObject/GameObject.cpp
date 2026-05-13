@@ -35,10 +35,6 @@ namespace
 
 
 GameObject::GameObject()
-	: m_Components{}
-	, m_Parent(nullptr)
-	, m_ObjectDestroyed(false)
-	, m_LayerIdx(-1)
 {
 }
 
@@ -363,7 +359,7 @@ void GameObject::DeregisterAsRootParent()
 void GameObject::RegisterAsParent()
 {
 	// if (m_bInLayer) return;
-	LevelMgr::GetInst()->GetCurLevel()->GetLayer(m_LayerIdx)->AddObject(this);
+	LevelMgr::GetInst()->GetCurLevel()->GetLayer(m_LayerIdx)->AddParentObject(this);
 }
 
 int GameObject::GetChildIdx(const Ptr<GameObject>& _Child)

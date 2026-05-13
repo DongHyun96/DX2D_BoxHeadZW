@@ -36,29 +36,6 @@ Ptr<Asset> AssetMgr::Find(ASSET_TYPE _Type, const wstring& _Key, bool _ShowWarni
     return iter->second;
 }
 
-void AssetMgr::LoadAllLevels()
-{
-     // recursive_directory_iterator를 사용해 하위 폴더까지 일괄 탐색
-    for (const auto& entry : fs::recursive_directory_iterator(CONTENT_PATH)) 
-    {
-        if (entry.is_regular_file()) 
-        {
-            fs::path filePath = entry.path();
-            wstring extension = filePath.extension().wstring();
-
-            // 확장자를 소문자로 일괄 변환 (이거 빼도 될듯?)
-            transform(extension.begin(), extension.end(), extension.begin(), towlower);
-
-            if (extension != L".lv") continue;
-            
-            // Level
-            const wstring Assetkey      = L"Level\\" + filePath.filename().wstring(); // 에셋 키
-            const wstring relativePath  = fs::relative(filePath, CONTENT_PATH).wstring(); // Content 폴더 기준의 상대 경로 추출
-            Load<ALevel>(Assetkey, relativePath);
-        }
-    }
-}
-
 void AssetMgr::LoadAllTexMetaData()
 {
     const wstring TexMetaDataFolderPath = CONTENT_PATH + L"\\_Meta\\_TextureMeta";

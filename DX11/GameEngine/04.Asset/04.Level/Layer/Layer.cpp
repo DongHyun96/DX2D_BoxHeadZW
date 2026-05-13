@@ -15,7 +15,7 @@ Layer::Layer(const Layer& _Origin)
     // ParentObjects만 복사해주면 됨
 
     for (const Ptr<GameObject>& Object : _Origin.m_vecParents)
-        AddObject(Object->Clone());
+        AddParentObject(Object->Clone());
 }
 
 Layer::~Layer()
@@ -28,7 +28,7 @@ void Layer::SetName(const wstring& name)
     Entity::SetName(name);
 }
 
-void Layer::AddObject(const Ptr<GameObject>& _Object)
+void Layer::AddParentObject(const Ptr<GameObject>& _Object)
 {
     m_vecParents.push_back(_Object);
 
@@ -42,13 +42,11 @@ void Layer::AddObject(const Ptr<GameObject>& _Object)
 
     while (!queue.empty())
     {
-        GameObject* pObject = queue.front();
-        queue.pop_front();
+        GameObject* pObject = queue.front(); queue.pop_front();
         
         // pObject->m_LayerIdx = m_LayerIdx;
         pObject->m_bInLayer   = true;
         pObject->m_OwnerLevel = this->m_OwnerLevel;
-        // m_vecAllObjects.push_back(pObject);
 
         for (const Ptr<GameObject>& pChild : pObject->m_vecChild)
             queue.push_back(pChild.Get());

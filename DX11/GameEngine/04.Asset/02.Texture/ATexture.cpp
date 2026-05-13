@@ -136,7 +136,7 @@ HRESULT ATexture::Load(const wstring& _strFilePath)
     else if (L"tga" == strExt)  hr = LoadFromTGAFile(_strFilePath.c_str(), nullptr, m_Image);
         
     // WIC(Window Image Component) .png, .jpg, .jpeg, .bmp
-    else hr = LoadFromWICFile(_strFilePath.c_str(), TEXTURE_LOADING_FLAG, nullptr, m_Image); // TODO : 만일 Texture 색상이 이상하게 나오면 플래그 다른거 넣어볼 것
+    else hr = LoadFromWICFile(_strFilePath.c_str(), TEXTURE_LOADING_FLAG, nullptr, m_Image);
         
     if (FAILED(hr))
     {
