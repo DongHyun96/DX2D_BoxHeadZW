@@ -69,7 +69,8 @@ struct UIAnimTrack
     
 public:
     
-    UIAnimKeyFrameData          OriginalStateData{};            // 원본 데이터 저장
+    UIAnimKeyFrameData          OriginalStateData{};            // 원본 데이터 저장 (이걸 오브젝트 단위로, 원본값을 저장해야 함)
+    
     vector<UIAnimKeyFrameData>  KeyFrames{};                    // 시간 순서에 따라 정렬된 키프레임들
 
 private: // Play 시작 시, 또는 Play 중 쓰일 값들

@@ -14,8 +14,7 @@ map<UI_ANIM_CUR_KEYFRAME_UPDATE_TYPE, Ptr<UpdateUIAnimKeyIndexStrategy>> UIAnimT
 
 bool UIAnimKeyFrameData::SetAnimDataFromGameObject(GameObject* _GameObject, float _Time)
 {
-    if (!_GameObject) return false;
-    if (!_GameObject->Transform()) return false;    
+    if (!_GameObject || !_GameObject->Transform()) return false;    
     
     Time = _Time;
     
@@ -324,11 +323,11 @@ void UIAnimTrack::Stop()
 
     // 굳이 ControlType을 쓰지 않은 이유 -> Play 처리 안한 상태에서 Stop을 한 상황일 수 있음
     if (TargetText = TargetObject->GetScriptComponent<CText>().Get())
-        TargetText->SetColor(KeyFrames[0].TintColor);
+        TargetText->SetColor(OriginalStateData.TintColor);
     else if (const Ptr<CRenderComponent>& RenderCom = TargetObject->GetRenderCom())
     {
         TargetMaterial = RenderCom->GetMaterial().Get();
-        TargetMaterial->SetScalar(VEC4_0, KeyFrames[0].TintColor);
+        TargetMaterial->SetScalar(VEC4_0, OriginalStateData.TintColor);
     }
     
     /* Init CurKeyFrame Index Update Strategy */
