@@ -270,11 +270,7 @@ bool UIAnimTrack::GetOriginalKeyFrameData(const GUID& _GUID, UIAnimKeyFrameData&
 
 bool UIAnimTrack::ReduceOriginalStateData(const GUID& _GUID)
 {
-    if (!ORIGINAL_STATE_DATA.contains(_GUID))
-    {
-        assert(nullptr);
-        return false;
-    }
+    if (!ORIGINAL_STATE_DATA.contains(_GUID)) return false;
 
     if (--ORIGINAL_STATE_DATA_COUNT[_GUID] <= 0)
     {

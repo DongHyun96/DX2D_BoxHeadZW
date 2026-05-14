@@ -45,8 +45,11 @@ private:
 	
 	vector<function<void(GameObject*)>> 	m_vecDelegateOnActivate{};		// SetActive true 처리될 때 CallBack 처리
 	vector<function<void(GameObject*)>> 	m_vecDelegateOnDeactivate{};	// SetActive false 처리될 때 CallBack 처리
-	map<DWORD_PTR, function<void()>>		m_mapDelegateOnDestroy{};		// Destroy 처리될 때 Callback 처리 -> GameObjectRefHolder에게 Destroy 되었다고 알림 처리할 때 사용 및 Script한테 Destroy 알리는 등 처리
-	map<CScript*, function<void()>>			m_mapDelegateOnRemoveScript{};	// RemoveScript 호출 시, Callback 처리
+
+private:
+	
+	map<class GameObjectRefHolder*, function<void()>> m_mapDelegateOnDestroy{}; // Destroy 처리될 때(사용자 요청에 의한) Callback 처리 -> GameObjectRefHolder에게 Destroy 되었다고 알림 처리할 때 사용 및 Script한테 Destroy 알리는 등 처리
+	map<class GameObjectRefHolder*, function<void()>> m_mapDelegateOnDelete{};	// 소멸자 호출 시(사용자 요청에 의한 처리가 아닌) Callback 처리 -> GORefHolder의 Dangling pointer 문제를 막기 위함
 	
 private: // TimeScale에 따른 DT Context 관련
 
@@ -121,15 +124,33 @@ public:
 	bool AddComponent(const Ptr<Component>& _Com);
 	Ptr<Component> GetComponent(COMPONENT_TYPE _Type) { return m_Components[static_cast<UINT>(_Type)]; }
 
+public:
+	
 	void AddDeactivateDelegate(const function<void(GameObject*)>& _Delegate) { m_vecDelegateOnDeactivate.push_back(_Delegate); }
 	// void RemoveDeactivateDelegate(const function<void()>& _Delegate) // 이건 functional 특성 상 wrapper이기 때문에 직접 비교가 불가능 -> 특정 요소를 찝어서 remove처리 불가능
 	void AddActivateDelegate(const function<void(GameObject*)>& _Delegate) { m_vecDelegateOnActivate.push_back(_Delegate); }
+
+public:
 	
-	void AddDestroyDelegate(DWORD_PTR _Delegator, const function<void()>& _Delegate) { m_mapDelegateOnDestroy.insert(make_pair(_Delegator, _Delegate)); }
-	void RemoveDestroyDelegate(DWORD_PTR _Delegator) { m_mapDelegateOnDestroy.erase(_Delegator); }
-	
-	void AddRemoveScriptDelegate(CScript* _ScriptTarget, const function<void()>& _Delegate) { m_mapDelegateOnRemoveScript.insert(make_pair(_ScriptTarget, _Delegate)); }
-	
+	/// <summary>
+	/// Destroy Delegate 추가 
+	/// </summary>
+	void AddDestroyDelegate(GameObjectRefHolder* _Delegator, const function<void()>& _Delegate) { m_mapDelegateOnDestroy.insert(make_pair(_Delegator, _Delegate)); }
+
+	/// <summary>
+	/// Delete Delegate 추가 
+	/// </summary>
+	void AddDeleteDelegate(GameObjectRefHolder* _Delegator, const function<void()>& _Delegate) { m_mapDelegateOnDelete.insert(make_pair(_Delegator, _Delegate)); }
+
+	/// <summary>
+	/// Destroy & Delete Delegate 일괄 삭제 
+	/// </summary>
+	void RemoveDestroyDeleteDelegate(GameObjectRefHolder* _Delegator)
+	{
+		m_mapDelegateOnDestroy.erase(_Delegator);
+		m_mapDelegateOnDelete.erase(_Delegator);
+	}
+
 public:
 	
 	/// <summary>

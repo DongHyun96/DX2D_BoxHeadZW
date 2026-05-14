@@ -64,6 +64,12 @@ GameObject::GameObject(const GameObject& _Origin)
 
 GameObject::~GameObject()
 {
+	// Delete Delegate 호출
+	for (const pair<GameObjectRefHolder* const, function<void()>>& Pair : m_mapDelegateOnDelete)
+		Pair.second();
+	
+	m_mapDelegateOnDelete.clear();
+	m_mapDelegateOnDestroy.clear();
 }
 
 void GameObject::AfterLevelGameObjectGuidTableInit()
@@ -208,15 +214,8 @@ bool GameObject::RemoveScript(const Ptr<CScript>& _TargetScript)
 	{
 		if (*iter == _TargetScript)
 		{
-			// OnRemoveScript Delegate 호출
-			if (m_mapDelegateOnRemoveScript.contains(iter->Get()) && m_mapDelegateOnRemoveScript[iter->Get()])
-				m_mapDelegateOnRemoveScript[iter->Get()]();
-
-			// OnRemoveScript Delegate 제거
-			m_mapDelegateOnRemoveScript.erase(iter->Get());
-
-			// Destroy Delegate 제거
-			m_mapDelegateOnDestroy.erase(reinterpret_cast<DWORD_PTR>(iter->Get()));
+			// RemoveScript 관련 처리 (CScript를 파생받은 Script에서 해당 처리가 필요할 시
+			_TargetScript->OnRemoveScript();
 			
 			// GameObject에서 Script 제거
 			m_vecScripts.erase(iter);
@@ -267,8 +266,6 @@ bool GameObject::AddComponent(const Ptr<Component>& _Com)
 	{
 		CScript* Script = dynamic_cast<CScript*>(_Com.Get());
 		m_vecScripts.push_back(Script);
-		m_mapDelegateOnRemoveScript.insert(make_pair(Script, bind(&CScript::OnRemoveScript, Script)));
-		m_mapDelegateOnDestroy.insert(make_pair(reinterpret_cast<DWORD_PTR>(Script), bind(&CScript::OnOwnerDestroy, Script)));
 	}
 	
 	else // 입력으로 들어온 컴포넌트가 스크립트가 아니면, 알맞은 배열 포인터로 가리킴
@@ -474,7 +471,6 @@ bool GameObject::SetLayerIdx(int _LayerIdx)
 	
 	return true;
 }
-
 void GameObject::RegisterLayer()
 {
 	Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
@@ -489,7 +485,7 @@ void GameObject::Destroy()
 	if (m_OwnerPoolComponent) return; // Pooling된 Object에 대한 직접적인 삭제요청은 허용 x
     
 	// RenderComponent를 들고 있던 경우, Render domain에서 제거
-	// 자식의 RenderComponent 또한 존재했다면 도메인에서 없앤다
+	// 자식의 RenderComponent 또한 존재했다면 일괄적으로 도메인에서 없앤다
 	{
 		queue<GameObject*> q{};
 		q.push(this);
@@ -506,8 +502,21 @@ void GameObject::Destroy()
 	}
 
 	// Destroy Delegate 처리
-	for (const pair<const DWORD_PTR, function<void()>>& Pair : m_mapDelegateOnDestroy)
+	// OnDestroy Delegate 호출 처리 중, Destroy Delegate 구독 해제 처리가 들어가 있을 수 있기 때문에 안전하게 임시로 복사한 map으로 순회해서 Delegate 호출 처리
+	map<GameObjectRefHolder*, function<void()>> mapDelegateOnDestroyTemp = m_mapDelegateOnDestroy;
+	
+	for (const pair<GameObjectRefHolder* const, function<void()>>& Pair : mapDelegateOnDestroyTemp)
 		Pair.second();
+	
+	
+	// 이 GO 자체는 더 이상 쓸 수 없는 객체 -> DestroyDelegate 호출 처리 이후, 안정성을 위해 DestroyDelegate 모두 비워둠
+	mapDelegateOnDestroyTemp.clear();
+	m_mapDelegateOnDestroy.clear();
+	m_mapDelegateOnDelete.clear();
+	
+	// Script에 대해 Destroy 처리할 내용 처리
+	for (const Ptr<CScript>& Script : m_vecScripts)
+		Script->OnOwnerDestroy();
 	
 	TaskInfo info = {};
     

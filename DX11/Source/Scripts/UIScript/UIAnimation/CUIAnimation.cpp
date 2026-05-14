@@ -41,7 +41,7 @@ void CUIAnimation::AfterLevelGameObjectGuidTableInit()
         
         /* GameObject 래퍼런스로 들고 있었던 원본 GameObject가 Destroy 되었을 때 Callback binding */
         // 원본 GameObject가 Destroy 당하면, 달려있었던 Track을 삭제처리한다
-        Track.TargetObjectReference.SetDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
+        Track.TargetObjectReference.SetReferenceObjDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
 
         /* Original State 값들 기록 */
         if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
@@ -119,6 +119,7 @@ void CUIAnimation::SetEditingAnimTime(float _Time)
 
 bool CUIAnimation::AddGameObjectToAnimate(GameObject* _GameObject)
 {
+    if (!_GameObject)                                               return false;
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP)  return false;
     if (IsTrackHasObject(_GameObject))                              return false; // 이미 해당 Object AnimTrack이 있는 경우
     if (!_GameObject->Transform())                                  return false; // 최소 Transform 정보는 있어야 Animation 가능
@@ -126,6 +127,10 @@ bool CUIAnimation::AddGameObjectToAnimate(GameObject* _GameObject)
     /* 새로운 AnimTrack 추가 */
     UIAnimTrack NewAnimTrack{};
     NewAnimTrack.TargetObjectReference.SetGameObject(_GameObject);
+    
+    /* GameObject 래퍼런스로 들고 있었던 원본 GameObject가 Destroy 되었을 때 Callback binding */
+    // 원본 GameObject가 Destroy 당하면, 달려있었던 Track을 삭제처리한다
+    NewAnimTrack.TargetObjectReference.SetReferenceObjDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
     
     /* 원본값 기록 */
     // 1. 기존의 원본값이 이미 존재했다면 -> 해당 원본값으로 원본값 사용 -> 다른 Animation에서 Stop 처리를 안한 상태에서 해당 GO를 이 Animation에 추가할 경우 원본값 훼손이 될 수 있음 -> 기존의 원본값을 본래의 원본값으로 저장 처리할 것
@@ -167,7 +172,8 @@ bool CUIAnimation::RemoveTrackByTrackIdx(int _TrackIdx)
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
     if (_TrackIdx < 0 || _TrackIdx >= m_vecTracks.size()) return false;
 
-    m_vecTracks[_TrackIdx].ReduceSelfOriginalStateData();
+    if (!m_vecTracks[_TrackIdx].ReduceSelfOriginalStateData())
+        DebugUtil::AddDebugLog("[CUIAnimation::RemoveTrackByTrackIdx] : ReduceSelfOriginalStateData failed");
     
     m_vecTracks.erase(m_vecTracks.begin() + _TrackIdx);
     return true;
