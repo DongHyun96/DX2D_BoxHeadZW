@@ -13,15 +13,23 @@ GameObjectRefHolder::~GameObjectRefHolder()
 }
 
 GameObjectRefHolder::GameObjectRefHolder(const GameObjectRefHolder& _Origin)
-    : m_RefGUID(_Origin.m_RefGUID) // GUID만 복사하고, GameObject는 다시금 연결처리를 해주어야 함
+    : m_GameObject(_Origin.m_GameObject) // 주의 : Level 복사 시(Stop to play), AfterInitGuidTable 시점에서 제대로 된 GO Reference 연결처리할 것
+    , m_RefGUID(_Origin.m_RefGUID)
+    , m_DelegateOnReferenceGameObjectDestroyed(_Origin.m_DelegateOnReferenceGameObjectDestroyed) // 주의 : Level 복사 시(Stop to play), AfterInitGuidTable 시점에서 복제된 객체의 Delegate 연결을 해주어야 함 
 {
+    // 전달받은 GO 래퍼런스가 유효하다면, OnDestroy 및 OnDelete Delegate 구독 처리
+    if (m_GameObject)
+    {
+        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
+        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDelete, this));
+    }
 }
 
 // 소유권 이전 및 기존 객체 사용불가 처리
 GameObjectRefHolder::GameObjectRefHolder(GameObjectRefHolder&& _Origin) noexcept
     : m_GameObject(_Origin.m_GameObject)
     , m_RefGUID(_Origin.m_RefGUID)
-    , m_DelegateOnGameObjectDestroyed(move(_Origin.m_DelegateOnGameObjectDestroyed))
+    , m_DelegateOnReferenceGameObjectDestroyed(move(_Origin.m_DelegateOnReferenceGameObjectDestroyed))
 {
     // 전달받은 GO 래퍼런스가 유효하다면, OnDestroy 및 OnDelete Delegate 구독 처리
     if (m_GameObject)
@@ -45,7 +53,7 @@ GameObjectRefHolder& GameObjectRefHolder::operator=(const GameObjectRefHolder& _
     // 새롭게 받은 값으로 래퍼런스 잡기
     this->m_RefGUID                       = _Other.m_RefGUID;
     this->m_GameObject                    = _Other.m_GameObject;
-    this->m_DelegateOnGameObjectDestroyed = _Other.m_DelegateOnGameObjectDestroyed;
+    this->m_DelegateOnReferenceGameObjectDestroyed = _Other.m_DelegateOnReferenceGameObjectDestroyed;
 
     // 새로이 받은 래퍼런스 GO가 유효하다면, OnDestroy및 OnDelete Delegate 구독 처리
     if (m_GameObject)
@@ -68,7 +76,7 @@ GameObjectRefHolder& GameObjectRefHolder::operator=(GameObjectRefHolder&& _Other
     // 소유권 이전 및 기존 객체 사용불가 처리
     m_RefGUID                       = _Other.m_RefGUID;
     m_GameObject                    = _Other.m_GameObject;
-    m_DelegateOnGameObjectDestroyed = move(_Other.m_DelegateOnGameObjectDestroyed);
+    m_DelegateOnReferenceGameObjectDestroyed = move(_Other.m_DelegateOnReferenceGameObjectDestroyed);
 
     // 새로이 받은 래퍼런스 GO가 유효하다면, OnDestroy및 OnDelete Delegate 구독 처리
     if (m_GameObject)
@@ -102,10 +110,10 @@ void GameObjectRefHolder::SetGameObject(GameObject* _GameObject)
 
 void GameObjectRefHolder::OnGameObjectDestroyed()
 {
-    if (m_DelegateOnGameObjectDestroyed)
+    if (m_DelegateOnReferenceGameObjectDestroyed)
     {
-        m_DelegateOnGameObjectDestroyed(m_GameObject);
-        m_DelegateOnGameObjectDestroyed = nullptr; // 해제 처리 이후, 안정성을 위해 Delegate nullptr 처리
+        m_DelegateOnReferenceGameObjectDestroyed(m_GameObject);
+        m_DelegateOnReferenceGameObjectDestroyed = nullptr; // 해제 처리 이후, 안정성을 위해 Delegate nullptr 처리
     }
     
     // 레퍼런스 연결 끊기
@@ -119,7 +127,7 @@ void GameObjectRefHolder::OnGameObjectDelete()
     // 레퍼런스 연결을 먼저 끊고, m_DelegateOnGameObjectDestroyed nullptr 처리를 하는 순서가 안전함
     m_GameObject                    = nullptr;
     m_RefGUID                       = GUID_NULL;
-    m_DelegateOnGameObjectDestroyed = nullptr;
+    m_DelegateOnReferenceGameObjectDestroyed = nullptr;
 }
 
 void GameObjectRefHolder::SaveToLevelFile(FILE* _File)
@@ -135,9 +143,11 @@ void GameObjectRefHolder::LoadFromLevelFile(FILE* _File)
 void GameObjectRefHolder::LinkReferenceToGameObject(const Ptr<ALevel>& _Level)
 {
     if (!_Level) return;
+    
+    // 이전에 기록받은 GUID를 통해 Level의 GUIDTable에서 실질적인 GameObject Reference 연결
     m_GameObject = _Level->GetObjectByGUID(m_RefGUID);
 
-    // 정상적으로 불러와졌다면, Destroy 처리에 대한 Delegate binding 처리
+    // 연결이 정상적으로 되었다면, Destroy 처리에 대한 Delegate binding 처리
     if (m_GameObject)
     {
         m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));

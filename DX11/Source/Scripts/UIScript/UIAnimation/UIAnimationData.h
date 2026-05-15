@@ -107,8 +107,13 @@ public:
     
     UIAnimTrack() = default;
     ~UIAnimTrack() = default;
-    
+
+    /// <summary>
+    /// 기존에는 GORefHolder에서 GUID 복사만 처리하고 AfterLevelGameObjectGuidTableInit 시점에 GO Ref 연결 처리를 해주었음
+    /// Editing 상태에서 CUIAnimation 복사 생성이 일어나면(Animation GO Duplicate), 정확히 복사 처리를 해주어야 해서, GO Ref 연결 처리까지도 추가
+    /// </summary>
     UIAnimTrack(const UIAnimTrack& _Origin);
+    
     UIAnimTrack(UIAnimTrack&& _Origin) noexcept;
     
     UIAnimTrack& operator=(const UIAnimTrack& _Other);

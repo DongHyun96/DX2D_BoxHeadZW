@@ -16,12 +16,42 @@ CUIAnimation::CUIAnimation()
 CUIAnimation::CUIAnimation(const CUIAnimation& _Origin)
     : CScript(_Origin)
     , m_vecTracks(_Origin.m_vecTracks)
-    // 나머지 멤버변수는 초기값으로 처리 (Editing 환경에서 재생 Testing 중이던 Animation일 수 있음 -> 이걸 다시 멈춘 상태로 시작)
+    , m_EndHandling(_Origin.m_EndHandling)
+    // 나머지 멤버변수는 초기값으로 처리 (Editing 환경에서 재생 Testing 중이던 Animation일 수 있음 -> 이걸 다시 멈춘 상태의 객체로 복사)
 {
+    
+    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return;
+    
+    // Editing 환경에서의 사용자 요청에 의한(Duplicate) 복사 상황인 경우, Delegate 및 기본 처리를 해주어야 함
+    for (UIAnimTrack& Track : m_vecTracks)
+    {
+        if (!Track.TargetObjectReference.GetGameObject())
+        {
+            DebugUtil::AddDebugLog("[CUIAnimation(Copy Constructor)] : Invalid Track's TargetObject Received during Duplicating AnimObj");
+            continue;
+        }
+        
+        Track.TargetObjectReference.SetReferenceObjDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
+    }
+    
+    // Editing 환경에서 Tick 함수가 돌아야 하기 때문에, 해당 처리 추가
+    // 이게 정확히 AddComponent 이전에 호출이 들어오기 때문에, OwnerGameObject가 명확히 잡혀있지 않은 상황
+    // 따라서 Init 시점에 해당 처리를 해준다
+    // RegisterEditingTickEnabled();
+    
+    // 기본 Stop인 상황으로 기본값 setting이 되어 있음
+    // Stop();
 }
 
 CUIAnimation::~CUIAnimation()
 {
+}
+
+void CUIAnimation::Init()
+{
+    // 사용자 요청으로 인한 Animation GO Duplicate 처리 시, EditingTickEnabled 옵션을 이 시점에서 켜주어야 valid하게 처리됨
+    if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
+        RegisterEditingTickEnabled();
 }
 
 void CUIAnimation::AfterLevelGameObjectGuidTableInit()

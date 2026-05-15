@@ -40,10 +40,11 @@ GameObject::GameObject()
 
 GameObject::GameObject(const GameObject& _Origin)
 	: Entity(_Origin)
-	, m_LayerIdx(_Origin.m_LayerIdx) // 원본의 LayerIdx를 따르도록 처리
+	, m_GUID(_Origin.m_GUID) // 원본의 LayerIdx를 따르도록 처리
+	, m_OwnerLevel(_Origin.m_OwnerLevel)
 	, m_IsActive(_Origin.m_IsActive)
 	, m_IsVisible(_Origin.m_IsVisible)
-	, m_GUID(_Origin.m_GUID)
+	, m_LayerIdx(_Origin.m_LayerIdx)
 {
 	// 원본 오브젝트와 동일한 세팅의 컴포넌트를 복사해서 나한테 넣어준다.
 	for (UINT i = 0; i < static_cast<UINT>(COMPONENT_TYPE::END); ++i)
@@ -268,10 +269,10 @@ bool GameObject::AddComponent(const Ptr<Component>& _Com)
 		m_vecScripts.push_back(Script);
 	}
 	
-	else // 입력으로 들어온 컴포넌트가 스크립트가 아니면, 알맞은 배열 포인터로 가리킴
+	else // 입력으로 들어온 컴포넌트가 스크립트가 아니면(ComponentType), 알맞은 배열 포인터로 가리킴
 	{
 		const UINT componentIdx = static_cast<UINT>(_Com->GetComponentType());
-		if (m_Components[componentIdx]) return false;
+		if (m_Components[componentIdx]) return false; // 동일한 Component 종류가 이미 있으면 추가하지 않음
 		m_Components[componentIdx] = _Com;
 	}
 	

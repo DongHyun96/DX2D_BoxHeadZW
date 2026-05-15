@@ -32,6 +32,9 @@ CScript::~CScript()
 
 bool CScript::RegisterEditingTickEnabled()
 {
+    // 아직 Owner나 OwnerLevel이 초기화 처리가 되지 않은 경우
+    if (!GetOwner() || !GetOwner()->GetOwnerLevel()) return false;
+    
     // 만일 현재 Level이 Owner의 Level이고, Stop 상황이 아니라면 EditingTickEnabled 처리 x
     if (LevelMgr::GetInst()->GetCurLevel() == GetOwner()->GetOwnerLevel())
         if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;

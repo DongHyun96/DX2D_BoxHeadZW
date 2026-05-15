@@ -37,6 +37,7 @@ public:
     
 public:
 
+    virtual void Init() override;
     virtual void AfterLevelGameObjectGuidTableInit() override;
     virtual void Tick() override;
 
