@@ -4,6 +4,8 @@
 class UIAnimationGroupUI : public CustomScriptUI
 {
 private:
+    char    m_AddAnimKeyBuffer[256] = "";
+    wstring m_SelectedAnimKey       = L"";
 
 public:
     
@@ -12,7 +14,11 @@ public:
     
 public:
     void Tick_UI() override;
-    void OnRemoveComponentConfirmed(bool _Confirmed) override;
     void SetTargetObject(const Ptr<GameObject>& _TargetObject) override;
+    
+private:
+    
+    void Tick_AddAnimationToGroup(class CUIAnimationGroup* _AnimGroup);
+    void Tick_ShowAnimList(CUIAnimationGroup* _AnimGroup);
     
 };

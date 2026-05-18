@@ -10,6 +10,9 @@
 /// </summary>
 class CUIAnimationGroup : public CScript
 {
+    
+    friend class UIAnimationGroupUI;
+    
 private:
 
     map<wstring, GameObjectRefHolder> m_mapAnimationGameObjects{};

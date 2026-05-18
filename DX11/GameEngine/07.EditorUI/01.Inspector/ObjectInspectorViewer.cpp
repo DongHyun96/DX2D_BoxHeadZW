@@ -22,6 +22,7 @@
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/04.FlipbookRenderUI/FlipbookRenderUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/05.RenderUI/05.TileRenderUI/TileRenderUI.h"
 #include "GameEngine/07.EditorUI/04.ComponentUI/06.ScriptUI/CustomScriptUI/GameUIAnimationUI/GameUIAnimationUI.h"
+#include "GameEngine/07.EditorUI/04.ComponentUI/06.ScriptUI/CustomScriptUI/UIAnimationGroupUI/UIAnimationGroupUI.h"
 
 #include "GameEngine/07.EditorUI/04.ComponentUI/07.PoolUI/PoolUI.h"
 #include "GameEngine/07.EditorUI/10.ConfirmUI/ConfirmUI.h"
@@ -123,6 +124,11 @@ void ObjectInspectorViewer::CreateChildUI()
     m_mapCustomScriptUI[UIANIMATION] = new GameUIAnimationUI;
     m_mapCustomScriptUI[UIANIMATION]->SetSizeAsChild(Vec2(0.f, 400.f));
     m_Owner->AddChildUI(m_mapCustomScriptUI[UIANIMATION].Get());
+    
+    m_mapCustomScriptUI[UIANIMATIONGROUP] = new UIAnimationGroupUI;
+    m_mapCustomScriptUI[UIANIMATIONGROUP]->SetSizeAsChild(Vec2(0.f, 400.f));
+    m_Owner->AddChildUI(m_mapCustomScriptUI[UIANIMATIONGROUP].Get());
+    
 }
 
 void ObjectInspectorViewer::SetTargetObject(GameObject* _Object)

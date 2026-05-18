@@ -71,6 +71,9 @@ bool CUIAnimationGroup::RemoveAnimationByKey(const wstring& _AnimKey)
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
     if (!m_mapAnimationGameObjects.contains(_AnimKey)) return false;
 
+    // 지우기 전 Stop 처리한 뒤 지우기
+    m_mapAnimations[_AnimKey]->Stop();
+    
     m_mapAnimationGameObjects.erase(_AnimKey);
     m_mapAnimations.erase(_AnimKey);
     return true;
@@ -84,6 +87,9 @@ bool CUIAnimationGroup::AddAnimation(const wstring& _AnimKey, GameObject* _AnimO
     // Animation Object가 아닌 경우
     CUIAnimation* UIAnimation = _AnimObj->GetScriptComponent<CUIAnimation>().Get();
     if (!UIAnimation) return false;
+    
+    // Invalid Key
+    if (_AnimKey.empty()) return false;
 
     GameObjectRefHolder AnimGameObjectRefHolder{};
     AnimGameObjectRefHolder.SetGameObject(_AnimObj);
@@ -100,11 +106,9 @@ bool CUIAnimationGroup::PlayAnimation(const wstring& _AnimToPlay, UIAnimEndHandl
 
     // Play 처리하는 Animation을 제외한 나머지 Animation들 Stop 처리
     for (const pair<const wstring, CUIAnimation*>& AnimationPair : m_mapAnimations)
-    {
-        if (AnimationPair.first == _AnimToPlay) AnimationPair.second->Play(_EndHandling);
-        else AnimationPair.second->Stop();
-    }
+        AnimationPair.second->Stop();
     
+    m_mapAnimations[_AnimToPlay]->Play(_EndHandling);
     return true;
 }
 
