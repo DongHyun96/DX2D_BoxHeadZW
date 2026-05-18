@@ -15,13 +15,12 @@ GameObjectRefHolder::~GameObjectRefHolder()
 GameObjectRefHolder::GameObjectRefHolder(const GameObjectRefHolder& _Origin)
     : m_GameObject(_Origin.m_GameObject) // 주의 : Level 복사 시(Stop to play), AfterInitGuidTable 시점에서 제대로 된 GO Reference 연결처리할 것
     , m_RefGUID(_Origin.m_RefGUID)
-    , m_DelegateOnReferenceGameObjectDestroyed(_Origin.m_DelegateOnReferenceGameObjectDestroyed) // 주의 : Level 복사 시(Stop to play), AfterInitGuidTable 시점에서 복제된 객체의 Delegate 연결을 해주어야 함 
 {
     // 전달받은 GO 래퍼런스가 유효하다면, OnDestroy 및 OnDelete Delegate 구독 처리
     if (m_GameObject)
     {
-        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
-        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDelete, this));
+        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
+        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
     }
 }
 
@@ -29,13 +28,12 @@ GameObjectRefHolder::GameObjectRefHolder(const GameObjectRefHolder& _Origin)
 GameObjectRefHolder::GameObjectRefHolder(GameObjectRefHolder&& _Origin) noexcept
     : m_GameObject(_Origin.m_GameObject)
     , m_RefGUID(_Origin.m_RefGUID)
-    , m_DelegateOnReferenceGameObjectDestroyed(move(_Origin.m_DelegateOnReferenceGameObjectDestroyed))
 {
     // 전달받은 GO 래퍼런스가 유효하다면, OnDestroy 및 OnDelete Delegate 구독 처리
     if (m_GameObject)
     {
-        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
-        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDelete, this));
+        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
+        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
     }
 
     // 원본의 래퍼런스는 연결 해제
@@ -51,15 +49,14 @@ GameObjectRefHolder& GameObjectRefHolder::operator=(const GameObjectRefHolder& _
         m_GameObject->RemoveDestroyDeleteDelegate(this);
 
     // 새롭게 받은 값으로 래퍼런스 잡기
-    this->m_RefGUID                       = _Other.m_RefGUID;
-    this->m_GameObject                    = _Other.m_GameObject;
-    this->m_DelegateOnReferenceGameObjectDestroyed = _Other.m_DelegateOnReferenceGameObjectDestroyed;
+    this->m_RefGUID    = _Other.m_RefGUID;
+    this->m_GameObject = _Other.m_GameObject;
 
     // 새로이 받은 래퍼런스 GO가 유효하다면, OnDestroy및 OnDelete Delegate 구독 처리
     if (m_GameObject)
     {
-        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
-        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDelete, this));
+        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
+        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
     }
     
     return *this;
@@ -74,15 +71,14 @@ GameObjectRefHolder& GameObjectRefHolder::operator=(GameObjectRefHolder&& _Other
         m_GameObject->RemoveDestroyDeleteDelegate(this);
     
     // 소유권 이전 및 기존 객체 사용불가 처리
-    m_RefGUID                       = _Other.m_RefGUID;
-    m_GameObject                    = _Other.m_GameObject;
-    m_DelegateOnReferenceGameObjectDestroyed = move(_Other.m_DelegateOnReferenceGameObjectDestroyed);
+    m_RefGUID    = _Other.m_RefGUID;
+    m_GameObject = _Other.m_GameObject;
 
     // 새로이 받은 래퍼런스 GO가 유효하다면, OnDestroy및 OnDelete Delegate 구독 처리
     if (m_GameObject)
     {
-        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
-        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDelete, this));
+        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
+        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
     }
     
     _Other.SetGameObject(nullptr); // 원본은 연결 해제
@@ -103,31 +99,16 @@ void GameObjectRefHolder::SetGameObject(GameObject* _GameObject)
     // 새로 들어온 GO가 Valid하다면, 새로이 Destroy Delegate를 잡아준다
     if (m_GameObject)
     {
-        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
-        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDelete, this));
+        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
+        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
     }
 }
 
-void GameObjectRefHolder::OnGameObjectDestroyed()
+void GameObjectRefHolder::OnGameObjectDestroyOrDelete()
 {
-    if (m_DelegateOnReferenceGameObjectDestroyed)
-    {
-        m_DelegateOnReferenceGameObjectDestroyed(m_GameObject);
-        m_DelegateOnReferenceGameObjectDestroyed = nullptr; // 해제 처리 이후, 안정성을 위해 Delegate nullptr 처리
-    }
-    
     // 레퍼런스 연결 끊기
     m_GameObject = nullptr;
     m_RefGUID    = GUID_NULL;
-}
-
-void GameObjectRefHolder::OnGameObjectDelete()
-{
-    // 레퍼런스 연결 끊기
-    // 레퍼런스 연결을 먼저 끊고, m_DelegateOnGameObjectDestroyed nullptr 처리를 하는 순서가 안전함
-    m_GameObject                    = nullptr;
-    m_RefGUID                       = GUID_NULL;
-    m_DelegateOnReferenceGameObjectDestroyed = nullptr;
 }
 
 void GameObjectRefHolder::SaveToLevelFile(FILE* _File)
@@ -154,7 +135,7 @@ void GameObjectRefHolder::LinkReferenceToGameObject(const Ptr<ALevel>& _Level)
     // 연결이 정상적으로 되었다면, Destroy 처리에 대한 Delegate binding 처리
     if (m_GameObject)
     {
-        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyed, this));
-        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDelete, this));
+        m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
+        m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
     }
 }

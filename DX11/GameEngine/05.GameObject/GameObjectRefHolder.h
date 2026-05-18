@@ -10,8 +10,6 @@ private:
 	GameObject* m_GameObject{}; // 실질적인 원본 reference 객체
 	GUID		m_RefGUID{};	// Reference GameObject의 GUID
 	
-	function<void(GameObject*)> m_DelegateOnReferenceGameObjectDestroyed{}; // 래퍼런스로 들고 있었던 게임오브젝트가 Delete되었을 때, 이 GameObjectRefHolder를 사용중이었던 객체에게 알림용 Delegate
-	
 public:
 
 	GameObjectRefHolder();
@@ -51,25 +49,13 @@ public:
 		return _Other.m_RefGUID == m_RefGUID;
 	}
 
-public:
-	
-	void SetReferenceObjDestroyDelegate(const function<void(GameObject*)>& _Func) { m_DelegateOnReferenceGameObjectDestroyed = _Func; }
-	
 private:
 	
 	/// <summary>
-	/// 래퍼런스로 들고 있었던 GameObject가 Destroy되었을 때, Callback 받는 함수
-	/// 래퍼런스 연결을 끊고 nullptr로 처리 & 추가로 해당 Reference를 들고 있었던 다른 객체에게 Destroy되었다고 알림(만약 Destroy 관련 구독 처리가 되어 있다면)
-	/// 주의 : Client 요청 처리로 GameObject::Destroy() 호출이 들어간 경우에만 Delegate 호출 처리됨
-	/// Level 삭제 시 Destroy 요청 없이 GO 삭제 처리되는 경우에, m_DelegateOnGameObjectDestroyed 델리게이트 호출에서 의도치 않은 상황이 발생해서 이렇게 함 
+	/// 래퍼런스로 들고 있었던 GameObject의 소멸자에서 또는 Destroy 되었을 때, Callback Delegate 호출 처리
+	/// 래퍼런스 연결 끊기 처리
 	/// </summary>
-	void OnGameObjectDestroyed();
-	
-	/// <summary>
-	/// 래퍼런스로 들고 있었던 GameObject의 소멸자에서 Delegate 호출 처리
-	/// GO 래퍼런스 포인터의 DanglingPointer 문제를 막기 위함
-	/// </summary>
-	void OnGameObjectDelete();
+	void OnGameObjectDestroyOrDelete();
 	
 public:
 	

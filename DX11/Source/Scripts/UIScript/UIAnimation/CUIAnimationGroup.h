@@ -21,6 +21,7 @@ private:
 public:
     
     CUIAnimationGroup();
+    CUIAnimationGroup(const CUIAnimationGroup& _Origin);
     virtual ~CUIAnimationGroup() override;
     
     CLONE(CUIAnimationGroup);
@@ -35,7 +36,6 @@ public:
 
 public: // 삭제, 추가 처리는 Editing 환경에서만 가능하도록 처리
     
-    bool RemoveAnimationByGameObject(GameObject* _GameObject);
     bool RemoveAnimationByKey(const wstring& _AnimKey);
     
     bool AddAnimation(const wstring& _AnimKey, GameObject* _AnimObj);

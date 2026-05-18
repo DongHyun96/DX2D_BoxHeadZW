@@ -74,11 +74,6 @@ public: // Editing 관련 함수들
     /// <returns> : Editing 상태가 아니거나, index 초과 시 return false </returns>
     bool RemoveTrackByTrackIdx(int _TrackIdx);
 
-    /// <summary>
-    /// Target GameObject를 들고 있는 Track 삭제하기 
-    /// </summary>
-    bool RemoveTrackByGameObject(GameObject* _GameObject);
-
 public:
     /// <summary>
     /// 해당 index Track의 해당 프레임타임에 새로운 키프레임 추가

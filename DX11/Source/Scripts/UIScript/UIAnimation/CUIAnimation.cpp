@@ -30,8 +30,6 @@ CUIAnimation::CUIAnimation(const CUIAnimation& _Origin)
             DebugUtil::AddDebugLog("[CUIAnimation(Copy Constructor)] : Invalid Track's TargetObject Received during Duplicating AnimObj");
             continue;
         }
-        
-        Track.TargetObjectReference.SetReferenceObjDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
     }
     
     // Editing 환경에서 Tick 함수가 돌아야 하기 때문에, 해당 처리 추가
@@ -69,10 +67,6 @@ void CUIAnimation::AfterLevelGameObjectGuidTableInit()
             return;
         }
         
-        /* GameObject 래퍼런스로 들고 있었던 원본 GameObject가 Destroy 되었을 때 Callback binding */
-        // 원본 GameObject가 Destroy 당하면, 달려있었던 Track을 삭제처리한다
-        Track.TargetObjectReference.SetReferenceObjDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
-
         /* Original State 값들 기록 */
         if (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP)
         {
@@ -158,10 +152,6 @@ bool CUIAnimation::AddGameObjectToAnimate(GameObject* _GameObject)
     UIAnimTrack NewAnimTrack{};
     NewAnimTrack.TargetObjectReference.SetGameObject(_GameObject);
     
-    /* GameObject 래퍼런스로 들고 있었던 원본 GameObject가 Destroy 되었을 때 Callback binding */
-    // 원본 GameObject가 Destroy 당하면, 달려있었던 Track을 삭제처리한다
-    NewAnimTrack.TargetObjectReference.SetReferenceObjDestroyDelegate(bind(&CUIAnimation::RemoveTrackByGameObject, this, placeholders::_1));
-    
     /* 원본값 기록 */
     // 1. 기존의 원본값이 이미 존재했다면 -> 해당 원본값으로 원본값 사용 -> 다른 Animation에서 Stop 처리를 안한 상태에서 해당 GO를 이 Animation에 추가할 경우 원본값 훼손이 될 수 있음 -> 기존의 원본값을 본래의 원본값으로 저장 처리할 것
     // 최초 Animate할 GO를 잡은 상황 -> 현재 GO 상태를 초기원본으로 기록처리
@@ -207,26 +197,6 @@ bool CUIAnimation::RemoveTrackByTrackIdx(int _TrackIdx)
     
     m_vecTracks.erase(m_vecTracks.begin() + _TrackIdx);
     return true;
-}
-
-bool CUIAnimation::RemoveTrackByGameObject(GameObject* _GameObject)
-{
-    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-
-    for (auto it = m_vecTracks.begin(); it != m_vecTracks.end(); ++it)
-    {
-        const UIAnimTrack& Track = *it;
-        
-        if (Track.TargetObjectReference.GetGameObject() == _GameObject)
-        {
-            Track.ReduceSelfOriginalStateData();
-            m_vecTracks.erase(it);
-            return true;
-        }
-    }
-
-    // 일치하는 GameObject를 찾지 못함
-    return false;
 }
 
 bool CUIAnimation::AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime)

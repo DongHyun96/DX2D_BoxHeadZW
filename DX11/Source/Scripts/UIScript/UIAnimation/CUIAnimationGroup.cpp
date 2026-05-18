@@ -11,9 +11,30 @@ CUIAnimationGroup::CUIAnimationGroup()
 {
 }
 
+CUIAnimationGroup::CUIAnimationGroup(const CUIAnimationGroup& _Origin)
+    : CScript(_Origin)
+    , m_mapAnimationGameObjects(_Origin.m_mapAnimationGameObjects)
+    , m_mapAnimations(_Origin.m_mapAnimations)
+{
+    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return;
+    
+    // Editing 환경에서의 사용자 요청에 의한(Duplicate) 복사 상황인 경우, Delegate 및 기본 처리를 해주어야 함
+    for (pair<const wstring, GameObjectRefHolder>& Pair : m_mapAnimationGameObjects)
+    {
+        GameObjectRefHolder& AnimObjRefHolder = Pair.second; 
+        if (!AnimObjRefHolder.GetGameObject())
+        {
+            DebugUtil::AddDebugLog("[CUIAnimationGroup(Copy Constructor)] : Some GORef not valid!");
+            continue;
+        }
+    }
+}
+
 CUIAnimationGroup::~CUIAnimationGroup()
 {
 }
+
+
 
 void CUIAnimationGroup::AfterLevelGameObjectGuidTableInit()
 {
@@ -33,37 +54,11 @@ void CUIAnimationGroup::AfterLevelGameObjectGuidTableInit()
         GameObject* AnimObj                  = AnimObjRefHolder.GetGameObject();
         const Ptr<CUIAnimation>& UIAnimation = AnimObj->GetScriptComponent<CUIAnimation>();
         m_mapAnimations.insert(make_pair(Pair.first, UIAnimation.Get()));
-        
-        /* GameObject 래퍼런스로 들고 있었던 GameObject Destroy 시, Callback 처리 */
-        AnimObjRefHolder.SetReferenceObjDestroyDelegate(bind(&CUIAnimationGroup::RemoveAnimationByGameObject, this, placeholders::_1));
     }
 }
 
 void CUIAnimationGroup::Tick()
 {
-}
-
-bool CUIAnimationGroup::RemoveAnimationByGameObject(GameObject* _GameObject)
-{
-    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-
-    wstring RemovedKey{};
-        
-    for (map<wstring, GameObjectRefHolder>::iterator it = m_mapAnimationGameObjects.begin(); it != m_mapAnimationGameObjects.end(); ++it)
-    {
-        if (it->second.GetGameObject() == _GameObject)
-        {
-            RemovedKey = it->first;
-            m_mapAnimationGameObjects.erase(it);
-            break;
-        }
-    }
-
-    // 삭제할 GameObject가 존재하지 않았음
-    if (RemovedKey.empty()) return false;
-    
-    m_mapAnimations.erase(RemovedKey);
-    return true;
 }
 
 bool CUIAnimationGroup::RemoveAnimationByKey(const wstring& _AnimKey)
