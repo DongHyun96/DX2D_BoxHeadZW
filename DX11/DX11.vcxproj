@@ -237,6 +237,7 @@ CodeGen.exe</Command>
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\05.RenderUI\RenderUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\CustomScriptUI\CustomScriptUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\CustomScriptUI\GameUIAnimationUI\GameUIAnimationUI.h" />
+    <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\CustomScriptUI\UIAnimationGroupUI\UIAnimationGroupUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\ScriptUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\07.PoolUI\PoolUI.h" />
     <ClInclude Include="GameEngine\07.EditorUI\04.ComponentUI\ComponentUI.h" />
@@ -357,6 +358,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\UIScript\HUD\HUD.h" />
     <ClInclude Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.h" />
     <ClInclude Include="Source\Scripts\UIScript\UIAnimation\CUIAnimation.h" />
+    <ClInclude Include="Source\Scripts\UIScript\UIAnimation\CUIAnimationGroup.h" />
     <ClInclude Include="Source\Scripts\UIScript\UIAnimation\UIAnimationData.h" />
     <ClInclude Include="Source\UserHeader\userDefine.h" />
     <ClInclude Include="Source\UserHeader\userEnum.h" />
@@ -520,6 +522,7 @@ CodeGen.exe</Command>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\CustomScriptUI\GameUIAnimationUI\GameUIAnimationUI.cpp" />
+    <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\CustomScriptUI\UIAnimationGroupUI\UIAnimationGroupUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\06.ScriptUI\ScriptUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\07.PoolUI\PoolUI.cpp" />
     <ClCompile Include="GameEngine\07.EditorUI\04.ComponentUI\ComponentUI.cpp" />
@@ -649,6 +652,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\UIScript\HUD\HUD.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\UIAnimation\CUIAnimation.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\UIAnimation\CUIAnimationGroup.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\UIAnimation\UIAnimationData.cpp" />
     <ClCompile Include="Source\UserHeader\userStruct.cpp" />
   </ItemGroup>

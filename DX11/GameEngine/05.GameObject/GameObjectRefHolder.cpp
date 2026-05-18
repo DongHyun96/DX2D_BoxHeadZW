@@ -142,7 +142,11 @@ void GameObjectRefHolder::LoadFromLevelFile(FILE* _File)
 
 void GameObjectRefHolder::LinkReferenceToGameObject(const Ptr<ALevel>& _Level)
 {
-    if (!_Level) return;
+    if (!_Level)
+    {
+        DebugUtil::AddDebugLog("[GameObjectRefHolder::LinkReferenceToGameObject] : Invalid Level received");
+        return;
+    }
     
     // 이전에 기록받은 GUID를 통해 Level의 GUIDTable에서 실질적인 GameObject Reference 연결
     m_GameObject = _Level->GetObjectByGUID(m_RefGUID);

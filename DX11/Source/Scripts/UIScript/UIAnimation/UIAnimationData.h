@@ -82,7 +82,7 @@ struct UIAnimTrack
 private:
     
     static unordered_map<GUID, UIAnimKeyFrameData, GUIDHasher>    ORIGINAL_STATE_DATA;        // 원본 데이터 저장 (같은 오브젝트를 서로 다른 AnimationTrack이 관여할 때, 원본값은 항상 동일해야 한다)
-    static unordered_map<GUID, int, GUIDHasher>                   ORIGINAL_STATE_DATA_COUNT;  // 한Track당(GUID 당), 원본 데이터값 저장을 몇개 했는지 기록, 복제된 Level내에서도 Count를 올려주어야 소멸자에서 제대로 처리를 할 수 있을 듯?
+    static unordered_map<GUID, int, GUIDHasher>                   ORIGINAL_STATE_DATA_COUNT;  // 한Track당(GUID 당), 원본 데이터값 저장을 몇개 했는지 기록
 
 private: // Play 시작 시, 또는 Play 중 쓰일 값들
 

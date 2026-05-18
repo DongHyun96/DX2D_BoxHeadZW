@@ -60,6 +60,7 @@
 #include "Source/Scripts/UIScript\CText.h"
 #include "Source/Scripts/UIScript\InGameUIManager\CIngameUIManager.h"
 #include "Source/Scripts/UIScript\UIAnimation\CUIAnimation.h"
+#include "Source/Scripts/UIScript\UIAnimation\CUIAnimationGroup.h"
 
 void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
@@ -118,6 +119,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CText");
 	_vec.push_back(L"CIngameUIManager");
 	_vec.push_back(L"CUIAnimation");
+	_vec.push_back(L"CUIAnimationGroup");
 }
 
 CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
@@ -240,6 +242,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CIngameUIManager;
 	if (L"CUIAnimation" == _strScriptName)
 		return new CUIAnimation;
+	if (L"CUIAnimationGroup" == _strScriptName)
+		return new CUIAnimationGroup;
 	return nullptr;
 }
 
@@ -365,6 +369,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CIngameUIManager;
 	case (UINT)SCRIPT_TYPE::UIANIMATION:
 		return new CUIAnimation;
+	case (UINT)SCRIPT_TYPE::UIANIMATIONGROUP:
+		return new CUIAnimationGroup;
 	}
 	return nullptr;
 }
@@ -491,6 +497,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CIngameUIManager";
 	case SCRIPT_TYPE::UIANIMATION:
 		return L"CUIAnimation";
+	case SCRIPT_TYPE::UIANIMATIONGROUP:
+		return L"CUIAnimationGroup";
 	}
 	return nullptr;
 }

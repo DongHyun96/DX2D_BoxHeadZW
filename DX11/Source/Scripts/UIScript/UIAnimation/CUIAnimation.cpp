@@ -387,7 +387,10 @@ void CUIAnimation::OnRemoveScript()
 
     // 모든 Track에 대해, OnRemove 처리를 해준다. (원본값 관련 처리를 위해)
     for (const UIAnimTrack& Track : m_vecTracks)
-        Track.ReduceSelfOriginalStateData();
+    {
+        if (!Track.ReduceSelfOriginalStateData())
+            DebugUtil::AddDebugLog("[CUIAnimation::OnRemoveScript] : Failed to ReduceSelfOriginalStateData");
+    }
     
     // 다른 Script에서 EditingTickEnable옵션을 사용하지 않는다면, 이 GameObject에 대해 EditingTick 비활성화
     DeRegisterEditingTickEnabled();
@@ -402,7 +405,10 @@ void CUIAnimation::OnOwnerDestroy()
         if (Script != this && Script->GetIsUseEditingTick()) return;
     
     for (const UIAnimTrack& Track : m_vecTracks)
-        Track.ReduceSelfOriginalStateData();
+    {
+        if (!Track.ReduceSelfOriginalStateData())
+            DebugUtil::AddDebugLog("[CUIAnimation::OnOwnerDestroy] : Failed to ReduceSelfOriginalStateData");
+    }
     
     // 다른 Script에서 EditingTickEnable옵션을 사용하지 않는다면, 이 GameObject에 대해 EditingTick 비활성화
     // 오브젝트 자체가 삭제처리될 때에도, ALevel에는 EditingTick GO Set에 해당 GameObject가 들어가있는 상황
