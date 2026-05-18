@@ -253,7 +253,10 @@ void TreeUI::Tick_UI()
     if (m_DragNode && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
         m_IsDragging = false;
 
-    if ((m_DragNode && m_DropNode) || (m_DragNode && ImGui::IsMouseReleased(ImGuiMouseButton_Left))) 
+    bool bMouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+    bool bHoveredTreeUI = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
+
+    if ((m_DragNode && m_DropNode) || (m_DragNode && !m_DropNode && bMouseReleased && bHoveredTreeUI)) 
     {
         if (m_DragDropInst && m_DragDropInstMemFunc)
             (m_DragDropInst->*m_DragDropInstMemFunc)(
@@ -261,6 +264,10 @@ void TreeUI::Tick_UI()
                 reinterpret_cast<DWORD_PTR>(m_DropNode.Get())
             );
 
+        m_DragNode = m_DropNode = nullptr;
+    }
+    else if (!m_IsDragging)
+    {
         m_DragNode = m_DropNode = nullptr;
     }
 }
