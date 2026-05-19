@@ -13,6 +13,9 @@
 #include "Source/Scripts/UIScript/CText.h"
 #include "Source/Scripts/UIScript/UIAnimation/CUIAnimation.h"
 #include "Source/Scripts/UIScript/UIAnimation/UIAnimationData.h"
+
+Ptr<UIAnimKeyFrameData> GameUIAnimationUI::s_CopiedUIAnimKeyFrameData{};
+
 namespace
 {
     string ToString(const wstring& _WString)

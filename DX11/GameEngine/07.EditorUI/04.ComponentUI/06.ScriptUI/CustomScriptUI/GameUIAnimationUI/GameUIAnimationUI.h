@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "GameEngine/07.EditorUI/04.ComponentUI/06.ScriptUI/CustomScriptUI/CustomScriptUI.h"
+#include "Source/Scripts/UIScript/UIAnimation/UIAnimationData.h"
 
 class CUIAnimation;
 struct UIAnimTrack;
@@ -27,7 +28,11 @@ private:
     
 private:
     
-    const float m_MaxAnimTimeMargin = 1.f;    
+    const float m_MaxAnimTimeMargin = 1.f;
+    
+private:
+    
+    static Ptr<UIAnimKeyFrameData> s_CopiedUIAnimKeyFrameData;
     
 public:
     GameUIAnimationUI();
@@ -51,5 +56,9 @@ private:
 private:
     
     void OnRemoveTrackConfirmUI(bool _Confirmed);
+    
+public:
+    
+    static void SetCopiedUIAnimKeyFrameData(const UIAnimKeyFrameData& _Origin) { s_CopiedUIAnimKeyFrameData = new UIAnimKeyFrameData(_Origin); }
     
 };

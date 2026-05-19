@@ -24,7 +24,8 @@ UIAnimKeyFrameData::~UIAnimKeyFrameData()
 }
 
 UIAnimKeyFrameData::UIAnimKeyFrameData(const UIAnimKeyFrameData& _Origin)
-    : Time(_Origin.Time)
+    : Entity(_Origin)
+    , Time(_Origin.Time)
     , Transform(_Origin.Transform ? _Origin.Transform->Clone() : nullptr)
     , TintColor(_Origin.TintColor)
     , EasingType(_Origin.EasingType)
@@ -32,7 +33,8 @@ UIAnimKeyFrameData::UIAnimKeyFrameData(const UIAnimKeyFrameData& _Origin)
 }
 
 UIAnimKeyFrameData::UIAnimKeyFrameData(UIAnimKeyFrameData&& _Origin) noexcept
-    : Time(_Origin.Time)
+    : Entity(move(_Origin))
+    , Time(_Origin.Time)
     , Transform(_Origin.Transform) // 얕은 복사 처리로 하고 원본의 Transform을 nullptr 처리
     , TintColor(_Origin.TintColor)
     , EasingType(_Origin.EasingType)
@@ -43,6 +45,8 @@ UIAnimKeyFrameData::UIAnimKeyFrameData(UIAnimKeyFrameData&& _Origin) noexcept
 UIAnimKeyFrameData& UIAnimKeyFrameData::operator=(const UIAnimKeyFrameData& _Other)
 {
     if (this == &_Other) return *this;
+
+    Entity::operator=(_Other);
     
     Time       = _Other.Time;
     Transform  = _Other.Transform ? _Other.Transform->Clone() : nullptr;
@@ -55,6 +59,8 @@ UIAnimKeyFrameData& UIAnimKeyFrameData::operator=(const UIAnimKeyFrameData& _Oth
 UIAnimKeyFrameData& UIAnimKeyFrameData::operator=(UIAnimKeyFrameData&& _Other) noexcept
 {
     if (this == &_Other) return *this;
+
+    Entity(move(_Other));
     
     Time       = _Other.Time;
     Transform  = _Other.Transform;
@@ -140,14 +146,16 @@ bool StopStateEditorUpdateIndexStrategy::UpdateCurPlayingIndex(float _AnimTimer,
 }
 
 UIAnimTrack::UIAnimTrack(const UIAnimTrack& _Origin)
-    : TargetObjectReference(_Origin.TargetObjectReference)
+    : Entity(_Origin) 
+    , TargetObjectReference(_Origin.TargetObjectReference)
     , KeyFrames(_Origin.KeyFrames)
     // 나머지 멤버변수는 초기값으로 둠 (Editing 환경에서 Play 상태로 테스팅 중이었던 상태 복구처리)
 {
 }
 
 UIAnimTrack::UIAnimTrack(UIAnimTrack&& _Origin) noexcept
-    : TargetObjectReference(move(_Origin.TargetObjectReference)) // 여기서는 원본 GO 레퍼런스 모두 이동 (GUID 뿐 아니라 GO 포인터까지)
+    : Entity(move(_Origin)) 
+    , TargetObjectReference(move(_Origin.TargetObjectReference)) // 여기서는 원본 GO 레퍼런스 모두 이동 (GUID 뿐 아니라 GO 포인터까지)
     , KeyFrames(move(_Origin.KeyFrames))
     , m_UpdateUIKeyIndexStrategy(_Origin.m_UpdateUIKeyIndexStrategy)
 {
@@ -161,6 +169,9 @@ UIAnimTrack& UIAnimTrack::operator=(const UIAnimTrack& _Other)
 {
     if (this == &_Other) return *this; 
 
+    // Entity 복사대입 처리
+    Entity::operator=(_Other);
+    
     TargetObjectReference = _Other.TargetObjectReference;
     // OriginalStateData     = _Other.OriginalStateData;
     KeyFrames             = _Other.KeyFrames;
@@ -180,6 +191,9 @@ UIAnimTrack& UIAnimTrack::operator=(UIAnimTrack&& _Other) noexcept
 {
     if (this == &_Other) return *this; 
 
+    // Entity 이동대입 처리
+    Entity::operator=(move(_Other));
+    
     TargetObjectReference = move(_Other.TargetObjectReference);
     KeyFrames             = move(_Other.KeyFrames);
 

@@ -22,6 +22,13 @@ public:
 	{
 		if (m_Ptr) m_Ptr->AddRef();
 	}
+	
+	Ptr(Ptr&& _Other) noexcept
+		: m_Ptr(_Other.m_Ptr)
+	{
+		// 소유권 이전받음, 원본 참조 연결 끊어버림
+		_Other.m_Ptr = nullptr;
+	}
 
 	~Ptr()
 	{
@@ -57,6 +64,18 @@ public:
 		m_Ptr = _Ptr;
 
 		if (m_Ptr) m_Ptr->AddRef();
+		return *this;
+	}
+	
+	Ptr& operator=(Ptr&& _Other) noexcept
+	{
+		if (m_Ptr == _Other.m_Ptr) return *this;
+
+		if (m_Ptr) m_Ptr->Release(); // 이전에 자신이 소유했던 ptr가 있었다면, 기존에 갖고 있었던 ptr Release 처리
+
+		m_Ptr        = _Other.m_Ptr; // 소유권 이전
+		_Other.m_Ptr = nullptr; // 원본 포인터 해제 (마찬가지로 AddRef() 안함)
+
 		return *this;
 	}
 

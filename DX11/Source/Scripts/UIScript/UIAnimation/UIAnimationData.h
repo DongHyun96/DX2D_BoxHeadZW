@@ -15,7 +15,7 @@ enum class TintColorControl
     RENDERCOM_TINTCOLOR,    // RenderComponent의 TintColor 변경
 };
 
-struct UIAnimKeyFrameData
+struct UIAnimKeyFrameData : public Entity
 {
     float               Time{};                       // 키프레임 시간대 (-1.f인 경우, 원본 GO의 데이터)
     Ptr<CTransform>     Transform{};
@@ -26,7 +26,7 @@ struct UIAnimKeyFrameData
 public:
     
     UIAnimKeyFrameData();
-    ~UIAnimKeyFrameData();
+    virtual ~UIAnimKeyFrameData() override;
     
     UIAnimKeyFrameData(const UIAnimKeyFrameData& _Origin);
     UIAnimKeyFrameData(UIAnimKeyFrameData&& _Origin) noexcept;
@@ -74,7 +74,7 @@ struct StopStateEditorUpdateIndexStrategy : public UpdateUIAnimKeyIndexStrategy
 /// <summary>
 /// 하나의 GameObject를 담당하는 애니메이션 트랙
 /// </summary>
-struct UIAnimTrack
+struct UIAnimTrack : public Entity
 {
     GameObjectRefHolder         TargetObjectReference{};        // 이 Track을 사용할 GameObject
     vector<UIAnimKeyFrameData>  KeyFrames{};                    // 시간 순서에 따라 정렬된 키프레임들
@@ -106,7 +106,7 @@ private:
 public:
     
     UIAnimTrack() = default;
-    ~UIAnimTrack() = default;
+    virtual ~UIAnimTrack() override = default;
 
     /// <summary>
     /// 기존에는 GORefHolder에서 GUID 복사만 처리하고 AfterLevelGameObjectGuidTableInit 시점에 GO Ref 연결 처리를 해주었음
