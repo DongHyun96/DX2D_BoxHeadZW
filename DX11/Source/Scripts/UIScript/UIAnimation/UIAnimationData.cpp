@@ -35,7 +35,7 @@ UIAnimKeyFrameData::UIAnimKeyFrameData(const UIAnimKeyFrameData& _Origin)
 UIAnimKeyFrameData::UIAnimKeyFrameData(UIAnimKeyFrameData&& _Origin) noexcept
     : Entity(move(_Origin))
     , Time(_Origin.Time)
-    , Transform(_Origin.Transform) // 얕은 복사 처리로 하고 원본의 Transform을 nullptr 처리
+    , Transform(move(_Origin.Transform)) // 얕은 복사 처리로 하고 원본의 Transform을 nullptr 처리
     , TintColor(_Origin.TintColor)
     , EasingType(_Origin.EasingType)
 {
@@ -60,10 +60,10 @@ UIAnimKeyFrameData& UIAnimKeyFrameData::operator=(UIAnimKeyFrameData&& _Other) n
 {
     if (this == &_Other) return *this;
 
-    Entity(move(_Other));
+    Entity::operator=(move(_Other));
     
     Time       = _Other.Time;
-    Transform  = _Other.Transform;
+    Transform  = move(_Other.Transform);
     TintColor  = _Other.TintColor;
     EasingType = _Other.EasingType;
     

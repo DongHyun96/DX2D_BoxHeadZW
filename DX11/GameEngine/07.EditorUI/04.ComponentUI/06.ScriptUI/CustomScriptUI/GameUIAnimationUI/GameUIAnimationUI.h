@@ -60,5 +60,6 @@ private:
 public:
     
     static void SetCopiedUIAnimKeyFrameData(const UIAnimKeyFrameData& _Origin) { s_CopiedUIAnimKeyFrameData = new UIAnimKeyFrameData(_Origin); }
+    static const Ptr<UIAnimKeyFrameData>& GetCopiedUIAnimKeyFrameData()  { return s_CopiedUIAnimKeyFrameData; }
     
 };

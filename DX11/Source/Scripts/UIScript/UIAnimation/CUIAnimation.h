@@ -78,8 +78,8 @@ public:
     /// <summary>
     /// 해당 index Track의 해당 프레임타임에 새로운 키프레임 추가
     /// </summary>
-    /// <returns> : 해당 키프레임을 넣을 수 없는 상황이라면 return false </returns>
-    bool AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime);
+    /// <returns> : 해당 키프레임을 넣을 수 없는 상황이라면 return nullptr, 제대로 키프레임을 추가했다면 추가한 키프레임 포인터 반환 </returns>
+    class UIAnimKeyFrameData* AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime);
 
     /// <summary>
     /// 특정 트랙의 특정 KeyFrame Idx 번 삭제 

@@ -290,9 +290,9 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, float _MaxAni
 
         // Current Time Indicator
 
-        const float currentDisplayTime = _Animation->IsPlaying() ? _Animation->GetAnimTimer() : _Animation->GetEditingAnimTimer();
-        const float scrubberX          = s_ActualTimelineStartX + (currentDisplayTime * m_TimelineScale);
-        ImVec2 tableEndPos       = ImGui::GetCursorScreenPos();
+        const float currentDisplayTime  = _Animation->IsPlaying() ? _Animation->GetAnimTimer() : _Animation->GetEditingAnimTimer();
+        const float scrubberX           = s_ActualTimelineStartX + (currentDisplayTime * m_TimelineScale);
+        ImVec2 tableEndPos              = ImGui::GetCursorScreenPos();
         
         drawList->AddLine
         (
@@ -337,6 +337,23 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation)
     }
     ImGui::SameLine();
     
+    // 새로운 키 프레임 Paste 기능으로 추가하는 기능 (현재의 EditingTime에 추가)
+    if (ShortCut(ImGuiMod_Ctrl | ImGuiKey_V))
+    {
+        if (!GameUIAnimationUI::GetCopiedUIAnimKeyFrameData())
+            DebugUtil::AddDebugLog("No KeyFrame Copied yet!");
+        else
+        {
+            DebugUtil::AddDebugLog("New KeyFrame paste to current time");
+            UIAnimKeyFrameData KeyFrame = *(GameUIAnimationUI::GetCopiedUIAnimKeyFrameData().Get());
+            KeyFrame.Time = _Animation->GetEditingAnimTimer();
+                
+            if (UIAnimKeyFrameData* NewAddedKeyFrame = _Animation->AddNewKeyFrame(m_SelectedTrackIdx, _Animation->GetEditingAnimTimer()))
+                *NewAddedKeyFrame = move(KeyFrame); // 복사대입 처리
+        }
+    }
+    
+    
     // 키프레임 추가 기능
     ImGui::Spacing();
     if (ImGui::Button("Add KeyFrame"))
@@ -361,6 +378,20 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation)
     if (m_SelectedKeyIdx >= 0 && m_SelectedKeyIdx < SelectedTrack.KeyFrames.size())
     {
         UIAnimKeyFrameData& KeyFrame = SelectedTrack.KeyFrames[m_SelectedKeyIdx];
+
+        // 키프레임 복사 기능
+        if (ShortCut(ImGuiMod_Ctrl | ImGuiKey_C))
+        {
+            DebugUtil::AddDebugLog("KeyFrame Copied");
+            GameUIAnimationUI::SetCopiedUIAnimKeyFrameData(KeyFrame);
+        }
+        
+        // 키프레임 삭제 기능
+        if (ShortCut(ImGuiKey_Delete))
+        {
+            m_RemoveKeyTrackIdx = m_SelectedTrackIdx;
+            m_RemoveKeyIdx      = m_SelectedKeyIdx;
+        }
         
         ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Editing KeyFrame %d (Time: %.2f sec)", m_SelectedKeyIdx, KeyFrame.Time);
         
@@ -422,7 +453,22 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation)
         ImGui::Spacing();
         if (ImGui::Button("Capture KeyFrame from Target Object")) 
             KeyFrame.SetAnimDataFromGameObject(TargetObj, KeyFrame.Time);
+        
         ImGui::SameLine();
+
+        // 키프레임 붙여넣기 기능
+        if (ImGui::Button("Paste CopiedKeyFrame to this Key"))
+        {
+            if (!GameUIAnimationUI::GetCopiedUIAnimKeyFrameData())
+                DebugUtil::AddDebugLog("No KeyFrame Copied yet!");
+            else
+            {
+                DebugUtil::AddDebugLog("KeyFrame paste to current selected keyFrame");
+                const float Time = KeyFrame.Time;
+                KeyFrame = *(GameUIAnimationUI::GetCopiedUIAnimKeyFrameData().Get()); // 복사대입처리 (Time은 현재 Time으로 지정해야함)
+                KeyFrame.Time = Time;
+            }
+        }
 
         // 첫 번째 키프레임은 삭제 제한 처리
         const bool bCanDeleteKey = (m_SelectedKeyIdx > 0 && SelectedTrack.KeyFrames.size() > 1);
@@ -430,14 +476,12 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation)
         if (ImGui::Button("Remove Selected KeyFrame"))
         {
             m_RemoveKeyTrackIdx = m_SelectedTrackIdx;
-            m_RemoveKeyIdx = m_SelectedKeyIdx;
+            m_RemoveKeyIdx      = m_SelectedKeyIdx;
         }
         ImGui::EndDisabled();
     }
-    else
-    {
-        ImGui::TextDisabled("Select a KeyFrame marker (Diamond) above to edit its Transform and Color.");
-    }
+    else ImGui::TextDisabled("Select a KeyFrame marker (Diamond) above to edit its Transform and Color.");
+        
 }
 
 void GameUIAnimationUI::ClearSelectionIfInvalid(CUIAnimation* _Animation)
@@ -472,18 +516,26 @@ void GameUIAnimationUI::OnRemoveTrackConfirmUI(bool _Confirmed)
 
 void GameUIAnimationUI::HandlePendingRemovals(CUIAnimation* _Animation)
 {
+    // RemoveTrack 처리
     if (m_RemoveTrackIdx >= 0 && m_PendingToRemoveTrack)
     {
-        _Animation->RemoveTrackByTrackIdx(m_RemoveTrackIdx);
+        if (_Animation->RemoveTrackByTrackIdx(m_RemoveTrackIdx))
+            DebugUtil::AddDebugLog("Track removal succeeded");
+        else DebugUtil::AddDebugLog("Track removal failed");
+        
         if (m_SelectedTrackIdx == m_RemoveTrackIdx) { m_SelectedTrackIdx = -1; m_SelectedKeyIdx = -1; }
         m_RemoveTrackIdx = -1; 
     }
 
+    // RemoveKeyFrame 처리 -> 단, 트랙에 최소 하나의 키프레임은 상시 있어야 한다
     if (m_RemoveKeyTrackIdx >= 0 && m_RemoveKeyIdx >= 0)
     {
-        _Animation->RemoveKeyFrame(m_RemoveKeyTrackIdx, m_RemoveKeyIdx);
+        if (_Animation->RemoveKeyFrame(m_RemoveKeyTrackIdx, m_RemoveKeyIdx))
+            DebugUtil::AddDebugLog("KeyFrame remove succeeded");
+        else DebugUtil::AddDebugLog("KeyFrame remove failed");
+        
         if (m_SelectedKeyIdx == m_RemoveKeyIdx) { m_SelectedKeyIdx = -1; }
-        m_RemoveKeyTrackIdx = -1; 
-        m_RemoveKeyIdx = -1;      
+        m_RemoveKeyTrackIdx = -1;
+        m_RemoveKeyIdx      = -1;      
     }
 }

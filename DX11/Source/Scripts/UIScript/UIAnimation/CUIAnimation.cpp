@@ -199,17 +199,17 @@ bool CUIAnimation::RemoveTrackByTrackIdx(int _TrackIdx)
     return true;
 }
 
-bool CUIAnimation::AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime)
+UIAnimKeyFrameData* CUIAnimation::AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime)
 {
-    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return false;
-    if (_TrackIdx < 0 || _TrackIdx >= m_vecTracks.size()) return false;
+    if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return nullptr;
+    if (_TrackIdx < 0 || _TrackIdx >= m_vecTracks.size()) return nullptr;
 
     vector<UIAnimKeyFrameData>& KeyFrames = m_vecTracks[_TrackIdx].KeyFrames;
 
     for (vector<UIAnimKeyFrameData>::iterator it = KeyFrames.begin(); it != KeyFrames.end(); ++it)
     {
         if (_KeyFrameTime > it->Time) continue;
-        if (_KeyFrameTime == it->Time) return false; // 동시간대의 키프레임이 이미 존재한다면, 중복된 키프레임 추가 불가
+        if (_KeyFrameTime == it->Time) return nullptr; // 동시간대의 키프레임이 이미 존재한다면, 중복된 키프레임 추가 불가
         
         // 삽입될 위치가 여기다
         // 삽입 시, 이전 값과 동일한 it로 생성을 한다
@@ -220,8 +220,8 @@ bool CUIAnimation::AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime)
         NewData.TintColor  = PrevIt->TintColor;
         NewData.EasingType = PrevIt->EasingType;
         
-        KeyFrames.insert(it, NewData);
-        return true;
+        it = KeyFrames.insert(it, NewData);
+        return &*it;
     }
 
     // 마지막 키프레임으로 추가되었을 때
@@ -231,7 +231,7 @@ bool CUIAnimation::AddNewKeyFrame(int _TrackIdx, float _KeyFrameTime)
     NewData.TintColor = KeyFrames.back().TintColor;
     KeyFrames.push_back(NewData);
     
-    return true;
+    return &KeyFrames.back();
 }
 
 bool CUIAnimation::RemoveKeyFrame(int _TrackIdx, int _KeyFrameIdx)
@@ -241,6 +241,8 @@ bool CUIAnimation::RemoveKeyFrame(int _TrackIdx, int _KeyFrameIdx)
     
     vector<UIAnimKeyFrameData>& KeyFrames = m_vecTracks[_TrackIdx].KeyFrames;
     if (_KeyFrameIdx < 0 || _KeyFrameIdx >= KeyFrames.size()) return false;
+    
+    if (KeyFrames.size() <= 1) return false; // 최소 하나의 키프레임은 있어야 Track이라고 볼 수 있음 -> 만일 Track 전체 삭제를 원한다면, Track 삭제로 처리할 것
 
     KeyFrames.erase(KeyFrames.begin() + _KeyFrameIdx);
     return true;
