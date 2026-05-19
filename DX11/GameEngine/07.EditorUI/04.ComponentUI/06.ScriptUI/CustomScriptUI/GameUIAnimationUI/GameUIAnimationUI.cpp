@@ -54,14 +54,13 @@ GameUIAnimationUI::~GameUIAnimationUI()
 
 void GameUIAnimationUI::Tick_UI()
 {
-    ComponentUI::Tick_UI();
-
     CUIAnimation* Animation = static_cast<CUIAnimation*>(GetScript());
 
     // 현재 레벨이 정지(STOP) 상태인지 체크
-    const bool bCanEdit = (LevelMgr::GetInst()->GetLevelState() == LEVEL_STATE::STOP);
-    
-    ImGui::BeginDisabled(!bCanEdit);
+    const bool bDisable = (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) || Animation->IsPlaying(); 
+    ImGui::BeginDisabled(bDisable);
+    ComponentUI::Tick_UI(); // Component(여기서는 Script) 삭제 기능
+    ImGui::EndDisabled();
     
     // 데이터가 변했을 때를 대비한 Selection 안전장치
     ClearSelectionIfInvalid(Animation);
@@ -80,15 +79,18 @@ void GameUIAnimationUI::Tick_UI()
     MaxAnimTime += m_MaxAnimTimeMargin; // 여백 1초 추가
     
     // 1. 상단 재생/컨트롤 툴바
-    RenderToolbar(Animation, bCanEdit, MaxAnimTime);
+    RenderToolbar(Animation, bDisable, MaxAnimTime);
     ImGui::Separator();
 
     // 2. 메인 에디터 (좌: 트랙 리스트 / 우: 도프시트 타임라인)
-    RenderMainEditor(Animation, bCanEdit, MaxAnimTime);
+    ImGui::BeginDisabled(bDisable);
+    RenderMainEditor(Animation, MaxAnimTime);
+    ImGui::EndDisabled();
     ImGui::Separator();
 
     // 3. 하단 인스펙터 (선택된 트랙/키프레임 편집기)
-    RenderBottomInspector(Animation, bCanEdit);
+    ImGui::BeginDisabled(bDisable);
+    RenderBottomInspector(Animation);
 
     ImGui::EndDisabled();
     
@@ -124,7 +126,7 @@ void GameUIAnimationUI::SetTargetObject(const Ptr<GameObject>& _TargetObject)
         UIAnimationScript->Stop();
 }
 
-void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime)
+void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bDisable, float _MaxAnimTime)
 {
     // 재생 컨트롤
     if (ImGui::Button("Play")) { _Animation->Play(); }
@@ -140,7 +142,7 @@ void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, 
     // Time indicator 시간 조정
     float CurrentDisplayTime = _Animation->IsPlaying() ? _Animation->GetAnimTimer() : _Animation->GetEditingAnimTimer();
     
-    ImGui::BeginDisabled(_Animation->IsPlaying() || !_bCanEdit);
+    ImGui::BeginDisabled(_bDisable);
     ImGui::SetNextItemWidth(300.0f);
     if (ImGui::SliderFloat("Time", &CurrentDisplayTime, 0.0f, _MaxAnimTime, "%.3f s"))
         _Animation->SetEditingAnimTime(CurrentDisplayTime);
@@ -158,9 +160,8 @@ void GameUIAnimationUI::RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, 
     ImGui::SliderFloat("Zoom", &m_TimelineScale, 50.0f, 500.0f, "%.0f px/s");
 }
 
-void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime)
+void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, float _MaxAnimTime)
 {
-    ImGui::BeginDisabled(!_bCanEdit);
     ImGui::Button("Drop GameObject Here to Add Track", ImVec2(-FLT_MIN, 30.0f));
     if (ImGui::BeginDragDropTarget())
     {
@@ -175,7 +176,6 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
         }
         ImGui::EndDragDropTarget();
     }
-    ImGui::EndDisabled();
 
     vector<UIAnimTrack>& Tracks = _Animation->GetTracks();
 
@@ -307,7 +307,7 @@ void GameUIAnimationUI::RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdi
     }
 }
 
-void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bCanEdit)
+void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation)
 {
     vector<UIAnimTrack>& Tracks = _Animation->GetTracks();
 
@@ -324,7 +324,6 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
     ImGui::Text("Inspector: [%s]", GetGameObjectName(TargetObj).c_str());
     
     // --- [1] 트랙 레벨 기능 (트랙 선택 시 + 항상 보임) ---
-    ImGui::BeginDisabled(!_bCanEdit);
     
     // 원본 상태 복사/적용
     if (ImGui::Button("Capture Origin (from Target)"))
@@ -337,15 +336,8 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
     
     // 키프레임 추가 기능
     ImGui::Spacing();
-    static float s_NewKeyTime = 0.0f;
-    ImGui::SetNextItemWidth(100.0f);
-    ImGui::InputFloat("Time##AddKey", &s_NewKeyTime, 0.1f, 1.0f, "%.2f");
-    ImGui::SameLine();
     if (ImGui::Button("Add KeyFrame"))
-    {
-        if (_Animation->AddNewKeyFrame(m_SelectedTrackIdx, s_NewKeyTime))
-            s_NewKeyTime += 0.1f;
-    }
+        if (_Animation->AddNewKeyFrame(m_SelectedTrackIdx, _Animation->GetEditingAnimTimer()))
 
     ImGui::SameLine(ImGui::GetWindowWidth() - 120.0f);
     if (ImGui::Button("Remove Track"))
@@ -360,7 +352,6 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
         pUI->SetActive(true);
     }
 
-    ImGui::EndDisabled();
     ImGui::Separator();
 
     // --- [2] 키프레임 상세 편집 기능 (키프레임이 선택되었을 때만) ---
@@ -370,8 +361,6 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
         
         ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.2f, 1.0f), "Editing KeyFrame %d (Time: %.2f sec)", m_SelectedKeyIdx, KeyFrame.Time);
         
-        ImGui::BeginDisabled(!_bCanEdit);
-
         // 수치 입력으로 키프레임 Time 조정
         float frameTime = KeyFrame.Time;
         ImGui::SetNextItemWidth(150.0f);
@@ -440,8 +429,6 @@ void GameUIAnimationUI::RenderBottomInspector(CUIAnimation* _Animation, bool _bC
             m_RemoveKeyTrackIdx = m_SelectedTrackIdx;
             m_RemoveKeyIdx = m_SelectedKeyIdx;
         }
-        ImGui::EndDisabled();
-
         ImGui::EndDisabled();
     }
     else

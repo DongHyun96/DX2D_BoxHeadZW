@@ -41,9 +41,9 @@ private:
         
 private:
     
-    void RenderToolbar(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime);
-    void RenderMainEditor(CUIAnimation* _Animation, bool _bCanEdit, float _MaxAnimTime);
-    void RenderBottomInspector(CUIAnimation* _Animation, bool _bCanEdit);
+    void RenderToolbar(CUIAnimation* _Animation, bool _bDisable, float _MaxAnimTime);
+    void RenderMainEditor(CUIAnimation* _Animation, float _MaxAnimTime);
+    void RenderBottomInspector(CUIAnimation* _Animation);
     
     void HandlePendingRemovals(CUIAnimation* _Animation);
     void ClearSelectionIfInvalid(CUIAnimation* _Animation);
