@@ -120,7 +120,8 @@ enum class ENEMY_TYPE
 
 enum class ROUND_STATE
 {
-    WAIT,
+    WAIT_FOR_GAMESTART,
+    WAIT_FOR_ROUNDSTART,
     ROUND_GOING,
     GAME_OVER
 };

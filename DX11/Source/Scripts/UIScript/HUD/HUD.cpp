@@ -55,8 +55,15 @@ void RoundIndicators::OnRoundStateChanged(ROUND_STATE _NextRoundState)
 {
     switch (_NextRoundState)
     {
-    case ROUND_STATE::WAIT:
+    case ROUND_STATE::WAIT_FOR_GAMESTART:
+    {
+        RoundWaitText->SetText(L"EnterKey to start");
+        RoundIndicatorAnimGroup->PlayAnimation(L"WaitingGameStartAnim", UIAnimEndHandling::LOOP);
+    }
+        break;
+    case ROUND_STATE::WAIT_FOR_ROUNDSTART:
         RoundIndicatorAnimGroup->PlayAnimation(L"RoundWaitingStartAnim");
+        RoundWaitText->SetText(L"Waiting for next round...");
         break;
     case ROUND_STATE::ROUND_GOING:
     {
@@ -66,7 +73,6 @@ void RoundIndicators::OnRoundStateChanged(ROUND_STATE _NextRoundState)
         break;
     case ROUND_STATE::GAME_OVER:
     {
-        // TODO : Animation 으로 처리할 것
         RoundIndicatorAnimGroup->PlayAnimation(L"GameOverAnim");
         RoundText->SetText(L"Game Over");
     }

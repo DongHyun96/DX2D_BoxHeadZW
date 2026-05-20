@@ -55,7 +55,7 @@ private:
     
 public:
     
-    void ReduceSpawnedCount() { --m_SpawnedCount; }
+    int ReduceSpawnedCount() { return --m_SpawnedCount; }
     
 public:
     

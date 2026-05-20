@@ -37,6 +37,8 @@ void GameManager::OnLevelBegin()
     m_ItemPooler             = nullptr;
     m_RoundHandler           = nullptr;
     m_InGameUIManager        = nullptr;
+
+    m_bHasGameStart = false;
     
     CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
@@ -63,12 +65,15 @@ void GameManager::OnLevelPlayToStop()
     AStarPathFinder::Init();
     
     m_bHasGameStart = false;
+    m_vecDelegateOnGameStart.clear();
 }
 
 void GameManager::OnLevelChanged(ALevel* _PrevLevel, ALevel* _NextLevel)
 {
     // TODO : 특정 Level에서 다른 Level 로 넘어갈 때 처리할 것 처리하기
-    m_InGameUIManager        = nullptr;
+    m_InGameUIManager = nullptr;
+    m_bHasGameStart   = false;
+    m_vecDelegateOnGameStart.clear();
     
     CStructure::ClearInstalledInfo();
     AStarPathFinder::Init();
@@ -78,6 +83,16 @@ CPoolComponent* GameManager::GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE
 {
     if (!m_mapFlipbookEffectPoolers.contains(_PoolerType)) return nullptr;
     return m_mapFlipbookEffectPoolers.at(_PoolerType);
+}
+
+void GameManager::SetIsGameStart(bool _bHasGameStart)
+{
+    m_bHasGameStart = _bHasGameStart;
+    if (m_bHasGameStart)
+    {
+        for (const function<void()>& Delegate : m_vecDelegateOnGameStart)
+            Delegate();
+    }
 }
 
 void GameManager::SpawnRocketSmoke(const Vec3& _SpawnPos)

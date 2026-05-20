@@ -2,6 +2,7 @@
 #include "CRoundHandler.h"
 
 #include "GameEngine/03.Manager/02.TimeMgr/TimeMgr.h"
+#include "GameEngine/03.Manager/03.KeyMgr/KeyMgr.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/EnemySpawnHandler/CEnemySpawnHandler.h"
@@ -34,19 +35,12 @@ void CRoundHandler::Begin()
 void CRoundHandler::AfterLevelBegin()
 {
     // Round 대기 or Start
-    SetRoundState(ROUND_STATE::WAIT);
+    SetRoundState(ROUND_STATE::WAIT_FOR_GAMESTART);
 }
 
 void CRoundHandler::Tick()
 {
-    if (!GM->GetIsGameStart()) return;
     HandleTransition();
-    
-    switch (m_RoundState)
-    {
-    case ROUND_STATE::GAME_OVER: DebugUtil::SetPermanentDebugLog("RoundState", "RoundState : GAMEOVER", DEF_COLOR_ORANGE);
-        break;
-    }
 }
 
 void CRoundHandler::HandleTransition()
@@ -55,7 +49,14 @@ void CRoundHandler::HandleTransition()
     
     switch (m_RoundState)
     {
-    case ROUND_STATE::WAIT:
+    case ROUND_STATE::WAIT_FOR_GAMESTART:
+        if (KEY_TAP(KEY::ENTER))
+        {
+            GM->SetIsGameStart(true);
+            SetRoundState(ROUND_STATE::WAIT_FOR_ROUNDSTART);
+        }
+        break;
+    case ROUND_STATE::WAIT_FOR_ROUNDSTART:
     {
         m_RoundWaitTimer -= DT;
         GM->GetIngameUIManager()->GetRoundIndicators()->SetRoundWaitingDisplaySec(m_RoundWaitTimer);
@@ -119,7 +120,7 @@ void CRoundHandler::HandleTransition()
             
             m_AllDieCheckTimer  = 0.f;
             m_CurrentRoundTimer = 0.f;
-            SetRoundState(ROUND_STATE::WAIT);
+            SetRoundState(ROUND_STATE::WAIT_FOR_ROUNDSTART);
         }
         
         
@@ -141,7 +142,12 @@ void CRoundHandler::SetRoundState(ROUND_STATE _RoundState)
 
     switch (m_RoundState)
     {
-    case ROUND_STATE::WAIT:
+    case ROUND_STATE::WAIT_FOR_GAMESTART:
+    {
+        if (m_DelegateOnRoundStateChanged) m_DelegateOnRoundStateChanged(m_RoundState);
+        return;
+    }
+    case ROUND_STATE::WAIT_FOR_ROUNDSTART:
     {
         m_RoundWaitTimer = s_RoundWaitTime;
         // GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundWaitStart();

@@ -38,9 +38,9 @@ void CEnemySpawnHandler::Begin()
 
 void CEnemySpawnHandler::Tick()
 {
-    GM->GetIngameUIManager()->GetZombieAliveCount()->SetText(to_wstring(m_SpawnedCount));
+    // GM->GetIngameUIManager()->GetZombieAliveCount()->SetText(to_wstring(m_SpawnedCount));
 
-    if (KEY_TAP(KEY::MRB) && !GM->GetIsGameStart())
+    /*if (KEY_TAP(KEY::MRB) && !GM->GetIsGameStart())
     {
         static int iterator{};
         bool Spawned{};
@@ -50,7 +50,7 @@ void CEnemySpawnHandler::Tick()
         }
         if (!Spawned) return;
         if (++iterator >= static_cast<int>(ENEMY_TYPE::END)) iterator = 0;
-    }
+    }*/
 }
 
 GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType, FIRST_SPAWN_LOC _SpawnLoc)
@@ -81,6 +81,9 @@ GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType
     TryInitSpawnedEnemy(EnemyScript);
     EnemyScript->SetCurrentWalkType(ENEMY_WALK_TYPE::FIRST_SPAWN_WALK);
     EnemyScript->SetFirstSpawnMoveDestination(PickedRandomDestCellCoord);
+
+    // EnemyAliveCount UI 업데이트
+    GM->GetIngameUIManager()->SetZombieAliveCountText(m_SpawnedCount);
     
     return SpawnedEnemy;
 }
@@ -111,6 +114,9 @@ GameObject* CEnemySpawnHandler::SpawnEnemyOnAvailableCell(ENEMY_TYPE _EnemyType,
         EnemyScript->SetCurrentWalkType(ENEMY_WALK_TYPE::FIRST_SPAWN_WALK);
         ++m_SpawnedCount;
     }
+
+    // EnemyAliveCount UI 업데이트
+    GM->GetIngameUIManager()->SetZombieAliveCountText(m_SpawnedCount);
     
     return SpawnedEnemy; 
 }

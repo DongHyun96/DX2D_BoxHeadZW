@@ -13,6 +13,7 @@
 #include "Source/Scripts/StatScript/CStatScript.h"
 
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerScript.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 map<ENEMY_WALK_TYPE, Ptr<EnemyWalkStrategy>> CEnemyScript::s_mapWalkingStrategies = 
 {
@@ -189,7 +190,8 @@ void CEnemyScript::HandleFadeOut()
     GetOwner()->SetActive(false);
 
     // 살아있는 Zombie count 하나 줄임
-    GM->GetEnemySpawnHandler()->ReduceSpawnedCount();
+    const int ZombieTotalCount = GM->GetEnemySpawnHandler()->ReduceSpawnedCount();
+    GM->GetIngameUIManager()->SetZombieAliveCountText(ZombieTotalCount);
     
     OnFadeOutEnd();
 }

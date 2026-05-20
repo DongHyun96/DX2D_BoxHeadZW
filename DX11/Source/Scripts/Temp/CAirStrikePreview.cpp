@@ -20,7 +20,8 @@ void CAirStrikePreview::Begin()
 
 void CAirStrikePreview::Tick()
 {
-    if (GM->GetIsGameStart()) Destroy();
+    // TODO : 만약에 필요하다하면, GM의 OnGameStart Delegate 구독 박아두고 호출받아서 처리를 할 것(당장에는 Preview 오브젝트 Level에서 삭제해둠)
+    // if (GM->GetIsGameStart()) Destroy();
 }
 
 void CAirStrikePreview::SaveToLevelFile(FILE* _File)

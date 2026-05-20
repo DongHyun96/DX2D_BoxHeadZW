@@ -52,6 +52,10 @@ private:
     class CRoundHandler* m_RoundHandler{};
     class CFirstSpawnLocManager* m_FirstSpawnLocManager{};
     class CIngameUIManager* m_InGameUIManager{};
+
+private:
+    
+    vector<function<void()>> m_vecDelegateOnGameStart{};
     
 public:
     
@@ -61,6 +65,10 @@ public:
     void OnLevelBegin();
     void OnLevelPlayToStop();
     void OnLevelChanged(class ALevel* _PrevLevel, ALevel* _NextLevel);
+
+public:
+    
+    void AddDelegateOnGameStart(const function<void()>& _Delegate) { m_vecDelegateOnGameStart.push_back(_Delegate); }
     
 public:
     
@@ -77,7 +85,7 @@ public:
     CPoolComponent* GetRocketProjectilePooler() const { return m_RocketProjectilePooler; }
     
     void SetGrenadePooler(CPoolComponent* _PoolComponent) { m_GrenadePooler = _PoolComponent; }
-    CPoolComponent* GetGrenaderPooler() const { return m_GrenadePooler; }
+    CPoolComponent* GetGrenadePooler() const { return m_GrenadePooler; }
     
     void SetBackgroundCellManager(CBackgroundTile* _BackgroundCellManager) { m_BackgroundCellManager = _BackgroundCellManager; }
     CBackgroundTile* GetBackgroundCellManager() const { return m_BackgroundCellManager; }
@@ -94,8 +102,7 @@ public:
     void SetIngameUIManager(CIngameUIManager* _InGameUIManager) { m_InGameUIManager = _InGameUIManager; }
     CIngameUIManager* GetIngameUIManager() const { return m_InGameUIManager; }
 
-    bool GetIsGameStart() const { return m_bHasGameStart; }
-    void SetIsGameStart(bool _bHasGameStart) { m_bHasGameStart = _bHasGameStart; }
+    void SetIsGameStart(bool _bHasGameStart);
     
     void SetItemPooler(CPoolComponent* _PoolComponent) { m_ItemPooler = _PoolComponent; }
     CPoolComponent* GetItemPooler() const { return m_ItemPooler; }

@@ -20,12 +20,9 @@ private:
     
     class CCrossHair* m_CrossHair{};
     
-    float m_AccTime = 0.f;
-    bool  m_bPrevGameStart = false;
 
 public:
     CIngameUIManager();
-    CIngameUIManager(const CIngameUIManager& _Origin);
     virtual ~CIngameUIManager() override;
     CLONE(CIngameUIManager);
     
@@ -33,12 +30,15 @@ public:
 
     virtual void Begin() override;
     virtual void Tick() override;
+
+public:
+    
+    void SetZombieAliveCountText(int _AliveCount);
     
 public:
     
     const Ptr<AmmoCountUIArea>& GetAmmoCountUIArea() const { return m_AmmoCountUIArea; }
     const Ptr<RoundIndicators>& GetRoundIndicators() const { return m_RoundIndicators; }
-    CText*           GetZombieAliveCount() const    { return m_ZombieAliveCount; }
 
     CCrossHair* GetCrossHair() const { return m_CrossHair; }
     void SetCrossHair(CCrossHair* _CrossHair) { m_CrossHair = _CrossHair; }
@@ -46,6 +46,8 @@ public:
 private:
 
     void InitMembers();
+    void InitPlayerHUDMembers(const Ptr<GameObject>& PlayerHUD);
+    void InitAnimationGroupMembers(const Ptr<GameObject>& AnimationGroups);
     
 public:
     

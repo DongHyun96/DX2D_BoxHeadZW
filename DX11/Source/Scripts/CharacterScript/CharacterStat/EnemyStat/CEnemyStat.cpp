@@ -5,6 +5,7 @@
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
 #include "Source/Scripts/Item/CItem.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 CEnemyStat::CEnemyStat()
     : CCharacterStat(SCRIPT_TYPE::ENEMYSTAT)

@@ -18,17 +18,6 @@ CIngameUIManager::CIngameUIManager()
     
 }
 
-CIngameUIManager::CIngameUIManager(const CIngameUIManager& _Origin)
-    : CScript(_Origin)
-    , m_AmmoCountUIArea(nullptr)
-    , m_RoundIndicators(nullptr)
-    , m_ZombieAliveCount(nullptr)
-    , m_CrossHair(nullptr)
-    , m_AccTime(0.f)
-    , m_bPrevGameStart(false)
-{
-}
-
 CIngameUIManager::~CIngameUIManager()
 {
     m_AmmoCountUIArea = nullptr;
@@ -42,41 +31,19 @@ void CIngameUIManager::Begin()
     
     // RoundHandler - RoundIndicator Delegate 구독 처리
     GM->GetRoundHandler()->SetDelegateOnRoundStateChanged(bind(&RoundIndicators::OnRoundStateChanged, m_RoundIndicators.Get(), placeholders::_1));
+
+    // 초기 ZombieCountUI 0으로 초기화
+    SetZombieAliveCountText(0);
 }
 
 void CIngameUIManager::Tick()
 {
-    bool bGameStart = GameManager::GetInst()->GetIsGameStart();
+}
 
-    if (!bGameStart)
-    {
-        m_AccTime += DT;
-
-        if (m_RoundIndicators->RoundWaitText)
-        {
-            // 게임 시작 전이면 "Enterkey to start" 텍스트 표시 및 깜빡임 연출
-            m_RoundIndicators->RoundWaitText->SetText(L"EnterKey to start");
-            m_RoundIndicators->RoundWaitText->Transform()->SetRelativePosY(-150.f); // 화면 중앙보다 살짝 하단
-            
-            float Alpha = (sinf(m_AccTime * 5.f) + 1.f) * 0.5f;
-            m_RoundIndicators->RoundWaitText->SetAlpha(Alpha);
-        }
-    }
-    else
-    {
-        // 게임이 시작된 직후 한 번만 원래 상태로 복구 시도 (또는 라운드 시스템에 맡김)
-        if (!m_bPrevGameStart)
-        {
-            if (m_RoundIndicators->RoundWaitText)
-            {
-                m_RoundIndicators->RoundWaitText->SetText(L"Waiting for next round...");
-                m_RoundIndicators->RoundWaitText->SetAlpha(0.f);
-                // 위치는 OnRoundWaitStart 등에서 다시 잡힐 것이므로 굳이 여기서 초기화 안 해도 됨
-            }
-        }
-    }
-
-    m_bPrevGameStart = bGameStart;
+void CIngameUIManager::SetZombieAliveCountText(int _AliveCount)
+{
+    _AliveCount = max(0, _AliveCount);
+    m_ZombieAliveCount->SetText(to_wstring(_AliveCount));
 }
 
 void CIngameUIManager::InitMembers()
@@ -84,22 +51,33 @@ void CIngameUIManager::InitMembers()
     Layer* UILayer = LevelMgr::GetInst()->GetCurLevel()->GetLayer(MAX_LAYER - 1);
 
     Ptr<GameObject> PlayerHUD{};
+    Ptr<GameObject> AnimationGroups{};
     
     for (const Ptr<GameObject>& RootObject : UILayer->GetParentObjects())
     {
         if (RootObject->GetName() == L"GameUI")
         {
             for (const Ptr<GameObject>& Child : RootObject->GetChildren())
+            {
                 if (Child->GetName() == L"PlayerHUD") PlayerHUD = Child;
-            break;
+                if (Child->GetName() == L"AnimationGroups") AnimationGroups = Child;
+            }
         }
     }
 
-    if (!PlayerHUD) return;
-
     if (!m_AmmoCountUIArea) m_AmmoCountUIArea = new AmmoCountUIArea;
     if (!m_RoundIndicators) m_RoundIndicators = new RoundIndicators;
+    
+    InitPlayerHUDMembers(PlayerHUD);
+    InitAnimationGroupMembers(AnimationGroups);
 
+    
+}
+
+void CIngameUIManager::InitPlayerHUDMembers(const Ptr<GameObject>& PlayerHUD)
+{
+    if (!PlayerHUD) return;
+    
     queue<Ptr<GameObject>> q{};
     q.push(PlayerHUD);
 
@@ -125,11 +103,6 @@ void CIngameUIManager::InitMembers()
         {
             m_RoundIndicators->RoundWaitTimeText = Current->GetScriptComponent<CText>().Get();
         }
-        else if (Name == L"RoundIndicatorAnimGroup")
-        {
-            m_RoundIndicators->RoundIndicatorAnimGroup = Current->GetScriptComponent<CUIAnimationGroup>().Get();    
-        }
-        
         else if (Name == L"AmmoLeftText") //
         {
             m_AmmoCountUIArea->MainAmmoCount = Current->GetScriptComponent<CText>().Get();
@@ -169,6 +142,27 @@ void CIngameUIManager::InitMembers()
         {
             q.push(Child);
         }
+    }
+}
+
+void CIngameUIManager::InitAnimationGroupMembers(const Ptr<GameObject>& AnimationGroups)
+{
+    if (!AnimationGroups) return;
+    
+    queue<Ptr<GameObject>> q{};
+    q.push(AnimationGroups);
+
+    while (!q.empty())
+    {
+        Ptr<GameObject> Current = q.front(); q.pop();
+
+        const wstring& Name = Current->GetName();
+
+        if (Name == L"RoundIndicatorAnimGroup")
+            m_RoundIndicators->RoundIndicatorAnimGroup = Current->GetScriptComponent<CUIAnimationGroup>().Get();    
+
+        for (const Ptr<GameObject>& Child : Current->GetChildren())
+            q.push(Child);
     }
 }
 

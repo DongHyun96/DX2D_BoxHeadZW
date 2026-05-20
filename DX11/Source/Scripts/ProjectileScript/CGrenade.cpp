@@ -48,7 +48,7 @@ void CGrenade::Begin()
 
 void CGrenade::AfterLevelBegin()
 {
-    if (!GM->GetGrenaderPooler())
+    if (!GM->GetGrenadePooler())
     {
         if (CPoolComponent* PoolComponent = GetOwner()->GetOwnerPoolComponent())
             GM->SetGrenadePooler(PoolComponent);
