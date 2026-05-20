@@ -5,10 +5,12 @@
 #include "ImGui/imgui.h"
 #include "Source/ScriptMgr.h"
 #include "Source/Manager/GameManager.h"
+#include "Source/Scripts/RoundHandler/CRoundHandler.h"
 
 #include "Source/Scripts/UIScript/CText.h"
 #include "Source/Scripts/UIScript/CProgressBar.h"
 // #include "Source/Scripts/UIScript/HUD/HUD.h"
+#include "Source/Scripts/UIScript/UIAnimation/CUIAnimationGroup.h"
 
 CIngameUIManager::CIngameUIManager()
     : CScript(SCRIPT_TYPE::INGAMEUIMANAGER)
@@ -37,6 +39,9 @@ void CIngameUIManager::Begin()
 {
     GameManager::GetInst()->SetIngameUIManager(this);
     InitMembers();
+    
+    // RoundHandler - RoundIndicator Delegate 구독 처리
+    GM->GetRoundHandler()->SetDelegateOnRoundStateChanged(bind(&RoundIndicators::OnRoundStateChanged, m_RoundIndicators.Get(), placeholders::_1));
 }
 
 void CIngameUIManager::Tick()
@@ -119,6 +124,10 @@ void CIngameUIManager::InitMembers()
         else if (Name == L"RoundWaitTimeText")
         {
             m_RoundIndicators->RoundWaitTimeText = Current->GetScriptComponent<CText>().Get();
+        }
+        else if (Name == L"RoundIndicatorAnimGroup")
+        {
+            m_RoundIndicators->RoundIndicatorAnimGroup = Current->GetScriptComponent<CUIAnimationGroup>().Get();    
         }
         
         else if (Name == L"AmmoLeftText") //

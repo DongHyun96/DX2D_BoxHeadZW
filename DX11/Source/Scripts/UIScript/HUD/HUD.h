@@ -16,9 +16,7 @@ struct AmmoCountUIArea : public Entity
 public:
 
     void UpdateToGun(PLAYER_HANDSTATE _HandState, int _MainAmmoCount);
-    
     void UpdateCurrentAmmoCount(int _AmmoCount);
-    
     void UpdateToStructure(PLAYER_STRUCTURE_TYPE _Type, int _Count);
 };
 
@@ -27,18 +25,16 @@ struct RoundIndicators : public Entity
     CText* RoundText{}; // Round 1 Round 2
     CText* RoundWaitText{}; // Waiting for next round
     CText* RoundWaitTimeText{}; // time text
+    
+    class CUIAnimationGroup* RoundIndicatorAnimGroup{}; // Round Anim Group
 
-private:
-    
-    float RoundNumberTimer{};
-    int RoundTextPhase = 0;
-    
 public:
     
-    void OnRoundWaitStart();
-    void OnRoundStart(int RoundNumber);
-    void OnGameOver();
+    /// <summary>
+    /// RoundHandler에서 Round 변화 시, Callback 받는 함수 -> RoundState에 맞는 UI 처리 
+    /// </summary>
+    void OnRoundStateChanged(ROUND_STATE _NextRoundState);
     
-    void OnRoundWaiting(float RoundWaitTime);
-    void OnRounding();
+    void SetRoundWaitingDisplaySec(float RoundWaitTime);
+    
 };

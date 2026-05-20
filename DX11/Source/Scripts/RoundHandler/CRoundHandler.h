@@ -48,6 +48,10 @@ private:
     
 private:
     
+    function<void(ROUND_STATE)> m_DelegateOnRoundStateChanged{}; // RoundState 변화 시, 호출될 함수 (인자는 set처리된 RoundState)
+    
+private:
+    
     static const float  s_RoundWaitTime;
     float               m_RoundWaitTimer = s_RoundWaitTime;
     
@@ -78,7 +82,9 @@ private:
 public:
     
     void SetRoundState(ROUND_STATE _RoundState);
-    ROUND_STATE GetRoundState() const { return m_RoundState; }
+    void SetDelegateOnRoundStateChanged(const function<void(ROUND_STATE)>& _Delegate) { m_DelegateOnRoundStateChanged = _Delegate; }
+
+    int GetRoundNumber() const { return m_CurrentRoundIdx + 1; }
     
 public:
     

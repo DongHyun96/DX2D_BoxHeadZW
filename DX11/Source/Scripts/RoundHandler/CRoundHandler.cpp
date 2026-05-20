@@ -34,7 +34,7 @@ void CRoundHandler::Begin()
 void CRoundHandler::AfterLevelBegin()
 {
     // Round 대기 or Start
-    GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundWaitStart();
+    SetRoundState(ROUND_STATE::WAIT);
 }
 
 void CRoundHandler::Tick()
@@ -58,7 +58,7 @@ void CRoundHandler::HandleTransition()
     case ROUND_STATE::WAIT:
     {
         m_RoundWaitTimer -= DT;
-        GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundWaiting(m_RoundWaitTimer);
+        GM->GetIngameUIManager()->GetRoundIndicators()->SetRoundWaitingDisplaySec(m_RoundWaitTimer);
         
         if (m_RoundWaitTimer > 0.f) return;
         
@@ -69,8 +69,6 @@ void CRoundHandler::HandleTransition()
     case ROUND_STATE::ROUND_GOING:
     {
         m_CurrentRoundTimer += DT;
-        
-        GM->GetIngameUIManager()->GetRoundIndicators()->OnRounding();
         
         if (!m_ThisRoundAdditionalSpawnLeft.empty())
         {
@@ -140,13 +138,14 @@ void CRoundHandler::HandleTransition()
 void CRoundHandler::SetRoundState(ROUND_STATE _RoundState)
 {
     m_RoundState = _RoundState;
-    
+
     switch (m_RoundState)
     {
     case ROUND_STATE::WAIT:
     {
         m_RoundWaitTimer = s_RoundWaitTime;
-        GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundWaitStart();
+        // GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundWaitStart();
+        if (m_DelegateOnRoundStateChanged) m_DelegateOnRoundStateChanged(m_RoundState);    
         return;
     }
         
@@ -184,14 +183,14 @@ void CRoundHandler::SetRoundState(ROUND_STATE _RoundState)
         m_AdditionalSpawnTimer    = 0.f;
         m_AllDieCheckTimer        = 0.f;
         
-        GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundStart(m_CurrentRoundIdx + 1);
-        
+        // GM->GetIngameUIManager()->GetRoundIndicators()->OnRoundStart(m_CurrentRoundIdx + 1);
+        if (m_DelegateOnRoundStateChanged) m_DelegateOnRoundStateChanged(m_RoundState);
         return;
     }
         
     case ROUND_STATE::GAME_OVER:
     {
-        GM->GetIngameUIManager()->GetRoundIndicators()->OnGameOver();
+        if (m_DelegateOnRoundStateChanged) m_DelegateOnRoundStateChanged(m_RoundState);
     }
         
     }

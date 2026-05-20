@@ -17,17 +17,6 @@ CUIAnimationGroup::CUIAnimationGroup(const CUIAnimationGroup& _Origin)
     , m_mapAnimations(_Origin.m_mapAnimations)
 {
     if (LevelMgr::GetInst()->GetLevelState() != LEVEL_STATE::STOP) return;
-    
-    // Editing 환경에서의 사용자 요청에 의한(Duplicate) 복사 상황인 경우, Delegate 및 기본 처리를 해주어야 함
-    for (pair<const wstring, GameObjectRefHolder>& Pair : m_mapAnimationGameObjects)
-    {
-        GameObjectRefHolder& AnimObjRefHolder = Pair.second; 
-        if (!AnimObjRefHolder.GetGameObject())
-        {
-            DebugUtil::AddDebugLog("[CUIAnimationGroup(Copy Constructor)] : Some GORef not valid!");
-            continue;
-        }
-    }
 }
 
 CUIAnimationGroup::~CUIAnimationGroup()
@@ -67,7 +56,9 @@ bool CUIAnimationGroup::RemoveAnimationByKey(const wstring& _AnimKey)
     if (!m_mapAnimationGameObjects.contains(_AnimKey)) return false;
 
     // 지우기 전 Stop 처리한 뒤 지우기
-    m_mapAnimations[_AnimKey]->Stop();
+    // Valid하지 않은 Animation오브젝트를 들고 있을 수 있음(Missing) -> 확인하고 Stop 처리
+    if (m_mapAnimationGameObjects[_AnimKey].GetGameObject())
+        m_mapAnimations[_AnimKey]->Stop();
     
     m_mapAnimationGameObjects.erase(_AnimKey);
     m_mapAnimations.erase(_AnimKey);
