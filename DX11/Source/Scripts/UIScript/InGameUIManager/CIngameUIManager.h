@@ -19,7 +19,8 @@ private:
     CText*               m_ZombieAliveCount{};
     
     class CCrossHair* m_CrossHair{};
-    
+
+    class CGameLogManager* m_GameLogManager{};
 
 public:
     CIngameUIManager();

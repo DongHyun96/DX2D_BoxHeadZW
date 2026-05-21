@@ -25,6 +25,8 @@ enum class SCRIPT_PARAM
     PROGRESS_BAR,
     FONT_STYLE,
     FONT_ALIGN,
+    GAME_OBJ_REF_HOLDER,
+    VEC_GAME_OBJ_REF_HOLDER
 };
 
 struct tScriptParam

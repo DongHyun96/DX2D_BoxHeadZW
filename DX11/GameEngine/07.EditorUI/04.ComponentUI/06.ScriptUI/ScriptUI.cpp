@@ -11,6 +11,7 @@
 #include "Source/Scripts/RoundHandler/CRoundHandler.h"
 #include "Source/Scripts/UIScript/CProgressBar.h"
 #include "GameEngine/03.Manager/10.FontMgr/FontMgr.h"
+#include "GameEngine/05.GameObject/GameObjectRefHolder.h"
 
 namespace
 {
@@ -546,6 +547,76 @@ void ScriptUI::TickScriptParams()
 				}
 				ImGui::PopID();
 				AddItemHeight();
+			}
+		}
+			break;
+		case SCRIPT_PARAM::GAME_OBJ_REF_HOLDER:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			
+			GameObjectRefHolder* ObjRefHolder = static_cast<GameObjectRefHolder*>(vecParam[i].Data);
+
+			ImGui::SameLine(150);
+			const wstring ObjectName = ObjRefHolder->GetGameObject() != nullptr ? ObjRefHolder->GetGameObject()->GetName() : L"<None>";
+			const string ObjectNameStr = string(ObjectName.begin(), ObjectName.end()) + "##REF_HOLDER";
+			
+			ImGui::InputText("##REF_HOLDER", string(ObjectName.begin(), ObjectName.end()).data(), ObjectName.length() + 1, ImGuiInputTextFlags_ReadOnly);
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload("Outliner"))
+				{
+					if (!TreeUI::IsPayloadMultiData(Payload))
+					{
+						DWORD_PTR Data = *static_cast<DWORD_PTR*>(Payload->Data);
+						if (Ptr<GameObject> ReceivedObj = reinterpret_cast<GameObject*>(Data))
+							ObjRefHolder->SetGameObject(ReceivedObj);
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+		}
+			break;
+		case SCRIPT_PARAM::VEC_GAME_OBJ_REF_HOLDER:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			// vector<RoundInfo>& vecRoundInfo = *static_cast<vector<RoundInfo>*>(vecParam[i].Data);
+			
+			vector<GameObjectRefHolder>& vecObjRefHolder = *static_cast<vector<GameObjectRefHolder>*>(vecParam[i].Data);
+			
+			string AddKey = "Add Element##" + GetUIKey();
+			if (ImGui::Button(AddKey.c_str()))
+				vecObjRefHolder.push_back(move(GameObjectRefHolder()));
+
+			int TempCount{};
+			for (auto it = vecObjRefHolder.begin(); it != vecObjRefHolder.end(); )
+			{
+				GameObjectRefHolder& ObjRefHolder = *it;
+				const wstring ObjectName = ObjRefHolder.GetGameObject() != nullptr ? ObjRefHolder.GetGameObject()->GetName() : L"<None>";
+				const string ObjectNameStr = string(ObjectName.begin(), ObjectName.end()) + "##REF_HOLDER";
+
+				const string Tempkey = "##REF_HOLDER" + to_string(TempCount);  
+				ImGui::InputText(Tempkey.c_str(), string(ObjectName.begin(), ObjectName.end()).data(), ObjectName.length() + 1, ImGuiInputTextFlags_ReadOnly);
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload("Outliner"))
+					{
+						if (!TreeUI::IsPayloadMultiData(Payload))
+						{
+							DWORD_PTR Data = *static_cast<DWORD_PTR*>(Payload->Data);
+							if (Ptr<GameObject> ReceivedObj = reinterpret_cast<GameObject*>(Data))
+								ObjRefHolder.SetGameObject(ReceivedObj);
+						}
+					}
+					ImGui::EndDragDropTarget();
+				}
+
+				ImGui::SameLine();
+				const string RemoveBtnKey = "Remove##" + to_string(TempCount); 
+				if (ImGui::Button(RemoveBtnKey.c_str()))
+					it = vecObjRefHolder.erase(it);
+				else ++it;
+				
+				++TempCount;
 			}
 		}
 			break;

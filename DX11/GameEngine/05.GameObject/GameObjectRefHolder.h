@@ -40,6 +40,7 @@ public:
 public:
 	
 	void SetGameObject(GameObject* _GameObject);
+	void SetGameObject(const Ptr<GameObject>& _GameObject) { SetGameObject(_GameObject.Get()); }
 	
 	GameObject* GetGameObject() const { return m_GameObject; }
 	GUID GetRefGUID() const { return m_RefGUID; }

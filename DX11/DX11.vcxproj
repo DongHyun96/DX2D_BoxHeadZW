@@ -355,6 +355,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\UIScript\CGameUI.h" />
     <ClInclude Include="Source\Scripts\UIScript\CProgressBar.h" />
     <ClInclude Include="Source\Scripts\UIScript\CText.h" />
+    <ClInclude Include="Source\Scripts\UIScript\GameLog\CGameLogManager.h" />
     <ClInclude Include="Source\Scripts\UIScript\HUD\HUD.h" />
     <ClInclude Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.h" />
     <ClInclude Include="Source\Scripts\UIScript\UIAnimation\CUIAnimation.h" />
@@ -649,6 +650,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\UIScript\CGameUI.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\CProgressBar.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\CText.cpp" />
+    <ClCompile Include="Source\Scripts\UIScript\GameLog\CGameLogManager.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\HUD\HUD.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\InGameUIManager\CIngameUIManager.cpp" />
     <ClCompile Include="Source\Scripts\UIScript\UIAnimation\CUIAnimation.cpp" />

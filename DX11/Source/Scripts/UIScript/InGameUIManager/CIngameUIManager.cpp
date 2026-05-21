@@ -11,6 +11,7 @@
 #include "Source/Scripts/UIScript/CProgressBar.h"
 // #include "Source/Scripts/UIScript/HUD/HUD.h"
 #include "Source/Scripts/UIScript/UIAnimation/CUIAnimationGroup.h"
+#include "Source/Scripts/UIScript/GameLog/CGameLogManager.h"
 
 CIngameUIManager::CIngameUIManager()
     : CScript(SCRIPT_TYPE::INGAMEUIMANAGER)
@@ -122,6 +123,10 @@ void CIngameUIManager::InitPlayerHUDMembers(const Ptr<GameObject>& PlayerHUD)
         else if (Name == L"RoundAmmoIcon") //
         {
             m_AmmoCountUIArea->RoundAmmoIcon = Current.Get();
+        }
+        else if (Name == L"GameLogManager")
+        {
+            m_GameLogManager = Current->GetScriptComponent<CGameLogManager>().Get();
         }
         
         // Weapon Icons
