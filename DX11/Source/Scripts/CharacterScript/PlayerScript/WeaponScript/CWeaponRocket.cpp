@@ -10,6 +10,7 @@
 CWeaponRocket::CWeaponRocket()
     : CWeaponScript(SCRIPT_TYPE::WEAPONROCKET)
 {
+    m_SwitchingLog = L"SWITCHED TO ROCKET";
 }
 
 CWeaponRocket::~CWeaponRocket()

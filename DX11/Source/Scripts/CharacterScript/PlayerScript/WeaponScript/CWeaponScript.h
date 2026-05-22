@@ -13,6 +13,10 @@ private:
     float               m_FireIntervalTime{};         // 발사 사이의 시간간격    (버프 가능)
     float               m_DamageAmountPerRound{};     // 한 발당 Damage량       (버프 가능)
 
+protected:
+    
+    wstring m_SwitchingLog{};
+    
 public:
     
     CWeaponScript(SCRIPT_TYPE _ScriptType);
@@ -77,6 +81,8 @@ public:
     void SetFireIntervalTime(float _FireIntervalTime) { m_FireIntervalTime = _FireIntervalTime; }
     
     void SetDamageAmountPerRound(float _DamageAmountPerRound) {  m_DamageAmountPerRound = _DamageAmountPerRound; }
+    
+    const wstring& GetSwitchingLog() const { return m_SwitchingLog; }
     
 public:
     

@@ -13,6 +13,7 @@
 #include "Source/Scripts/ProjectileScript/CGrenade.h"
 #include "Source/Scripts/UIScript/CCrossHair.h"
 #include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
+#include "StructureHandler/CStructureHandler.h"
 
 CPlayerWeaponHandler::CPlayerWeaponHandler()
     : CScript(SCRIPT_TYPE::PLAYERWEAPONHANDLER)
@@ -238,16 +239,23 @@ void CPlayerWeaponHandler::TickDeployAirStrike()
 
 void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
 {
-    m_HandState = _HandState;
+    PLAYER_HANDSTATE PrevHandState = m_HandState;
+    m_HandState                    = _HandState;
 
-    if (m_HandState == PLAYER_HANDSTATE::UNARMED)
+    // Structure 설치 모드로 전환한 UI 처리해주기
+    if (PrevHandState != m_HandState && m_HandState == PLAYER_HANDSTATE::UNARMED)
     {
+        // 크로스헤어 감추기
         GM->GetIngameUIManager()->GetCrossHair()->GetOwner()->SetActive(false);
+
+        // Player HUD UI Structure용으로 적용
+        GetOwner()->GetScriptComponent<CStructureHandler>()->UpdateUIToCurrentStructureHoldingType();
     }
     
     // 해당 Slot에 무기가 존재한다면
     if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_HandState))
     {
+        // 현재 무기 상태의 FireInterval 및 Damage 량 적용
         WEAPON_MASTERY NextWeaponMasteryState = m_mapCurrentMastery[m_HandState].CurrentMasteryState;
         const WeaponMasteryBuff& BuffData = EACH_WEAPON_MASTERY_BUFF.at(m_HandState).at(static_cast<int>(NextWeaponMasteryState));
         
@@ -256,10 +264,14 @@ void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
         Weapon->SetDamageAmountPerRound(BuffData.DamageAmountPerRound);
         
         // UI 업데이트
-        CInvenScript* Inven = GM->GetPlayerObject()->GetScriptComponent<CInvenScript>().Get();
-        
-        GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToGun(m_HandState, Inven->GetCurrentAmmoCount(_HandState));
-        GM->GetIngameUIManager()->GetCrossHair()->GetOwner()->SetActive(true);
+        if (m_HandState != PrevHandState)
+        {
+            CInvenScript* Inven = GM->GetPlayerObject()->GetScriptComponent<CInvenScript>().Get();
+            
+            GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToGun(m_HandState, Inven->GetCurrentAmmoCount(_HandState));
+            GM->GetIngameUIManager()->GetCrossHair()->GetOwner()->SetActive(true);
+            GM->GetIngameUIManager()->AddGameLog(Weapon->GetSwitchingLog());
+        }
     }
 }
 

@@ -32,7 +32,11 @@ public:
 
 	~Ptr()
 	{
-		if (m_Ptr) m_Ptr->Release();
+		if (m_Ptr)
+		{
+			m_Ptr->Release();
+			m_Ptr = nullptr;
+		}
 	}
 	
 public:

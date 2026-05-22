@@ -76,6 +76,10 @@ public:
     
     static const set<UINT>& GetTurretHitScanLayers() { return s_setTurretHitScanLayers; }
     
+    /// <summary>
+    /// 현재 StructureHolding에 맞게끔 UI 초기 세팅
+    /// </summary>
+    void UpdateUIToCurrentStructureHoldingType() const;
     
 public:
     

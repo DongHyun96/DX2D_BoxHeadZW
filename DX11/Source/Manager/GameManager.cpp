@@ -87,6 +87,8 @@ CPoolComponent* GameManager::GetFlipbookEffectPooler(FLIPBOOK_EFFECT_POOLER_TYPE
 
 void GameManager::SetIsGameStart(bool _bHasGameStart)
 {
+    if (m_bHasGameStart == _bHasGameStart) return;
+    
     m_bHasGameStart = _bHasGameStart;
     if (m_bHasGameStart)
     {

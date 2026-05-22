@@ -11,6 +11,7 @@
 CWeaponUzi::CWeaponUzi()
     : CWeaponScript(SCRIPT_TYPE::WEAPONUZI)
 {
+    m_SwitchingLog = L"SWITCHED TO UZI";
 }
 
 CWeaponUzi::~CWeaponUzi()

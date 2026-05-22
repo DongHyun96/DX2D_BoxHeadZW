@@ -48,6 +48,9 @@ int CInvenScript::ReduceCurrentStructureCount(PLAYER_STRUCTURE_TYPE _StructureTy
         DebugUtil::AddDebugLog("[CInvenScript::ReduceCurrentStructureCount] : Count Reduced to under 0.", DEF_COLOR_BLUE, 10.f);
         m_mapStructureCount[_StructureType] = 0;
     }
+    
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateCurrentAmmoCount(m_mapStructureCount[_StructureType]);
+    
     return m_mapStructureCount[_StructureType];
 }
 

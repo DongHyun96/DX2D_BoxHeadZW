@@ -47,6 +47,11 @@ void CIngameUIManager::SetZombieAliveCountText(int _AliveCount)
     m_ZombieAliveCount->SetText(to_wstring(_AliveCount));
 }
 
+void CIngameUIManager::AddGameLog(const wstring& _GameLog)
+{
+    m_GameLogManager->AddGameLog(_GameLog);
+}
+
 void CIngameUIManager::InitMembers()
 {
     Layer* UILayer = LevelMgr::GetInst()->GetCurLevel()->GetLayer(MAX_LAYER - 1);

@@ -14,6 +14,8 @@
 CWeaponPistol::CWeaponPistol()
     : CWeaponScript(SCRIPT_TYPE::WEAPONPISTOL)
 {
+    m_SwitchingLog = L"SWITCHED TO PISTOL";
+    
 }
 
 CWeaponPistol::~CWeaponPistol()

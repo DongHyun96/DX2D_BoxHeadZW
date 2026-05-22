@@ -11,6 +11,7 @@
 CWeaponMinigun::CWeaponMinigun()
     : CWeaponScript(SCRIPT_TYPE::WEAPONMINIGUN)
 {
+    m_SwitchingLog = L"SWITCHED TO MINIGUN";
 }
 
 CWeaponMinigun::~CWeaponMinigun()

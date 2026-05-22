@@ -5,6 +5,7 @@
 #include "Source/Manager/GameManager.h"
 #include "Source/Scripts/RoundHandler/CRoundHandler.h"
 #include "Source/Scripts/UIScript/CText.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 #include "Source/Scripts/UIScript/UIAnimation/CUIAnimationGroup.h"
 
 void AmmoCountUIArea::UpdateToGun(PLAYER_HANDSTATE _HandState, int _MainAmmoCount)
@@ -23,11 +24,7 @@ void AmmoCountUIArea::UpdateToGun(PLAYER_HANDSTATE _HandState, int _MainAmmoCoun
         MainAmmoCount->SetText(L"INF");
         MainAmmoCount->SetColor(DEF_COLOR_WHITE);
     }
-    else
-    {
-        MainAmmoCount->SetText(to_wstring(_MainAmmoCount));
-        MainAmmoCount->SetColor((_MainAmmoCount <= 0) ? Vec4(1.f, 0.f, 0.f, 1.f) : DEF_COLOR_WHITE);
-    }
+    else UpdateCurrentAmmoCount(_MainAmmoCount);
 }
 
 void AmmoCountUIArea::UpdateCurrentAmmoCount(int _AmmoCount)
@@ -47,8 +44,18 @@ void AmmoCountUIArea::UpdateToStructure(PLAYER_STRUCTURE_TYPE _Type, int _Count)
     RoundAmmoIcon->SetActive(false);
         
     StructureIcons[_Type]->SetActive(true);
-        
-    MainAmmoCount->SetText(to_wstring(_Count));
+
+    UpdateCurrentAmmoCount(_Count);
+    
+    // Game Log 추가
+    switch (_Type) 
+    {
+    case PLAYER_STRUCTURE_TYPE::BARRICADE:          GM->GetIngameUIManager()->AddGameLog(L"SWITCHED TO BARRICADE");     return;
+    case PLAYER_STRUCTURE_TYPE::BARREL:             GM->GetIngameUIManager()->AddGameLog(L"SWITCHED TO BARREL");        return;
+    case PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN: GM->GetIngameUIManager()->AddGameLog(L"SWITCHED TO TURRET_MG");     return;
+    case PLAYER_STRUCTURE_TYPE::TURRET_MORTAR:      GM->GetIngameUIManager()->AddGameLog(L"SWITCHED TO TURRET_MORTAR"); return;
+    case PLAYER_STRUCTURE_TYPE::TURRET_ROCKET:      GM->GetIngameUIManager()->AddGameLog(L"SWITCHED TO TURRET_ROCKET"); return;
+    }
 }
 
 void RoundIndicators::OnRoundStateChanged(ROUND_STATE _NextRoundState)

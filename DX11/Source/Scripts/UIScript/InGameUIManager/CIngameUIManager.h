@@ -44,6 +44,8 @@ public:
     CCrossHair* GetCrossHair() const { return m_CrossHair; }
     void SetCrossHair(CCrossHair* _CrossHair) { m_CrossHair = _CrossHair; }
     
+    void AddGameLog(const wstring& _GameLog);
+    
 private:
 
     void InitMembers();

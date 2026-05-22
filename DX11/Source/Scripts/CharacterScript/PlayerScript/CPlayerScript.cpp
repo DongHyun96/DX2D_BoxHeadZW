@@ -16,6 +16,7 @@
 #include "Source/Scripts/CharacterScript/CharacterStat/PlayerStat/CPlayerStat.h"
 #include "Source/Scripts/CharacterScript/EnemyScript/CEnemyScript.h"
 #include "Source/Scripts/StatScript/CStatScript.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 CPlayerScript::CPlayerScript()
     : CCharacterScript(SCRIPT_TYPE::PLAYERSCRIPT)
@@ -72,8 +73,7 @@ void CPlayerScript::AfterLevelBegin()
 void CPlayerScript::Tick()
 {
     CCharacterScript::Tick();
-    
-    // For Testing
+
     if (KEY_TAP(KEY::ENTER)) GM->SetIsGameStart(true);
 }
 

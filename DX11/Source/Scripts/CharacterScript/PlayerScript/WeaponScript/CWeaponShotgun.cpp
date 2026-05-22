@@ -13,6 +13,7 @@ CWeaponShotgun::CWeaponShotgun()
     : CWeaponScript(SCRIPT_TYPE::WEAPONSHOTGUN)
     , m_FireSpreadAngle(ConvertToAngle(10.f))
 {
+    m_SwitchingLog = L"SWITCHED TO SHOTGUN";
 }
 
 CWeaponShotgun::~CWeaponShotgun()

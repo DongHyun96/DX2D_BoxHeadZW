@@ -77,7 +77,9 @@ void CStructureHandler::Tick()
         !m_InvenScript->HasAnyStructure()
         )
     {
-        m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->SetActive(false);
+        if (m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->GetActive())
+            m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->SetActive(false);
+        
         return;
     }
     
@@ -104,6 +106,8 @@ void CStructureHandler::Tick()
 
 void CStructureHandler::UpdateCurrentStructureHolding()
 {
+    PLAYER_STRUCTURE_TYPE PrevStructureHolding = m_CurrentStructureHolding;
+    
     // 현재 들고있는 StructureHolding의 개수가 모두 소진되었을 때에, 바로 다음 StructureType으로 넘어간다
     if (!m_InvenScript->HasStructure(m_CurrentStructureHolding))
         UpdateToNextStructureTypeHolding();
@@ -113,9 +117,9 @@ void CStructureHandler::UpdateCurrentStructureHolding()
         UpdateToNextStructureTypeHolding();
     else if (KeyMgr::GetInst()->GetMouseWheel() == -1)
         UpdateToPrevStructureTypeHolding();
-    
-    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToStructure(m_CurrentStructureHolding, m_InvenScript->GetStructureCount(m_CurrentStructureHolding));
 
+    if (m_CurrentStructureHolding != PrevStructureHolding)
+        GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToStructure(m_CurrentStructureHolding, m_InvenScript->GetStructureCount(m_CurrentStructureHolding));
 }
 
 void CStructureHandler::UpdateToNextStructureTypeHolding()
@@ -169,6 +173,13 @@ void CStructureHandler::UpdateSpawnStructure(const Vec2& _PreviewPos, bool _Avai
     
     if (KEY_TAP(KEY::MLB))
     {
+        // 설치할 설치물 개수가 없는 상황 -> 모든 설치물 개수가 떨어졌을 때, 결국엔 한번은 들어오게 되어 처리를 해주어야 함
+        if (m_InvenScript->GetStructureCount(m_CurrentStructureHolding) <= 0)
+        {
+            GM->GetIngameUIManager()->AddGameLog(L"NO STRUCTURES TO PLACE");
+            return;
+        }
+        
         GameObject* SpawnedStructure = m_mapStructureTypePrefabs[m_CurrentStructureHolding]->InstantiateAndSpawnToCurLevel();
         SpawnedStructure->Transform()->SetRelativePos(ToVec3(_PreviewPos, _PreviewPos.y));
         SpawnedStructure->GetScriptComponent<CStructure>()->PlayInstallSound();
@@ -224,4 +235,9 @@ void CStructureHandler::UpdatePreviewStructureObject(const Vec2& _PreviewPos, bo
     
     // Begin에서 생성처리한 DynamicMaterial 이다
     PreviewObject->GetRenderCom()->GetMaterial()->SetScalar(SCALAR_PARAM::VEC4_0, Color);
+}
+
+void CStructureHandler::UpdateUIToCurrentStructureHoldingType() const
+{
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToStructure(m_CurrentStructureHolding, m_InvenScript->GetStructureCount(m_CurrentStructureHolding));
 }
