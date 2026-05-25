@@ -67,7 +67,7 @@ void CPlayerScript::AfterLevelBegin()
 {
     CCharacterScript::AfterLevelBegin();
     if (GetOwner()->GetScriptComponent<CPlayerWeaponHandler>())
-        GetOwner()->GetScriptComponent<CPlayerWeaponHandler>()->SetHandState(PLAYER_HANDSTATE::PISTOL);
+        GetOwner()->GetScriptComponent<CPlayerWeaponHandler>()->SetHandState(PLAYER_HANDSTATE::PISTOL, false);
 }
 
 void CPlayerScript::Tick()

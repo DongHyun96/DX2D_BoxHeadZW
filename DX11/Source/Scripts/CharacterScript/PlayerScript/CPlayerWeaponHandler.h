@@ -121,6 +121,7 @@ private:
     
     class CPlayerScript*    m_PlayerMainScript{};
     class CEquipmentScript* m_EquipmentScript{};
+    class CInvenScript*     m_InvenScript{};
     
 private:
     
@@ -151,10 +152,20 @@ private:
     void TickFireWeapon();
     void TickFireGrenade();
     void TickDeployAirStrike();
+
+private:
+    
+    /// <returns> : 현재 HandState에서의 NextWeaponType 반환 (장착된 무기류 상태를 따져서) </returns>
+    PLAYER_HANDSTATE GetNextWeaponType();
+
+    /// <returns> : 현재 HandState에서의 PrevWeaponType 반환 (장착된 무기류 상태를 따져서) </returns>
+    PLAYER_HANDSTATE GetPrevWeaponType();
+    
     
 public:
-
-    void SetHandState(PLAYER_HANDSTATE _HandState);
+    
+    void SetHandState(PLAYER_HANDSTATE _HandState, bool _bAddGameLog = true);
+    
     PLAYER_HANDSTATE GetHandState() const { return m_HandState; }
     
     /// <summary>

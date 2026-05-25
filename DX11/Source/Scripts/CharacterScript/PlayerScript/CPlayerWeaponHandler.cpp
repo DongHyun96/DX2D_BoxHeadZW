@@ -77,7 +77,8 @@ void CPlayerWeaponHandler::Init()
 void CPlayerWeaponHandler::Begin()
 {
     m_PlayerMainScript = GetOwner()->GetScriptComponent<CPlayerScript>().Get();
-    m_EquipmentScript = GetOwner()->GetScriptComponent<CEquipmentScript>().Get();
+    m_EquipmentScript  = GetOwner()->GetScriptComponent<CEquipmentScript>().Get();
+    m_InvenScript      = GetOwner()->GetScriptComponent<CInvenScript>().Get();
 
     m_AirStrikePrefab = FIND_ASSET(APrefab, L"Prefab\\AirStrikePrefab.pref");
 }
@@ -94,32 +95,32 @@ void CPlayerWeaponHandler::Tick()
     // TODO : 여기 지우기 & 버프 처리 시, Weapon에 실질적으로 setting을 해주어야 함(지금 무기를 바꿀때만 처리가 되는 중)
     if (KEY_TAP(KEY::MOUSE_X1))
     {
-        if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
+        if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_HandState))
         {
-            int StateIdx = static_cast<int>(m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState);
+            int StateIdx = static_cast<int>(m_mapCurrentMastery[m_HandState].CurrentMasteryState);
             if (--StateIdx >= 0)
             {
-                m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
-                SetHandState(m_PlayerMainScript->GetHandState());   
+                m_mapCurrentMastery[m_HandState].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
+                SetHandState(m_HandState);   
             }
         }
     }
     
     if (KEY_TAP(KEY::MOUSE_X2))
     {
-        if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
+        if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_HandState))
         {
-            int StateIdx = static_cast<int>(m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState);
+            int StateIdx = static_cast<int>(m_mapCurrentMastery[m_HandState].CurrentMasteryState);
             if (++StateIdx <= 2)
             {
-                m_mapCurrentMastery[m_PlayerMainScript->GetHandState()].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
-                SetHandState(m_PlayerMainScript->GetHandState());   
+                m_mapCurrentMastery[m_HandState].CurrentMasteryState = static_cast<WEAPON_MASTERY>(StateIdx);
+                SetHandState(m_HandState);   
             }
         }
     }
     
     // TODO : 여기 지우기 (Muzzle 위치 디버깅)   
-    const PLAYER_HANDSTATE CurrentHandState = m_PlayerMainScript->GetHandState();
+    const PLAYER_HANDSTATE CurrentHandState = m_HandState;
     const int DirectionIndex = static_cast<int>(m_PlayerMainScript->GetCurrentFacedDirection());
     const Vec3 MuzzleWorldPos = Transform()->GetWorldPos() + m_mapEachMuzzleOffsets[CurrentHandState][DirectionIndex];
     DrawDebugCircle(MuzzleWorldPos, 5.f, DEF_COLOR_RED, 0.f);
@@ -130,23 +131,22 @@ void CPlayerWeaponHandler::TickSwapWeapon()
     // 사격 중이라면 무기 교환 불가
     if (m_LastTickFired) return;
 
-    // KEY_TAP(KEY::E)     ? PLAYER_HANDSTATE::UNARMED :
     static PLAYER_HANDSTATE PrevGunState{};
+    
+    // UnArmed(설치물 모드) <-> GunState Swapping 처리
     if (KEY_TAP(KEY::E))
     {
         if (m_HandState == PLAYER_HANDSTATE::UNARMED)
-        {
-            SetHandState(PrevGunState);
-        }
+            SetHandState(PrevGunState); // 이전 무기 상태로 돌아가기
         else
         {
-            PrevGunState = m_HandState;
+            PrevGunState = m_HandState; // 설치물 모드로 들어가기 전에, 이전 무기상태 기억
             SetHandState(PLAYER_HANDSTATE::UNARMED);
         }
         return;   
     }
     
-    // Numbering으로 무기 전환
+    /* Numbering으로 무기 전환 */
     PLAYER_HANDSTATE NextHandState =    KEY_TAP(KEY::NUM_1) ? PLAYER_HANDSTATE::PISTOL : 
                                         KEY_TAP(KEY::NUM_2) ? PLAYER_HANDSTATE::UZI :
                                         KEY_TAP(KEY::NUM_3) ? PLAYER_HANDSTATE::SHOTGUN :
@@ -155,68 +155,63 @@ void CPlayerWeaponHandler::TickSwapWeapon()
                                         
 
     
+    /* 마우스 휠로 무기 전환 (PISTOL ~ ROCKET 범위) (설치물 상태에서는 x) */
     if (m_HandState != PLAYER_HANDSTATE::UNARMED)
     {
-        // 마우스 휠로 무기 전환 (PISTOL ~ ROCKET 범위) (설치물 상태에서는 x)
-        int wheel = KeyMgr::GetInst()->GetMouseWheel();
-        if (NextHandState == PLAYER_HANDSTATE::END && wheel != 0)
-        {
-            if (m_HandState == PLAYER_HANDSTATE::UNARMED)
-            {
-                // UNARMED 상태에서 휠을 돌리면 PISTOL로 진입
-                NextHandState = PLAYER_HANDSTATE::PISTOL;
-            }
-            else
-            {
-                int iCur = static_cast<int>(m_HandState);
-                int iStart = static_cast<int>(PLAYER_HANDSTATE::PISTOL);
-                int iEnd = static_cast<int>(PLAYER_HANDSTATE::ROCKET);
+        const int wheel = KeyMgr::GetInst()->GetMouseWheel();
 
-                if (wheel > 0) // Wheel Up -> 다음 무기
-                {
-                    iCur++;
-                    if (iCur > iEnd) iCur = iStart;
-                }
-                else // Wheel Down -> 이전 무기
-                {
-                    iCur--;
-                    if (iCur < iStart) iCur = iEnd;
-                }
-                NextHandState = static_cast<PLAYER_HANDSTATE>(iCur);
-            }
-        }
+        // Numbering으로 무기전환을 하지 않았고, 마우스 휠 동작이 발생했을 때
+        if (NextHandState == PLAYER_HANDSTATE::END && wheel != 0)
+            NextHandState = (wheel == 1) ? GetNextWeaponType() : GetPrevWeaponType();
     }
-    
-    if (NextHandState == PLAYER_HANDSTATE::END) return; // 아무 무기 Swap 시도도 이루어지지 않음
+
+    // 아무 무기 Swap 시도도 이루어지지 않음 or 아직 획득하지 못한 무기로 Swap 시도하는 것이면 무시
+    if (NextHandState == PLAYER_HANDSTATE::END || !m_EquipmentScript->GetEquippedWeapon(NextHandState)) return; 
     
     SetHandState(NextHandState);
 }
 
 void CPlayerWeaponHandler::TickFireWeapon()
 {
-    if (KEY_RELEASED(KEY::MLB))
+    // 발사하는 도중에는 SwapWeapon 처리 불가 -> Released 처리까지 모두 완료된 이후에야 UnArmed로 Swap 가능
+    if (m_HandState == PLAYER_HANDSTATE::UNARMED) return;
+    
+    Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_HandState);
+    if (!Weapon) return;
+    
+    const int AmmoLeft = m_InvenScript->GetCurrentAmmoCount(m_HandState);
+    if (AmmoLeft <= 0)
     {
-        Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState());
-        if (m_LastTickFired && Weapon)
+        // Release 처리를 하지 않았다면 여기서도 Release 처리를 해주어야 함
+        if (m_LastTickFired)
         {
             Weapon->OnFireReleased();
+            m_LastTickFired = false;
         }
+        return; // 장탄수 부족으로 사격 불가
+    }
+
+    if (KEY_RELEASED(KEY::MLB))
+    {
+        if (m_LastTickFired) Weapon->OnFireReleased();
         m_LastTickFired = false;
         return;
     }
     
     if (!KEY_PRESSED(KEY::MLB)) return;
+
+    // 누르고 있는 중
     
-    const PLAYER_HANDSTATE CurrentHandState = m_PlayerMainScript->GetHandState();
+    const PLAYER_HANDSTATE CurrentHandState = m_HandState;
 
     const int DirectionIndex = static_cast<int>(m_PlayerMainScript->GetCurrentFacedDirection());
     const Vec2 MuzzleWorldPos = ToVec2(Transform()->GetWorldPos()) + m_mapEachMuzzleOffsets[CurrentHandState][DirectionIndex];
     
-    if (Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_PlayerMainScript->GetHandState()))
+    if (Weapon)
     {
         const Vec2 MousePos = ToVec2(KeyMgr::GetInst()->GetMouseWorldPos());
         if (Weapon->Fire(MuzzleWorldPos, MousePos - MuzzleWorldPos))
-            m_PlayerMainScript->GetOwner()->GetScriptComponent<CInvenScript>()->ReduceCurrentAmmoCount(CurrentHandState);
+            m_InvenScript->ReduceCurrentAmmoCount(CurrentHandState);
         m_LastTickFired = true;
     }
 }
@@ -237,7 +232,51 @@ void CPlayerWeaponHandler::TickDeployAirStrike()
     }
 }
 
-void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
+PLAYER_HANDSTATE CPlayerWeaponHandler::GetNextWeaponType()
+{
+    const map<PLAYER_HANDSTATE, Ptr<CWeaponScript>>& mapEquippedWeapons = m_EquipmentScript->GetEquippedWeapons();
+    map<PLAYER_HANDSTATE, Ptr<CWeaponScript>>::const_iterator it        = mapEquippedWeapons.find(m_HandState);
+    
+    // 이 if문 방어코드로 들어오지는 않을 예정
+    if (mapEquippedWeapons.empty())
+        return PLAYER_HANDSTATE::END;
+
+    // 이 if문 방어코드로 들어오지는 않을 예정
+    if (it == mapEquippedWeapons.end()) 
+        return PLAYER_HANDSTATE::END;
+
+    if (++it == mapEquippedWeapons.end()) // ++it 끝에 도달한 경우
+    {
+        it = mapEquippedWeapons.begin();
+        return it->first;
+    }
+
+    return it->first;
+}
+
+PLAYER_HANDSTATE CPlayerWeaponHandler::GetPrevWeaponType()
+{
+    const map<PLAYER_HANDSTATE, Ptr<CWeaponScript>>& mapEquippedWeapons = m_EquipmentScript->GetEquippedWeapons();
+    map<PLAYER_HANDSTATE, Ptr<CWeaponScript>>::const_iterator it        = mapEquippedWeapons.find(m_HandState);
+
+    // 이 if문 방어코드로 들어오지는 않을 예정
+    if (mapEquippedWeapons.empty())
+        return PLAYER_HANDSTATE::END;
+    
+    // 이 if문 방어코드로 들어오지는 않을 예정
+    if (it == mapEquippedWeapons.end()) 
+        return PLAYER_HANDSTATE::END;
+
+    if (it == mapEquippedWeapons.begin())
+    {
+        it = prev(mapEquippedWeapons.end());
+        return it->first;
+    }
+    
+    return (--it)->first;
+}
+
+void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState, bool _bAddGameLog)
 {
     PLAYER_HANDSTATE PrevHandState = m_HandState;
     m_HandState                    = _HandState;
@@ -250,6 +289,8 @@ void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
 
         // Player HUD UI Structure용으로 적용
         GetOwner()->GetScriptComponent<CStructureHandler>()->UpdateUIToCurrentStructureHoldingType();
+        
+        return;
     }
     
     // 해당 Slot에 무기가 존재한다면
@@ -266,18 +307,18 @@ void CPlayerWeaponHandler::SetHandState(PLAYER_HANDSTATE _HandState)
         // UI 업데이트
         if (m_HandState != PrevHandState)
         {
-            CInvenScript* Inven = GM->GetPlayerObject()->GetScriptComponent<CInvenScript>().Get();
-            
-            GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToGun(m_HandState, Inven->GetCurrentAmmoCount(_HandState));
+            GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToGun(m_HandState, m_InvenScript->GetCurrentAmmoCount(_HandState));
             GM->GetIngameUIManager()->GetCrossHair()->GetOwner()->SetActive(true);
-            GM->GetIngameUIManager()->AddGameLog(Weapon->GetSwitchingLog());
+            
+            if (_bAddGameLog)
+                GM->GetIngameUIManager()->AddGameLog(Weapon->GetSwitchingLog());
         }
     }
 }
 
 const Vec2& CPlayerWeaponHandler::GetCurrentMuzzleOffset()
 {
-    const MuzzleOffsets& CurrentMuzzleOffsets = m_mapEachMuzzleOffsets[m_PlayerMainScript->GetHandState()];
+    const MuzzleOffsets& CurrentMuzzleOffsets = m_mapEachMuzzleOffsets[m_HandState];
     return CurrentMuzzleOffsets.at(static_cast<int>(m_PlayerMainScript->GetCurrentFacedDirection()));
 }
 

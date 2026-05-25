@@ -19,7 +19,8 @@ private:
     
     map<PLAYER_HANDSTATE, int> m_AmmoLeft = 
     {
-        {PLAYER_HANDSTATE::PISTOL,  0}, // Infinite    
+        {PLAYER_HANDSTATE::UNARMED, 0}, // Dummy
+        {PLAYER_HANDSTATE::PISTOL,  INT_MAX}, // Infinite    
         {PLAYER_HANDSTATE::UZI,     200},    
         {PLAYER_HANDSTATE::SHOTGUN, 80},    
         {PLAYER_HANDSTATE::MINIGUN, 400},    

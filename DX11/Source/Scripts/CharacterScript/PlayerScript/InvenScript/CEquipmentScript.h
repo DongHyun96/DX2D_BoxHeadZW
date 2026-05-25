@@ -37,6 +37,8 @@ public:
     /// <returns></returns>
     Ptr<CWeaponScript> GetEquippedWeapon(PLAYER_HANDSTATE _HandState) const;
     
+    const map<PLAYER_HANDSTATE, Ptr<CWeaponScript>>& GetEquippedWeapons() const { return m_mapEquippedWeapons; }
+    
 public:
     
     void SaveToLevelFile(FILE* _File) override {};

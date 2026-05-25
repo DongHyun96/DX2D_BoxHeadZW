@@ -15,10 +15,10 @@ CEquipmentScript::CEquipmentScript()
 {
     // TODO : 다른 무기들은 파밍을 통해서 얻을 것
     EquipWeapon(PLAYER_HANDSTATE::PISTOL);
-    EquipWeapon(PLAYER_HANDSTATE::UZI);
-    EquipWeapon(PLAYER_HANDSTATE::SHOTGUN);
+    // EquipWeapon(PLAYER_HANDSTATE::UZI);
+    // EquipWeapon(PLAYER_HANDSTATE::SHOTGUN);
     EquipWeapon(PLAYER_HANDSTATE::MINIGUN);
-    EquipWeapon(PLAYER_HANDSTATE::ROCKET);
+    // EquipWeapon(PLAYER_HANDSTATE::ROCKET);
 }
 
 CEquipmentScript::~CEquipmentScript()
@@ -43,19 +43,13 @@ void CEquipmentScript::Tick()
 
 void CEquipmentScript::EquipWeapon(PLAYER_HANDSTATE EquipSlot)
 {
-    // TODO : 나머지 Weapon 들에 대해서도 클래스 만들고 Concrete 클래스 객체 할당하는 처리 넣기
     switch (EquipSlot)
     {
-    case PLAYER_HANDSTATE::PISTOL: m_mapEquippedWeapons[EquipSlot] = new CWeaponPistol; return;
-        
-    case PLAYER_HANDSTATE::UZI: m_mapEquippedWeapons[EquipSlot] = new CWeaponUzi; return;
-        break;
-    case PLAYER_HANDSTATE::SHOTGUN: m_mapEquippedWeapons[EquipSlot] = new CWeaponShotgun; return;
-        break;
-    case PLAYER_HANDSTATE::MINIGUN: m_mapEquippedWeapons[EquipSlot] = new CWeaponMinigun; return;
-        break;
-    case PLAYER_HANDSTATE::ROCKET: m_mapEquippedWeapons[EquipSlot] = new CWeaponRocket; return;
-        break;
+    case PLAYER_HANDSTATE::PISTOL:  m_mapEquippedWeapons[EquipSlot] = new CWeaponPistol;    return;
+    case PLAYER_HANDSTATE::UZI:     m_mapEquippedWeapons[EquipSlot] = new CWeaponUzi;       return;
+    case PLAYER_HANDSTATE::SHOTGUN: m_mapEquippedWeapons[EquipSlot] = new CWeaponShotgun;   return;
+    case PLAYER_HANDSTATE::MINIGUN: m_mapEquippedWeapons[EquipSlot] = new CWeaponMinigun;   return;
+    case PLAYER_HANDSTATE::ROCKET:  m_mapEquippedWeapons[EquipSlot] = new CWeaponRocket;    return;
     case PLAYER_HANDSTATE::UNARMED: case PLAYER_HANDSTATE::END: break; 
     }
 }
