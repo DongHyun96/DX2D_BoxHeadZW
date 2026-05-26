@@ -172,6 +172,7 @@ void CCamera::Render(bool _bUseRenderDomainSort)
     g_Trans.matView = m_matView;
     g_Trans.matProj = m_matProj;
 
+    // Domain Sort 사용 x
     if (!_bUseRenderDomainSort)
     {
         Ptr<ALevel> pCurLevel = LevelMgr::GetInst()->GetCurLevel();
@@ -216,6 +217,7 @@ void CCamera::Render(bool _bUseRenderDomainSort)
         BillboardRenderInstancing::FlushInstancing();
         SpriteRenderInstancing::FlushInstancing();
         TileDecalInstancing::FlushInstancing();
+        return;
     }
 
     // SortObject();
