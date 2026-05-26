@@ -57,6 +57,20 @@ int CInvenScript::ReduceCurrentStructureCount(PLAYER_STRUCTURE_TYPE _StructureTy
 int CInvenScript::IncreaseCurrentStructureCount(PLAYER_STRUCTURE_TYPE _StructureType, int _IncreaseAmount)
 {
     m_mapStructureCount[_StructureType] += _IncreaseAmount;
+
+    // GameLog 처리
+    wstring GameLog{};
+    switch (_StructureType)
+    {
+    case PLAYER_STRUCTURE_TYPE::BARRICADE:          GameLog = L"EARNED BARRICADE";          break; 
+    case PLAYER_STRUCTURE_TYPE::BARREL:             GameLog = L"EARNED BARREL";             break;
+    case PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN: GameLog = L"EARNED TURRET_MACHINE_GUN"; break;
+    case PLAYER_STRUCTURE_TYPE::TURRET_MORTAR:      GameLog = L"EARNED TURRET_MORTAR";      break;
+    case PLAYER_STRUCTURE_TYPE::TURRET_ROCKET:      GameLog = L"EARNED TURRET_ROCKET";      break;
+    case PLAYER_STRUCTURE_TYPE::END:                                                        return 0;
+    }
+    
+    GM->GetIngameUIManager()->AddGameLog(GameLog);
     return m_mapStructureCount[_StructureType];
 }
 
@@ -74,4 +88,23 @@ void CInvenScript::ReduceCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _Redu
     
     if (_HandState != PLAYER_HANDSTATE::PISTOL)
         GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateCurrentAmmoCount(m_AmmoLeft[_HandState]);   
+}
+
+void CInvenScript::IncreaseCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _IncreaseAmount)
+{
+    m_AmmoLeft.at(_HandState) += _IncreaseAmount;
+    
+    // GameLog 처리
+    wstring GameLog{};
+
+    switch (_HandState)
+    {
+    case PLAYER_HANDSTATE::PISTOL: case PLAYER_HANDSTATE::UNARMED: case PLAYER_HANDSTATE::END: return;
+    case PLAYER_HANDSTATE::UZI:     GameLog = L"EARNED UZI AMMO";       break;
+    case PLAYER_HANDSTATE::SHOTGUN: GameLog = L"EARNED SHOTGUN AMMO";   break;
+    case PLAYER_HANDSTATE::MINIGUN: GameLog = L"EARNED MINIGUN AMMO";   break;
+    case PLAYER_HANDSTATE::ROCKET:  GameLog = L"EARNED ROCKET AMMO";    break;
+    }
+    
+    GM->GetIngameUIManager()->AddGameLog(GameLog);
 }

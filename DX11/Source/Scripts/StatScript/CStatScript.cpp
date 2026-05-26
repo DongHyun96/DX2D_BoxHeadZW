@@ -50,7 +50,7 @@ bool CStatScript::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
 bool CStatScript::ApplyHeal(float _HealAmount)
 {
     if (IsDead()) return false; // 이미 죽은 상태이면 heal 처리 x TODO : Testing 환경이라면 이 장치 풀기
-
+    
     m_HP = min(m_HP + _HealAmount, m_HPMax);
     return true;
 }

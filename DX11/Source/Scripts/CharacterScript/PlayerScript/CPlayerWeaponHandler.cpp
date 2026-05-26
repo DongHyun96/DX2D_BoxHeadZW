@@ -191,6 +191,7 @@ void CPlayerWeaponHandler::TickFireWeapon()
         return; // 장탄수 부족으로 사격 불가
     }
 
+    // 일반적인 Release 처리
     if (KEY_RELEASED(KEY::MLB))
     {
         if (m_LastTickFired) Weapon->OnFireReleased();

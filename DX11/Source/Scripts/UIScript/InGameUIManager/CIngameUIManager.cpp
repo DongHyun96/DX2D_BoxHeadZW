@@ -52,6 +52,14 @@ void CIngameUIManager::AddGameLog(const wstring& _GameLog)
     m_GameLogManager->AddGameLog(_GameLog);
 }
 
+bool CIngameUIManager::UpdateHPBar(float _HP, float _MaxHP)
+{
+    if (_MaxHP <= 0.f) return false;
+
+    m_AmmoCountUIArea->HPBar->SetRatio(_HP / _MaxHP);    
+    return true;
+}
+
 void CIngameUIManager::InitMembers()
 {
     Layer* UILayer = LevelMgr::GetInst()->GetCurLevel()->GetLayer(MAX_LAYER - 1);

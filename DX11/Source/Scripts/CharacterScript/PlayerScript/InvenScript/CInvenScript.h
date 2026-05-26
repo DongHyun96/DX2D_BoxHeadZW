@@ -73,7 +73,7 @@ public:
     
     int GetCurrentAmmoCount(PLAYER_HANDSTATE _HandState) const { return m_AmmoLeft.at(_HandState); }
     void ReduceCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _ReduceAmount = 1);
-    void IncreaseCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _IncreaseAmount = 1) { m_AmmoLeft.at(_HandState) += _IncreaseAmount; }
+    void IncreaseCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _IncreaseAmount = 1);
     
 public:
     

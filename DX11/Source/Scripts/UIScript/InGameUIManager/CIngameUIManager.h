@@ -43,8 +43,15 @@ public:
 
     CCrossHair* GetCrossHair() const { return m_CrossHair; }
     void SetCrossHair(CCrossHair* _CrossHair) { m_CrossHair = _CrossHair; }
+
+public:
     
     void AddGameLog(const wstring& _GameLog);
+
+    /// <returns> : 제대로 적용할 수 없는 수치가 들어왔다면 return false </returns>
+    bool UpdateHPBar(float _HP, float _MaxHP);
+
+    
     
 private:
 

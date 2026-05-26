@@ -11,6 +11,7 @@
 
 #include "Source/Scripts/CharacterScript/CharacterStat/PlayerStat/CPlayerStat.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/InvenScript/CInvenScript.h"
+#include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 CItem::CItem()
     : CScript(SCRIPT_TYPE::ITEM)
@@ -85,7 +86,7 @@ void CItem::OnColliderBeginOverlap(CCollider2D* _Owner, CCollider2D* _Other)
         if (iRandom == 0)
         {
             // 1. Heal
-            pPlayerStat->ApplyHeal(30.f);
+            pPlayerStat->ApplyHeal(GetRandom(30.f, 60.f));
         }
         else if (iRandom == 1)
         {
@@ -93,8 +94,9 @@ void CItem::OnColliderBeginOverlap(CCollider2D* _Owner, CCollider2D* _Other)
             CInvenScript* pInven = pOtherObj->GetScriptComponent<CInvenScript>().Get();
             if (pInven)
             {
-                PLAYER_STRUCTURE_TYPE type = static_cast<PLAYER_STRUCTURE_TYPE>(rand() % static_cast<int>(PLAYER_STRUCTURE_TYPE::END));
-                pInven->IncreaseCurrentStructureCount(type, 5);
+                const PLAYER_STRUCTURE_TYPE type = static_cast<PLAYER_STRUCTURE_TYPE>(rand() % static_cast<int>(PLAYER_STRUCTURE_TYPE::END));
+                const int Amount = GetRandom(5, 10);
+                pInven->IncreaseCurrentStructureCount(type, Amount);
             }
         }
         else

@@ -128,14 +128,20 @@ void GameObjectRefHolder::LinkReferenceToGameObject(const Ptr<ALevel>& _Level)
         DebugUtil::AddDebugLog("[GameObjectRefHolder::LinkReferenceToGameObject] : Invalid Level received");
         return;
     }
-    
-    // 이전에 기록받은 GUID를 통해 Level의 GUIDTable에서 실질적인 GameObject Reference 연결
-    m_GameObject = _Level->GetObjectByGUID(m_RefGUID);
-
     // 연결이 정상적으로 되었다면, Destroy 처리에 대한 Delegate binding 처리
-    if (m_GameObject)
+    // -> 기존에 복사생성자에서 복사처리를 하면서, SharedLevel안에 있던 GO에도 이 GORef의 Delegate 구독 처리가 되어버림
+    // 위의 복사생성자에서의 Delegate 구독은 필요함 (Editing 상태에서 Duplicate 기능 사용 시, 복사생성자가 호출되어 제대로 Delegate 연결이 되어 있어야 함)
+    // 새로이 Link 처리를 할 적에, SetGameObject를 통해 이전에 DestroyDelete Delegate 구독을 한 적이 있다면 취소 시켜줌 (GO 와 GORef 쌍이 있을 때 GO Delegate 또한 연결된 GORef가 하나로 유일무이해야함)
+    
+    SetGameObject(_Level->GetObjectByGUID(m_RefGUID));
+    
+    /*// 이전에 기록받은 GUID를 통해 Level의 GUIDTable에서 실질적인 GameObject Reference 연결
+     * 이런식으로 직접 연결 x
+    m_GameObject = _Level->GetObjectByGUID(m_RefGUID);*/
+    /*if (m_GameObject)
     {
         m_GameObject->AddDestroyDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
         m_GameObject->AddDeleteDelegate(this, bind(&GameObjectRefHolder::OnGameObjectDestroyOrDelete, this));
-    }
+    }*/
+
 }

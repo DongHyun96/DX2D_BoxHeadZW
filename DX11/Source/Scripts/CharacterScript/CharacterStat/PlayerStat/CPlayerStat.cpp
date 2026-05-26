@@ -96,7 +96,10 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
 bool CPlayerStat::ApplyHeal(float _HealAmount)
 {
     bool Result = CCharacterStat::ApplyHeal(_HealAmount);
-    GM->GetIngameUIManager()->GetAmmoCountUIArea()->HPBar->SetRatio(GetHP() / GetMaxHP());
+    GM->GetIngameUIManager()->UpdateHPBar(GetHP(), GetMaxHP());
+
+    GM->GetIngameUIManager()->AddGameLog(L"HEAL APPLIED");
+    
     return Result;
 }
 
@@ -105,6 +108,8 @@ bool CPlayerStat::ApplyBoost(float _BoostAmount)
     if (IsDead()) return false;
     
     m_Boost = min(m_Boost + _BoostAmount, m_BoostMax);
+    GM->GetIngameUIManager()->AddGameLog(L"BOOST APPLIED");
+    
     return true;
 }
 

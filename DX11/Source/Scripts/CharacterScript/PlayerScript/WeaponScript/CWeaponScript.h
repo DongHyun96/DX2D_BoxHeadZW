@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 /// <summary>
-/// Non-attachable
+/// Non-attachable (GameObject에 직접 부착되는 Script가 아닌, CEquipmentScript 내에서 관리되는 객체)
 /// </summary>
 class CWeaponScript : public CScript
 {
