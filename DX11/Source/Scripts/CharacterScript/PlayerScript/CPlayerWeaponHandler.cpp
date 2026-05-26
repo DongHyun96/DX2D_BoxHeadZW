@@ -174,8 +174,6 @@ void CPlayerWeaponHandler::TickSwapWeapon()
 void CPlayerWeaponHandler::TickFireWeapon()
 {
     // 발사하는 도중에는 SwapWeapon 처리 불가 -> Released 처리까지 모두 완료된 이후에야 UnArmed로 Swap 가능
-    if (m_HandState == PLAYER_HANDSTATE::UNARMED) return;
-    
     Ptr<CWeaponScript> Weapon = m_EquipmentScript->GetEquippedWeapon(m_HandState);
     if (!Weapon) return;
     
@@ -183,11 +181,17 @@ void CPlayerWeaponHandler::TickFireWeapon()
     if (AmmoLeft <= 0)
     {
         // Release 처리를 하지 않았다면 여기서도 Release 처리를 해주어야 함
+        // Player가 누르고 있는 도중 장탄수 모두 소모한 경우
         if (m_LastTickFired)
         {
             Weapon->OnFireReleased();
             m_LastTickFired = false;
+            GM->GetIngameUIManager()->AddGameLog(L"OUT OF AMMO");
         }
+        
+        if (KEY_TAP(KEY::MLB)) // 장탄수가 부족할 때 Tap을 누름
+            GM->GetIngameUIManager()->AddGameLog(L"OUT OF AMMO");
+        
         return; // 장탄수 부족으로 사격 불가
     }
 
