@@ -40,7 +40,7 @@ void CEnemySpawnHandler::Tick()
 {
     // GM->GetIngameUIManager()->GetZombieAliveCount()->SetText(to_wstring(m_SpawnedCount));
 
-    /*if (KEY_TAP(KEY::MRB) && !GM->GetIsGameStart())
+    if (KEY_TAP(KEY::MRB))
     {
         static int iterator{};
         bool Spawned{};
@@ -50,7 +50,7 @@ void CEnemySpawnHandler::Tick()
         }
         if (!Spawned) return;
         if (++iterator >= static_cast<int>(ENEMY_TYPE::END)) iterator = 0;
-    }*/
+    }
 }
 
 GameObject* CEnemySpawnHandler::SpawnEnemyOnFirstSpawnArea(ENEMY_TYPE _EnemyType, FIRST_SPAWN_LOC _SpawnLoc)

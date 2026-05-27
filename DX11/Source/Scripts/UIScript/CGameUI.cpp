@@ -14,7 +14,7 @@ CGameUI::~CGameUI()
 void CGameUI::Begin()
 {
     // UILayer (31) 설정
-    GetOwner()->SetLayerIdx(31);
+    // GetOwner()->SetLayerIdx(31);
 }
 
 void CGameUI::Tick()

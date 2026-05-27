@@ -51,6 +51,7 @@
 #include "Source/Scripts/Structure\CBarrel.h"
 #include "Source/Scripts/Structure\CStructure.h"
 #include "Source/Scripts/Structure\CTurret.h"
+#include "Source/Scripts/Structure\StructureHPBar\CStructureHPBar.h"
 #include "Source/Scripts/Structure\StructureStat\CStructureStat.h"
 #include "Source/Scripts/Temp\CAirStrikePreview.h"
 #include "Source/Scripts/UIScript\CButton.h"
@@ -112,6 +113,7 @@ void ScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 	_vec.push_back(L"CBarrel");
 	_vec.push_back(L"CStructure");
 	_vec.push_back(L"CTurret");
+	_vec.push_back(L"CStructureHPBar");
 	_vec.push_back(L"CStructureStat");
 	_vec.push_back(L"CAirStrikePreview");
 	_vec.push_back(L"CButton");
@@ -226,6 +228,8 @@ CScript * ScriptMgr::GetScript(const wstring& _strScriptName)
 		return new CStructure;
 	if (L"CTurret" == _strScriptName)
 		return new CTurret;
+	if (L"CStructureHPBar" == _strScriptName)
+		return new CStructureHPBar;
 	if (L"CStructureStat" == _strScriptName)
 		return new CStructureStat;
 	if (L"CAirStrikePreview" == _strScriptName)
@@ -355,6 +359,8 @@ CScript * ScriptMgr::GetScript(UINT _iScriptType)
 		return new CStructure;
 	case (UINT)SCRIPT_TYPE::TURRET:
 		return new CTurret;
+	case (UINT)SCRIPT_TYPE::STRUCTUREHPBAR:
+		return new CStructureHPBar;
 	case (UINT)SCRIPT_TYPE::STRUCTURESTAT:
 		return new CStructureStat;
 	case (UINT)SCRIPT_TYPE::AIRSTRIKEPREVIEW:
@@ -485,6 +491,8 @@ const wchar_t * ScriptMgr::GetScriptName(CScript * _pScript)
 		return L"CStructure";
 	case SCRIPT_TYPE::TURRET:
 		return L"CTurret";
+	case SCRIPT_TYPE::STRUCTUREHPBAR:
+		return L"CStructureHPBar";
 	case SCRIPT_TYPE::STRUCTURESTAT:
 		return L"CStructureStat";
 	case SCRIPT_TYPE::AIRSTRIKEPREVIEW:

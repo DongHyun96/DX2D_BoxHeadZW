@@ -79,8 +79,7 @@ GameObject* CPerceptionHandler::ResolvePerceptionTarget(CCollider2D* _OtherColli
 {
     GameObject* OtherOwner = _OtherCollider->GetOwner();
     if (OtherOwner->HasScript(SCRIPT_TYPE::PLAYERSCRIPT))   return OtherOwner; // Player인 경우
-    if (!OtherOwner->HasScript(SCRIPT_TYPE::STRUCTURE))     return nullptr;
-
+    
     CStructure* Structure = OtherOwner->GetScriptComponent<CStructure>().Get();
     if (!Structure || Structure->GetIsPreviewObject()) return nullptr;
 

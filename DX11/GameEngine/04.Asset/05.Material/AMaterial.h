@@ -37,6 +37,7 @@ public:
     void SetDomain(RENDER_DOMAIN _Domain) { m_Domain = _Domain; }
     RENDER_DOMAIN GetDomain() const { return m_Domain; }
 
+public:
 
     virtual HRESULT Save(const wstring& _FilePath) override;
     virtual HRESULT Load(const wstring& _FilePath) override;

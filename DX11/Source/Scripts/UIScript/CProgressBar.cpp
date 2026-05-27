@@ -18,10 +18,13 @@ void CProgressBar::Init()
 {
     CGameUI::Init();
     
-    AddScriptParam(SCRIPT_PARAM::PROGRESS_BAR, this, L"Ratio", false, 0.1f); // 이거 멤버변수만 바꾸는 중 -> 실질적으로 SetRenderScale 처리를 해야 제대로 반영이 됨
+    AddScriptParam(SCRIPT_PARAM::PROGRESS_BAR, this, L"Ratio", false, 0.1f);
+    
+    GetOwner()->GetRenderCom()->CreateDynamicMaterial();
     
     // 왼쪽에서 오른쪽으로 차오르는 효과를 위해 피벗을 왼쪽 중앙(0, 0.5)으로 설정
     GetOwner()->GetRenderCom()->SetRenderPivot(Vec2(0.f, 0.5f));
+    
 }
 
 void CProgressBar::Begin()
