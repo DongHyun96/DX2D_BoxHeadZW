@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CCamera.h"
 
+#include "GameEngine/02.Device/Device.h"
 #include "GameEngine/03.Manager/05.LevelMgr/LevelMgr.h"
 #include "GameEngine/03.Manager/06.RenderMgr/RenderMgr.h"
 #include "GameEngine/06.Component/RenderComponent/02.BillboardRender/BillboardRenderInstancing.h"
@@ -194,15 +195,6 @@ void CCamera::Render(bool _bUseRenderDomainSort)
             COMPONENT_TYPE ComType = COMPONENT_TYPE::END;
             for (const Ptr<GameObject>& object : vecObjects)
             {
-                // Text Object인 경우
-                if (object->GetIsTextObject())
-                {
-                    object->Render();
-                    continue;
-                }
-
-                // 일반적인 Renderer Rendering 처리 상황
-                
                 // 오브젝틀가 렌더링을 할 수 있는 상태인지 확인
                 if (!object->GetRenderCom() || !object->GetRenderCom()->GetMesh() || !object->GetRenderCom()->GetMaterial())
                     continue;
@@ -318,6 +310,21 @@ void CCamera::RenderGameUI()
     BillboardRenderInstancing::FlushInstancing();
     SpriteRenderInstancing::FlushInstancing();
     
+}
+
+bool CCamera::WorldToScreen(const Vec3& _WorldPos, Vec2& _OutScreenPos) const
+{
+    const Vec2 resol = Device::GetInst()->GetRenderResolution();
+
+    Matrix viewProj = m_matView * m_matProj;
+    Vec3 ndc = Vec3::Transform(_WorldPos, viewProj);
+
+    _OutScreenPos.x = (ndc.x * 0.5f + 0.5f) * resol.x;
+    _OutScreenPos.y = (-ndc.y * 0.5f + 0.5f) * resol.y;
+
+    return ndc.x >= -1.f && ndc.x <= 1.f &&
+           ndc.y >= -1.f && ndc.y <= 1.f &&
+           ndc.z >= 0.f  && ndc.z <= 1.f;
 }
 
 /*void CCamera::Render()

@@ -10,6 +10,7 @@
 
 #include "Source/Scripts/RoundHandler/CRoundHandler.h"
 #include "Source/Scripts/UIScript/CProgressBar.h"
+#include "Source/Scripts/UIScript/CText.h"
 #include "GameEngine/03.Manager/10.FontMgr/FontMgr.h"
 #include "GameEngine/05.GameObject/GameObjectRefHolder.h"
 
@@ -380,6 +381,50 @@ void ScriptUI::TickScriptParams()
 				}
 				ImGui::EndCombo();
 			}
+			AddItemHeight();
+		}
+			break;
+		case SCRIPT_PARAM::FONT_COORD_MODE:
+		{
+			ImGui::Text(string(vecParam[i].Desc.begin(), vecParam[i].Desc.end()).c_str());
+			ImGui::SameLine(120);
+
+			TEXT_COORD_MODE* target = static_cast<TEXT_COORD_MODE*>(vecParam[i].Data);
+			if (!target)
+			{
+				AddItemHeight();
+				break;
+			}
+
+			string Key = "##FontCoordModeSelection";
+			Key += ID + GetUIKey();
+
+			const char* coordModeNames[] =
+			{
+				"Legacy Screen Center",
+				"Camera Projected"
+			};
+
+			int currentIdx = static_cast<int>(*target);
+			if (currentIdx < 0 || currentIdx >= IM_ARRAYSIZE(coordModeNames))
+				currentIdx = 0;
+
+			if (ImGui::BeginCombo(Key.c_str(), coordModeNames[currentIdx]))
+			{
+				for (int n = 0; n < IM_ARRAYSIZE(coordModeNames); ++n)
+				{
+					const bool isSelected = (currentIdx == n);
+					if (ImGui::Selectable(coordModeNames[n], isSelected))
+					{
+						*target = static_cast<TEXT_COORD_MODE>(n);
+					}
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
 			AddItemHeight();
 		}
 			break;

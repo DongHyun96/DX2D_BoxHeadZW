@@ -4,8 +4,18 @@
 
 #include "GameEngine/03.Manager/10.FontMgr/FontMgr.h"
 
+enum class TEXT_COORD_MODE
+{
+    LEGACY_SCREEN_CENTER,
+    CAMERA_PROJECTED        // 신규 위치 처리 방식 : UI 카메라 View/Proejection 기준 변환 적용
+};
+
 class CText : public CGameUI
 {
+private:
+    
+    TEXT_COORD_MODE m_CoordMode{};
+    
 private:
     wstring m_strText{};
     wstring m_FontStyle = L"None";

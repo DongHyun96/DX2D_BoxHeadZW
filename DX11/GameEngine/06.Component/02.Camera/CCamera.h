@@ -98,6 +98,10 @@ public:
     void Render(bool _bUseRenderDomainSort = true);
     void RenderGameUI();
     
+public:
+    
+    bool WorldToScreen(const Vec3& _WorldPos, OUT Vec2& _OutScreenPos) const;
+    
 private:
     
     // void SortObject();
