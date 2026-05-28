@@ -194,6 +194,15 @@ void CCamera::Render(bool _bUseRenderDomainSort)
             COMPONENT_TYPE ComType = COMPONENT_TYPE::END;
             for (const Ptr<GameObject>& object : vecObjects)
             {
+                // Text Object인 경우
+                if (object->GetIsTextObject())
+                {
+                    object->Render();
+                    continue;
+                }
+
+                // 일반적인 Renderer Rendering 처리 상황
+                
                 // 오브젝틀가 렌더링을 할 수 있는 상태인지 확인
                 if (!object->GetRenderCom() || !object->GetRenderCom()->GetMesh() || !object->GetRenderCom()->GetMaterial())
                     continue;

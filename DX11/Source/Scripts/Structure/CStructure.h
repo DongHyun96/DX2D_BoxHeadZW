@@ -12,6 +12,10 @@ private:
     // static set<CStructure*> s_setInstalledStructures;
     static RandomizedSet<CStructure*> s_setInstalledStructures;
     
+    // 맵에 설치된 설치물들의 위치 기록
+    // 사용자에 의한 Remove 처리 시, 필요
+    static map<Vec2, CStructure*> s_mapInstalledStructureLocation;
+    
 private:
 
     Ptr<ASound> m_InstallSound{};
@@ -71,9 +75,24 @@ public:
     
     static void ClearInstalledInfo() { s_setInstalledStructures.clear(); }
     static void AddInstalledStructure(CStructure* _Structure);
-    static void RemoveInstalledStructure(CStructure* _Structure);
-    static const RandomizedSet<CStructure*>& GetInstalledStructures() { return s_setInstalledStructures; }
     
+protected:
+    
+    static void RemoveInstalledStructure(CStructure* _Structure);
+    
+public:
+    
+    static const RandomizedSet<CStructure*>& GetInstalledStructures() { return s_setInstalledStructures; }
+    static CStructure* GetInstalledStructure(const Vec2& _Pos);
+
+public:
+    
+    /// <summary>
+    /// 이 구조물 파괴 처리 
+    /// </summary>
+    /// <param name="_DestroyedByDamaged"> : Damage를 받아서 Destroy 처리가 되었는지 여부 </param>
+    /// <returns> 파괴 성공 시, return true </returns>
+    virtual bool DestroyStructure(bool _DestroyedByDamaged = true);
     
 public:
     

@@ -100,6 +100,7 @@ void CStructureHandler::Tick()
     // 두 가지를 체크해야 함 -> Cell 위치가 Available한 Cell인지 & Preview Object와 Ovelapped 중인 물체가 있는지
     
     UpdatePreviewStructureObject(MousePosToCellWorldPos, StructureAvailable);
+    UpdateRemoveStructure(MousePosToCellWorldPos);
     UpdateSpawnStructure(MousePosToCellWorldPos, StructureAvailable);
     
 }
@@ -166,6 +167,18 @@ void CStructureHandler::UpdateToPrevStructureTypeHolding()
     }
 }
 
+void CStructureHandler::UpdateRemoveStructure(const Vec2& _CurrentMouseCellPos)
+{
+    CStructure* TargetStructure = CStructure::GetInstalledStructure(_CurrentMouseCellPos);
+    if (!TargetStructure) return;
+    
+    // Erase ToolTip 표시
+    
+    
+    // Erase 동작 처리
+    if (KEY_TAP(KEY::MRB)) TargetStructure->DestroyStructure(false); 
+}
+
 void CStructureHandler::UpdateSpawnStructure(const Vec2& _PreviewPos, bool _Available)
 {
     // 설치를 할 수 없는 상황
@@ -228,10 +241,10 @@ void CStructureHandler::UpdatePreviewStructureObject(const Vec2& _PreviewPos, bo
     GameObject* PreviewObject = m_mapStructureTypePreviewObjects[m_CurrentStructureHolding];
     PreviewObject->SetActive(true, false);
     
-    Vec3 Pos = ToVec3(_PreviewPos, -3500.f); 
+    const Vec3 Pos = ToVec3(_PreviewPos, -3500.f); 
     PreviewObject->Transform()->SetRelativePos(Pos);
     
-    Vec4 Color = _Available ? Vec4(1.f, 1.f, 1.f, PREVIEW_ALPHA) : Vec4(1.f, 0.5f, 0.5f, PREVIEW_ALPHA);
+    const Vec4 Color = _Available ? Vec4(1.f, 1.f, 1.f, PREVIEW_ALPHA) : Vec4(1.f, 0.5f, 0.5f, PREVIEW_ALPHA);
     
     // Begin에서 생성처리한 DynamicMaterial 이다
     PreviewObject->GetRenderCom()->GetMaterial()->SetScalar(SCALAR_PARAM::VEC4_0, Color);

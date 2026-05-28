@@ -15,7 +15,7 @@ public:
     // 값 추가 (O(1))
     bool insert(const T& val) 
     {
-        if (valToIndex.find(val) != valToIndex.end()) 
+        if (valToIndex.contains(val)) 
         {
             return false; // 이미 존재하는 값이면 무시
         }

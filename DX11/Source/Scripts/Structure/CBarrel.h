@@ -20,8 +20,8 @@ private: // 지연 폭파 관련
     
 private:
     
+    ExplosionSpawnDesc m_ExplosionDesc{};
     ExplosionSpawnDesc m_LateExplosionSpawnDesc{};
-    
     
 public:
     
@@ -42,7 +42,7 @@ public:
     
     bool IsMarkedLateExplosion() const { return m_MarkedLateExplosion; }
     
-public:
+private:
     
     /// <summary>
     /// Adjacent CellCoord Barrel 체킹용 map에서 TargetBarrel 지우기 
@@ -53,6 +53,10 @@ public:
     /// 자기 자신과 Adjacent한 Cell에 Barrel이 존재한다면, 해당 Barrel 폭파 처리
     /// </summary>
     void TryExplodeAdjacentCells();
+
+private:
+    
+    virtual bool DestroyStructure(bool _DestroyedByDamaged) override;
     
 private:
     

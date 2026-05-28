@@ -15,10 +15,10 @@ CEquipmentScript::CEquipmentScript()
 {
     // TODO : 다른 무기들은 파밍을 통해서 얻을 것
     EquipWeapon(PLAYER_HANDSTATE::PISTOL);
-    // EquipWeapon(PLAYER_HANDSTATE::UZI);
-    // EquipWeapon(PLAYER_HANDSTATE::SHOTGUN);
+    EquipWeapon(PLAYER_HANDSTATE::UZI);
+    EquipWeapon(PLAYER_HANDSTATE::SHOTGUN);
     EquipWeapon(PLAYER_HANDSTATE::MINIGUN);
-    // EquipWeapon(PLAYER_HANDSTATE::ROCKET);
+    EquipWeapon(PLAYER_HANDSTATE::ROCKET);
 }
 
 CEquipmentScript::~CEquipmentScript()

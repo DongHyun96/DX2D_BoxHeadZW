@@ -52,7 +52,12 @@ private:
     void UpdateToPrevStructureTypeHolding();
     
 private:
-
+    
+    /// <summary>
+    /// 해당 Cell 위치에 Structure가 존재한다면, 우클릭을 통해 제거 처리 
+    /// </summary>
+    void UpdateRemoveStructure(const Vec2& _CurrentMouseCellPos);
+    
     /// <summary>
     /// 현재 StructureHoldingType 실제로 Spawn 처리 시도
     /// </summary>

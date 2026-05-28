@@ -6,10 +6,6 @@ class CStructureStat : public CStatScript
 {
 private:
     
-    ExplosionSpawnDesc m_BarrelExplosionDesc{};
-    
-private:
-    
     class CStructureHPBar* m_StructureHPBar{};
     
 public:

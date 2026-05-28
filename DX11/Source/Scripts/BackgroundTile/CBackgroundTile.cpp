@@ -125,10 +125,6 @@ bool CBackgroundTile::IsCellAvailable(const CellCoord& _CellCoord) const
 bool CBackgroundTile::IsCellTaken(const CellCoord& _CellCoord) const
 {
     if (IsCellCoordOutOfBounds(_CellCoord)) return false;
-
-    if (m_CellTaken.size() <= _CellCoord.y) return false;
-    if (m_CellTaken[_CellCoord.y].size() <= _CellCoord.x) return false;
-
     return m_CellTaken[_CellCoord.y][_CellCoord.x];
 }
 

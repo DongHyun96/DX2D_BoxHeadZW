@@ -7,8 +7,8 @@
 #include "Source/AStar/AStarPathFinder.h"
 #include "Source/Manager/GameManager.h"
 
-RandomizedSet<CStructure*> CStructure::s_setInstalledStructures{};
-
+RandomizedSet<CStructure*>  CStructure::s_setInstalledStructures{};
+map<Vec2, CStructure*>      CStructure::s_mapInstalledStructureLocation{};
 
 CStructure::CStructure()
     : CScript(SCRIPT_TYPE::STRUCTURE)
@@ -102,13 +102,37 @@ bool CStructure::BlockCharacterCollider(CCollider2D* _OtherCollider)
 void CStructure::AddInstalledStructure(CStructure* _Structure)
 {
     s_setInstalledStructures.insert(_Structure);
+    s_mapInstalledStructureLocation.insert(make_pair(_Structure->Transform()->GetRelativePosXY(), _Structure));
     AStarPathFinder::ClearPathCache();
 }
 
 void CStructure::RemoveInstalledStructure(CStructure* _Structure)
 {
+    s_mapInstalledStructureLocation.erase(_Structure->Transform()->GetRelativePosXY());
     s_setInstalledStructures.remove(_Structure);
     AStarPathFinder::ClearPathCache();
+}
+
+CStructure* CStructure::GetInstalledStructure(const Vec2& _Pos)
+{
+    if (!s_mapInstalledStructureLocation.contains(_Pos)) return nullptr;
+    return s_mapInstalledStructureLocation[_Pos];
+}
+
+bool CStructure::DestroyStructure(bool _DestroyedByDamaged)
+{
+    if (m_IsPreviewObject) return false;
+
+    // 자기자신 Destroy
+    Destroy();
+    
+    // Taken Cell 상태 되돌리기
+    const CellCoord cellCoord = GM->GetBackgroundCellManager()->GetWorldPosToCellCoord(Transform()->GetWorldPos2D());
+    GM->GetBackgroundCellManager()->SetCellTaken(cellCoord, false);
+    
+    RemoveInstalledStructure(this);
+
+    return true;
 }
 
 void CStructure::SaveToLevelFile(FILE* _File)

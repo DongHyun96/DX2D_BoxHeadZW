@@ -8,29 +8,33 @@
 
 map<CBarrel*, CellCoord> CBarrel::m_mapSpawnedBarrel{};
 
+
 const float CBarrel::m_LateExplodeWaitTime = 0.1f;
+
 
 CBarrel::CBarrel()
     : CStructure(SCRIPT_TYPE::BARREL)
 {
-    m_LateExplosionSpawnDesc.SpawnPos                   = Vec3();
-    m_LateExplosionSpawnDesc.ExplosionSizeFactor        = 1.f;
-    m_LateExplosionSpawnDesc.FPS                        = 50.f;
-    m_LateExplosionSpawnDesc.DamageAmount               = 50.f;
-    m_LateExplosionSpawnDesc.SpawnedBy                  = nullptr;
-    m_LateExplosionSpawnDesc.UseCollisionForDamaging    = true;
-    m_LateExplosionSpawnDesc.PlayExplosionSound         = true;
-    m_LateExplosionSpawnDesc.UpwardVelocity             = Vec2::UnitY;
-    m_LateExplosionSpawnDesc.DamagePulseDelaySec        = 0.03f;
-    m_LateExplosionSpawnDesc.DamagePulseDurationSec     = 0.06f;
-    m_LateExplosionSpawnDesc.DamagePulseSpriteIdx       = 1;
-    m_LateExplosionSpawnDesc.SecondaryBurstCount        = 2;
-    m_LateExplosionSpawnDesc.SecondaryBurstRadius       = 65.f;
-    m_LateExplosionSpawnDesc.SecondaryBurstMinDelaySec  = 0.04f;
-    m_LateExplosionSpawnDesc.SecondaryBurstMaxDelaySec  = 0.12f;
-    m_LateExplosionSpawnDesc.SecondaryBurstDamageScale  = 0.f; // visual only
-    m_LateExplosionSpawnDesc.SecondaryBurstSizeScale    = 0.5f;
-    m_LateExplosionSpawnDesc.SecondaryBurstPlaySound    = false;
+    m_ExplosionDesc.SpawnPos                   = Vec3();
+    m_ExplosionDesc.ExplosionSizeFactor        = 1.f;
+    m_ExplosionDesc.FPS                        = 50.f;
+    m_ExplosionDesc.DamageAmount               = 50.f;
+    m_ExplosionDesc.SpawnedBy                  = nullptr;
+    m_ExplosionDesc.UseCollisionForDamaging    = true;
+    m_ExplosionDesc.PlayExplosionSound         = true;
+    m_ExplosionDesc.UpwardVelocity             = Vec2::UnitY;
+    m_ExplosionDesc.DamagePulseDelaySec        = 0.03f;
+    m_ExplosionDesc.DamagePulseDurationSec     = 0.06f;
+    m_ExplosionDesc.DamagePulseSpriteIdx       = 1;
+    m_ExplosionDesc.SecondaryBurstCount        = 2;
+    m_ExplosionDesc.SecondaryBurstRadius       = 65.f;
+    m_ExplosionDesc.SecondaryBurstMinDelaySec  = 0.04f;
+    m_ExplosionDesc.SecondaryBurstMaxDelaySec  = 0.12f;
+    m_ExplosionDesc.SecondaryBurstDamageScale  = 0.f; // visual only
+    m_ExplosionDesc.SecondaryBurstSizeScale    = 0.5f;
+    m_ExplosionDesc.SecondaryBurstPlaySound    = false;
+    
+    m_LateExplosionSpawnDesc = m_ExplosionDesc;
 }
 
 CBarrel::~CBarrel()
@@ -111,6 +115,28 @@ void CBarrel::TryExplodeAdjacentCells()
 
     for (auto iter = CheckedExplosion.begin(); iter != CheckedExplosion.end(); ++iter)
         RemoveSpawnedBarrelFromStaticMap(*iter);
+}
+
+bool CBarrel::DestroyStructure(bool _DestroyedByDamaged)
+{
+    if (!CStructure::DestroyStructure(_DestroyedByDamaged)) return false;
+
+    // 자기자신 CellCoord map 에서 제거
+    CBarrel::RemoveSpawnedBarrelFromStaticMap(this);
+
+    // Damage를 입어서 터진 것이라면, ExplosionEffect 스폰 및 연쇄 폭파 적용
+    if (_DestroyedByDamaged)
+    {
+        m_ExplosionDesc.SpawnPos            = Transform()->GetRelativePos();
+        m_ExplosionDesc.ExplosionSizeFactor = GetRandom(1.2f, 1.5f);
+        m_ExplosionDesc.UpwardVelocity      = Vec2::UnitY * GetRandom(0.25f, 0.55f);
+        GM->SpawnExplosion(m_ExplosionDesc);
+            
+        // 연쇄 폭파 처리
+        TryExplodeAdjacentCells();
+    }
+    
+    return true;
 }
 
 void CBarrel::ExecuteLateExplosion()
