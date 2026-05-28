@@ -4,7 +4,7 @@
 class CProgressBar : public CGameUI
 {
 private:
-    float m_fRatio;
+    float m_Ratio;
 
 public:
     CProgressBar();
@@ -19,7 +19,7 @@ public:
     
 public:
     
-    void SetRatio(float _fRatio);
-    float GetRatio() const { return m_fRatio; }
+    float SetRatio(float _Ratio);
+    float GetRatio() const { return m_Ratio; }
 
 };

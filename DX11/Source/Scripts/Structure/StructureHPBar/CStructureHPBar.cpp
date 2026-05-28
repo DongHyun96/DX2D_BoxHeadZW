@@ -22,16 +22,14 @@ void CStructureHPBar::Begin()
         {
             m_MainProgressBarGameObject = Child.Get();
             m_MainProgressBar           = m_MainProgressBarGameObject->GetScriptComponent<CProgressBar>().Get();
-            // m_MainBarMtrl               = m_MainProgressBarGameObject->GetRenderCom()->CreateDynamicMaterial().Get();
             m_MainBarMtrl               = m_MainProgressBarGameObject->GetRenderCom()->GetMaterial().Get();
-            m_MainBarTintColorOrigin    = m_MainBarMtrl->GetScalar<Vec4>(VEC4_0);
+            m_MainBarTintAlphaOrigin    = m_MainBarMtrl->GetTintColorAlpha();
         }
         else
         {
             m_BackgroundGameObject      = Child.Get();
-            // m_BackgroundBarMtrl         = m_BackgroundGameObject->GetRenderCom()->CreateDynamicMaterial().Get();
             m_BackgroundBarMtrl         = m_BackgroundGameObject->GetRenderCom()->GetMaterial().Get();
-            m_BackgroundTintColorOrigin = m_BackgroundBarMtrl->GetScalar<Vec4>(VEC4_0);
+            m_BackgroundTintAlphaOrigin = m_BackgroundBarMtrl->GetTintColorAlpha();
         }
     }
 
@@ -45,22 +43,21 @@ void CStructureHPBar::Tick()
     static const float MAX_VISIBLE_RANGE_SQRT = 200.f * 200.f;
     const float DistanceSqrt = Vec2::DistanceSquared(m_PlayerTransform->GetRelativePosXY(), m_StructureTransform->GetRelativePosXY());
 
-    const float MainBarAlpha    = MappingToNewRangeClamped(DistanceSqrt, 0.f, MAX_VISIBLE_RANGE_SQRT, m_MainBarTintColorOrigin.w, 0.f);
-    const float BGAlpha         = MappingToNewRangeClamped(DistanceSqrt, 0.f, MAX_VISIBLE_RANGE_SQRT, m_BackgroundTintColorOrigin.w, 0.f);
-    
-    m_MainBarMtrl->SetScalar(SCALAR_PARAM::VEC4_0, Vec4(m_MainBarTintColorOrigin.x, m_MainBarTintColorOrigin.y, m_MainBarTintColorOrigin.z, MainBarAlpha));
-    m_BackgroundBarMtrl->SetScalar(SCALAR_PARAM::VEC4_0, Vec4(m_BackgroundTintColorOrigin.x, m_BackgroundTintColorOrigin.y, m_BackgroundTintColorOrigin.z, BGAlpha));
+    const float MainBarAlpha    = MappingToNewRangeClamped(DistanceSqrt, 0.f, MAX_VISIBLE_RANGE_SQRT, m_MainBarTintAlphaOrigin, 0.f);
+    const float BGAlpha         = MappingToNewRangeClamped(DistanceSqrt, 0.f, MAX_VISIBLE_RANGE_SQRT, m_BackgroundTintAlphaOrigin, 0.f);
+
+    m_MainBarMtrl->SetTintColorAlpha(MainBarAlpha);
+    m_BackgroundBarMtrl->SetTintColorAlpha(BGAlpha);
 }
 
 bool CStructureHPBar::UpdateHPBar(float _HP, float _MaxHP)
 {
     if (_MaxHP <= 0.f) return false;
-    m_MainProgressBar->SetRatio(_HP / _MaxHP);
-    
+    const float Ratio = m_MainProgressBar->SetRatio(_HP / _MaxHP);
 
     // Color 조정
-    m_MainBarMtrl->GetScalar<Vec4>(VEC4_0);
-    
+    const Vec3 CurrentColor = Vec3::Lerp({1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, Ratio);
+    m_MainBarMtrl->SetTintColor(CurrentColor);    
     return true;
 }
 

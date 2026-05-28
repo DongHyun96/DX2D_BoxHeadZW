@@ -28,6 +28,13 @@ AMaterial::~AMaterial()
 {
 }
 
+void AMaterial::SetTintColor(const Vec3& _TintColor)
+{
+    m_Const.v4Arr[0].x = _TintColor.x;
+    m_Const.v4Arr[0].y = _TintColor.y;
+    m_Const.v4Arr[0].z = _TintColor.z;
+}
+
 HRESULT AMaterial::Save(const wstring& _FilePath)
 {
     if (FAILED(Asset::Save(_FilePath))) return E_FAIL; 

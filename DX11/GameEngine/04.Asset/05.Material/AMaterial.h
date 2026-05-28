@@ -28,12 +28,23 @@ public:
     void SetShader(const Ptr<AGraphicShader>& _Shader) { m_Shader = _Shader; }
     Ptr<AGraphicShader> GetShader() const { return m_Shader; }
 
+public:
+    
     template<typename T>
     void SetScalar(SCALAR_PARAM _Param, const T& _Data);
     
     template<typename T>
     T& GetScalar(SCALAR_PARAM _Param);
 
+    void SetTintColor(const Vec4& _TintColor) { m_Const.v4Arr[0] = _TintColor; }
+    void SetTintColor(const Vec3& _TintColor);
+    Vec4 GetTintColor() const { return m_Const.v4Arr[0]; }
+    
+    void SetTintColorAlpha(float _Alpha) { m_Const.v4Arr[0].w = _Alpha; }
+    float GetTintColorAlpha() const { return m_Const.v4Arr[0].w; }
+
+public:
+    
     void SetDomain(RENDER_DOMAIN _Domain) { m_Domain = _Domain; }
     RENDER_DOMAIN GetDomain() const { return m_Domain; }
 

@@ -13,8 +13,10 @@ private:
 
     AMaterial*          m_MainBarMtrl{};
     AMaterial*          m_BackgroundBarMtrl{};
-    Vec4                m_MainBarTintColorOrigin{};
-    Vec4                m_BackgroundTintColorOrigin{};
+    
+
+    float               m_MainBarTintAlphaOrigin{};
+    float               m_BackgroundTintAlphaOrigin{};
 
 private:
     

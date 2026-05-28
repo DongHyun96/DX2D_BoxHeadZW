@@ -6,7 +6,7 @@
 
 CProgressBar::CProgressBar()
     : CGameUI(PROGRESSBAR)
-    , m_fRatio(1.f)
+    , m_Ratio(1.f)
 {
 }
 
@@ -37,9 +37,10 @@ void CProgressBar::Tick()
     CGameUI::Tick();
 }
 
-void CProgressBar::SetRatio(float _fRatio)
+float CProgressBar::SetRatio(float _Ratio)
 {
-    m_fRatio = _fRatio;
-    m_fRatio = clamp(m_fRatio, 0.f, 1.f);
-    GetOwner()->GetRenderCom()->SetRenderScale(Vec2(m_fRatio, 1.f));
+    m_Ratio = _Ratio;
+    m_Ratio = clamp(m_Ratio, 0.f, 1.f);
+    GetOwner()->GetRenderCom()->SetRenderScale(Vec2(m_Ratio, 1.f));
+    return m_Ratio;
 }
