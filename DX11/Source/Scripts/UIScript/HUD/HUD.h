@@ -10,14 +10,37 @@ struct AmmoCountUIArea : public Entity
     GameObject*                             RoundAmmoIcon{};
     
     map<PLAYER_STRUCTURE_TYPE, GameObject*> StructureIcons{};
+
+private:
     
     class CProgressBar*                     HPBar{};
+    CProgressBar*                           HPBarDamage{};
+    
+    bool                                    bEnableDamageBarLerp{};
+    float                                   MainHPBarRatioDest = 1.f;
+    float                                   DamageHPBarRatioDest{};
     
 public:
 
     void UpdateToGun(PLAYER_HANDSTATE _HandState, int _MainAmmoCount);
     void UpdateCurrentAmmoCount(int _AmmoCount);
     void UpdateToStructure(PLAYER_STRUCTURE_TYPE _Type, int _Count);
+
+public:
+    
+    void SetHPBar(CProgressBar* _HPBar) { HPBar = _HPBar; }
+    void SetHPBarDamage(CProgressBar* _HPBarDamaged) { HPBarDamage = _HPBarDamaged; }
+    
+    bool UpdateHPBar(float _HP, float _MaxHP);
+    
+public:
+    
+    void Tick();
+    
+private:
+    
+    void LerpProgressBar(CProgressBar* _TargetProgressBar, float _LerpAlphaSpeed, float _DestRatio);
+    
 };
 
 struct RoundIndicators : public Entity

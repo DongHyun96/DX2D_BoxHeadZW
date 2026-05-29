@@ -89,7 +89,7 @@ bool CPlayerStat::TakeDamage(float _DamageAmount, GameObject* _DamageCauser)
     }
 
     MainPlayerScript->SetMainState(NextState);
-    GM->GetIngameUIManager()->GetAmmoCountUIArea()->HPBar->SetRatio(GetHP() / GetMaxHP());
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateHPBar(GetHP(), GetMaxHP());
     return true;
 }
 

@@ -39,6 +39,7 @@ void CIngameUIManager::Begin()
 
 void CIngameUIManager::Tick()
 {
+    m_AmmoCountUIArea->Tick();
 }
 
 void CIngameUIManager::SetZombieAliveCountText(int _AliveCount)
@@ -54,10 +55,7 @@ void CIngameUIManager::AddGameLog(const wstring& _GameLog)
 
 bool CIngameUIManager::UpdateHPBar(float _HP, float _MaxHP)
 {
-    if (_MaxHP <= 0.f) return false;
-
-    m_AmmoCountUIArea->HPBar->SetRatio(_HP / _MaxHP);    
-    return true;
+    return m_AmmoCountUIArea->UpdateHPBar(_HP, _MaxHP);
 }
 
 void CIngameUIManager::InitMembers()
@@ -131,7 +129,11 @@ void CIngameUIManager::InitPlayerHUDMembers(const Ptr<GameObject>& PlayerHUD)
         }
         else if (Name == L"HPBar") // 
         {
-            m_AmmoCountUIArea->HPBar = Current->GetScriptComponent<CProgressBar>().Get();
+            m_AmmoCountUIArea->SetHPBar(Current->GetScriptComponent<CProgressBar>().Get());
+        }
+        else if (Name == L"HPBarDamaged")
+        {
+            m_AmmoCountUIArea->SetHPBarDamage(Current->GetScriptComponent<CProgressBar>().Get());
         }
         else if (Name == L"RoundAmmoIcon") //
         {
