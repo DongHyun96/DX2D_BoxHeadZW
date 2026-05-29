@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "GameEngine/05.GameObject/GameObjectRefHolder.h"
 
 /// <summary>
 /// 구조물 설치 Handler 클래스
@@ -24,6 +25,11 @@ private:
 private:
     
     static set<UINT> s_setTurretHitScanLayers;
+
+private:
+    
+    GameObjectRefHolder m_ToolTipGORef{};
+    class CStructureInstruction* m_ToolTip{};
     
 public:
     
@@ -33,6 +39,8 @@ public:
 
 public:
 
+    virtual void Init() override;
+    virtual void AfterLevelGameObjectGuidTableInit() override;
     virtual void Begin() override;
     virtual void Tick() override;
     
@@ -88,7 +96,7 @@ public:
     
 public:
     
-    virtual void SaveToLevelFile(FILE* _File) override {}
-    virtual void LoadFromLevelFile(FILE* _File) override {}
+    virtual void SaveToLevelFile(FILE* _File) override;
+    virtual void LoadFromLevelFile(FILE* _File) override;
     
 };

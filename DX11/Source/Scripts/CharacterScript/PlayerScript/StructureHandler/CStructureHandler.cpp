@@ -11,6 +11,7 @@
 #include "Source/Scripts/CharacterScript/PlayerScript/CPlayerWeaponHandler.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/InvenScript/CInvenScript.h"
 #include "Source/Scripts/Structure/CStructure.h"
+#include "Source/Scripts/Structure/StructureExplanationUI/CStructureInstruction.h"
 #include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
 set<UINT> CStructureHandler::s_setTurretHitScanLayers{};
@@ -22,6 +23,18 @@ CStructureHandler::CStructureHandler()
 
 CStructureHandler::~CStructureHandler()
 {
+}
+
+void CStructureHandler::Init()
+{
+    AddScriptParam(SCRIPT_PARAM::GAME_OBJ_REF_HOLDER, &m_ToolTipGORef, L"ToolTipRef", false);
+}
+
+void CStructureHandler::AfterLevelGameObjectGuidTableInit()
+{
+    m_ToolTipGORef.LinkReferenceToGameObject(LevelMgr::GetInst()->GetCurLevel());
+    if (m_ToolTipGORef.GetGameObject())
+        m_ToolTip = m_ToolTipGORef.GetGameObject()->GetScriptComponent<CStructureInstruction>().Get();
 }
 
 void CStructureHandler::Begin()
@@ -79,6 +92,9 @@ void CStructureHandler::Tick()
     {
         if (m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->GetActive())
             m_mapStructureTypePreviewObjects[m_CurrentStructureHolding]->SetActive(false);
+
+        // ToolTip 감추기
+        m_ToolTip->SetStructureInstructionState(STRUCTURE_INSTRUCTION_STATE::NONE);
         
         return;
     }
@@ -170,10 +186,15 @@ void CStructureHandler::UpdateToPrevStructureTypeHolding()
 void CStructureHandler::UpdateRemoveStructure(const Vec2& _CurrentMouseCellPos)
 {
     CStructure* TargetStructure = CStructure::GetInstalledStructure(_CurrentMouseCellPos);
-    if (!TargetStructure) return;
+    if (!TargetStructure)
+    {
+        // Install ToolTip 표시
+        m_ToolTip->SetStructureInstructionState(STRUCTURE_INSTRUCTION_STATE::INSTALL_INSTRUCTION);
+        return;
+    }
     
     // Erase ToolTip 표시
-    
+    m_ToolTip->SetStructureInstructionState(STRUCTURE_INSTRUCTION_STATE::REMOVE_INSTRUCTION);
     
     // Erase 동작 처리
     if (KEY_TAP(KEY::MRB)) TargetStructure->DestroyStructure(false); 
@@ -248,9 +269,22 @@ void CStructureHandler::UpdatePreviewStructureObject(const Vec2& _PreviewPos, bo
     
     // Begin에서 생성처리한 DynamicMaterial 이다
     PreviewObject->GetRenderCom()->GetMaterial()->SetScalar(SCALAR_PARAM::VEC4_0, Color);
+    
+    // Tool Tip 위치 지정
+    m_ToolTip->SetPos(KeyMgr::GetInst()->GetMouseUIPos());
 }
 
 void CStructureHandler::UpdateUIToCurrentStructureHoldingType() const
 {
     GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateToStructure(m_CurrentStructureHolding, m_InvenScript->GetStructureCount(m_CurrentStructureHolding));
+}
+
+void CStructureHandler::SaveToLevelFile(FILE* _File)
+{
+    m_ToolTipGORef.SaveToLevelFile(_File);
+}
+
+void CStructureHandler::LoadFromLevelFile(FILE* _File)
+{
+    m_ToolTipGORef.LoadFromLevelFile(_File);
 }

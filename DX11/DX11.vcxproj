@@ -347,6 +347,7 @@ CodeGen.exe</Command>
     <ClInclude Include="Source\Scripts\Structure\CBarrel.h" />
     <ClInclude Include="Source\Scripts\Structure\CStructure.h" />
     <ClInclude Include="Source\Scripts\Structure\CTurret.h" />
+    <ClInclude Include="Source\Scripts\Structure\StructureExplanationUI\CStructureInstruction.h" />
     <ClInclude Include="Source\Scripts\Structure\StructureHPBar\CStructureHPBar.h" />
     <ClInclude Include="Source\Scripts\Structure\StructureStat\CStructureStat.h" />
     <ClInclude Include="Source\Scripts\Structure\TurretAttackStrategy.h" />
@@ -642,6 +643,7 @@ CodeGen.exe</Command>
     <ClCompile Include="Source\Scripts\Structure\CBarrel.cpp" />
     <ClCompile Include="Source\Scripts\Structure\CStructure.cpp" />
     <ClCompile Include="Source\Scripts\Structure\CTurret.cpp" />
+    <ClCompile Include="Source\Scripts\Structure\StructureExplanationUI\CStructureInstruction.cpp" />
     <ClCompile Include="Source\Scripts\Structure\StructureHPBar\CStructureHPBar.cpp" />
     <ClCompile Include="Source\Scripts\Structure\StructureStat\CStructureStat.cpp">
     </ClCompile>

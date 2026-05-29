@@ -601,11 +601,11 @@ void ScriptUI::TickScriptParams()
 			
 			GameObjectRefHolder* ObjRefHolder = static_cast<GameObjectRefHolder*>(vecParam[i].Data);
 
-			ImGui::SameLine(150);
+			ImGui::SameLine();
 			const wstring ObjectName = ObjRefHolder->GetGameObject() != nullptr ? ObjRefHolder->GetGameObject()->GetName() : L"<None>";
-			const string ObjectNameStr = string(ObjectName.begin(), ObjectName.end()) + "##REF_HOLDER";
+			const string Tempkey = "##REF_HOLDER" + to_string(i);  
 			
-			ImGui::InputText("##REF_HOLDER", string(ObjectName.begin(), ObjectName.end()).data(), ObjectName.length() + 1, ImGuiInputTextFlags_ReadOnly);
+			ImGui::InputText(Tempkey.c_str(), string(ObjectName.begin(), ObjectName.end()).data(), ObjectName.length() + 1, ImGuiInputTextFlags_ReadOnly);
 			if (ImGui::BeginDragDropTarget())
 			{
 				if (const ImGuiPayload* Payload = ImGui::AcceptDragDropPayload("Outliner"))
@@ -636,10 +636,10 @@ void ScriptUI::TickScriptParams()
 			for (auto it = vecObjRefHolder.begin(); it != vecObjRefHolder.end(); )
 			{
 				GameObjectRefHolder& ObjRefHolder = *it;
-				const wstring ObjectName = ObjRefHolder.GetGameObject() != nullptr ? ObjRefHolder.GetGameObject()->GetName() : L"<None>";
-				const string ObjectNameStr = string(ObjectName.begin(), ObjectName.end()) + "##REF_HOLDER";
+				const wstring ObjectName = ObjRefHolder.GetGameObject() != nullptr ? ObjRefHolder.GetGameObject()->GetName() : L"<None>" + to_wstring(i);
+				// const string ObjectNameStr = string(ObjectName.begin(), ObjectName.end()) + "##REF_HOLDER";
 
-				const string Tempkey = "##REF_HOLDER" + to_string(TempCount);  
+				const string Tempkey = "##REF_HOLDER_VEC" + to_string(TempCount);  
 				ImGui::InputText(Tempkey.c_str(), string(ObjectName.begin(), ObjectName.end()).data(), ObjectName.length() + 1, ImGuiInputTextFlags_ReadOnly);
 				if (ImGui::BeginDragDropTarget())
 				{

@@ -88,7 +88,7 @@ void GameObject::AfterLevelGameObjectGuidTableInit()
 void GameObject::Begin()
 {
 	for (const Ptr<CScript>& script : m_vecScripts)
-		script->Begin();	
+		script->Begin();
 	
 	for (const Ptr<Component>& component : m_Components)
 		if (component) component->Begin();
