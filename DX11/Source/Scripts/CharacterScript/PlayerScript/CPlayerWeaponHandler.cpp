@@ -223,17 +223,45 @@ void CPlayerWeaponHandler::TickFireWeapon()
 
 void CPlayerWeaponHandler::TickFireGrenade()
 {
+    // TODO : Grenade 개수 파악해서 처리할 것
     if (KEY_TAP(KEY::C))
-        GM->SpawnGrenade(Transform()->GetWorldPos(), m_PlayerMainScript->GetPlayerToMousePos().Normalized(), 75.f, 3, 400.f, 300.f, true);
+    {
+        if (m_InvenScript->GetCurrentGrenadeCount() <= 0)
+        {
+            GM->GetIngameUIManager()->AddGameLog(L"NO GRENADES LEFT");
+            return;
+        }
+        
+        const bool Spawned = GM->SpawnGrenade
+        (
+            Transform()->GetWorldPos(),
+            m_PlayerMainScript->GetPlayerToMousePos().Normalized(),
+            75.f, 3, 400.f, 300.f, true
+        );
+        
+        if (Spawned) m_InvenScript->ReduceCurrentGrenadeCount(); 
+    }
 }
 
 void CPlayerWeaponHandler::TickDeployAirStrike()
 {
+    // TODO : AirStrike 개수 파악해서 처리할 것
     if (KEY_TAP(KEY::Q))
     {
         if (CAirStrike::HasAirStrikeSpawnedAlive()) return;
-        GameObject* AirStriker = m_AirStrikePrefab->InstantiateAndSpawnToCurLevel();
-        AirStriker->Transform()->SetRelativePos(Transform()->GetWorldPos() - Vec3::UnitY * 30.f);
+        
+        if (m_InvenScript->GetCurrentAirStrikeCount() <= 0)
+        {
+            GM->GetIngameUIManager()->AddGameLog(L"NO AIRSTRIKES LEFT");
+            return;
+        }
+
+        if (GameObject* AirStriker = m_AirStrikePrefab->InstantiateAndSpawnToCurLevel())
+        {
+            AirStriker->Transform()->SetRelativePos(Transform()->GetWorldPos() - Vec3::UnitY * 30.f);
+            GM->GetIngameUIManager()->AddGameLog(L"AIRSTRIKE INCOMING");
+            m_InvenScript->ReduceCurrentAirStrikeCount();
+        }
     }
 }
 

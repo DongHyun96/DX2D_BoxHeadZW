@@ -16,7 +16,8 @@ private:
         {PLAYER_STRUCTURE_TYPE::TURRET_MORTAR,      0},    
         {PLAYER_STRUCTURE_TYPE::TURRET_ROCKET,      0},    
     };
-    
+
+    // 현재 무기 남은 장탄수 (해금되지 않은 무기의 탄약도 소유하고 있을 수 있다)
     map<PLAYER_HANDSTATE, int> m_AmmoLeft = 
     {
         {PLAYER_HANDSTATE::UNARMED, 0}, // Dummy
@@ -26,6 +27,11 @@ private:
         {PLAYER_HANDSTATE::MINIGUN, 400},    
         {PLAYER_HANDSTATE::ROCKET,  20},    
     };
+
+private: // 수류탄 및 AirStrike 남은 개수
+    
+    int m_AirStrikeCount{};
+    int m_GrenadeCount{};
     
 public:
 
@@ -38,8 +44,9 @@ public:
 public:
 
     virtual void Begin() override;
-    
+    virtual void AfterLevelBegin() override;
     virtual void Tick() override;
+    
 
 public:
     /// <summary>
@@ -74,6 +81,19 @@ public:
     int GetCurrentAmmoCount(PLAYER_HANDSTATE _HandState) const { return m_AmmoLeft.at(_HandState); }
     void ReduceCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _ReduceAmount = 1);
     void IncreaseCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _IncreaseAmount = 1);
+
+    int GetCurrentGrenadeCount() const { return m_GrenadeCount; }
+    void ReduceCurrentGrenadeCount(int _ReduceAmount = 1);
+    void IncreaseCurrentGrenadeCount(int _IncreaseAmount = 1);
+    
+    int GetCurrentAirStrikeCount() const { return m_AirStrikeCount; }
+    void ReduceCurrentAirStrikeCount(int _ReduceAmount = 1);
+    void IncreaseCurrentAirStrikeCount(int _IncreaseAmount = 1);
+    
+private:
+    
+    void SetCurrentGrenadeCount(int _GrenadeCount);
+    void SetCurrentAirStrikeCount(int _AirStrikeCount);
     
 public:
     

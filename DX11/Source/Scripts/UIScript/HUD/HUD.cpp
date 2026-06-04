@@ -59,6 +59,20 @@ void AmmoCountUIArea::UpdateToStructure(PLAYER_STRUCTURE_TYPE _Type, int _Count)
     }
 }
 
+void AmmoCountUIArea::UpdateCurrentGrenadeCount(int _Count)
+{
+    const wstring CountText = L"X " + to_wstring(_Count);
+    GrenadeCount->SetText(CountText);
+    GrenadeCount->SetColor((_Count <= 0) ? DEF_COLOR_RED : DEF_COLOR_WHITE);
+}
+
+void AmmoCountUIArea::UpdateCurrentAirStrikeCount(int _Count)
+{
+    const wstring CountText = L"X " + to_wstring(_Count);
+    AirStrikeCount->SetText(CountText);
+    AirStrikeCount->SetColor((_Count <= 0) ? DEF_COLOR_RED : DEF_COLOR_WHITE);
+}
+
 bool AmmoCountUIArea::UpdateHPBar(float _HP, float _MaxHP)
 {
     if (_MaxHP <= 0.f) return false;

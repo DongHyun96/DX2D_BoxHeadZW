@@ -69,23 +69,22 @@ void CItem::Tick()
 
 void CItem::OnColliderBeginOverlap(CCollider2D* _Owner, CCollider2D* _Other)
 {
-    GameObject* pOtherObj              = _Other->GetOwner();
-    CPlayerStat* pPlayerStat           = pOtherObj->GetScriptComponent<CPlayerStat>().Get();
-    CEquipmentScript* pEquipmentScript = pOtherObj->GetScriptComponent<CEquipmentScript>().Get();
+    GameObject*         pOtherObj        = _Other->GetOwner();
+    CPlayerStat*        pPlayerStat      = pOtherObj->GetScriptComponent<CPlayerStat>().Get();
+    
+    // Player가 아닌 다른 물체와의 충돌이 일어남
+    if (!pPlayerStat) return;
+    
+    CEquipmentScript*   pEquipmentScript = pOtherObj->GetScriptComponent<CEquipmentScript>().Get();
+    CInvenScript*       pInven           = pOtherObj->GetScriptComponent<CInvenScript>().Get();
     
     if (!m_EarnedSound) m_EarnedSound = FIND_ASSET(ASound, L"Sound\\PickUpAmmo.wav");
     m_EarnedSound->Play(1, 0.5f, true);
 
-    // Player가 아닌 다른 물체와의 충돌이 일어남
-    if (!pPlayerStat) return;
     
     m_LifeTime = m_MaxLifeTime;    
     GetOwner()->SetActive(false);
 
-    // 충돌할 수 있는 충돌체는 Player 뿐이다 Player에게 랜덤하게 버프 주기
-    // Heal, 구조물 하나 선택해서 늘리기(CInvenScript), 탄알 수 늘리기(CInvenScript)
-    
-    
     // 새로운 무기종류 해금 : 확률 1%
     if (CheckProbabilityPercent(1.f))
     {
@@ -106,48 +105,48 @@ void CItem::OnColliderBeginOverlap(CCollider2D* _Owner, CCollider2D* _Other)
         }
     }
 
-    // ApplyHeal, Inven Structure 개수 늘리기, 탄알 수 늘리기 각각 나머지 확률에서 동일히 1/3 확률
-    const int iRandom = GetRandom(0, 2);
-
-    if (iRandom == 0)
+    // AirStrike : 확률 5%
+    if (CheckProbabilityPercent(5.f))
     {
-        // 1. Heal
-        pPlayerStat->ApplyHeal(GetRandom(30.f, 60.f));
+        const int IncreaseAmount = GetRandom(1, 2);
+        pInven->IncreaseCurrentAirStrikeCount(IncreaseAmount);
+        return;
     }
-    else if (iRandom == 1)
-    {
-        // 2. 구조물 하나 선택해서 늘리기(CInvenScript)
-        CInvenScript* pInven = pOtherObj->GetScriptComponent<CInvenScript>().Get();
-        if (pInven)
-        {
-            const PLAYER_STRUCTURE_TYPE type = static_cast<PLAYER_STRUCTURE_TYPE>(rand() % static_cast<int>(PLAYER_STRUCTURE_TYPE::END));
 
-            // Turret 종류
-            switch (type)
-            {
-            case PLAYER_STRUCTURE_TYPE::BARRICADE:
-            case PLAYER_STRUCTURE_TYPE::BARREL:
-                pInven->IncreaseCurrentStructureCount(type, GetRandom(10, 20));
-                break;
-            case PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN: 
-            case PLAYER_STRUCTURE_TYPE::TURRET_MORTAR: 
-            case PLAYER_STRUCTURE_TYPE::TURRET_ROCKET:
-                pInven->IncreaseCurrentStructureCount(type, GetRandom(3, 10));
-                break;
-            case PLAYER_STRUCTURE_TYPE::END:
-                break;
-            }
-            
+    // 나머지 94% 확률을 동일한 확률로 쪼개어 ApplyHeal, Inven Structure 개수 늘리기, 탄알 수 늘리기, Grenade Count 늘리기
+    switch (GetRandom(0, 3))
+    {
+    case 0: // 1. Heal
+        pPlayerStat->ApplyHeal(GetRandom(30.f, 60.f));
+        return;
+    case 1: // 2. 구조물 하나 선택해서 늘리기(CInvenScript)
+    {
+        const PLAYER_STRUCTURE_TYPE type = static_cast<PLAYER_STRUCTURE_TYPE>(rand() % static_cast<int>(PLAYER_STRUCTURE_TYPE::END));
+
+        // Turret 종류
+        switch (type)
+        {
+        case PLAYER_STRUCTURE_TYPE::BARRICADE:
+        case PLAYER_STRUCTURE_TYPE::BARREL:
+            pInven->IncreaseCurrentStructureCount(type, GetRandom(10, 20));
+            break;
+        case PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN: 
+        case PLAYER_STRUCTURE_TYPE::TURRET_MORTAR: 
+        case PLAYER_STRUCTURE_TYPE::TURRET_ROCKET:
+            pInven->IncreaseCurrentStructureCount(type, GetRandom(3, 10));
+            break;
+        case PLAYER_STRUCTURE_TYPE::END:
+            break;
         }
     }
-    else
+        return;
+    case 2: // 3. 탄알 수 늘리기(CInvenScript)
     {
-        // 3. 탄알 수 늘리기(CInvenScript)
         CInvenScript* pInven = pOtherObj->GetScriptComponent<CInvenScript>().Get();
         if (pInven)
         {
-            // PISTOL(1)은 무한이므로 제외하고 UZI(2) ~ ROCKET(5) 중 선택
-            const PLAYER_HANDSTATE WeaponType = static_cast<PLAYER_HANDSTATE>(rand() % 4 + 2);
+            // PISTOL(1)은 무한이므로 제외하고 UZI(2) ~ ROCKET(5) 중 선택 (END인 경우, GrenadeCount 늘리는 것으로 처리)
+            const PLAYER_HANDSTATE WeaponType = static_cast<PLAYER_HANDSTATE>(rand() % 5 + 2);
 
             static const map<PLAYER_HANDSTATE, pair<int, int>> RANDOM_AMMO_AMOUNT_RANGE = 
             {
@@ -155,13 +154,17 @@ void CItem::OnColliderBeginOverlap(CCollider2D* _Owner, CCollider2D* _Other)
                 {PLAYER_HANDSTATE::SHOTGUN, {20, 40}},
                 {PLAYER_HANDSTATE::MINIGUN, {50, 200}},
                 {PLAYER_HANDSTATE::ROCKET,  {20, 30}},
+                {PLAYER_HANDSTATE::END,     {5, 15}}, // Grenade
             };
 
             const int _Min               = RANDOM_AMMO_AMOUNT_RANGE.at(WeaponType).first;
             const int _Max               = RANDOM_AMMO_AMOUNT_RANGE.at(WeaponType).second;
             const int IncreaseAmmoAmount = GetRandom(_Min, _Max);
-            
-            pInven->IncreaseCurrentAmmoCount(WeaponType, IncreaseAmmoAmount);
+
+            if (WeaponType != PLAYER_HANDSTATE::END)
+                pInven->IncreaseCurrentAmmoCount(WeaponType, IncreaseAmmoAmount);
+            else pInven->IncreaseCurrentGrenadeCount(IncreaseAmmoAmount);
         }
+    }
     }
 }

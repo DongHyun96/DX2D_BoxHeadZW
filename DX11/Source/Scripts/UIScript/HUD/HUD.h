@@ -25,6 +25,11 @@ public:
     void UpdateToGun(PLAYER_HANDSTATE _HandState, int _MainAmmoCount);
     void UpdateCurrentAmmoCount(int _AmmoCount);
     void UpdateToStructure(PLAYER_STRUCTURE_TYPE _Type, int _Count);
+    
+public:
+    
+    void UpdateCurrentGrenadeCount(int _Count);
+    void UpdateCurrentAirStrikeCount(int _Count);
 
 public:
     

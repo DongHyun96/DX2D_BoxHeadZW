@@ -28,6 +28,12 @@ void CInvenScript::Begin()
     
 }
 
+void CInvenScript::AfterLevelBegin()
+{
+    SetCurrentAirStrikeCount(2);
+    SetCurrentGrenadeCount(10);
+}
+
 void CInvenScript::Tick()
 {
 }
@@ -107,4 +113,43 @@ void CInvenScript::IncreaseCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _In
     }
     
     GM->GetIngameUIManager()->AddGameLog(GameLog);
+}
+
+void CInvenScript::ReduceCurrentGrenadeCount(int _ReduceAmount)
+{
+    m_GrenadeCount = max(0, m_GrenadeCount - _ReduceAmount);
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateCurrentGrenadeCount(m_GrenadeCount);
+}
+
+void CInvenScript::IncreaseCurrentGrenadeCount(int _IncreaseAmount)
+{
+    m_GrenadeCount += _IncreaseAmount;
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateCurrentGrenadeCount(m_GrenadeCount);
+    GM->GetIngameUIManager()->AddGameLog(L"EARNED GRENADES (+" + to_wstring(_IncreaseAmount) + L")");
+}
+
+void CInvenScript::ReduceCurrentAirStrikeCount(int _ReduceAmount)
+{
+    m_AirStrikeCount = max(0, m_AirStrikeCount - _ReduceAmount);
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateCurrentAirStrikeCount(m_AirStrikeCount);
+}
+
+void CInvenScript::IncreaseCurrentAirStrikeCount(int _IncreaseAmount)
+{
+    m_AirStrikeCount += _IncreaseAmount;
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateCurrentAirStrikeCount(m_AirStrikeCount);
+    GM->GetIngameUIManager()->AddGameLog(L"EARNED AIRSTRIKES (+" + to_wstring(_IncreaseAmount) + L")");
+}
+
+void CInvenScript::SetCurrentGrenadeCount(int _GrenadeCount)
+{
+    m_GrenadeCount = _GrenadeCount;
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateCurrentGrenadeCount(m_GrenadeCount);
+}
+
+void CInvenScript::SetCurrentAirStrikeCount(int _AirStrikeCount)
+{
+    m_AirStrikeCount = _AirStrikeCount;
+    GM->GetIngameUIManager()->GetAmmoCountUIArea()->UpdateCurrentAirStrikeCount(m_AirStrikeCount);
+
 }
