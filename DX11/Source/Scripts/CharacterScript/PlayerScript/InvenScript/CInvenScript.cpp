@@ -62,12 +62,12 @@ int CInvenScript::IncreaseCurrentStructureCount(PLAYER_STRUCTURE_TYPE _Structure
     wstring GameLog{};
     switch (_StructureType)
     {
-    case PLAYER_STRUCTURE_TYPE::BARRICADE:          GameLog = L"EARNED BARRICADE";          break; 
-    case PLAYER_STRUCTURE_TYPE::BARREL:             GameLog = L"EARNED BARREL";             break;
-    case PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN: GameLog = L"EARNED TURRET_MACHINE_GUN"; break;
-    case PLAYER_STRUCTURE_TYPE::TURRET_MORTAR:      GameLog = L"EARNED TURRET_MORTAR";      break;
-    case PLAYER_STRUCTURE_TYPE::TURRET_ROCKET:      GameLog = L"EARNED TURRET_ROCKET";      break;
-    case PLAYER_STRUCTURE_TYPE::END:                                                        return 0;
+    case PLAYER_STRUCTURE_TYPE::BARRICADE:          GameLog = L"EARNED BARRICADE (+"             + to_wstring(_IncreaseAmount) + L")"; break; 
+    case PLAYER_STRUCTURE_TYPE::BARREL:             GameLog = L"EARNED BARREL (+"                + to_wstring(_IncreaseAmount) + L")"; break;
+    case PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN: GameLog = L"EARNED TURRET_MACHINE_GUN (+"    + to_wstring(_IncreaseAmount) + L")"; break;
+    case PLAYER_STRUCTURE_TYPE::TURRET_MORTAR:      GameLog = L"EARNED TURRET_MORTAR (+"         + to_wstring(_IncreaseAmount) + L")"; break;
+    case PLAYER_STRUCTURE_TYPE::TURRET_ROCKET:      GameLog = L"EARNED TURRET_ROCKET (+"         + to_wstring(_IncreaseAmount) + L")"; break;
+    case PLAYER_STRUCTURE_TYPE::END: return 0;
     }
     
     GM->GetIngameUIManager()->AddGameLog(GameLog);
@@ -100,10 +100,10 @@ void CInvenScript::IncreaseCurrentAmmoCount(PLAYER_HANDSTATE _HandState, int _In
     switch (_HandState)
     {
     case PLAYER_HANDSTATE::PISTOL: case PLAYER_HANDSTATE::UNARMED: case PLAYER_HANDSTATE::END: return;
-    case PLAYER_HANDSTATE::UZI:     GameLog = L"EARNED UZI AMMO";       break;
-    case PLAYER_HANDSTATE::SHOTGUN: GameLog = L"EARNED SHOTGUN AMMO";   break;
-    case PLAYER_HANDSTATE::MINIGUN: GameLog = L"EARNED MINIGUN AMMO";   break;
-    case PLAYER_HANDSTATE::ROCKET:  GameLog = L"EARNED ROCKET AMMO";    break;
+    case PLAYER_HANDSTATE::UZI:     GameLog = L"EARNED UZI AMMO (+"      + to_wstring(_IncreaseAmount) + L")";    break;
+    case PLAYER_HANDSTATE::SHOTGUN: GameLog = L"EARNED SHOTGUN AMMO (+"  + to_wstring(_IncreaseAmount) + L")";    break;
+    case PLAYER_HANDSTATE::MINIGUN: GameLog = L"EARNED MINIGUN AMMO (+"  + to_wstring(_IncreaseAmount) + L")";    break;
+    case PLAYER_HANDSTATE::ROCKET:  GameLog = L"EARNED ROCKET AMMO (+"   + to_wstring(_IncreaseAmount) + L")";    break;
     }
     
     GM->GetIngameUIManager()->AddGameLog(GameLog);

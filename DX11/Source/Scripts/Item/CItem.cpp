@@ -10,6 +10,7 @@
 #include "Source/Manager/GameManager.h"
 
 #include "Source/Scripts/CharacterScript/CharacterStat/PlayerStat/CPlayerStat.h"
+#include "Source/Scripts/CharacterScript/PlayerScript/InvenScript/CEquipmentScript.h"
 #include "Source/Scripts/CharacterScript/PlayerScript/InvenScript/CInvenScript.h"
 #include "Source/Scripts/UIScript/InGameUIManager/CIngameUIManager.h"
 
@@ -68,47 +69,99 @@ void CItem::Tick()
 
 void CItem::OnColliderBeginOverlap(CCollider2D* _Owner, CCollider2D* _Other)
 {
-    GameObject* pOtherObj = _Other->GetOwner();
-    CPlayerStat* pPlayerStat = pOtherObj->GetScriptComponent<CPlayerStat>().Get();
+    GameObject* pOtherObj              = _Other->GetOwner();
+    CPlayerStat* pPlayerStat           = pOtherObj->GetScriptComponent<CPlayerStat>().Get();
+    CEquipmentScript* pEquipmentScript = pOtherObj->GetScriptComponent<CEquipmentScript>().Get();
     
     if (!m_EarnedSound) m_EarnedSound = FIND_ASSET(ASound, L"Sound\\PickUpAmmo.wav");
     m_EarnedSound->Play(1, 0.5f, true);
+
+    // Player가 아닌 다른 물체와의 충돌이 일어남
+    if (!pPlayerStat) return;
     
-    if (pPlayerStat)
+    m_LifeTime = m_MaxLifeTime;    
+    GetOwner()->SetActive(false);
+
+    // 충돌할 수 있는 충돌체는 Player 뿐이다 Player에게 랜덤하게 버프 주기
+    // Heal, 구조물 하나 선택해서 늘리기(CInvenScript), 탄알 수 늘리기(CInvenScript)
+    
+    
+    // 새로운 무기종류 해금 : 확률 1%
+    if (CheckProbabilityPercent(1.f))
     {
-        m_LifeTime = m_MaxLifeTime;    
-        GetOwner()->SetActive(false);
-
-        // 충돌할 수 있는 충돌체는 Player 뿐이다 Player에게 랜덤하게 버프 주기
-        // Heal, 구조물 하나 선택해서 늘리기(CInvenScript), 탄알 수 늘리기(CInvenScript)
-        int iRandom = GetRandom(0, 2);
-
-        if (iRandom == 0)
+        // 모두 해금했는지 체크
+        const PLAYER_HANDSTATE NextWeaponToUnlock = pEquipmentScript->GetNextWeaponTypeToUnlock();
+        if (NextWeaponToUnlock != PLAYER_HANDSTATE::END)
         {
-            // 1. Heal
-            pPlayerStat->ApplyHeal(GetRandom(30.f, 60.f));
-        }
-        else if (iRandom == 1)
-        {
-            // 2. 구조물 하나 선택해서 늘리기(CInvenScript)
-            CInvenScript* pInven = pOtherObj->GetScriptComponent<CInvenScript>().Get();
-            if (pInven)
+            if (pEquipmentScript->EquipWeapon(NextWeaponToUnlock))
             {
-                const PLAYER_STRUCTURE_TYPE type = static_cast<PLAYER_STRUCTURE_TYPE>(rand() % static_cast<int>(PLAYER_STRUCTURE_TYPE::END));
-                const int Amount = GetRandom(5, 10);
-                pInven->IncreaseCurrentStructureCount(type, Amount);
+                switch (NextWeaponToUnlock)
+                {
+                case PLAYER_HANDSTATE::SHOTGUN: GM->GetIngameUIManager()->AddGameLog(L"SHOTGUN UNLOCKED");  return;
+                case PLAYER_HANDSTATE::MINIGUN: GM->GetIngameUIManager()->AddGameLog(L"MINIGUN UNLOCKED");  return;
+                case PLAYER_HANDSTATE::ROCKET:  GM->GetIngameUIManager()->AddGameLog(L"ROCKET UNLOCKED");   return;
+                default: return;
+                }                
             }
         }
-        else
+    }
+
+    // ApplyHeal, Inven Structure 개수 늘리기, 탄알 수 늘리기 각각 나머지 확률에서 동일히 1/3 확률
+    const int iRandom = GetRandom(0, 2);
+
+    if (iRandom == 0)
+    {
+        // 1. Heal
+        pPlayerStat->ApplyHeal(GetRandom(30.f, 60.f));
+    }
+    else if (iRandom == 1)
+    {
+        // 2. 구조물 하나 선택해서 늘리기(CInvenScript)
+        CInvenScript* pInven = pOtherObj->GetScriptComponent<CInvenScript>().Get();
+        if (pInven)
         {
-            // 3. 탄알 수 늘리기(CInvenScript)
-            CInvenScript* pInven = pOtherObj->GetScriptComponent<CInvenScript>().Get();
-            if (pInven)
+            const PLAYER_STRUCTURE_TYPE type = static_cast<PLAYER_STRUCTURE_TYPE>(rand() % static_cast<int>(PLAYER_STRUCTURE_TYPE::END));
+
+            // Turret 종류
+            switch (type)
             {
-                // PISTOL(1)은 무한이므로 제외하고 UZI(2) ~ ROCKET(5) 중 선택
-                PLAYER_HANDSTATE type = static_cast<PLAYER_HANDSTATE>(rand() % 4 + 2);
-                pInven->IncreaseCurrentAmmoCount(type, 50);
+            case PLAYER_STRUCTURE_TYPE::BARRICADE:
+            case PLAYER_STRUCTURE_TYPE::BARREL:
+                pInven->IncreaseCurrentStructureCount(type, GetRandom(10, 20));
+                break;
+            case PLAYER_STRUCTURE_TYPE::TURRET_MACHINE_GUN: 
+            case PLAYER_STRUCTURE_TYPE::TURRET_MORTAR: 
+            case PLAYER_STRUCTURE_TYPE::TURRET_ROCKET:
+                pInven->IncreaseCurrentStructureCount(type, GetRandom(3, 10));
+                break;
+            case PLAYER_STRUCTURE_TYPE::END:
+                break;
             }
+            
+        }
+    }
+    else
+    {
+        // 3. 탄알 수 늘리기(CInvenScript)
+        CInvenScript* pInven = pOtherObj->GetScriptComponent<CInvenScript>().Get();
+        if (pInven)
+        {
+            // PISTOL(1)은 무한이므로 제외하고 UZI(2) ~ ROCKET(5) 중 선택
+            const PLAYER_HANDSTATE WeaponType = static_cast<PLAYER_HANDSTATE>(rand() % 4 + 2);
+
+            static const map<PLAYER_HANDSTATE, pair<int, int>> RANDOM_AMMO_AMOUNT_RANGE = 
+            {
+                {PLAYER_HANDSTATE::UZI,     {30, 60}},
+                {PLAYER_HANDSTATE::SHOTGUN, {20, 40}},
+                {PLAYER_HANDSTATE::MINIGUN, {50, 200}},
+                {PLAYER_HANDSTATE::ROCKET,  {20, 30}},
+            };
+
+            const int _Min               = RANDOM_AMMO_AMOUNT_RANGE.at(WeaponType).first;
+            const int _Max               = RANDOM_AMMO_AMOUNT_RANGE.at(WeaponType).second;
+            const int IncreaseAmmoAmount = GetRandom(_Min, _Max);
+            
+            pInven->IncreaseCurrentAmmoCount(WeaponType, IncreaseAmmoAmount);
         }
     }
 }

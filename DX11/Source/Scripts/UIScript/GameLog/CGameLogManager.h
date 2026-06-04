@@ -28,10 +28,10 @@ public:
     virtual void Tick() override;
 
 public:
+    
     /// <summary>
     /// GameLog 추가
     /// </summary>
-    /// <param name="_Log"> : GameLog </param>
     void AddGameLog(const wstring& _Log);
     
 private:

@@ -99,6 +99,16 @@ Vec3 MappingToNewRangeClamped(const Vec3& _Src, const Vec3& _SrcMin, const Vec3&
     return {X, Y, Z};
 }
 
+bool CheckProbability(float _Probability)
+{
+    return GetRandom<float>(0.f, 1.f) < _Probability;
+}
+
+bool CheckProbabilityPercent(float _Percent)
+{
+    return GetRandom<float>(0.f, 100.f) < _Percent;
+}
+
 EDIRECTION GetEightDirection(const Vec3& _Vector)
 {
     return GetEightDirection(ToVec2(_Vector));

@@ -98,13 +98,15 @@ bool CPlayerStat::ApplyHeal(float _HealAmount)
     bool Result = CCharacterStat::ApplyHeal(_HealAmount);
     GM->GetIngameUIManager()->UpdateHPBar(GetHP(), GetMaxHP());
 
-    GM->GetIngameUIManager()->AddGameLog(L"HEAL APPLIED");
+    GM->GetIngameUIManager()->AddGameLog(L"HEAL APPLIED (+" + to_wstring(static_cast<int>(_HealAmount)) + L")");
     
     return Result;
 }
 
 bool CPlayerStat::ApplyBoost(float _BoostAmount)
 {
+    // Currently not in used
+    
     if (IsDead()) return false;
     
     m_Boost = min(m_Boost + _BoostAmount, m_BoostMax);

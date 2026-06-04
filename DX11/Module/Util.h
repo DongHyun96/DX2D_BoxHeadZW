@@ -118,6 +118,19 @@ const T* PickRandom(const vector<T>& _Vec)
 }
 
 /// <summary>
+/// 0 ~ 1 사이의 랜덤확률 통과 여부 체크
+/// </summary>
+/// <returns> : 통과하였다면 return true </returns>
+bool CheckProbability(float _Probability);
+
+/// <summary>
+/// % 랜덤확률 통과 여부 체크
+/// </summary>
+/// <returns> : 통과하였다면 return true </returns>
+bool CheckProbabilityPercent(float _Percent);
+
+
+/// <summary>
 /// Z값을 제외한 X, Y값으로 Vec3에서 Vec2값 반환
 /// </summary>
 static Vec2 ToVec2(const Vec3& _V) { return {_V.x, _V.y}; }
